@@ -1,0 +1,80 @@
+@startuml fig05-secuencia-pago
+' Figura 5. Diagrama de secuencia UML: pago en linea con control de
+' idempotencia (RF-006). Fuente: SCE-MC-001 v2.0, seccion 13.4.
+' Documenta el control que evita el cargo duplicado: riesgo RK-02.
+skinparam shadowing false
+autonumber
+
+actor Alumno as AL
+participant "Portal" as UI
+participant "Gateway de API" as GW
+participant "Dominio de pagos" as DPAG
+participant "Servicio de bitacora" as BIT
+database "PostgreSQL" as DB
+participant "Mercado Pago" as MP <<externo>>
+
+AL -> UI : consulta estado de cuenta
+UI -> GW : GET /cuenta/{matricula}
+GW -> DPAG : obtener saldo y movimientos
+DPAG -> DB : SELECT cuenta_alumno, movimiento
+DB --> DPAG : saldo y cargos
+DPAG --> UI : estado de cuenta
+
+AL -> UI : elige pagar
+UI -> GW : POST /pagos/intento
+GW -> DPAG : crearIntentoDePago(movimiento)
+DPAG -> DB : INSERT pago (estado = pendiente,\nclave_idempotencia UNIQUE)
+DPAG -> MP : crear preferencia de pago
+MP --> DPAG : url de checkout
+DPAG --> UI : redirigir a la pasarela
+UI --> AL : checkout de Mercado Pago
+
+AL -> MP : realiza el pago
+
+== Confirmacion asincrona por webhook ==
+
+MP -> GW : POST /webhooks/pagos (evento)
+GW -> DPAG : procesarNotificacion(evento)
+DPAG -> DPAG : verificar firma del evento
+
+alt firma invalida
+  DPAG --> MP : 401 descartado
+  DPAG -> BIT : registrar intento con firma invalida
+else firma valida
+  DPAG -> DB : SELECT pago\nWHERE clave_idempotencia = evento.id
+
+  alt el evento ya fue aplicado (notificacion duplicada)
+    DB --> DPAG : pago ya en estado aplicado
+    DPAG -> BIT : registrar evento duplicado descartado
+    BIT -> DB : INSERT bitacora
+    DPAG --> MP : 200 OK (sin efecto)
+    note right of DPAG
+      RK-02: una segunda o tercera
+      notificacion del mismo evento
+      no genera un segundo movimiento.
+    end note
+  else primer evento para esa clave
+    DB --> DPAG : pago pendiente
+    group Transaccion atomica
+      DPAG -> DB : BEGIN
+      DPAG -> DB : UPDATE pago SET estado = aplicado
+      DPAG -> DB : INSERT movimiento (un solo movimiento neto)
+      DPAG -> DB : UPDATE cuenta_alumno SET saldo
+      DPAG -> BIT : registrar pago aplicado
+      BIT -> DB : INSERT bitacora (autor, accion,\nvalor_anterior, fecha)
+      DPAG -> DB : COMMIT
+    end
+    DPAG --> MP : 200 OK
+  end
+end
+
+GW -> UI : notificar actualizacion
+UI --> AL : pago reflejado en el estado de cuenta
+
+note over DPAG, DB
+  RF-006: el pago se refleja una sola vez
+  y sin depender de comprobante en papel.
+  Conciliacion diaria segun la seccion 17.
+end note
+
+@enduml

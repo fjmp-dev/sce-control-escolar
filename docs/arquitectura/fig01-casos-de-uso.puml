@@ -1,0 +1,90 @@
+@startuml fig01-casos-de-uso
+' Figura 1. Diagrama de casos de uso del SCE, version 1 del piloto.
+' Fuente: SCE-MC-001 v2.0, seccion 13.1. Roles: Tabla 5. Requisitos: Tabla 19.
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Alumno" as AL
+actor "Profesor" as PR
+actor "Control escolar" as CE
+actor "Coordinacion academica" as CA
+actor "Caja" as CJ
+actor "Direccion" as DI
+actor "Pasarela de pago" as PP <<sistema externo>>
+
+rectangle "Sistema de Control Escolar Universitario (SCE)" {
+
+  usecase "Consultar expediente\n(RF-001)" as UC01
+  usecase "Inscribirse al semestre\n(RF-002)" as UC02
+  usecase "Verificar prerrequisitos" as UC02a
+  usecase "Verificar adeudos" as UC02b
+  usecase "Detectar choque de horario" as UC02c
+  usecase "Definir oferta, grupos,\nprofesores y aulas (RF-003)" as UC03
+  usecase "Capturar calificaciones\n(RF-004)" as UC04
+  usecase "Consultar calificaciones" as UC05
+  usecase "Cerrar periodo y recalcular\npromedio y creditos (RF-005)" as UC06
+  usecase "Consultar estado de cuenta" as UC07
+  usecase "Pagar en linea\n(RF-006)" as UC08
+  usecase "Conciliar pagos" as UC09
+  usecase "Solicitar tramite\n(RF-007)" as UC10
+  usecase "Emitir constancia,\nno adeudo e historial" as UC11
+  usecase "Consultar estado del tramite\n(RF-010)" as UC12
+  usecase "Consultar reportes agregados\n(RF-009)" as UC13
+  usecase "Administrar expediente\ny cambio de plantel" as UC14
+  usecase "Registrar en bitacora" as UCB
+  usecase "Autenticar y autorizar\npor rol (RF-008)" as UCA
+}
+
+AL --> UC01
+AL --> UC02
+AL --> UC05
+AL --> UC07
+AL --> UC08
+AL --> UC10
+AL --> UC12
+
+PR --> UC04
+PR --> UC05
+
+CE --> UC14
+CE --> UC11
+CE --> UC01
+
+CA --> UC03
+CA --> UC06
+
+CJ --> UC07
+CJ --> UC09
+
+DI --> UC13
+
+UC08 --> PP
+
+' Inclusiones obligatorias (seccion 13.1): ninguna inscripcion se confirma
+' sin verificar requisitos, adeudos y choques.
+UC02 ..> UC02a : <<include>>
+UC02 ..> UC02b : <<include>>
+UC02 ..> UC02c : <<include>>
+
+' Ninguna operacion sensible ocurre sin registro en bitacora (RNF-SEG-001).
+UC02 ..> UCB : <<include>>
+UC04 ..> UCB : <<include>>
+UC08 ..> UCB : <<include>>
+UC11 ..> UCB : <<include>>
+UC14 ..> UCB : <<include>>
+
+' Toda operacion requiere autenticacion y autorizacion (RNF-SEG-001).
+UC01 ..> UCA : <<include>>
+UC02 ..> UCA : <<include>>
+UC03 ..> UCA : <<include>>
+UC04 ..> UCA : <<include>>
+UC08 ..> UCA : <<include>>
+UC13 ..> UCA : <<include>>
+
+note bottom of UCB
+  Bitacora inmutable: autor, accion,
+  valor anterior (JSON) y fecha.
+end note
+
+@enduml

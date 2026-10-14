@@ -1,0 +1,55 @@
+@startuml fig09-despliegue
+' Figura 9. Diagrama de despliegue UML del ambiente piloto.
+' Fuente: SCE-MC-001 v2.0, seccion 13.7 y Tabla 30.
+skinparam shadowing false
+
+node "Navegador del usuario" as CLIENTE {
+  artifact "Portal SCE\n(Next.js, build estatico + SSR)" as APP
+}
+
+node "Proxy inverso" as PROXY <<nginx>> {
+  artifact "Terminacion TLS 1.2+\ny enrutamiento" as TLS
+}
+
+node "Servidor de aplicacion" as APPSRV {
+  artifact "sce-portal\n(Next.js)" as NEXT
+  artifact "sce-api\n(NestJS)" as NEST
+  artifact "healthcheck /salud" as HC
+}
+
+node "Servidor de base de datos" as DBSRV {
+  database "PostgreSQL 16" as PG
+  artifact "Respaldo diario cifrado" as BKP
+}
+
+node "Monitoreo" as MON {
+  artifact "Metricas y percentil 95" as MET
+  artifact "Alertas de disponibilidad" as ALR
+}
+
+cloud "Mercado Pago" as MP <<externo>>
+
+CLIENTE -down-> PROXY : HTTPS 443
+PROXY -down-> NEXT : HTTP 3000
+PROXY -down-> NEST : HTTP 3001
+NEST -down-> PG : TCP 5432 (TLS)
+NEST -right-> MP : HTTPS (API y webhook)
+MP -left-> PROXY : HTTPS webhook
+PG -down-> BKP : pg_dump diario
+MON -left-> HC : sondeo periodico
+MON -down-> PG : metricas
+
+note right of DBSRV
+  Servidor de aplicacion y servidor
+  de base de datos separados.
+  RPO menor a 24 h, RTO menor a 4 h.
+end note
+
+note bottom of MON
+  RNF-FIA-001: disponibilidad mayor o
+  igual a 99,0 % en semana de inscripcion.
+  RNF-REN-001: percentil 95 medido aqui,
+  nunca en maquina de desarrollo.
+end note
+
+@enduml

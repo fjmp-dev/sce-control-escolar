@@ -1,0 +1,71 @@
+@startuml fig04-secuencia-inscripcion
+' Figura 4. Diagrama de secuencia UML: inscripcion semestral (RF-002).
+' Fuente: SCE-MC-001 v2.0, seccion 13.4.
+' Muestra el orden de validaciones, la transaccion y el registro en bitacora.
+skinparam shadowing false
+autonumber
+
+actor Alumno as AL
+participant "Portal" as UI
+participant "Gateway de API" as GW
+participant "Identidad y acceso" as IAM
+participant "Dominio de expediente" as DEXP
+participant "Dominio academico" as DACA
+participant "Dominio de pagos" as DPAG
+participant "Servicio de bitacora" as BIT
+database "PostgreSQL" as DB
+
+AL -> UI : selecciona carga academica
+UI -> GW : POST /inscripciones
+GW -> IAM : validar token y rol
+IAM --> GW : rol = alumno, matricula
+
+GW -> DEXP : iniciar inscripcion(matricula, periodo)
+DEXP -> DB : leer expediente y periodo abierto
+DB --> DEXP : expediente activo
+
+group Validaciones obligatorias (orden fijo)
+  DEXP -> DACA : validarPrerrequisitos(carga)
+  DACA -> DB : consultar historial y prerequisito
+  DB --> DACA : materias acreditadas
+  DACA --> DEXP : resultado
+
+  DEXP -> DPAG : validarAdeudos(matricula)
+  DPAG -> DB : consultar cuenta_alumno
+  DB --> DPAG : saldo
+  DPAG --> DEXP : resultado
+
+  DEXP -> DACA : validarChoques(carga)
+  DACA -> DB : consultar horario de cada grupo
+  DB --> DACA : horarios
+  DACA --> DEXP : resultado
+end
+
+alt alguna validacion falla
+  DEXP -> BIT : registrar intento rechazado
+  BIT -> DB : insertar bitacora
+  DEXP --> GW : 409 estado = rechazada, motivo explicito
+  GW --> UI : motivo (adeudo | prerrequisito | choque)
+  UI --> AL : mensaje y estado distinguibles (RNF-USU-001)
+else todas las validaciones pasan
+  group Transaccion atomica
+    DEXP -> DB : BEGIN
+    DEXP -> DACA : reservar cupo de cada grupo
+    DACA -> DB : UPDATE grupo SET ocupacion = ocupacion + 1\n(bloqueo transaccional)
+    DEXP -> DB : INSERT inscripcion, inscripcion_grupo
+    DEXP -> BIT : registrar inscripcion confirmada
+    BIT -> DB : INSERT bitacora (autor, accion, valor_anterior, fecha)
+    DEXP -> DB : COMMIT
+  end
+  DEXP --> GW : 201 folio, estado = confirmada
+  GW --> UI : comprobante
+  UI --> AL : inscripcion confirmada
+end
+
+note over DEXP, DB
+  Si el cupo se agota entre la validacion y
+  el COMMIT, la transaccion revierte y la
+  inscripcion termina en estado rechazada.
+end note
+
+@enduml

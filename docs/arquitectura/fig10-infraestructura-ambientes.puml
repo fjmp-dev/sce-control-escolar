@@ -1,0 +1,57 @@
+@startuml fig10-infraestructura-ambientes
+' Figura 10. Infraestructura de ambientes y flujo de integracion y
+' despliegue continuos. Fuente: SCE-MC-001 v2.0, seccion 13.7 (Tabla 30)
+' y seccion 20.1 (puertas de promocion).
+skinparam shadowing false
+
+rectangle "Desarrollo" as DEV #EEF2F6 {
+  card "Docker Compose local\nNext.js + NestJS + PostgreSQL" as D1
+  card "Datos sinteticos" as D2
+  card "Mercado Pago sandbox" as D3
+}
+
+rectangle "Pruebas / integracion" as CI #EEF2F6 {
+  card "GitHub Actions" as C1
+  card "Base de datos efimera" as C2
+  card "Jest, Supertest, Newman" as C3
+  card "SonarQube, OWASP ZAP, gitleaks" as C4
+}
+
+rectangle "Staging" as STG #EEF2F6 {
+  card "Mismo tag candidato que ira a piloto" as S1
+  card "Datos anonimizados" as S2
+  card "HTTPS, humo y pruebas de carga" as S3
+}
+
+rectangle "Piloto" as PIL #EAF0F6 {
+  card "App y base de datos separadas" as P1
+  card "HTTPS con proxy inverso" as P2
+  card "Respaldo diario cifrado" as P3
+  card "Healthchecks y percentil 95" as P4
+}
+
+rectangle "Produccion institucional" as PRD #F5F5F4 {
+  card "Fuera de la primera version;\nsolo tras cierre exitoso del piloto" as R1
+}
+
+DEV -right-> CI : push / pull request
+CI -right-> STG : CI en verde sobre el tag candidato
+STG -right-> PIL : puertas de promocion (sec. 20.1)
+PIL -right-> PRD : cierre exitoso del piloto
+
+note bottom of STG
+  Puertas de promocion, en orden:
+  1. CI en verde sobre el tag candidato
+  2. Despliegue y prueba de humo en staging
+  3. Prueba de rendimiento dentro de RNF-REN
+  4. Acta de aceptacion firmada por PO y QA
+  5. Riesgos Alto mitigados o aceptados por escrito
+  6. Inventario actualizado y rollback verificado
+end note
+
+note bottom of DEV
+  RK-09: ningun dato personal real
+  fuera del piloto.
+end note
+
+@enduml

@@ -1,0 +1,59 @@
+@startuml fig06-estados
+' Figura 6. Diagrama de estados UML de la inscripcion y del tramite.
+' Fuente: SCE-MC-001 v2.0, seccion 13.5.
+' Todo estado de rechazo es explicito, lo que satisface RNF-USU-001.
+skinparam shadowing false
+
+title Estados de la inscripcion (RF-002) y del tramite (RF-007, RF-010)
+
+state "Inscripcion" as INS {
+  [*] --> Borrador
+  Borrador --> EnValidacion : enviar carga
+  EnValidacion --> RechazadaPorAdeudo : adeudo vigente
+  EnValidacion --> RechazadaPorPrerrequisito : prerrequisito faltante
+  EnValidacion --> RechazadaPorChoque : traslape de horario
+  EnValidacion --> RechazadaPorCupo : grupo sin cupo
+  EnValidacion --> Confirmada : todas las validaciones pasan
+
+  RechazadaPorAdeudo --> Borrador : corregir
+  RechazadaPorPrerrequisito --> Borrador : corregir
+  RechazadaPorChoque --> Borrador : corregir
+  RechazadaPorCupo --> Borrador : corregir
+
+  Confirmada --> Ajustada : alta o baja dentro del plazo
+  Ajustada --> Confirmada : revalidar
+  Confirmada --> Cerrada : cierre del periodo
+  Cerrada --> [*]
+
+  RechazadaPorAdeudo : motivo = adeudo
+  RechazadaPorPrerrequisito : motivo = prerrequisito
+  RechazadaPorChoque : motivo = choque
+  RechazadaPorCupo : motivo = cupo
+}
+
+state "Tramite" as TRA {
+  [*] --> Recibida
+  Recibida --> EnProceso : control escolar toma la solicitud
+  EnProceso --> Rechazada : requisito no cumplido
+  EnProceso --> Lista : documento emitido
+  Lista --> Entregada : el solicitante la descarga
+  Rechazada --> [*]
+  Entregada --> [*]
+
+  Recibida : fecha_actualizacion visible
+  EnProceso : fecha_actualizacion visible
+  Lista : folio y hash del documento
+  Rechazada : motivo visible para el solicitante
+}
+
+note as N1
+  Inscripcion — RNF-USU-001: los tres motivos
+  de rechazo muestran mensaje y estado
+  distinguibles (caso CF-INS-02).
+  --
+  Tramite — RF-010: el alumno consulta el estado
+  de cada solicitud con la fecha de su ultima
+  actualizacion (caso CF-TRA-02).
+end note
+
+@enduml

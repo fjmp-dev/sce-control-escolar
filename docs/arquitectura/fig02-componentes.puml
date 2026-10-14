@@ -1,0 +1,69 @@
+@startuml fig02-componentes
+' Figura 2. Diagrama de componentes UML: arquitectura logica del SCE.
+' Fuente: SCE-MC-001 v2.0, seccion 13.2 y Tabla 28.
+' Regla de diseno: la presentacion nunca accede a la base de datos y los
+' dominios se comunican a traves de servicios, no de tablas compartidas.
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+package "Capa de presentacion" {
+  [Portal de presentacion\n<<Next.js / React>>] as PORTAL
+}
+
+package "Capa de API y dominio" {
+  [Gateway de API\n<<NestJS>>] as GW
+  [Identidad y acceso\n<<JWT / guards>>] as IAM
+  [Dominio de expediente] as DEXP
+  [Dominio academico] as DACA
+  [Dominio de pagos] as DPAG
+  [Dominio de tramites] as DTRA
+  [Servicio de bitacora] as SBIT
+  [Servicio de reportes] as SREP
+}
+
+package "Capa de datos" {
+  [Persistencia\n<<PostgreSQL / Prisma>>] as PERS
+  database "Almacen de respaldos" as BKP
+}
+
+cloud "Mercado Pago" as MP <<externo>>
+
+PORTAL --> GW : HTTPS / REST
+GW --> IAM
+GW --> DEXP
+GW --> DACA
+GW --> DPAG
+GW --> DTRA
+GW --> SREP
+
+DEXP --> SBIT
+DACA --> SBIT
+DPAG --> SBIT
+DTRA --> SBIT
+
+DEXP --> PERS
+DACA --> PERS
+DPAG --> PERS
+DTRA --> PERS
+SBIT --> PERS
+SREP --> PERS
+IAM --> PERS
+
+DPAG --> MP : API y webhook
+PERS --> BKP : respaldo diario cifrado
+
+DACA ..> DEXP : servicio
+DPAG ..> DEXP : servicio
+DTRA ..> DEXP : servicio
+
+note right of PORTAL
+  Interfaces diferenciadas por rol.
+  No accede a la base de datos.
+end note
+
+note bottom of SBIT
+  Registro de operaciones sensibles:
+  autor, accion, valor anterior y fecha.
+end note
+
+@enduml

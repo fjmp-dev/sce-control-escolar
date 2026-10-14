@@ -1,0 +1,241 @@
+@startuml fig08-entidad-relacion
+' Figura 8. Diagrama entidad-relacion del SCE sobre PostgreSQL.
+' Fuente: SCE-MC-001 v2.0, seccion 13.6 y Tabla 29. Veintiuna entidades.
+' Reglas de integridad: no existen dos expedientes activos para la misma
+' matricula; un pago confirmado produce un solo movimiento neto; toda
+' calificacion queda ligada a profesor, grupo y periodo.
+skinparam shadowing false
+hide circle
+skinparam linetype ortho
+
+entity "usuario" as usuario {
+  * id : uuid <<PK>>
+  --
+  * correo : varchar <<unique>>
+  * hash_contrasena : varchar
+  * activo : boolean
+}
+
+entity "rol" as rol {
+  * id : smallint <<PK>>
+  --
+  * clave : varchar <<unique>>
+  * nombre : varchar
+}
+
+entity "usuario_rol" as usuario_rol {
+  * usuario_id : uuid <<PK,FK>>
+  * rol_id : smallint <<PK,FK>>
+  --
+  * asignado_en : timestamptz
+}
+
+entity "facultad" as facultad {
+  * clave : varchar <<PK>>
+  --
+  * nombre : varchar
+}
+
+entity "alumno" as alumno {
+  * matricula : varchar <<PK>>
+  --
+  * nombre : varchar
+  * facultad_clave : varchar <<FK>>
+  * usuario_id : uuid <<FK>>
+  * fecha_ingreso : date
+  * estatus : varchar
+}
+
+entity "plan_estudios" as plan {
+  * clave : varchar <<PK>>
+  --
+  * facultad_clave : varchar <<FK>>
+  * creditos_totales : int
+  * vigente_desde : date
+}
+
+entity "materia" as materia {
+  * clave : varchar <<PK>>
+  --
+  * plan_clave : varchar <<FK>>
+  * nombre : varchar
+  * creditos : int
+}
+
+entity "prerequisito" as prereq {
+  * materia_clave : varchar <<PK,FK>>
+  * requiere_clave : varchar <<PK,FK>>
+  --
+  * obligatorio : boolean
+}
+
+entity "periodo" as periodo {
+  * clave : varchar <<PK>>
+  --
+  * fecha_inicio : date
+  * fecha_fin : date
+  * estado : varchar
+}
+
+entity "grupo" as grupo {
+  * id : bigint <<PK>>
+  --
+  * clave : varchar
+  * materia_clave : varchar <<FK>>
+  * periodo_clave : varchar <<FK>>
+  * profesor_id : uuid <<FK>>
+  * cupo : int
+  * ocupacion : int
+}
+
+entity "horario" as horario {
+  * id : bigint <<PK>>
+  --
+  * grupo_id : bigint <<FK>>
+  * dia : smallint
+  * hora_inicio : time
+  * hora_fin : time
+  * aula : varchar
+}
+
+entity "inscripcion" as inscripcion {
+  * folio : varchar <<PK>>
+  --
+  * matricula : varchar <<FK>>
+  * periodo_clave : varchar <<FK>>
+  * estado : varchar
+  * motivo_rechazo : varchar
+  * fecha : timestamptz
+}
+
+entity "inscripcion_grupo" as ins_grupo {
+  * folio : varchar <<PK,FK>>
+  * grupo_id : bigint <<PK,FK>>
+  --
+  * fecha_alta : timestamptz
+}
+
+entity "calificacion" as calificacion {
+  * id : bigint <<PK>>
+  --
+  * folio : varchar <<FK>>
+  * grupo_id : bigint <<FK>>
+  * profesor_id : uuid <<FK>>
+  * periodo_clave : varchar <<FK>>
+  * parcial : smallint
+  * valor : numeric
+  * fecha_captura : timestamptz
+}
+
+entity "historial" as historial {
+  * matricula : varchar <<PK,FK>>
+  --
+  * promedio : numeric
+  * creditos_acumulados : int
+  * avance : numeric
+  * actualizado_en : timestamptz
+}
+
+entity "cuenta_alumno" as cuenta {
+  * matricula : varchar <<PK,FK>>
+  --
+  * saldo : numeric
+  * actualizado_en : timestamptz
+}
+
+entity "movimiento" as movimiento {
+  * id : bigint <<PK>>
+  --
+  * matricula : varchar <<FK>>
+  * pago_id : bigint <<FK>>
+  * concepto : varchar
+  * importe : numeric
+  * tipo : varchar
+  * fecha : timestamptz
+}
+
+entity "pago" as pago {
+  * id : bigint <<PK>>
+  --
+  * matricula : varchar <<FK>>
+  * clave_idempotencia : varchar <<unique>>
+  * referencia : varchar
+  * importe : numeric
+  * estado : varchar
+  * fecha : timestamptz
+}
+
+entity "tramite" as tramite {
+  * folio : varchar <<PK>>
+  --
+  * matricula : varchar <<FK>>
+  * tipo : varchar
+  * estado : varchar
+  * fecha_solicitud : timestamptz
+  * fecha_actualizacion : timestamptz
+}
+
+entity "documento" as documento {
+  * folio : varchar <<PK>>
+  --
+  * tramite_folio : varchar <<FK,unique>>
+  * tipo : varchar
+  * hash : varchar
+  * fecha_emision : timestamptz
+}
+
+entity "bitacora" as bitacora {
+  * id : bigserial <<PK>>
+  --
+  * autor : uuid <<FK>>
+  * accion : varchar
+  * entidad : varchar
+  * valor_anterior : jsonb
+  * fecha : timestamptz
+}
+
+usuario ||--o{ usuario_rol
+rol ||--o{ usuario_rol
+usuario ||--o| alumno
+facultad ||--o{ alumno
+facultad ||--o{ plan
+plan ||--o{ materia
+materia ||--o{ prereq
+materia ||--o{ prereq
+periodo ||--o{ grupo
+materia ||--o{ grupo
+usuario ||--o{ grupo
+grupo ||--|{ horario
+alumno ||--o{ inscripcion
+periodo ||--o{ inscripcion
+inscripcion ||--|{ ins_grupo
+grupo ||--o{ ins_grupo
+inscripcion ||--o{ calificacion
+grupo ||--o{ calificacion
+alumno ||--|| historial
+alumno ||--|| cuenta
+cuenta ||--o{ movimiento
+pago ||--o| movimiento
+alumno ||--o{ pago
+alumno ||--o{ tramite
+tramite ||--o| documento
+usuario ||--o{ bitacora
+
+note bottom of alumno
+  RF-001: indice unico parcial sobre
+  matricula con estatus = activo.
+  El cambio de facultad no borra historial.
+end note
+
+note bottom of pago
+  RK-02: clave_idempotencia UNIQUE.
+  Un pago confirmado produce un solo
+  movimiento neto.
+end note
+
+note bottom of bitacora
+  Registro inmutable: sin UPDATE ni DELETE.
+  valor_anterior en formato JSON.
+end note
+
+@enduml

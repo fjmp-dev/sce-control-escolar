@@ -1,0 +1,183 @@
+@startuml fig03-clases-dominio
+' Figura 3. Diagrama de clases UML del dominio del SCE.
+' Fuente: SCE-MC-001 v2.0, seccion 13.3 y Tabla 29.
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+class Usuario {
+  + id : UUID
+  + correo : string
+  + hash_contrasena : string
+  + activo : boolean
+  + autenticar() : Sesion
+}
+
+class Rol {
+  + id : int
+  + clave : string
+  + nombre : string
+}
+
+class Alumno {
+  + matricula : string <<PK>>
+  + nombre : string
+  + fecha_ingreso : date
+  + estatus : EstatusAlumno
+  + cambiarFacultad(destino) : void
+  + avanceCarrera() : decimal
+}
+
+class Facultad {
+  + clave : string
+  + nombre : string
+}
+
+class PlanEstudios {
+  + clave : string
+  + creditos_totales : int
+  + vigente_desde : date
+}
+
+class Materia {
+  + clave : string
+  + nombre : string
+  + creditos : int
+}
+
+class Prerequisito {
+  + obligatorio : boolean
+}
+
+class Periodo {
+  + clave : string
+  + fecha_inicio : date
+  + fecha_fin : date
+  + estado : EstadoPeriodo
+  + abrir() : void
+  + cerrar() : void
+}
+
+class Grupo {
+  + clave : string
+  + cupo : int
+  + ocupacion : int
+  + hayCupo() : boolean
+}
+
+class Horario {
+  + dia : DiaSemana
+  + hora_inicio : time
+  + hora_fin : time
+  + aula : string
+  + traslapaCon(otro) : boolean
+}
+
+class Inscripcion {
+  + folio : string
+  + fecha : timestamp
+  + estado : EstadoInscripcion
+  + motivo_rechazo : MotivoRechazo
+  + validarPrerrequisitos() : boolean
+  + validarAdeudos() : boolean
+  + validarChoques() : boolean
+  + confirmar() : void
+}
+
+class Calificacion {
+  + parcial : int
+  + valor : decimal
+  + fecha_captura : timestamp
+}
+
+class Historial {
+  + promedio : decimal
+  + creditos_acumulados : int
+  + avance : decimal
+  + recalcular() : void
+}
+
+class CuentaAlumno {
+  + saldo : decimal
+  + tieneAdeudo() : boolean
+}
+
+class Movimiento {
+  + concepto : string
+  + importe : decimal
+  + tipo : TipoMovimiento
+  + fecha : timestamp
+}
+
+class Pago {
+  + referencia : string
+  + clave_idempotencia : string <<unique>>
+  + importe : decimal
+  + estado : EstadoPago
+  + aplicarUnaVez() : boolean
+}
+
+class Tramite {
+  + folio : string
+  + tipo : TipoTramite
+  + estado : EstadoTramite
+  + fecha_solicitud : timestamp
+  + fecha_actualizacion : timestamp
+}
+
+class Documento {
+  + folio : string
+  + tipo : TipoTramite
+  + fecha_emision : timestamp
+  + hash : string
+}
+
+class Bitacora {
+  + id : bigint
+  + autor : UUID
+  + accion : string
+  + valor_anterior : json
+  + fecha : timestamp
+}
+
+Usuario "1" -- "1..*" Rol : usuario_rol >
+Usuario "0..1" -- "0..1" Alumno : perfil >
+Alumno "1..*" --> "1" Facultad : adscrito a >
+Facultad "1" -- "0..*" PlanEstudios
+PlanEstudios "1" -- "1..*" Materia
+Materia "0..*" -- "0..*" Materia : Prerequisito >
+Periodo "1" -- "0..*" Grupo
+Materia "1" -- "0..*" Grupo
+Grupo "1" -- "1..*" Horario
+Usuario "1" -- "0..*" Grupo : profesor asignado >
+Alumno "1" -- "0..*" Inscripcion
+Periodo "1" -- "0..*" Inscripcion
+Inscripcion "1" -- "1..*" Grupo : inscripcion_grupo >
+Inscripcion "1" -- "0..*" Calificacion
+Grupo "1" -- "0..*" Calificacion
+Alumno "1" -- "1" Historial
+Alumno "1" -- "1" CuentaAlumno
+CuentaAlumno "1" -- "0..*" Movimiento
+Movimiento "0..1" -- "0..1" Pago
+Alumno "1" -- "0..*" Tramite
+Tramite "0..1" -- "0..1" Documento
+
+note bottom of Alumno
+  RF-001: un solo expediente activo
+  por matricula, aun tras cambio de
+  plantel; el historial se conserva.
+end note
+
+note bottom of Pago
+  RF-006 y RK-02: la clave de
+  idempotencia impide el cargo
+  duplicado ante doble webhook.
+end note
+
+note bottom of Inscripcion
+  RNF-USU-001: todo rechazo deja
+  estado explicito con causa
+  (adeudo, prerrequisito o choque).
+end note
+
+@enduml

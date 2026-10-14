@@ -1,0 +1,345 @@
+// Esquema de datos del Sistema de Control Escolar Universitario (SCE)
+// Fuente: SCE-MC-001 v2.0, seccion 13.6 (Figura 8 y Tabla 29).
+// Veintiuna entidades. Reglas de integridad declaradas en el manual:
+//   1. No existen dos expedientes activos para la misma matricula.
+//   2. Un pago confirmado produce un solo movimiento neto.
+//   3. Toda calificacion queda ligada a profesor, grupo y periodo.
+//
+// Estado: linea base de fase 0. Pendiente de aprobacion por Product Owner
+// y QA antes de generar la primera migracion.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------
+// Identidad y acceso  ·  RF-008, RNF-SEG-001
+// ---------------------------------------------------------------------
+
+model Usuario {
+  id             String        @id @default(uuid()) @db.Uuid
+  correo         String        @unique
+  hashContrasena String        @map("hash_contrasena")
+  activo         Boolean       @default(true)
+  creadoEn       DateTime      @default(now()) @map("creado_en") @db.Timestamptz
+  roles          UsuarioRol[]
+  alumno         Alumno?
+  gruposImpartidos Grupo[]     @relation("ProfesorDeGrupo")
+  calificaciones Calificacion[]
+  bitacora       Bitacora[]
+
+  @@map("usuario")
+}
+
+model Rol {
+  id       Int          @id @db.SmallInt
+  clave    String       @unique // alumno, profesor, control_escolar, coordinacion, caja, direccion
+  nombre   String
+  usuarios UsuarioRol[]
+
+  @@map("rol")
+}
+
+/// Relacion muchos a muchos: soporta los seis perfiles y el minimo privilegio.
+model UsuarioRol {
+  usuarioId  String   @map("usuario_id") @db.Uuid
+  rolId      Int      @map("rol_id") @db.SmallInt
+  asignadoEn DateTime @default(now()) @map("asignado_en") @db.Timestamptz
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  rol        Rol      @relation(fields: [rolId], references: [id])
+
+  @@id([usuarioId, rolId])
+  @@map("usuario_rol")
+}
+
+// ---------------------------------------------------------------------
+// Catalogos institucionales  ·  RNF-FLE-001
+// ---------------------------------------------------------------------
+
+model Facultad {
+  clave   String        @id
+  nombre  String
+  alumnos Alumno[]
+  planes  PlanEstudios[]
+
+  @@map("facultad")
+}
+
+model PlanEstudios {
+  clave           String   @id
+  facultadClave   String   @map("facultad_clave")
+  creditosTotales Int      @map("creditos_totales")
+  vigenteDesde    DateTime @map("vigente_desde") @db.Date
+  facultad        Facultad @relation(fields: [facultadClave], references: [clave])
+  materias        Materia[]
+
+  @@map("plan_estudios")
+}
+
+model Materia {
+  clave      String        @id
+  planClave  String        @map("plan_clave")
+  nombre     String
+  creditos   Int
+  plan       PlanEstudios  @relation(fields: [planClave], references: [clave])
+  grupos     Grupo[]
+  requiereDe Prerequisito[] @relation("MateriaDestino")
+  esRequisitoDe Prerequisito[] @relation("MateriaOrigen")
+
+  @@map("materia")
+}
+
+/// Autorrelacion sobre materia; sustenta la validacion de RF-002.
+model Prerequisito {
+  materiaClave  String  @map("materia_clave")
+  requiereClave String  @map("requiere_clave")
+  obligatorio   Boolean @default(true)
+  materia       Materia @relation("MateriaDestino", fields: [materiaClave], references: [clave])
+  requiere      Materia @relation("MateriaOrigen", fields: [requiereClave], references: [clave])
+
+  @@id([materiaClave, requiereClave])
+  @@map("prerequisito")
+}
+
+model Periodo {
+  clave          String         @id // ej. 2026B
+  fechaInicio    DateTime       @map("fecha_inicio") @db.Date
+  fechaFin       DateTime       @map("fecha_fin") @db.Date
+  estado         String // abierto, en_curso, cerrado
+  grupos         Grupo[]
+  inscripciones  Inscripcion[]
+  calificaciones Calificacion[]
+
+  @@map("periodo")
+}
+
+// ---------------------------------------------------------------------
+// Expediente  ·  RF-001, RNF-DAT-001
+// ---------------------------------------------------------------------
+
+model Alumno {
+  matricula     String        @id
+  nombre        String
+  facultadClave String        @map("facultad_clave")
+  usuarioId     String?       @unique @map("usuario_id") @db.Uuid
+  fechaIngreso  DateTime      @map("fecha_ingreso") @db.Date
+  estatus       String // activo, baja, egresado
+  facultad      Facultad      @relation(fields: [facultadClave], references: [clave])
+  usuario       Usuario?      @relation(fields: [usuarioId], references: [id])
+  inscripciones Inscripcion[]
+  historial     Historial?
+  cuenta        CuentaAlumno?
+  pagos         Pago[]
+  tramites      Tramite[]
+
+  // RF-001: un solo expediente activo por matricula. La unicidad parcial
+  // sobre estatus = 'activo' se declara en la migracion con un indice
+  // parcial de PostgreSQL, que Prisma no expresa de forma nativa.
+  @@index([facultadClave])
+  @@index([estatus])
+  @@map("alumno")
+}
+
+model Historial {
+  matricula          String   @id
+  promedio           Decimal  @default(0) @db.Decimal(4, 2)
+  creditosAcumulados Int      @default(0) @map("creditos_acumulados")
+  avance             Decimal  @default(0) @db.Decimal(5, 2)
+  actualizadoEn      DateTime @updatedAt @map("actualizado_en") @db.Timestamptz
+  alumno             Alumno   @relation(fields: [matricula], references: [matricula])
+
+  @@map("historial")
+}
+
+// ---------------------------------------------------------------------
+// Oferta academica  ·  RF-003
+// ---------------------------------------------------------------------
+
+model Grupo {
+  id            BigInt             @id @default(autoincrement())
+  clave         String
+  materiaClave  String             @map("materia_clave")
+  periodoClave  String             @map("periodo_clave")
+  profesorId    String             @map("profesor_id") @db.Uuid
+  cupo          Int
+  ocupacion     Int                @default(0)
+  materia       Materia            @relation(fields: [materiaClave], references: [clave])
+  periodo       Periodo            @relation(fields: [periodoClave], references: [clave])
+  profesor      Usuario            @relation("ProfesorDeGrupo", fields: [profesorId], references: [id])
+  horarios      Horario[]
+  inscritos     InscripcionGrupo[]
+  calificaciones Calificacion[]
+
+  @@unique([clave, periodoClave])
+  @@index([profesorId, periodoClave])
+  @@map("grupo")
+}
+
+model Horario {
+  id         BigInt   @id @default(autoincrement())
+  grupoId    BigInt   @map("grupo_id")
+  dia        Int      @db.SmallInt // 1 = lunes ... 6 = sabado
+  horaInicio DateTime @map("hora_inicio") @db.Time
+  horaFin    DateTime @map("hora_fin") @db.Time
+  aula       String
+  grupo      Grupo    @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+
+  @@index([grupoId])
+  @@index([dia, horaInicio, horaFin, aula])
+  @@map("horario")
+}
+
+// ---------------------------------------------------------------------
+// Inscripcion  ·  RF-002, RNF-USU-001
+// ---------------------------------------------------------------------
+
+model Inscripcion {
+  folio          String             @id
+  matricula      String
+  periodoClave   String             @map("periodo_clave")
+  estado         String // borrador, en_validacion, rechazada, confirmada, ajustada, cerrada
+  motivoRechazo  String?            @map("motivo_rechazo") // adeudo, prerrequisito, choque, cupo
+  fecha          DateTime           @default(now()) @db.Timestamptz
+  alumno         Alumno             @relation(fields: [matricula], references: [matricula])
+  periodo        Periodo            @relation(fields: [periodoClave], references: [clave])
+  grupos         InscripcionGrupo[]
+  calificaciones Calificacion[]
+
+  @@unique([matricula, periodoClave])
+  @@index([estado])
+  @@map("inscripcion")
+}
+
+/// Clave compuesta que evita duplicidad de grupo en la carga del alumno.
+model InscripcionGrupo {
+  folio       String      @map("folio")
+  grupoId     BigInt      @map("grupo_id")
+  fechaAlta   DateTime    @default(now()) @map("fecha_alta") @db.Timestamptz
+  inscripcion Inscripcion @relation(fields: [folio], references: [folio], onDelete: Cascade)
+  grupo       Grupo       @relation(fields: [grupoId], references: [id])
+
+  @@id([folio, grupoId])
+  @@map("inscripcion_grupo")
+}
+
+// ---------------------------------------------------------------------
+// Evaluacion  ·  RF-004, RF-005
+// ---------------------------------------------------------------------
+
+/// Toda calificacion queda ligada a profesor, grupo y periodo (sec. 13.6).
+model Calificacion {
+  id            BigInt      @id @default(autoincrement())
+  folio         String
+  grupoId       BigInt      @map("grupo_id")
+  profesorId    String      @map("profesor_id") @db.Uuid
+  periodoClave  String      @map("periodo_clave")
+  parcial       Int         @db.SmallInt
+  valor         Decimal     @db.Decimal(4, 2)
+  fechaCaptura  DateTime    @default(now()) @map("fecha_captura") @db.Timestamptz
+  inscripcion   Inscripcion @relation(fields: [folio], references: [folio])
+  grupo         Grupo       @relation(fields: [grupoId], references: [id])
+  profesor      Usuario     @relation(fields: [profesorId], references: [id])
+  periodo       Periodo     @relation(fields: [periodoClave], references: [clave])
+
+  @@unique([folio, grupoId, parcial])
+  @@index([grupoId, periodoClave])
+  @@map("calificacion")
+}
+
+// ---------------------------------------------------------------------
+// Cobranza  ·  RF-006, RK-02
+// ---------------------------------------------------------------------
+
+model CuentaAlumno {
+  matricula     String       @id
+  saldo         Decimal      @default(0) @db.Decimal(12, 2)
+  actualizadoEn DateTime     @updatedAt @map("actualizado_en") @db.Timestamptz
+  alumno        Alumno       @relation(fields: [matricula], references: [matricula])
+  movimientos   Movimiento[]
+
+  @@map("cuenta_alumno")
+}
+
+model Movimiento {
+  id        BigInt       @id @default(autoincrement())
+  matricula String
+  pagoId    BigInt?      @unique @map("pago_id") // un pago produce un solo movimiento neto
+  concepto  String
+  importe   Decimal      @db.Decimal(12, 2)
+  tipo      String // cargo, abono, ajuste, beca
+  fecha     DateTime     @default(now()) @db.Timestamptz
+  cuenta    CuentaAlumno @relation(fields: [matricula], references: [matricula])
+  pago      Pago?        @relation(fields: [pagoId], references: [id])
+
+  @@index([matricula, fecha])
+  @@map("movimiento")
+}
+
+model Pago {
+  id                BigInt      @id @default(autoincrement())
+  matricula         String
+  claveIdempotencia String      @unique @map("clave_idempotencia") // RK-02
+  referencia        String
+  importe           Decimal     @db.Decimal(12, 2)
+  estado            String // pendiente, aplicado, rechazado, cancelado
+  fecha             DateTime    @default(now()) @db.Timestamptz
+  alumno            Alumno      @relation(fields: [matricula], references: [matricula])
+  movimiento        Movimiento?
+
+  @@index([matricula, estado])
+  @@map("pago")
+}
+
+// ---------------------------------------------------------------------
+// Tramites  ·  RF-007, RF-010
+// ---------------------------------------------------------------------
+
+model Tramite {
+  folio              String     @id
+  matricula          String
+  tipo               String // constancia, no_adeudo, historial
+  estado             String // recibida, en_proceso, lista, entregada, rechazada
+  fechaSolicitud     DateTime   @default(now()) @map("fecha_solicitud") @db.Timestamptz
+  fechaActualizacion DateTime   @updatedAt @map("fecha_actualizacion") @db.Timestamptz
+  alumno             Alumno     @relation(fields: [matricula], references: [matricula])
+  documento          Documento?
+
+  @@index([matricula, estado])
+  @@map("tramite")
+}
+
+model Documento {
+  folio        String   @id
+  tramiteFolio String   @unique @map("tramite_folio")
+  tipo         String
+  hash         String // verificacion de autenticidad del documento emitido
+  fechaEmision DateTime @default(now()) @map("fecha_emision") @db.Timestamptz
+  tramite      Tramite  @relation(fields: [tramiteFolio], references: [folio])
+
+  @@map("documento")
+}
+
+// ---------------------------------------------------------------------
+// Bitacora  ·  RNF-SEG-001
+// ---------------------------------------------------------------------
+
+/// Registro inmutable de operaciones sensibles. Sin UPDATE ni DELETE: la
+/// restriccion se aplica con permisos y disparadores en la migracion.
+model Bitacora {
+  id            BigInt   @id @default(autoincrement())
+  autor         String   @db.Uuid
+  accion        String
+  entidad       String
+  valorAnterior Json?    @map("valor_anterior")
+  fecha         DateTime @default(now()) @db.Timestamptz
+  usuario       Usuario  @relation(fields: [autor], references: [id])
+
+  @@index([entidad, fecha])
+  @@index([autor, fecha])
+  @@map("bitacora")
+}

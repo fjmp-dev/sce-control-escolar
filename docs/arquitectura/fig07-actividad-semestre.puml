@@ -1,0 +1,92 @@
+@startuml fig07-actividad-semestre
+' Figura 7. Diagrama de actividad UML: ciclo del semestre en el SCE.
+' Fuente: SCE-MC-001 v2.0, seccion 13.5.
+' Calles por responsable, desde la apertura del periodo hasta la emision
+' de constancias.
+skinparam shadowing false
+
+|Coordinacion academica|
+start
+:Abrir periodo;
+:Definir materias, grupos,
+profesores y aulas (RF-003);
+:Publicar oferta academica;
+
+|Alumno|
+:Consultar oferta;
+:Armar carga academica;
+:Enviar inscripcion (RF-002);
+
+|Sistema|
+:Validar prerrequisitos;
+:Validar adeudos;
+:Detectar choques de horario;
+if (todas las validaciones pasan?) then (no)
+  |Alumno|
+  :Recibir estado de rechazo
+  con motivo explicito;
+  stop
+else (si)
+  |Sistema|
+  :Confirmar inscripcion
+  y reservar cupo;
+  :Registrar en bitacora;
+endif
+
+|Caja|
+:Generar cargos del periodo;
+
+|Alumno|
+:Consultar estado de cuenta;
+:Pagar en linea (RF-006);
+
+|Sistema|
+:Aplicar pago una sola vez
+(clave de idempotencia);
+
+|Caja|
+:Conciliar pagos del dia;
+
+|Profesor|
+repeat
+  :Capturar calificaciones
+  del parcial (RF-004);
+repeat while (quedan parciales?) is (si)
+->no;
+
+|Alumno|
+:Consultar calificaciones
+al momento de la captura;
+
+|Sistema|
+:Cerrar periodo;
+:Recalcular promedio, creditos
+y avance de carrera (RF-005);
+:Actualizar historial;
+
+|Alumno|
+:Solicitar tramite (RF-007);
+
+|Control escolar|
+:Revisar requisitos;
+if (procede?) then (no)
+  :Rechazar con motivo;
+  stop
+else (si)
+  :Emitir constancia,
+  no adeudo o historial;
+endif
+
+|Sistema|
+:Registrar emision en bitacora;
+
+|Alumno|
+:Descargar documento;
+
+|Direccion|
+:Consultar reportes agregados
+de inscripcion, avance
+y cobranza (RF-009);
+stop
+
+@enduml
