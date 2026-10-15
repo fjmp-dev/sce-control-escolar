@@ -41,6 +41,11 @@ docs/
     catalogo-requisitos.md    Los 20 requisitos RF y RNF (sección 9)
     matriz-trazabilidad.md    Trazabilidad completa y catálogo de casos (sección 12.3)
     matriz-riesgos.md         Los 10 riesgos RK (sección 17.2)
+  gobierno/
+    metodologia-de-trabajo.md Cómo trabajamos: cadencia, roles y definición de terminado
+    plan-de-trabajo.md        Calendario por fases y backlog priorizado
+    roles-y-raci.md           Los seis roles con personas asignadas
+    actas/                    Actas de aceptación de fase y de sprint
 ```
 
 ---
@@ -71,6 +76,10 @@ En Visual Studio Code, la extensión *PlantUML* los previsualiza con `Alt+D`.
 | `docs/calidad/catalogo-requisitos.md` | 9 | Especificación de requisitos: catálogos RF y RNF. |
 | `docs/calidad/matriz-trazabilidad.md` | 12.3 | Matriz de trazabilidad y resultados de prueba asociados. |
 | `docs/calidad/matriz-riesgos.md` | 17.2 | Matriz de riesgos actualizada por fase y registro de tratamiento. |
+| `docs/gobierno/metodologia-de-trabajo.md` | 11, 15, 16, 29 | Ciclo de vida, rituales y artefactos por fase. |
+| `docs/gobierno/plan-de-trabajo.md` | 11.2, 39.1 | Plan de desarrollo por fase con calendario. |
+| `docs/gobierno/roles-y-raci.md` | 1.2, 5.1, 5.3 | Organigrama funcional y matriz RACI con personas. |
+| `docs/gobierno/actas/` | 10.4 | Actas de aceptación por fase, firmadas por Product Owner y QA. |
 
 ---
 
