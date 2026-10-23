@@ -21,7 +21,7 @@
 
 | ID | Riesgo | Nivel | Tratamiento | Responsable | Estado en fase 0 |
 |---|---|---|---|---|---|
-| RK-01 | Duplicación o pérdida de expediente al cambiar de plantel. | **Alto** | Mitigar: restricción de unicidad en matrícula, pruebas RNF-DAT-001 y revisión de migraciones. | Desarrollo | Diseñado. Índice único parcial declarado en `docs/datos/restricciones.sql`; sin implementación hasta la fase 2. |
+| RK-01 | Duplicación o pérdida de expediente al cambiar de plantel. | **Alto** | Mitigar: restricción de unicidad en matrícula, pruebas RNF-DAT-001 y revisión de migraciones. | Desarrollo | Implementado en base de datos: `matricula` es clave primaria de `alumno` (migración init); la consulta de duplicados CD-DAT-01 se automatiza en la fase 2. |
 | RK-02 | Pago cobrado que no se refleja o cargo duplicado. | **Alto** | Mitigar: clave de idempotencia, conciliación diaria y pruebas de integración con doble webhook. | Desarrollo y Caja | Diseñado. Clave de idempotencia única y movimiento neto único en el esquema; control documentado en la Figura 5. |
 | RK-03 | Acceso cruzado entre roles, por ejemplo un alumno que altera calificaciones. | **Alto** | Mitigar: guards por rol, pruebas CS-SEG y bitácora obligatoria. | Seguridad | Diseñado. Casos CS-SEG-01 a 06 definidos en la matriz de trazabilidad; bitácora inmutable declarada. |
 | RK-04 | Caída o lentitud durante la semana de inscripción. | **Alto** | Mitigar: pruebas de carga previas, monitoreo de percentil 95 y ventana de mantenimiento fuera de inscripción. | DevOps | Abierto. Sin ambiente piloto; casos CR-REN-01 a 05 definidos, no ejecutables en fase 0. |

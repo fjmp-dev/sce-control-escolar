@@ -1,0 +1,53 @@
+{
+  "name": "sce-api",
+  "version": "1.0.0",
+  "description": "API del Sistema de Control Escolar (NestJS + Prisma)",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "dev": "tsc -p tsconfig.json && node --env-file=.env dist/main.js",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force",
+    "test": "node --env-file=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --runInBand"
+  },
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "dependencies": {
+    "@nestjs/common": "^12.2.0",
+    "@nestjs/core": "^12.2.0",
+    "@nestjs/jwt": "^12.0.3",
+    "@nestjs/platform-express": "^12.2.0",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^12.2.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.5",
+    "@types/supertest": "^7.2.1",
+    "jest": "^30.5.2",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.1",
+    "ts-jest": "^29.4.15",
+    "typescript": "^5.9.3"
+  },
+  "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.mts"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "rootDir": ".",
+    "testMatch": [
+      "<rootDir>/test/**/*.spec.ts"
+    ]
+  }
+}
