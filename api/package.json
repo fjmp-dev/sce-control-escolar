@@ -5,11 +5,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
-    "dev": "tsc -p tsconfig.json && node --env-file=.env dist/main.js",
+    "dev": "tsc -p tsconfig.json && node --env-file-if-exists=.env dist/main.js",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --force",
-    "test": "node --env-file=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --runInBand"
+    "test": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --runInBand"
   },
   "license": "UNLICENSED",
   "type": "commonjs",

@@ -55,7 +55,7 @@ describe('RF-008 autenticacion', () => {
   });
 });
 
-describe('RF-008 autorizacion por rol', () => {
+describe('RF-008 autorizacion por rol (CI-AUTH-01, CF-ROL-01)', () => {
   const materia = { clave: 'TEST-001', planClave: 'ISW-2024', nombre: 'Materia de prueba', creditos: 4 };
 
   it('todos los roles leen catalogos', async () => {
@@ -86,5 +86,22 @@ describe('RNF-SEG-001 bitacora', () => {
     for (const sql of ['UPDATE bitacora SET accion = accion', 'DELETE FROM bitacora', 'TRUNCATE bitacora']) {
       await expect(prisma.$executeRawUnsafe(sql)).rejects.toThrow(/inmutable/);
     }
+  });
+});
+
+describe('RNF-DAT-001 calidad de datos (manual Tabla 39, en cada ejecucion del pipeline)', () => {
+  it('CD-DAT-01: no hay matriculas duplicadas', async () => {
+    const filas = await prisma.$queryRaw`SELECT matricula FROM alumno GROUP BY matricula HAVING count(*) > 1`;
+    expect(filas).toEqual([]);
+  });
+
+  it('CD-DAT-04: no hay calificaciones huerfanas de grupo, periodo o profesor', async () => {
+    const filas = await prisma.$queryRaw`
+      SELECT c.id FROM calificacion c
+        LEFT JOIN grupo g ON g.id = c.grupo_id
+        LEFT JOIN periodo p ON p.clave = c.periodo_clave
+        LEFT JOIN usuario u ON u.id = c.profesor_id
+       WHERE g.id IS NULL OR p.clave IS NULL OR u.id IS NULL`;
+    expect(filas).toEqual([]);
   });
 });

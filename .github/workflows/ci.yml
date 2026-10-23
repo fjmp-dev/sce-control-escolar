@@ -1,0 +1,55 @@
+# Integracion continua (manual sec. 31.1, etapas 1 a 4; plan de trabajo #17).
+# Ningun pull request entra a main sin estos dos trabajos en verde.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, Desarrollo]
+
+jobs:
+  api:
+    name: API - build y pruebas
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16 # version del manual, Tabla 7
+        env:
+          POSTGRES_USER: sce_app
+          POSTGRES_PASSWORD: sce_ci
+          POSTGRES_DB: sce
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sce_app" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://sce_app:sce_ci@localhost:5432/sce?schema=public
+      JWT_SECRET: solo-para-ci-no-es-un-secreto
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Migraciones sobre base limpia (CI-MIG-01)
+        run: npx prisma migrate deploy
+      - run: npm run db:seed
+      - run: npm run build
+      - name: Pruebas (CS-SEG, CI-AUTH, CD-DAT)
+        run: npm test
+
+  secretos:
+    name: Secretos - Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
