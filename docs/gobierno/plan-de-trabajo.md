@@ -42,6 +42,8 @@ S1 es corto a propósito: son los cinco días que quedan antes de que cierre la 
 
 ## 3. Backlog priorizado
 
+Cada elemento es un issue de GitHub con el mismo número (#1 a #22), su sprint como hito y etiquetas de prioridad y fase. El estado vivo está en los issues; esta tabla es la línea base del 15 de octubre.
+
 ### P0 — Antes del 19 de octubre
 
 Son los faltantes que la auditoría ya tiene criterio para encontrar y que se cierran con horas de escritorio, no de desarrollo.

@@ -5,8 +5,8 @@
 //   2. Un pago confirmado produce un solo movimiento neto.
 //   3. Toda calificacion queda ligada a profesor, grupo y periodo.
 //
-// Estado: linea base de fase 0. Pendiente de aprobacion por Product Owner
-// y QA antes de generar la primera migracion.
+// Restricciones que Prisma no expresa (CHECK, bitacora inmutable) viven en
+// migrations/20261023001700_restricciones.
 
 generator client {
   provider = "prisma-client-js"
@@ -137,9 +137,8 @@ model Alumno {
   pagos         Pago[]
   tramites      Tramite[]
 
-  // RF-001: un solo expediente activo por matricula. La unicidad parcial
-  // sobre estatus = 'activo' se declara en la migracion con un indice
-  // parcial de PostgreSQL, que Prisma no expresa de forma nativa.
+  // RF-001: matricula es la clave primaria, de modo que hay un solo
+  // expediente por alumno aunque cambie de facultad.
   @@index([facultadClave])
   @@index([estatus])
   @@map("alumno")

@@ -1,26 +1,21 @@
 -- Restricciones de integridad que el esquema de Prisma no expresa de forma
--- nativa y que se aplican en la primera migracion.
+-- nativa. Se aplican justo despues de la migracion init.
 -- Fuente: SCE-MC-001 v2.0, seccion 13.6. Riesgos RK-01, RK-02 y RK-03.
--- Estado: linea base de fase 0, pendiente de aprobacion por PO y QA.
+--
+-- Ya cubiertas por el esquema, por eso no se repiten aqui:
+--   RF-001 / RK-01  matricula es clave primaria de alumno: un expediente
+--                   por matricula (un indice parcial adicional seria
+--                   redundante y Prisma lo marcaria como drift).
+--   RF-006 / RK-02  movimiento.pago_id y pago.clave_idempotencia son UNIQUE.
 
--- ---------------------------------------------------------------------
--- RF-001 / RK-01: no existen dos expedientes activos para la misma
--- matricula. La matricula es clave primaria, de modo que la unicidad del
--- registro ya esta garantizada; este indice parcial impide ademas que un
--- proceso de cambio de plantel deje dos filas activas si en el futuro se
--- versiona el expediente.
--- ---------------------------------------------------------------------
-CREATE UNIQUE INDEX IF NOT EXISTS ux_alumno_activo
-  ON alumno (matricula)
-  WHERE estatus = 'activo';
+ALTER TABLE alumno
+  ADD CONSTRAINT ck_alumno_estatus CHECK (estatus IN ('activo', 'baja', 'egresado'));
 
--- ---------------------------------------------------------------------
--- RF-006 / RK-02: un pago confirmado produce un solo movimiento neto.
--- La clave de idempotencia ya es UNIQUE en la tabla pago; esta
--- restriccion cierra el otro extremo.
--- ---------------------------------------------------------------------
-ALTER TABLE movimiento
-  ADD CONSTRAINT ux_movimiento_pago UNIQUE (pago_id);
+ALTER TABLE periodo
+  ADD CONSTRAINT ck_periodo_estado CHECK (estado IN ('abierto', 'en_curso', 'cerrado'));
+
+ALTER TABLE periodo
+  ADD CONSTRAINT ck_periodo_rango CHECK (fecha_fin > fecha_inicio);
 
 ALTER TABLE pago
   ADD CONSTRAINT ck_pago_estado
@@ -82,13 +77,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS tg_bitacora_no_update ON bitacora;
 CREATE TRIGGER tg_bitacora_no_update
   BEFORE UPDATE OR DELETE ON bitacora
   FOR EACH ROW EXECUTE FUNCTION fn_bitacora_inmutable();
 
+-- TRUNCATE no dispara triggers por fila; sin este, el dueno de la tabla
+-- podria vaciarla.
+CREATE TRIGGER tg_bitacora_no_truncate
+  BEFORE TRUNCATE ON bitacora
+  FOR EACH STATEMENT EXECUTE FUNCTION fn_bitacora_inmutable();
+
 -- El rol de aplicacion solo inserta y lee.
-REVOKE UPDATE, DELETE ON bitacora FROM PUBLIC;
+REVOKE UPDATE, DELETE, TRUNCATE ON bitacora FROM PUBLIC;
 
 -- ---------------------------------------------------------------------
 -- RNF-DAT-001: consulta de verificacion de duplicados. Debe devolver cero
