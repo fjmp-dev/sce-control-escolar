@@ -7,6 +7,11 @@ on:
   push:
     branches: [main, Desarrollo]
 
+# Minimo privilegio para el token del workflow; gitleaks-action lee los commits del pull request.
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   api:
     name: API - build y pruebas

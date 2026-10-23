@@ -83,6 +83,9 @@ describe('RF-008 autorizacion por rol (CI-AUTH-01, CF-ROL-01)', () => {
 
 describe('RNF-SEG-001 bitacora', () => {
   it('CS-SEG-06: la base rechaza UPDATE, DELETE y TRUNCATE sobre bitacora', async () => {
+    // Sin filas, UPDATE y DELETE no disparan el trigger por fila y "pasarian": se inserta una primero.
+    const autor = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'control.escolar@sce.test' } });
+    await prisma.bitacora.create({ data: { autor: autor.id, accion: 'prueba_cs_seg_06', entidad: 'bitacora' } });
     for (const sql of ['UPDATE bitacora SET accion = accion', 'DELETE FROM bitacora', 'TRUNCATE bitacora']) {
       await expect(prisma.$executeRawUnsafe(sql)).rejects.toThrow(/inmutable/);
     }
