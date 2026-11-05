@@ -22,14 +22,16 @@ Los roles **no son permanentes**. Se asignan por sprint y se invierten en el sig
 
 | Rol (Tabla 11 del manual) | Sprint impar | Sprint par |
 |---|---|---|
-| Product Owner | FJMP | SJOM |
-| Desarrollo | SJOM | FJMP |
-| QA | FJMP | SJOM |
+| Product Owner | SJOM | FJMP |
+| Desarrollo | FJMP | SJOM |
+| QA | SJOM | FJMP |
 | Seguridad | Quien no escribió el código que se revisa | Quien no escribió el código que se revisa |
-| DevOps | SJOM | FJMP |
-| Administrador del sistema | SJOM | FJMP |
+| DevOps | FJMP | SJOM |
+| Administrador del sistema | FJMP | SJOM |
 
-**Sprint vigente:** S1, del 15 al 19 de octubre de 2026. Es sprint **impar**, pero por tratarse del sprint de cierre de la fase 0 —cuyo entregable completo lo produjo FJMP— la aceptación recae excepcionalmente en SJOM. A partir de S2 la tabla se aplica tal cual.
+**Sprint vigente:** S3, del 2 al 13 de noviembre de 2026, sprint impar. Product Owner y QA: SJOM. Desarrollo y DevOps: FJMP. La tabla coincide con la columna «Acepta» de `plan-de-trabajo.md`, sección 2: S1, S3 y S5 los acepta SJOM; S2 y S4 los acepta FJMP.
+
+> **Corrección del 5 de noviembre de 2026.** La versión anterior de esta tabla tenía las columnas invertidas respecto al plan de trabajo y trataba el sprint S1 como excepción. Se corrigió para que los tres documentos de gobierno digan lo mismo. Las desviaciones que ocurrieron en S2 se tratan en el registro de no conformidades del equipo.
 
 ---
 
