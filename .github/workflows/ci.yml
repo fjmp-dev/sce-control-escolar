@@ -40,13 +40,69 @@ jobs:
           cache: npm
           cache-dependency-path: api/package-lock.json
       - run: npm ci
+      - name: Dependencias sin vulnerabilidades altas o criticas (AU-20, sec. 14.5)
+        run: npm audit --audit-level=high
       - run: npx prisma generate
+      - name: Estandares de programacion - ESLint, sin any (AU-10, sec. 14)
+        run: npm run lint
       - name: Migraciones sobre base limpia (CI-MIG-01)
         run: npx prisma migrate deploy
       - run: npm run db:seed
       - run: npm run build
-      - name: Pruebas (CS-SEG, CI-AUTH, CD-DAT)
-        run: npm test
+      - name: Pruebas con cobertura (CS-SEG, CI-AUTH, CD-DAT; RNF-MAN-001)
+        run: npm run test:cov
+      # Evidencia descargable por ejecucion para el auditor (F-01 #5, AU-29 y AU-30).
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-lcov
+          path: api/coverage/
+          retention-days: 90
+
+  ambiente:
+    name: Ambiente de pruebas - Docker Compose y Trivy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Levantar PostgreSQL 16 y la API con datos sinteticos
+        run: docker compose up -d --build --wait --wait-timeout 180
+      - name: Humo - login y /auth/yo con cada uno de los seis roles (F-01 #2)
+        shell: bash # explicito: activa pipefail, para que un curl fallido no lo oculte jq
+        run: |
+          curl -s --retry 60 --retry-all-errors --retry-delay 2 -o /dev/null localhost:3000/auth/yo
+          for c in alumno profesor control.escolar coordinacion caja direccion; do
+            t=$(curl -sf -X POST localhost:3000/auth/login -H 'Content-Type: application/json' \
+                  -d "{\"correo\":\"$c@sce.test\",\"contrasena\":\"sce-dev-2026\"}" | jq -er .accessToken)
+            curl -sf localhost:3000/auth/yo -H "Authorization: Bearer $t" \
+              | jq -ec --arg rol "${c/./_}" 'select(.roles == [$rol]) | {cuenta: "'$c'", roles}'
+          done
+      - if: failure()
+        run: docker compose logs
+      - name: Trivy - imagen de la API (AU-20, sec. 14.5)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: sce-api:local
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          format: table
+          output: trivy-imagen.txt
+      - name: Trivy - repositorio (dependencias, secretos y configuracion)
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          format: table
+          output: trivy-repositorio.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy
+          path: trivy-*.txt
+          retention-days: 90
 
   secretos:
     name: Secretos - Gitleaks

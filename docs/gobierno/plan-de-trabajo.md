@@ -13,14 +13,16 @@ El semestre debe terminar con el proyecto completo. Este plan cubre lo inmediato
 
 El manual no incluía calendario con fechas, y esa ausencia es uno de los puntos que la auditoría señaló. Este es el calendario propuesto, anclado a los hitos de la sección 39.1 del manual.
 
-| Fase | Entregable principal | Inicio | Cierre previsto |
-|---|---|---|---|
-| 0 | Alcance validado | 1 de agosto de 2026 | **19 de octubre de 2026** |
-| 1 | Núcleo institucional | 20 de octubre de 2026 | 11 de diciembre de 2026 |
-| 2 | Expediente e inscripción | 12 de enero de 2027 | 26 de febrero de 2027 |
-| 3 | Académico: horarios, calificaciones e historial | 1 de marzo de 2027 | 16 de abril de 2027 |
-| 4 | Pagos y trámites | 19 de abril de 2027 | 28 de mayo de 2027 |
-| 5 | Piloto de una facultad | 31 de mayo de 2027 | Cierre del semestre piloto |
+| Fase | Entregable principal | Inicio | Estabilización | Cierre previsto |
+|---|---|---|---|---|
+| 0 | Alcance validado | 1 de agosto de 2026 | 15 al 19 de octubre de 2026 | **19 de octubre de 2026** |
+| 1 | Núcleo institucional | 20 de octubre de 2026 | 30 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 2 | Expediente e inscripción | 12 de enero de 2027 | 15 al 26 de febrero de 2027 | 26 de febrero de 2027 |
+| 3 | Académico: horarios, calificaciones e historial | 1 de marzo de 2027 | 5 al 16 de abril de 2027 | 16 de abril de 2027 |
+| 4 | Pagos y trámites | 19 de abril de 2027 | 17 al 28 de mayo de 2027 | 28 de mayo de 2027 |
+| 5 | Piloto de una facultad | 31 de mayo de 2027 | 31 de mayo al 11 de junio de 2027 (arranque del piloto) | Cierre del semestre piloto |
+
+**Estabilización** es el tramo final de cada fase, normalmente su último sprint. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación de la fase y se redacta el acta. En la fase 5 son las dos primeras semanas del piloto en operación. Las fechas de estabilización se añadieron el 5 de noviembre de 2026, en respuesta al elemento 8 de la solicitud F-01-SCE-002.
 
 Las fechas de las fases 2 a 5 son estimación a validar al cierre de la fase 1. Las de la fase 0 y 1 son firmes.
 

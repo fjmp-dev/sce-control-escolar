@@ -20,7 +20,7 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - API NestJS con autenticación JWT, autorización por los seis roles (RF-008) y catálogos institucionales.
 - Pruebas automatizadas (CS-SEG-04, CS-SEG-06, CI-AUTH-01, CD-DAT-01 y 04) e integración continua con GitHub Actions en cada pull request.
 
-Pendiente de fase 1: presentación en Next.js, alta de usuarios, Docker Compose y análisis estático (ESLint, SonarQube).
+Pendiente de fase 1: presentación en Next.js (incluido el panel de alta de usuarios) y SonarQube.
 
 **Tablero y backlog:** [issues del repositorio](https://github.com/fjmp-dev/sce-control-escolar/issues), agrupados por sprint en [hitos](https://github.com/fjmp-dev/sce-control-escolar/milestones). Los issues #1 a #22 corresponden uno a uno con el backlog de `docs/gobierno/plan-de-trabajo.md`; los cambios al manual se registran con la etiqueta `cambio` (#23 a #28).
 
@@ -37,8 +37,10 @@ api/                NestJS + Prisma (sección 3.6)
   src/
     auth/                 Login JWT y guard por rol (RF-008)
     catalogos/            Facultades, planes, materias y periodos
-  test/seguridad.spec.ts  Casos CS-SEG automatizados
-.github/workflows/ci.yml  Build, migraciones, pruebas y Gitleaks (sección 31)
+    usuarios/             Alta, baja y cambio de rol con bitácora (#22)
+  test/                   Casos CS-SEG, CI-AUTH y CD-DAT automatizados
+.github/workflows/ci.yml  Lint, build, migraciones, pruebas con cobertura, npm audit, Docker Compose, Trivy y Gitleaks (sección 31)
+docker-compose.yml        Ambiente de pruebas: PostgreSQL 16 + API con datos sintéticos
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
 docs/
@@ -58,15 +60,28 @@ docs/
     matriz-trazabilidad.md    Trazabilidad completa y catálogo de casos (sección 12.3)
     matriz-riesgos.md         Los 10 riesgos RK (sección 17.2)
     plan-de-pruebas.md        Plan de pruebas PP-SCE-001 (sección 21 y Anexo H)
+    registro-no-conformidades.md  No conformidades y acciones correctivas (sección 40)
+  auditoria/        Respuestas del auditado a las solicitudes de PA-SCE-001
   gobierno/
     metodologia-de-trabajo.md Cómo trabajamos: cadencia, roles y definición de terminado
     plan-de-trabajo.md        Calendario por fases y backlog priorizado
     roles-y-raci.md           Los seis roles con personas asignadas
     registro-de-cambios.md    Solicitudes de cambio CC (sección 16)
+    registro-aprobacion-manual-v2.0.md  Revisión y aprobación del manual (sección 1.2)
     actas/                    Actas de aceptación de fase y de sprint
 ```
 
 ---
+
+## Ambiente de pruebas en un comando
+
+Con Docker instalado:
+
+```bash
+docker compose up --build    # PostgreSQL 16 + API en http://localhost:3000, migrada y con seed
+```
+
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@` y `direccion@sce.test`, todas con la contraseña `sce-dev-2026`. CI levanta este mismo ambiente en cada pull request, hace login con los seis roles y escanea la imagen con Trivy.
 
 ## Levantar el ambiente de desarrollo
 
@@ -90,7 +105,9 @@ npm run dev                   # API en http://localhost:3000
 psql -d sce -f ../db/pgaudit.sql
 ```
 
-Endpoints: `POST /auth/login`, `GET /auth/yo`, y `GET`/`POST` sobre `/facultades`, `/planes`, `/materias` y `/periodos` (alta solo para coordinación).
+Endpoints: `POST /auth/login`, `GET /auth/yo`, y `GET`/`POST` sobre `/facultades`, `/planes`, `/materias` y `/periodos` (alta solo para coordinación); `GET`/`POST /usuarios` y `PATCH /usuarios/:id` para alta, baja y cambio de rol, solo para control escolar, con registro en bitácora.
+
+`npm run test:cov` genera el reporte de cobertura lcov en `api/coverage/`; CI lo publica como artefacto `cobertura-lcov` en cada ejecución.
 
 ---
 

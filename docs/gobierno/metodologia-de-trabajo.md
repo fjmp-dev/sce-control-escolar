@@ -28,14 +28,14 @@ Los seis roles del manual no se asignan a una persona de forma permanente. Se as
 
 | Rol del manual | Sprint impar (S1, S3, S5…) | Sprint par (S2, S4, S6…) |
 |---|---|---|
-| Product Owner | FJMP | SJOM |
-| QA | FJMP | SJOM |
-| Desarrollo | SJOM | FJMP |
-| DevOps | SJOM | FJMP |
+| Product Owner | SJOM | FJMP |
+| QA | SJOM | FJMP |
+| Desarrollo | FJMP | SJOM |
+| DevOps | FJMP | SJOM |
 | Seguridad | Quien **no** haya escrito el código que se revisa | Quien **no** haya escrito el código que se revisa |
-| Administrador del sistema | SJOM | FJMP |
+| Administrador del sistema | FJMP | SJOM |
 
-Esto significa que en un sprint dado, quien ocupa Product Owner y QA es el que acepta, y quien ocupa Desarrollo y DevOps es el que produce. Al sprint siguiente se invierte, de modo que ninguno acumula poder de aceptación sobre su propio trabajo a lo largo del proyecto.
+Esto significa que en un sprint dado, quien ocupa Product Owner y QA es el que acepta, y quien ocupa Desarrollo y DevOps es el que produce. Al sprint siguiente se invierte, de modo que ninguno acumula poder de aceptación sobre su propio trabajo a lo largo del proyecto. La tabla coincide con la columna «Acepta» de `plan-de-trabajo.md`, sección 2. El 5 de noviembre de 2026 se corrigió una versión anterior que tenía las columnas invertidas respecto al plan.
 
 **Excepción que no se negocia:** si por razones de tiempo uno de los dos escribe algo que le tocaría aceptar a él mismo, ese entregable espera al otro. No se aprueba nada en solitario. Si el otro no puede en toda la semana, se registra como impedimento en el acta del sprint y el entregable no cuenta como terminado.
 
