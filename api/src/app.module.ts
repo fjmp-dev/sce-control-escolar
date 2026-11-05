@@ -5,6 +5,7 @@ import { Prisma } from '@prisma/client';
 import { AuthController } from './auth/auth.controller';
 import { AuthGuard } from './auth/auth.guard';
 import { CatalogosController } from './catalogos/catalogos.controller';
+import { UsuariosController } from './usuarios/usuarios.controller';
 import { PrismaService } from './prisma.service';
 
 if (!process.env.JWT_SECRET) throw new Error('Falta JWT_SECRET en el ambiente (manual sec. 14.1, regla 5)');
@@ -27,7 +28,7 @@ class PrismaErrorFilter extends BaseExceptionFilter {
       signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN ?? '1h') as `${number}h` },
     }),
   ],
-  controllers: [AuthController, CatalogosController],
+  controllers: [AuthController, CatalogosController, UsuariosController],
   providers: [
     PrismaService,
     // Guard global: todo endpoint exige token salvo @Publico() (sec. 14.1, regla 7: se deniega por omision).

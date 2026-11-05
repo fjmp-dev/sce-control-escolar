@@ -40,13 +40,22 @@ jobs:
           cache: npm
           cache-dependency-path: api/package-lock.json
       - run: npm ci
+      - name: Dependencias sin vulnerabilidades altas o criticas (AU-20, sec. 14.5)
+        run: npm audit --audit-level=high
       - run: npx prisma generate
       - name: Migraciones sobre base limpia (CI-MIG-01)
         run: npx prisma migrate deploy
       - run: npm run db:seed
       - run: npm run build
-      - name: Pruebas (CS-SEG, CI-AUTH, CD-DAT)
-        run: npm test
+      - name: Pruebas con cobertura (CS-SEG, CI-AUTH, CD-DAT; RNF-MAN-001)
+        run: npm run test:cov
+      # Evidencia descargable por ejecucion para el auditor (F-01 #5, AU-29 y AU-30).
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-lcov
+          path: api/coverage/
+          retention-days: 90
 
   secretos:
     name: Secretos - Gitleaks
