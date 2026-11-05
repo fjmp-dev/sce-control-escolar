@@ -69,7 +69,7 @@ jobs:
       - name: Humo - login y /auth/yo con cada uno de los seis roles (F-01 #2)
         shell: bash # explicito: activa pipefail, para que un curl fallido no lo oculte jq
         run: |
-          curl -s --retry 40 --retry-connrefused --retry-delay 2 -o /dev/null localhost:3000/auth/yo
+          curl -s --retry 60 --retry-all-errors --retry-delay 2 -o /dev/null localhost:3000/auth/yo
           for c in alumno profesor control.escolar coordinacion caja direccion; do
             t=$(curl -sf -X POST localhost:3000/auth/login -H 'Content-Type: application/json' \
                   -d "{\"correo\":\"$c@sce.test\",\"contrasena\":\"sce-dev-2026\"}" | jq -er .accessToken)
