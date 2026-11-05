@@ -6,7 +6,7 @@
 **Periodo cubierto:** 1 de agosto de 2026 al 19 de octubre de 2026
 **Acta número:** ACT-F0-001
 
-> **Estado: borrador pendiente de firma.** Esta acta se cierra en la sesión del 19 de octubre de 2026. Las dos firmas deben corresponder a personas distintas, conforme a la sección 10.1 del manual.
+> **Estado: versión final para firma.** El contenido corresponde al cierre de la fase 0 del 19 de octubre de 2026 y no se modificó. La firma es **extemporánea**: se recaba después de esa fecha, y la fase 1 inició el 20 de octubre sin el acta firmada. La desviación está registrada como NC-002 en `docs/calidad/registro-no-conformidades.md`. Las firmas llevan su fecha real, sin antedatar.
 
 ---
 
@@ -52,7 +52,7 @@ Criterios de la sección 10.3 del manual, aplicados a una fase cuyo entregable e
 | Riesgo | Nivel | Situación al cierre | Decisión |
 |---|---|---|---|
 | RK-04 — Caída o lentitud durante la semana de inscripción | Alto | Abierto. No existe ambiente piloto donde medirlo; los casos CR-REN-01 a 05 están definidos pero no son ejecutables en esta fase. | **Aceptado con plan fechado.** Se verifica en la fase 5, conforme a la puerta 3 de la sección 20.1. |
-| RK-07 — Secretos expuestos en el repositorio o en registros | Alto | El repositorio existe desde el 14 de octubre de 2026. El escaneo de secretos queda configurado como elemento P0 del plan de trabajo. | **Mitigación comprometida al 19 de octubre de 2026.** |
+| RK-07 — Secretos expuestos en el repositorio o en registros | Alto | El repositorio existe desde el 14 de octubre de 2026. El escaneo de secretos queda configurado como elemento P0 del plan de trabajo. | **Mitigación comprometida al 19 de octubre de 2026.** Cumplida el 23 de octubre (pendiente 2 del apartado 6). |
 
 Los riesgos RK-01, RK-02, RK-03 y RK-09, también de nivel Alto, quedan en estado **diseñado**: su control está definido en el modelo de datos y en los diagramas, y se implementa en la fase que corresponda. No hay exposición, porque no existe sistema en operación.
 
@@ -73,13 +73,15 @@ Conforme a la sección 3.3 del plan de auditoría PA-SCE-001, se declara que los
 
 ## 6. Pendientes que se trasladan a la fase 1
 
-| # | Pendiente | Fecha comprometida |
-|---|---|---|
-| 1 | Registro de aprobación de la versión 2.0 del manual, con fecha, versión y medio | 19 de octubre de 2026 |
-| 2 | Protección de la rama `main` y escaneo de secretos con protección de envío | 19 de octubre de 2026 |
-| 3 | Tablero de sprint operando en GitHub Projects | 19 de octubre de 2026 |
-| 4 | Manual en versión 2.1, con las correcciones de consistencia identificadas | 30 de octubre de 2026 |
-| 5 | Plan de pruebas conforme al Anexo H | 30 de octubre de 2026 |
+Situación de cada pendiente al 5 de noviembre de 2026, fecha en que se preparó la firma:
+
+| # | Pendiente | Fecha comprometida | Situación al 5 de noviembre de 2026 |
+|---|---|---|---|
+| 1 | Registro de aprobación de la versión 2.0 del manual, con fecha, versión y medio | 19 de octubre de 2026 | Vencido. Registro preparado para firma en `docs/gobierno/registro-aprobacion-manual-v2.0.md` (NC-003) |
+| 2 | Protección de la rama `main` y escaneo de secretos con protección de envío | 19 de octubre de 2026 | **Cumplido** el 23 de octubre (issue #4). Ramas `main` y `Desarrollo` protegidas, secret scanning con push protection y Gitleaks en CI |
+| 3 | Tablero de sprint operando en GitHub Projects | 19 de octubre de 2026 | **Cumplido** el 23 de octubre (issue #6) |
+| 4 | Manual en versión 2.1, con las correcciones de consistencia identificadas | 30 de octubre de 2026 | Vencido. Reprogramado al 27 de noviembre de 2026 (NC-004) |
+| 5 | Plan de pruebas conforme al Anexo H | 30 de octubre de 2026 | **Cumplido** el 23 de octubre (issue #16): `docs/calidad/plan-de-pruebas.md` |
 
 ---
 

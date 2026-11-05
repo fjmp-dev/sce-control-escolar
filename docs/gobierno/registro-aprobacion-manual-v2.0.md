@@ -14,7 +14,7 @@
 | Versión | 2.0 |
 | Fecha de emisión | 16 de septiembre de 2026 |
 | Archivo | `Manual_de_Calidad_SCE-MC-001_v2.0.pdf` |
-| SHA-256 del archivo | `________________________________________________________________` *(se llena con el hash del PDF que se firma)* |
+| SHA-256 del archivo | `37e35c2f0664db585167996e256654830e8b05a564ff2e33bb73f6938c394ea4` |
 
 ## 2. Revisión
 
