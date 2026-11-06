@@ -1,0 +1,23 @@
+# Alertas y actualizaciones de dependencias (Tablas 32 y 42; AU-20). Los pull requests van a develop (sec. 15.2).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /api
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /api
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly

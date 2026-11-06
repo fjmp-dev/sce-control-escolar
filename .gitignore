@@ -6,3 +6,8 @@ node_modules/
 !.env.example
 dist/
 coverage/
+.puerta/
+sonar-reporte/
+.scannerwork/
+reportes/
+gitleaks.json
