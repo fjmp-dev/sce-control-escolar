@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Código | PP-SCE-001 |
-| Versión | 1.2 — borrador para aceptación |
-| Fecha | 6 de noviembre de 2026 (v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
+| Versión | 1.3 — borrador para aceptación |
+| Fecha | 6 de noviembre de 2026, Batch 2 (v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
 | Manual de referencia | SCE-MC-001 v2.0, secciones 10, 19, 21 a 28 y Anexo H |
 | Norma | ISO/IEC/IEEE 29119-3:2021 (estructura del plan) y 29119-4:2021 (técnicas) |
 | Autor | FJMP |
@@ -78,7 +78,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Secretos en el envío | Escaneo de secretos de GitHub con protección de envío | — | — | **Activo** |
 | Auditoría de base de datos | pgAudit | — | 18.0 | Solo en el ambiente local donde se corrió `db/pgaudit.sql`. Compose y CI no lo activan. **Batch 6:** se activa en staging, o se retira CC-005 |
 | Calidad de datos | Consultas SQL de verificación y Great Expectations | 0.18 | Vigente | SQL **en uso** (CD-DAT-01, 04); Great Expectations en el Batch 4 |
-| Contratos de API | Postman y Newman | Newman 6 | Vigente | Batch 2 |
+| Contratos de API | Postman y Newman | Newman 6 | Newman 6 | **En uso** en la etapa 4, contra Compose, con reporte HTML (`scripts/newman.sh`) |
 | Extremo a extremo | Cypress | 13 | Vigente | Batch 3 |
 | Unitarias de frontend | Vitest y React Testing Library | Vitest 1.x | Vigente | Batch 3 |
 | Compatibilidad | Playwright | 1.4x | Vigente | Batch 12 |
@@ -86,7 +86,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
 | Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
-| Seguridad de aplicación | OWASP ZAP | 2.15 | Vigente | Batch 2, en el ambiente de pruebas (Tabla 30); Batch 6, también en staging |
+| Seguridad de aplicación | OWASP ZAP | 2.15 | Imagen `stable` | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). Batch 6: también en staging |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
 | Accesibilidad | axe y Lighthouse | 4 / 11 | Vigente | Batch 3, con la interfaz |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
@@ -99,9 +99,9 @@ Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de av
 |---|---|---|---|---|
 | 1 Construcción | Compilación de TypeScript | Sin errores | Registro de la ejecución | Batch 1; Next.js en el Batch 3 |
 | 2 Análisis estático | ESLint, Prettier, Commitlint y Gitleaks | Cero errores y cero secretos | `gitleaks` | Batch 1 |
-| 3 Pruebas unitarias | Jest con cobertura; Vitest en el Batch 3 | Al menos 80 % en el dominio | `cobertura-unitarias` | Batch 1. **Sin pruebas ni umbral todavía:** no hay código de dominio. El umbral entra con la primera clase de dominio, en el Batch 2, porque Jest falla si el umbral apunta a archivos que no existen |
-| 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30) | Casos CI Must en verde | `cobertura-integracion` | Batch 1; Newman en el Batch 2 |
-| 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada | `calidad`, `trivy` | Batch 1; ZAP en el Batch 2 |
+| 3 Pruebas unitarias | Jest con cobertura; Vitest en el Batch 3 | Al menos 80 % de líneas en `src/**/dominio/**`; Jest falla si no se alcanza | `cobertura-unitarias` | Batch 2 |
+| 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30) | Casos CI Must en verde | `cobertura-integracion`, `newman` | Batch 1; Newman en el Batch 2 |
+| 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx y base intacta | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2 |
 | 6 Empaquetado | Imágenes `sce-portal` y `sce-api` firmadas y registradas | Imagen firmada y registrada | | Batch 3 |
 | 7 Despliegue a pruebas | Automático al fusionar en `develop`; **Cypress**; **k6** con umbrales (Tabla 48) | Humo en verde | Video y capturas | Batch 3; k6 en el Batch 13 |
 | 8 Staging y piloto | Manual, con etiqueta SemVer y acta | Autorización de PO y QA | | Batch 6 |
@@ -124,7 +124,13 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 **Excepciones de Gitleaks:** `.gitleaksignore` lista dos falsos positivos por huella (commit, archivo, regla y línea), con su justificación. Son la credencial pública por omisión de la imagen de SonarQube, en un commit de este batch; el código actual ya no tiene ese patrón. Una coincidencia nueva sigue fallando, comprobado. Toda excepción nueva requiere la aprobación de Seguridad en el pull request.
 
-**Falla cerrada:** los dos scripts de `scripts/` fallan si la herramienta no llegó a medir. Es deliberado: durante la puesta a punto, SonarQube respondió `OK` sin análisis y Gitleaks respondió "no leaks found" con 0 commits.
+**Falla cerrada:** los scripts de `scripts/` fallan si la herramienta no llegó a medir. Es deliberado: durante la puesta a punto, SonarQube respondió `OK` sin análisis y Gitleaks respondió "no leaks found" con 0 commits.
+
+### 4.3 Contratos y escaneo dinámico
+
+**Newman.** `api/test/contratos/sce.postman_collection.json` tiene dos carpetas: CS-SEG-04 prueba sin token cada operación protegida, y Contratos valida códigos y esquemas de respuesta. `openapi.spec.ts` falla si una operación protegida del contrato no está en la primera carpeta.
+
+**ZAP.** El escaneo usa una cuenta con los roles administrador y coordinación: con uno solo, los endpoints del otro responden 403 antes de validar la entrada, y esa validación quedaría sin probar. Se le quitan del OpenAPI el cierre de sesión y el cambio de contraseña, porque revocarían su propio token. Además de las alertas, `scripts/zap.sh` comprueba con los registros de la API que ZAP llegó autenticado, que no hubo ningún 5xx, que el token sigue vigente y que CD-DAT-01 y 04 siguen en cero filas.
 
 ---
 
@@ -147,19 +153,20 @@ Fuente: `api/test/integracion/`. Se ejecutan con `npm run test:integracion` en l
 
 | Caso | Requisito | Qué verifica | Técnica | Estado |
 |---|---|---|---|---|
-| CS-SEG-04 | RF-008, RNF-SEG-001 | Sin token, o con token alterado, responde 401 | Particiones de equivalencia | **Automatizado con Supertest, en verde.** La herramienta del manual es Newman: Batch 2 |
-| CS-SEG-07 | RF-008, RNF-SEG-001 | Token expirado responde 401; un usuario desactivado pierde el acceso aunque su token siga vigente | Particiones de equivalencia | **Parcial.** Falta la revocación por cierre de sesión: Batch 2 |
-| CI-AUTH-01 | RF-008 | El token de un rol no autoriza un endpoint de otro rol: cinco roles reciben 403 al dar de alta catálogos | Particiones de equivalencia | **Automatizado, en verde** |
-| CF-ROL-01 | RF-008 | Cada rol ve solo su parte. En fase 1: todos leen catálogos y solo coordinación los da de alta | Particiones de equivalencia | **Parcial**: catálogos. Se completa con cada módulo |
+| CS-SEG-04 | RF-008, RNF-SEG-001 | Un endpoint sin token responde 401 | Particiones de equivalencia | **Automatizado con Newman, en verde:** todas las operaciones protegidas del contrato |
+| CS-SEG-07 | RF-008, RNF-SEG-001 | La sesión expira en el tiempo configurado. El token revocado por cierre, cambio de contraseña, baja o cambio de roles no se reutiliza. Renovación sin rebasar la sesión máxima | Particiones de equivalencia y valores límite | **Automatizado con Supertest, en verde** |
+| CI-AUTH-01 | RF-008 | El token de un rol no autoriza un endpoint de otro rol: cada token contra cada endpoint, desde `docs/calidad/matriz-rol-endpoint.md` | Particiones de equivalencia | **Automatizado, en verde** |
+| CF-ROL-01 | RF-008 | Cada rol ve solo su parte: siete roles por 15 operaciones protegidas | Particiones de equivalencia | **Automatizado, en verde** sobre lo que existe. Crece con cada módulo |
 | Control de RK-03 | RNF-SEG-001 | La base rechaza UPDATE, DELETE y TRUNCATE sobre la bitácora | Basada en riesgo | **Automatizado, en verde** |
-| CI-MIG-01 | RNF-MAN-001 | Las migraciones se aplican sobre una base limpia y sobre una base con datos, sin pérdida. Compara filas y huella MD5 de las 21 tablas | Basada en riesgo | **Automatizado con Prisma y Testcontainers, en verde.** Comprobado con migraciones que alteran datos, borran filas y borran una columna: la prueba falla |
+| CI-MIG-01 | RNF-MAN-001 | Las migraciones se aplican sobre una base limpia y sobre una base con datos, sin pérdida. Comprueba que toda fila previa de las 21 tablas sigue igual; una migración puede agregar filas | Basada en riesgo | **Automatizado con Prisma y Testcontainers, en verde.** Comprobado con migraciones que alteran datos, borran filas y borran una columna: la prueba falla |
 | CD-DAT-01 | RNF-DAT-001 | Cero matrículas duplicadas, y la base rechaza un segundo expediente con la misma matrícula | Basada en riesgo | **Automatizado, en verde.** Consulta versionada. Great Expectations en el Batch 4 |
 | CD-DAT-04 | RNF-DAT-001 | Cero calificaciones sin grupo, periodo o profesor, y la consulta detecta un huérfano provocado | Basada en riesgo | **Automatizado, en verde.** Consulta versionada. Great Expectations en el Batch 4 |
 | — | RF-008 | Credenciales inválidas: mismo 401 exista o no la cuenta; entrada inválida 400; duplicado 409 | Valores límite | **Automatizado, en verde** |
+| — | Tabla 15, Resistencia; Parte B | Bloqueo tras 5 fallos en 15 minutos; política de contraseñas; confirmación de contraseña del administrador; bitácora de accesos fallidos, cambios de rol y acciones del administrador | Valores límite | **Automatizado, en verde** |
 | CS-SEG-01 a 03 | RF-008 | El alumno no captura ni altera calificaciones; caja no modifica el historial; un alumno no accede al expediente de otro | — | Pendiente: los endpoints se construyen en los batches 4 y 8 (#21) |
-| CS-SEG-05 | RNF-SEG-002 | Una entrada malformada no corrompe la base ni expone trazas con secretos | — | Pendiente: OWASP ZAP en el Batch 2 |
+| CS-SEG-05 | RNF-SEG-002 | Una entrada malformada no corrompe la base ni expone trazas con secretos | Basada en riesgo | **Automatizado con ZAP, en verde.** Los casos concretos también están en `gateway.spec.ts`. Se completa en el Batch 12 |
 | CS-SEG-06 | RNF-SEG-001 | Todo cambio de calificación, pago o constancia deja registro en bitácora | — | Pendiente: consulta SQL en los batches 4, 8, 9 y 10 |
-| CS-SEG-08 | RNF-SEG-002 | Sin secretos en el repositorio, en los registros ni en las respuestas de la API | — | **Parcial**: Gitleaks en CI sobre todo el historial, cero coincidencias. La revisión manual de registros y respuestas se hace en el Batch 2 |
+| CS-SEG-08 | RNF-SEG-002 | Sin secretos en el repositorio, en los registros ni en las respuestas de la API | Basada en riesgo | **Gitleaks y búsqueda en registros en cada corrida.** Revisión manual: primera pasada en `revision-cs-seg-08.md`, **falta la revisión de Seguridad** |
 
 El catálogo completo de casos de todas las fases, con requisito y fase, está en `docs/calidad/matriz-trazabilidad.md`, sección 3.
 

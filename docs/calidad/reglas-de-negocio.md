@@ -52,15 +52,15 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 | R-15 | Ante fallo de pasarela o de base, el estado queda pendiente y nunca confirmado | Tabla 15, RK-08 | CI-PAG-01 | 9 | No |
 | R-16 | El trámite solo sigue las transiciones de la Fig. 6, con fecha visible | RF-007, RF-010 | CF-TRA-01, CF-TRA-02 | 10 | No |
 | R-17 | No hay constancia sin historial | Tabla 16 | CF-TRA-01 | 10 | No |
-| R-18 | La autorización se comprueba por rol y se deniega por omisión | RF-008, 14.1-7 | CI-AUTH-01, CF-ROL-01 | 2 | Sí, sobre catálogos y usuarios |
-| R-19 | Toda operación requiere autenticación; ningún endpoint Must es anónimo | RNF-SEG-001, Tabla 38 | CS-SEG-04 | 2 | Sí, con Supertest |
-| R-20 | La sesión expira y un token revocado no se reutiliza | Tabla 38 | CS-SEG-07 | 2 | Parcial |
+| R-18 | La autorización se comprueba por rol y se deniega por omisión | RF-008, 14.1-7 | CI-AUTH-01, CF-ROL-01 | 2 | Sí, matriz completa sobre lo que existe |
+| R-19 | Toda operación requiere autenticación; ningún endpoint Must es anónimo | RNF-SEG-001, Tabla 38 | CS-SEG-04 | 2 | Sí, con Newman |
+| R-20 | La sesión expira y un token revocado no se reutiliza | Tabla 38 | CS-SEG-07 | 2 | Sí |
 | R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9 y 10 | No |
 | R-22 | La bitácora es inmutable | Tabla 29, RK-03 | Control de RK-03 | 1 | Sí |
 | R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4 | No |
 | R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | No |
 
-**Situación al 5 de noviembre de 2026: 3 de 24 con prueba completa (R-18, R-19 y R-22), 2 parciales (R-01 y R-20).** Es lo esperable en la fase 1: la métrica se reporta en cada cierre de fase.
+**Situación al 6 de noviembre de 2026, en la rama del Batch 2: 4 de 24 con prueba completa (R-18, R-19, R-20 y R-22), 1 parcial (R-01).** Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
 
 ---
 

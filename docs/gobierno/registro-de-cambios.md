@@ -33,6 +33,8 @@ Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://gith
 
 **Enmiendas del 5 de noviembre de 2026:** CC-002 pasa a la numeración de la Tabla 49 (`cambios/CC-002-enmienda.md`). CC-006 se amplía con Next.js 16 y React 19, y retira la sustitución de Testcontainers y PostgreSQL 18 local (`cambios/CC-006-enmienda.md`). El retiro se implementó en el Batch 1 ([#41](https://github.com/fjmp-dev/sce-control-escolar/issues/41)): las pruebas usan Testcontainers y Compose usa PostgreSQL 16. Versiones adoptadas: `plan-de-pruebas.md`, sección 4.
 
+**Implementación del 6 de noviembre de 2026 (Batch 2, [#42](https://github.com/fjmp-dev/sce-control-escolar/issues/42)):** CC-007, CC-010 y CC-015, en la migración `20261106120000_identidad_y_bitacora` y los módulos `identidad/`, `bitacora/` y `academico/`. **Su código no se fusiona sin la aprobación de la tabla de abajo.** CC-014 y CC-015 se ampliaron: la Fig. 2 dibuja la dependencia del gateway hacia persistencia para `/salud`, y el usuario técnico también firma los accesos fallidos.
+
 **Desviación registrada:** CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 
 ---
