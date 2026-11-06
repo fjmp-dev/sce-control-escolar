@@ -61,6 +61,7 @@ DEXP ..> DACA : validar prerrequisitos\ny choques (Fig. 4)
 DEXP ..> DPAG : validar adeudos (Fig. 4)
 DTRA ..> DPAG : saldo para no adeudo
 IAM --> SBIT
+GW ..> PERS : /salud (Tabla 57)
 
 note right of PORTAL
   Interfaces diferenciadas por rol.
