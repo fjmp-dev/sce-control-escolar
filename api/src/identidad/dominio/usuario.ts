@@ -15,7 +15,7 @@ export const ROLES = [
 export type ClaveRol = (typeof ROLES)[number];
 
 /** Parte B de PA-SCE-001: estos roles tienen sesión corta y confirman su contraseña en operaciones de cuentas. */
-const PRIVILEGIADOS: readonly ClaveRol[] = ['administrador'];
+const PRIVILEGIADOS: ReadonlySet<ClaveRol> = new Set(['administrador']);
 
 /** Tabla 15, Resistencia: fuerza bruta. */
 export const MAX_FALLOS = 5;
@@ -58,7 +58,7 @@ export class Usuario {
   ) {}
 
   get privilegiado(): boolean {
-    return this.roles.some((rol) => PRIVILEGIADOS.includes(rol));
+    return this.roles.some((rol) => PRIVILEGIADOS.has(rol));
   }
 
   /**

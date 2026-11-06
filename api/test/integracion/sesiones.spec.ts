@@ -134,7 +134,7 @@ describe('Bloqueo por intentos fallidos', () => {
     const datos = { autor: USUARIO_TECNICO, accion: 'acceso_fallido', entidad: `usuario:${id}` };
     await prisma.bitacora.createMany({ data: Array.from({ length: MAX_FALLOS }, () => ({ ...datos, fecha: hace16 })) });
     await prisma.bitacora.createMany({ data: Array.from({ length: MAX_FALLOS - 1 }, () => datos) });
-    await intento('ventana@sce.test', CONTRASENA).expect(201);
+    expect((await intento('ventana@sce.test', CONTRASENA)).status).toBe(201);
   });
 
   it('el mismo mensaje exista o no la cuenta, este o no bloqueada: no revela cuentas', async () => {
@@ -149,8 +149,10 @@ describe('Bloqueo por intentos fallidos', () => {
   });
 
   it('el usuario tecnico (CC-015) no puede autenticarse, y una cuenta inactiva tampoco', async () => {
-    for (const contrasena of ['!', 'cualquier-cosa-1']) await intento('sistema@sce.interno', contrasena).expect(401);
+    for (const contrasena of ['!', 'cualquier-cosa-1']) {
+      expect((await intento('sistema@sce.interno', contrasena)).status).toBe(401);
+    }
     await prisma.usuario.create({ data: { correo: 'inactiva@sce.test', hashContrasena: 'x', activo: false } });
-    await intento('inactiva@sce.test', CONTRASENA).expect(401);
+    expect((await intento('inactiva@sce.test', CONTRASENA)).status).toBe(401);
   });
 });

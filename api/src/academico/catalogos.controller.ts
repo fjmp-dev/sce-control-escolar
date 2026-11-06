@@ -38,7 +38,7 @@ class MateriaDto {
 }
 
 class PeriodoDto {
-  @ApiProperty({ example: '2027A', pattern: '^\\d{4}[AB]$' }) @Matches(/^\d{4}[AB]$/) clave!: string;
+  @ApiProperty({ example: '2027A', pattern: String.raw`^\d{4}[AB]$` }) @Matches(/^\d{4}[AB]$/) clave!: string;
   @ApiProperty({ format: 'date' }) @Type(() => Date) @IsDate() fechaInicio!: Date;
   @ApiProperty({ format: 'date' }) @Type(() => Date) @IsDate() fechaFin!: Date;
   @ApiProperty({ enum: ['abierto', 'en_curso', 'cerrado'] }) @IsIn(['abierto', 'en_curso', 'cerrado']) estado!: string;
