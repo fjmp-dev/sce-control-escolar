@@ -1,29 +1,29 @@
 name: Solicitud de cambio
 description: Cambio al alcance, requisitos, código, configuración o documentación (Anexo C)
-labels: ["cambio"]
+labels: ['cambio']
 body:
   - type: input
     id: identificador
     attributes:
       label: Identificador
       description: CC-NNN, consecutivo de docs/gobierno/registro-de-cambios.md.
-    validations: {required: true}
+    validations: { required: true }
   - type: dropdown
     id: tipo
     attributes:
       label: Tipo (Tabla 34)
       options: [Menor, Normal, Mayor o Must, Emergencia, Documental]
-    validations: {required: true}
+    validations: { required: true }
   - type: input
     id: modulo
     attributes:
       label: Módulo afectado
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: descripcion
     attributes:
       label: Descripción y motivo
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: impacto
     attributes:
@@ -36,7 +36,7 @@ body:
         - Rendimiento:
         - Requisitos tocados:
         - Ambiente destino:
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: decision
     attributes:

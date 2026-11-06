@@ -7,33 +7,33 @@ body:
     attributes:
       label: Historia
       description: Como rol, quiero acción, para beneficio.
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: criterios
     attributes:
       label: Criterios de aceptación
-    validations: {required: true}
+    validations: { required: true }
   - type: input
     id: requisito
     attributes:
       label: Requisito
       description: RF o RNF del catálogo.
-    validations: {required: true}
+    validations: { required: true }
   - type: input
     id: subcaracteristica
     attributes:
       label: Subcaracterística (Tabla 15)
       description: Sección 8.4 del manual.
-    validations: {required: true}
+    validations: { required: true }
   - type: dropdown
     id: prioridad
     attributes:
       label: Prioridad
       options: [Must, Should, Could]
-    validations: {required: true}
+    validations: { required: true }
   - type: input
     id: puntos
     attributes:
       label: Puntos de historia
       description: Base de la densidad de defectos (Tabla 59).
-    validations: {required: true}
+    validations: { required: true }

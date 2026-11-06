@@ -48,9 +48,16 @@ async function main() {
     ['ISW-701', 'Auditoría de sistemas', 6],
   ] as const;
   for (const [clave, nombre, creditos] of materias) {
-    await prisma.materia.upsert({ where: { clave }, update: {}, create: { clave, nombre, creditos, planClave: 'ISW-2024' } });
+    await prisma.materia.upsert({
+      where: { clave },
+      update: {},
+      create: { clave, nombre, creditos, planClave: 'ISW-2024' },
+    });
   }
-  for (const [materiaClave, requiereClave] of [['ISW-201', 'ISW-101'], ['ISW-301', 'ISW-201']]) {
+  for (const [materiaClave, requiereClave] of [
+    ['ISW-201', 'ISW-101'],
+    ['ISW-301', 'ISW-201'],
+  ]) {
     await prisma.prerequisito.upsert({
       where: { materiaClave_requiereClave: { materiaClave, requiereClave } },
       update: {},
@@ -61,7 +68,12 @@ async function main() {
   await prisma.periodo.upsert({
     where: { clave: '2027A' },
     update: {},
-    create: { clave: '2027A', fechaInicio: new Date('2027-01-12'), fechaFin: new Date('2027-06-30'), estado: 'abierto' },
+    create: {
+      clave: '2027A',
+      fechaInicio: new Date('2027-01-12'),
+      fechaFin: new Date('2027-06-30'),
+      estado: 'abierto',
+    },
   });
 
   const alumnoUsuario = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'alumno@sce.test' } });

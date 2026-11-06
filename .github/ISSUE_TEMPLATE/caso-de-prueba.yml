@@ -7,27 +7,27 @@ body:
     attributes:
       label: Identificador
       description: El del manual (CF, CI, CS, CR o CD).
-    validations: {required: true}
+    validations: { required: true }
   - type: input
     id: requisito
     attributes:
       label: Requisito
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: objetivo
     attributes:
       label: Objetivo, técnica y herramienta
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: pasos
     attributes:
       label: Precondiciones, datos y pasos
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: esperado
     attributes:
       label: Resultado esperado
-    validations: {required: true}
+    validations: { required: true }
   - type: textarea
     id: obtenido
     attributes:
