@@ -122,6 +122,8 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 **Diferencia con lo que pide AU-30:** no hay "panel de SonarQube" permanente, porque el servidor vive lo que dura la ejecución. La evidencia es el artefacto `calidad` (`puerta.json`, `medidas.json`, `hallazgos.json`, `resumen.md`) y el auditor puede repetir la medición con el script. Si el auditor exige el panel, hará falta un servidor persistente.
 
+**Excepciones de Gitleaks:** `.gitleaksignore` lista dos falsos positivos por huella (commit, archivo, regla y línea), con su justificación. Son la credencial pública por omisión de la imagen de SonarQube, en un commit de este batch; el código actual ya no tiene ese patrón. Una coincidencia nueva sigue fallando, comprobado. Toda excepción nueva requiere la aprobación de Seguridad en el pull request.
+
 **Falla cerrada:** los dos scripts de `scripts/` fallan si la herramienta no llegó a medir. Es deliberado: durante la puesta a punto, SonarQube respondió `OK` sin análisis y Gitleaks respondió "no leaks found" con 0 commits.
 
 ---

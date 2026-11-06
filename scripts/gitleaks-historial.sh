@@ -7,17 +7,22 @@ set -euo pipefail
 
 reporte=${1:-gitleaks.json}
 imagen=ghcr.io/gitleaks/gitleaks:v8.30.1
-esperados=$(git rev-list --count --no-merges --all) # todas las ramas; los merges no tienen diff que escanear
 
-salida=$(docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/repo" \
+if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+  echo "::error::Clon parcial: el resultado no cubriria el historial completo."
+  exit 1
+fi
+
+salida=$(docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo \
   -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory -e GIT_CONFIG_VALUE_0=/repo \
   "$imagen" git /repo --log-opts=--all --no-color --redact --report-format json --report-path "/repo/$reporte" 2>&1) && codigo=0 || codigo=$?
 echo "$salida"
 
 escaneados=$(sed -n 's/.* \([0-9][0-9]*\) commits scanned.*/\1/p' <<<"$salida" | tail -1)
-if [ "${escaneados:-0}" -lt "$esperados" ]; then
-  echo "::error::Gitleaks escaneo ${escaneados:-0} commits de $esperados: el resultado no es valido."
+if [ "${escaneados:-0}" -eq 0 ]; then
+  echo "::error::Gitleaks no escaneo ningun commit: el resultado no es valido."
   exit 1
 fi
-echo "Commits escaneados: $escaneados de $esperados. Coincidencias: $(jq length "$reporte")."
+# No coincide con rev-list: Gitleaks no cuenta merges ni commits sin texto nuevo, como los de solo imagenes.
+echo "Commits escaneados: $escaneados. Coincidencias: $(jq length "$reporte")."
 exit "$codigo"

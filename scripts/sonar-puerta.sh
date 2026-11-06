@@ -40,12 +40,14 @@ for _ in $(seq 1 120); do
 done
 [ "$(curl -s "$url/api/system/status" | jq -r .status)" = UP ] || { docker logs --tail 50 "$servidor"; exit 1; }
 
+# Credencial por omision de la imagen: publica, de un servidor que solo escucha en 127.0.0.1 y muere con este script.
+acceso=admin:admin
 api() {
   local r
-  r=$(curl -sS --fail-with-body -u admin:admin -X POST "$url/api/$1" "${@:2}") || { echo "$1: $r" >&2; return 1; }
+  r=$(curl -sS --fail-with-body -u "$acceso" -X POST "$url/api/$1" "${@:2}") || { echo "$1: $r" >&2; return 1; }
   echo "$r"
 }
-leer() { curl -sS --fail-with-body -u admin:admin "$url/api/$1" "${@:2}"; }
+leer() { curl -sS --fail-with-body -u "$acceso" "$url/api/$1" "${@:2}"; }
 
 api qualitygates/create -d "name=$puerta" >/dev/null
 # Una puerta nueva trae las condiciones por omision de SonarQube; solo rigen las de la Tabla 51.
