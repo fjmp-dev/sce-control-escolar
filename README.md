@@ -19,9 +19,10 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Base de datos PostgreSQL con las veintiuna entidades de la sección 13.6, migradas con Prisma, y sus restricciones de integridad.
 - Auditoría de base de datos con pgAudit (`db/pgaudit.sql`).
 - API NestJS con autenticación JWT, autorización por los seis roles (RF-008) y catálogos institucionales.
-- Pruebas automatizadas (CS-SEG-04, CS-SEG-06, CI-AUTH-01, CD-DAT-01 y 04) e integración continua con GitHub Actions en cada pull request.
+- Pruebas automatizadas sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CS-SEG-04 y 07, CD-DAT-01 y 04).
+- Pipeline de GitHub Actions con las etapas 1 a 5 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51).
 
-Pendiente de fase 1: presentación en Next.js (incluido el panel de alta de usuarios) y SonarQube.
+Pendiente de fase 1: arquitectura por capas e identidad completa (Batch 2) y presentación en Next.js (Batch 3).
 
 **Tablero y backlog:** [issues del repositorio](https://github.com/fjmp-dev/sce-control-escolar/issues), agrupados por sprint en [hitos](https://github.com/fjmp-dev/sce-control-escolar/milestones). Los issues #1 a #22 corresponden uno a uno con el backlog de `docs/gobierno/plan-de-trabajo.md`; los cambios al manual se registran con la etiqueta `cambio` (#23 a #28).
 
@@ -39,8 +40,11 @@ api/                NestJS + Prisma (sección 3.6)
     auth/                 Login JWT y guard por rol (RF-008)
     catalogos/            Facultades, planes, materias y periodos
     usuarios/             Alta, baja y cambio de rol con bitácora (#22)
-  test/                   Casos CS-SEG, CI-AUTH y CD-DAT automatizados
-.github/workflows/ci.yml  Lint, build, migraciones, pruebas con cobertura, npm audit, Docker Compose, Trivy y Gitleaks (sección 31)
+  prisma/verificacion/    Consultas SQL de calidad de datos, junto a las migraciones (19.1)
+  test/integracion/       CI-MIG, CI-AUTH, CS-SEG y CD-DAT, sobre PostgreSQL efímero
+  test/unitarias/         Dominio, desde el Batch 2
+.github/workflows/ci.yml  Etapas 1 a 5 de la Tabla 53 (sección 31)
+scripts/                  Puerta de calidad con SonarQube y Gitleaks sobre el historial completo
 docker-compose.yml        Ambiente de pruebas: PostgreSQL 16 + API con datos sintéticos
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
@@ -95,29 +99,32 @@ Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `
 
 ## Levantar el ambiente de desarrollo
 
-Requisitos: Node 24 y PostgreSQL (el manual fija 16; se probó con 18). En macOS: `brew install node postgresql@18`.
+Requisitos: Node 24 y Docker. En macOS: `brew install node colima docker docker-compose` y `colima start`.
 
 ```bash
-# 1. Base de datos y usuario de la aplicación (una sola vez, como superusuario)
-psql -d postgres -c "CREATE ROLE sce_app LOGIN PASSWORD 'sce_dev' CREATEDB"
-psql -d postgres -c "CREATE DATABASE sce OWNER sce_app"
+npm install                   # raíz: Prettier, Husky, lint-staged y Commitlint; activa los hooks de git
+docker compose up --build     # PostgreSQL 16 + API en http://localhost:3000
 
-# 2. API
 cd api
-cp .env.example .env          # ajustar JWT_SECRET
 npm install
-npx prisma migrate dev        # crea las 21 tablas y las restricciones
-npm run db:seed               # usuarios <rol>@sce.test, contraseña sce-dev-2026
-npm test                      # casos de seguridad
-npm run dev                   # API en http://localhost:3000
-
-# 3. Auditoría con pgAudit (opcional en desarrollo; ver comentarios del script)
-psql -d sce -f ../db/pgaudit.sql
+npx prisma generate
+cp .env.example .env          # con Colima, descomentar DOCKER_HOST y TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
+npm test                      # unitarias e integración; levanta su propio PostgreSQL 16 con Testcontainers
 ```
+
+| Comando | Qué hace |
+|---|---|
+| `npm run format:check` (raíz) | Prettier |
+| `npm run lint` (en `api/`) | ESLint con el plugin de TypeScript |
+| `npm run test:unitarias` y `npm run test:integracion` (en `api/`) | Etapas 3 y 4, con cobertura lcov en `api/coverage/` |
+| `scripts/gitleaks-historial.sh` | Gitleaks sobre todas las ramas y todo el historial |
+| `scripts/sonar-puerta.sh <commit-base>` | Puerta de calidad de la Tabla 51 sobre el código nuevo. Antes, correr la etapa 4 para tener cobertura |
+| `psql "$DATABASE_URL" -f api/prisma/verificacion/cd-dat-01.sql` | Consultas de calidad de datos; meta: cero filas |
+
+Las etapas del pipeline y su evidencia están en `docs/calidad/plan-de-pruebas.md`, sección 4.1.
 
 Endpoints: `POST /auth/login`, `GET /auth/yo`, y `GET`/`POST` sobre `/facultades`, `/planes`, `/materias` y `/periodos` (alta solo para coordinación); `GET`/`POST /usuarios` y `PATCH /usuarios/:id` para alta, baja y cambio de rol, solo para control escolar, con registro en bitácora.
 
-`npm run test:cov` genera el reporte de cobertura lcov en `api/coverage/`; CI lo publica como artefacto `cobertura-lcov` en cada ejecución.
 
 ---
 

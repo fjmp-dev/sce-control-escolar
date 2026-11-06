@@ -1,7 +1,7 @@
 # Registro de cambios — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 16 (gestión de cambios) y 12.4 (control de cambios a requisitos).
-**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 5 de noviembre de 2026.
+**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 6 de noviembre de 2026.
 
 Cada cambio tiene un issue en GitHub con la etiqueta `cambio`, con la solicitud, el análisis de impacto y la aprobación con fecha y responsable. Desde CC-007, la solicitud también está versionada en `docs/gobierno/cambios/`. Este archivo es el índice que se versiona junto con el código, para que el auditor lo encuentre sin entrar al tablero.
 
@@ -31,7 +31,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 
 Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15)). Ninguno modifica un requisito RF o RNF, la política de calidad ni el alcance de la primera versión.
 
-**Enmiendas del 5 de noviembre de 2026:** CC-002 pasa a la numeración de la Tabla 49 (`cambios/CC-002-enmienda.md`). CC-006 se amplía con Next.js 16 y React 19, y retira la sustitución de Testcontainers y PostgreSQL 18 local (`cambios/CC-006-enmienda.md`).
+**Enmiendas del 5 de noviembre de 2026:** CC-002 pasa a la numeración de la Tabla 49 (`cambios/CC-002-enmienda.md`). CC-006 se amplía con Next.js 16 y React 19, y retira la sustitución de Testcontainers y PostgreSQL 18 local (`cambios/CC-006-enmienda.md`). El retiro se implementó en el Batch 1 ([#41](https://github.com/fjmp-dev/sce-control-escolar/issues/41)): las pruebas usan Testcontainers y Compose usa PostgreSQL 16. Versiones adoptadas: `plan-de-pruebas.md`, sección 4.
 
 **Desviación registrada:** CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 

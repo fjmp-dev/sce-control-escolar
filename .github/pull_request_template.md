@@ -16,6 +16,7 @@
 
 - [ ] CI en verde: construcción, análisis estático y pruebas Must del área afectada
 - [ ] Puerta de calidad aprobada para el código nuevo (Tabla 51)
+- [ ] Deuda técnica nueva menor a un día; si no, documentada aquí y agendada (Tabla 51)
 - [ ] Reglas Must con prueba automatizada (14.1-10)
 - [ ] Sin secretos en el diff y sin registros que impriman datos personales
 - [ ] Operaciones sensibles con bitácora: autor, acción, valor anterior y fecha

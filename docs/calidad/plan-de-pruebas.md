@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Código | PP-SCE-001 |
-| Versión | 1.1 — borrador para aceptación |
-| Fecha | 5 de noviembre de 2026 (v1.0: 22 de octubre de 2026) |
+| Versión | 1.2 — borrador para aceptación |
+| Fecha | 6 de noviembre de 2026 (v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
 | Manual de referencia | SCE-MC-001 v2.0, secciones 10, 19, 21 a 28 y Anexo H |
 | Norma | ISO/IEC/IEEE 29119-3:2021 (estructura del plan) y 29119-4:2021 (técnicas) |
 | Autor | FJMP |
@@ -72,9 +72,9 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Tipo | Herramienta | Versión del manual (Tabla 42) | Versión adoptada | Estado |
 |---|---|---|---|---|
 | Unitarias e integración de API | Jest con ts-jest y Supertest | Jest 29, Supertest 6 | Jest 30, Supertest 7 | **En uso** |
-| Base efímera para integración | Testcontainers con PostgreSQL 16 | Testcontainers 10 | Vigente | **Batch 1**. Hoy se usa el servicio PostgreSQL 16 de GitHub Actions; CC-006 se corrige para retirar esa sustitución |
-| Migraciones | Prisma Migrate | — | Prisma 6 | **En uso** (CI-MIG-01) |
-| Secretos | Gitleaks | 8 | gitleaks-action v2 | **En uso** en CI |
+| Base efímera para integración | Testcontainers con PostgreSQL 16 | Testcontainers 10 | Testcontainers 12 | **En uso** |
+| Migraciones | Prisma Migrate | — | Prisma 6 | **En uso** (CI-MIG-01 completo) |
+| Secretos | Gitleaks | 8 | 8.30 | **En uso** en CI, sobre todas las ramas y todo el historial |
 | Secretos en el envío | Escaneo de secretos de GitHub con protección de envío | — | — | **Activo** |
 | Auditoría de base de datos | pgAudit | — | 18.0 | Solo en el ambiente local donde se corrió `db/pgaudit.sql`. Compose y CI no lo activan. **Batch 6:** se activa en staging, o se retira CC-005 |
 | Calidad de datos | Consultas SQL de verificación y Great Expectations | 0.18 | Vigente | SQL **en uso** (CD-DAT-01, 04); Great Expectations en el Batch 4 |
@@ -83,12 +83,46 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Unitarias de frontend | Vitest y React Testing Library | Vitest 1.x | Vigente | Batch 3 |
 | Compatibilidad | Playwright | 1.4x | Vigente | Batch 12 |
 | Rendimiento | JMeter y k6 | 5.6 / 0.5x | Vigente | Batch 13, en staging; después en el servidor del piloto |
-| Calidad de código | ESLint, Prettier, Husky, lint-staged, Commitlint, SonarQube | SonarQube 10 | ESLint **en uso** | Batch 1 |
-| Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI |
+| Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
+| Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
+| Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
 | Seguridad de aplicación | OWASP ZAP | 2.15 | Vigente | Batch 2, en el ambiente de pruebas (Tabla 30); Batch 6, también en staging |
-| Dependencias | npm audit y Dependabot | Integrado | — | **Activo** (alertas de Dependabot) |
+| Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
 | Accesibilidad | axe y Lighthouse | 4 / 11 | Vigente | Batch 3, con la interfaz |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
+
+### 4.1 Etapas del pipeline
+
+Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de avance de la siguiente. Newman, ZAP, Cypress y k6 están en el pipeline según las Tablas 30, 42 y 48, pero la Tabla 53 no los nombra (contradicción X-15); aquí se les asigna etapa.
+
+| Etapa | Contenido | Criterio de avance | Reporte como artefacto | Desde |
+|---|---|---|---|---|
+| 1 Construcción | Compilación de TypeScript | Sin errores | Registro de la ejecución | Batch 1; Next.js en el Batch 3 |
+| 2 Análisis estático | ESLint, Prettier, Commitlint y Gitleaks | Cero errores y cero secretos | `gitleaks` | Batch 1 |
+| 3 Pruebas unitarias | Jest con cobertura; Vitest en el Batch 3 | Al menos 80 % en el dominio | `cobertura-unitarias` | Batch 1. **Sin pruebas ni umbral todavía:** no hay código de dominio. El umbral entra con la primera clase de dominio, en el Batch 2, porque Jest falla si el umbral apunta a archivos que no existen |
+| 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30) | Casos CI Must en verde | `cobertura-integracion` | Batch 1; Newman en el Batch 2 |
+| 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada | `calidad`, `trivy` | Batch 1; ZAP en el Batch 2 |
+| 6 Empaquetado | Imágenes `sce-portal` y `sce-api` firmadas y registradas | Imagen firmada y registrada | | Batch 3 |
+| 7 Despliegue a pruebas | Automático al fusionar en `develop`; **Cypress**; **k6** con umbrales (Tabla 48) | Humo en verde | Video y capturas | Batch 3; k6 en el Batch 13 |
+| 8 Staging y piloto | Manual, con etiqueta SemVer y acta | Autorización de PO y QA | | Batch 6 |
+
+Los artefactos caducan a los 90 días; al cerrar cada fase se copian al repositorio de evidencias (Tabla 62).
+
+### 4.2 Puerta de calidad sobre código nuevo
+
+`scripts/sonar-puerta.sh`, también ejecutable en local. SonarQube Community analiza una sola rama y no analiza pull requests, así que en un contenedor efímero no tendría línea base. Se comprobó el 6 de noviembre de 2026 que se puede medir sin servidor persistente: el script arma un repositorio de dos commits, el árbol base y el árbol evaluado, y los analiza en orden. Lo nuevo es exactamente el diff entre ambos. Con código defectuoso de prueba, midió solo las líneas añadidas y rechazó por las cuatro condiciones que se violaron.
+
+| Tabla 51 | Métrica de SonarQube | Condición de error | Efecto |
+|---|---|---|---|
+| Cobertura en código nuevo ≥ 80 % | `new_coverage` | < 80 | Rechaza |
+| Errores bloqueantes o críticos: cero | `new_blocker_violations`, `new_critical_violations` | > 0 | Rechaza |
+| Duplicidad en código nuevo < 3 % | `new_duplicated_lines_density` | > 2.99 | Rechaza |
+| Vulnerabilidades altas o críticas: cero | `new_security_rating` | Peor que B | Rechaza |
+| Deuda técnica introducida < un día | `new_technical_debt` | ≥ 480 minutos | **Avisa, no rechaza:** la Tabla 51 dice "se documenta y se agenda". Se anota en el pull request |
+
+**Diferencia con lo que pide AU-30:** no hay "panel de SonarQube" permanente, porque el servidor vive lo que dura la ejecución. La evidencia es el artefacto `calidad` (`puerta.json`, `medidas.json`, `hallazgos.json`, `resumen.md`) y el auditor puede repetir la medición con el script. Si el auditor exige el panel, hará falta un servidor persistente.
+
+**Falla cerrada:** los dos scripts de `scripts/` fallan si la herramienta no llegó a medir. Es deliberado: durante la puesta a punto, SonarQube respondió `OK` sin análisis y Gitleaks respondió "no leaks found" con 0 commits.
 
 ---
 
@@ -96,7 +130,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 
 | Ambiente | Base de datos | Datos | Uso |
 |---|---|---|---|
-| Local | Docker Compose con Next.js, NestJS y PostgreSQL 16 (Tabla 30). Hoy, PostgreSQL 18 instalado hasta completar el Batch 1 | Seed sintético (`api/prisma/seed.mts`) | Desarrollo y ejecución previa al pull request |
+| Local | Docker Compose con NestJS y PostgreSQL 16 (Tabla 30), sobre Colima en macOS; Next.js desde el Batch 3. Las pruebas de integración levantan su propio PostgreSQL 16 con Testcontainers | Seed sintético (`api/prisma/seed.mts`) | Desarrollo y ejecución previa al pull request |
 | Pruebas / integración | GitHub Actions con PostgreSQL 16 efímero por ejecución | Seed sintético | Ejecución obligatoria en cada pull request; despliegue automático al fusionar en `develop`, desde el Batch 3 |
 | Staging | Se monta en el Batch 6, antes de cerrar la fase 2. Proveedor por definir | Sintéticos o anonimizados | Humo, rendimiento, ZAP, usabilidad, webhook de Mercado Pago sandbox |
 | Piloto | Batch 13 y 14 | Reales | Solo validación tras la puerta de promoción |
@@ -107,7 +141,7 @@ Regla de datos (sección 20.2 y RK-09): ningún ambiente distinto del piloto con
 
 ## 6. Casos de la fase 1 y su estado
 
-Fuente: `api/test/seguridad.spec.ts`. Se ejecutan con `npm test` en local y en cada pull request.
+Fuente: `api/test/integracion/`. Se ejecutan con `npm run test:integracion` en local, con Docker, y en la etapa 4 de cada pull request. Las consultas CD-DAT están en `api/prisma/verificacion/`, junto a las migraciones (19.1).
 
 | Caso | Requisito | Qué verifica | Técnica | Estado |
 |---|---|---|---|---|
@@ -116,14 +150,14 @@ Fuente: `api/test/seguridad.spec.ts`. Se ejecutan con `npm test` en local y en c
 | CI-AUTH-01 | RF-008 | El token de un rol no autoriza un endpoint de otro rol: cinco roles reciben 403 al dar de alta catálogos | Particiones de equivalencia | **Automatizado, en verde** |
 | CF-ROL-01 | RF-008 | Cada rol ve solo su parte. En fase 1: todos leen catálogos y solo coordinación los da de alta | Particiones de equivalencia | **Parcial**: catálogos. Se completa con cada módulo |
 | Control de RK-03 | RNF-SEG-001 | La base rechaza UPDATE, DELETE y TRUNCATE sobre la bitácora | Basada en riesgo | **Automatizado, en verde** |
-| CI-MIG-01 | RNF-MAN-001 | Las migraciones se aplican sobre una base limpia | — | **Parcial**: base limpia en CI. Falta base con datos (fase 2) |
-| CD-DAT-01 | RNF-DAT-001 | Cero matrículas duplicadas | — | **Automatizado, en verde** |
-| CD-DAT-04 | RNF-DAT-001 | Cero calificaciones sin grupo, periodo o profesor | — | **Automatizado, en verde** |
+| CI-MIG-01 | RNF-MAN-001 | Las migraciones se aplican sobre una base limpia y sobre una base con datos, sin pérdida. Compara filas y huella MD5 de las 21 tablas | Basada en riesgo | **Automatizado con Prisma y Testcontainers, en verde.** Comprobado con migraciones que alteran datos, borran filas y borran una columna: la prueba falla |
+| CD-DAT-01 | RNF-DAT-001 | Cero matrículas duplicadas, y la base rechaza un segundo expediente con la misma matrícula | Basada en riesgo | **Automatizado, en verde.** Consulta versionada. Great Expectations en el Batch 4 |
+| CD-DAT-04 | RNF-DAT-001 | Cero calificaciones sin grupo, periodo o profesor, y la consulta detecta un huérfano provocado | Basada en riesgo | **Automatizado, en verde.** Consulta versionada. Great Expectations en el Batch 4 |
 | — | RF-008 | Credenciales inválidas: mismo 401 exista o no la cuenta; entrada inválida 400; duplicado 409 | Valores límite | **Automatizado, en verde** |
 | CS-SEG-01 a 03 | RF-008 | El alumno no captura ni altera calificaciones; caja no modifica el historial; un alumno no accede al expediente de otro | — | Pendiente: los endpoints se construyen en los batches 4 y 8 (#21) |
 | CS-SEG-05 | RNF-SEG-002 | Una entrada malformada no corrompe la base ni expone trazas con secretos | — | Pendiente: OWASP ZAP en el Batch 2 |
 | CS-SEG-06 | RNF-SEG-001 | Todo cambio de calificación, pago o constancia deja registro en bitácora | — | Pendiente: consulta SQL en los batches 4, 8, 9 y 10 |
-| CS-SEG-08 | RNF-SEG-002 | Sin secretos en el repositorio, en los registros ni en las respuestas de la API | — | **Parcial**: Gitleaks en CI. La revisión manual de registros y respuestas se hace en el Batch 2 |
+| CS-SEG-08 | RNF-SEG-002 | Sin secretos en el repositorio, en los registros ni en las respuestas de la API | — | **Parcial**: Gitleaks en CI sobre todo el historial, cero coincidencias. La revisión manual de registros y respuestas se hace en el Batch 2 |
 
 El catálogo completo de casos de todas las fases, con requisito y fase, está en `docs/calidad/matriz-trazabilidad.md`, sección 3.
 
