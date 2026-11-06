@@ -3,7 +3,7 @@
 **Documento de referencia:** SCE-MC-001 v2.0, sección 40 (clasificación en la Tabla 61; ciclo en la 40.2).
 **Vigente desde:** 5 de noviembre de 2026.
 
-Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
+Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001 y al contrastar el repositorio contra el manual completo. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
 
 La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que nunca es quien ejecutó la acción, o el equipo auditor.
 
@@ -18,13 +18,16 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-003 | Menor | Sin registro de aprobación de la versión 2.0 del manual | AU-01 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
 | NC-004 | Menor | Elementos P1 del plan de trabajo (#7 a #15) vencidos sin reprogramación escrita | AU-02, AU-43 | FJMP | 27 de noviembre de 2026 | Abierta con plan |
 | NC-005 | Menor | Tablas de roles por sprint contradictorias entre documentos de gobierno | AU-04 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación |
+| NC-006 | Mayor | No existe el acta de levantamiento que la Tabla 23 exige para la fase 0 | AU-07, AU-43 | Ambos | 27 de noviembre de 2026, a confirmar por el equipo | Abierta con plan |
+| NC-007 | Menor | El catálogo de casos CS-SEG del repositorio divergió de la Tabla 49 del manual | AU-02, AU-05, AU-29 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación |
+| NC-008 | Menor | Cambios CC-001 a CC-006 implementados sin aprobación registrada | AU-06 | SJOM | 7 de noviembre de 2026 | Abierta con plan |
 
 ---
 
 ## NC-001 — Pull request fusionado sin revisión
 
 - **Fuente:** autoevaluación previa al informe preliminar de PA-SCE-001.
-- **Descripción:** el pull request #29 (*Fase 1: base de datos PostgreSQL, pgAudit, API con roles, plan de pruebas y CI*) se fusionó a `Desarrollo` el 23 de octubre de 2026 con cero revisiones. Lo abrió y lo fusionó la misma persona. El cambio toca autenticación y autorización, así que la sección 29 exige revisión de otro integrante.
+- **Descripción:** el pull request #29 (*Fase 1: base de datos PostgreSQL, pgAudit, API con roles, plan de pruebas y CI*) se fusionó a `Desarrollo` el 22 de octubre de 2026 con cero revisiones. Lo abrió y lo fusionó la misma persona. El cambio toca autenticación y autorización, así que la sección 29 exige revisión de otro integrante.
 - **Severidad:** Mayor. Afecta un control de seguridad: separación de funciones en cambios de seguridad.
 - **Evidencia:** `github.com/fjmp-dev/sce-control-escolar/pull/29`, pestaña de revisiones vacía.
 - **Causa (cinco porqués):**
@@ -47,7 +50,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Severidad:** Mayor. Incumple el registro obligatorio de aceptación de fase.
 - **Evidencia:** `docs/gobierno/actas/acta-aceptacion-fase-0.md` e issue #1 abierto.
 - **Causa:** la firma se dejó para una sesión presencial que no ocurrió. Ninguna regla impedía iniciar la fase siguiente sin el acta firmada.
-- **Acción correctiva:** SJOM firma el acta como Product Owner y QA del sprint de aceptación. El acta conserva su fecha de cierre de fase y registra que la firma es extemporánea. Responsable: SJOM. Fecha: 6 de noviembre de 2026.
+- **Acción correctiva:** SJOM firma el acta como Product Owner y QA, ya con la evaluación de la Tabla 23 y la salvedad por NC-006. El acta conserva su fecha de cierre de fase y registra que la firma es extemporánea. Responsable: SJOM. Fecha: 6 de noviembre de 2026.
 - **Acción preventiva:** no se abre ninguna fase sin el acta de la anterior firmada. Se incorpora a la definición de terminado de la fase.
 - **Verificación de eficacia:** el equipo auditor revisa el acta firmada. Al cierre de la fase 1 se verifica que el acta exista antes del inicio de la fase 2.
 
@@ -78,3 +81,41 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Severidad:** Menor.
 - **Acción correctiva:** se alinearon los tres documentos con el plan de trabajo el 5 de noviembre de 2026. Responsable: FJMP.
 - **Verificación de eficacia:** QA del sprint (SJOM) revisa la corrección en el PR #30.
+
+## NC-006 — Falta el acta de levantamiento de la fase 0
+
+- **Fuente:** contraste del acta ACT-F0-001 con la Tabla 23 del manual, 5 de noviembre de 2026.
+- **Descripción:** la condición mínima de aceptación de la fase 0 es "acta de levantamiento con control escolar, coordinación y caja, y lista explícita de qué entra y qué no". La lista existe (manual, sección 3.2). El acta de levantamiento no está en el repositorio. Además, la versión 1.0 del acta de fase evaluaba criterios propios del equipo y los presentaba como los de la sección 10.3.
+- **Severidad:** Mayor. Es la condición de aceptación de una fase, de la misma clase que NC-002.
+- **Evidencia:** Tabla 23 del manual; `docs/gobierno/actas/acta-aceptacion-fase-0.md`; ausencia del acta en el repositorio.
+- **Causa preliminar (cinco porqués; la confirma el equipo):**
+  1. ¿Por qué no hay acta? Porque el levantamiento no quedó documentado en el repositorio.
+  2. ¿Por qué no se notó al redactar el acta de fase? Porque se usaron criterios propios y no se contrastaron con la Tabla 23.
+  3. ¿Por qué se usaron criterios propios? Porque el entregable de la fase se interpretó solo como documental.
+  4. ¿Por qué nadie lo detectó en revisión? Porque el acta no se había revisado ni firmado.
+  5. Causa raíz: no existía una lista de verificación de fase que partiera de la Tabla 23.
+- **Acción correctiva:** si las entrevistas se hicieron, se documentan con fechas, participantes y notas reales; si no se hicieron, se realizan con control escolar, coordinación y caja de la facultad de referencia. **No se redacta un acta sobre entrevistas que no ocurrieron.** Responsable: FJMP y SJOM. Fecha: 27 de noviembre de 2026, a confirmar por el equipo.
+- **Acción preventiva:** la plantilla de acta (Anexo B) parte de la condición de la Tabla 23 para cada fase.
+- **Verificación de eficacia:** el equipo auditor revisa el acta de levantamiento. En cada cierre de fase, QA comprueba la condición de la Tabla 23.
+
+## NC-007 — Catálogo CS-SEG distinto de la Tabla 49
+
+- **Fuente:** contraste de `matriz-trazabilidad.md` con la Tabla 49 y con PA-SCE-001, 5 de noviembre de 2026.
+- **Descripción:** el repositorio definió CS-SEG-02 a 08 con significados propios, y CC-002 fijó esa numeración. La Tabla 49 los define de otra manera, y el plan de auditoría usa la del manual (AU-14 cita CS-SEG-04 y 07; AU-15, 01 a 03; AU-16, 06). Como consecuencia, la prueba llamada CS-SEG-06 verificaba la inmutabilidad de la bitácora, no lo que la Tabla 49 pide, y la respuesta F-01 v1.1 citó esas etiquetas.
+- **Severidad:** Menor. Ningún control se perdió; el defecto está en la identificación de los casos.
+- **Evidencia:** Tabla 49; `plan-de-pruebas.md` v1.0, sección 7.
+- **Causa:** se reconciliaron los rangos que el manual menciona sin tomar la Tabla 49 como definición de cada caso.
+- **Acción correctiva:** catálogo, plan de pruebas y nombres de pruebas alineados con la Tabla 49; CC-002 corregido; respuesta F-01 v1.2. Responsable: FJMP. Fecha: 5 de noviembre de 2026.
+- **Acción preventiva:** el catálogo cita la tabla del manual de la que sale cada caso.
+- **Verificación de eficacia:** QA revisa la corrección en el pull request del Batch 0.
+
+## NC-008 — Cambios implementados sin aprobación registrada
+
+- **Fuente:** revisión de `registro-de-cambios.md`, 5 de noviembre de 2026.
+- **Descripción:** CC-001 a CC-006 se implementaron y CC-003 a CC-006 entraron en el PR #29, pero su tabla de aprobaciones sigue vacía. La sección 16.2 pone la aprobación antes de la implementación, y CC-004 y CC-005 son de tipo Mayor.
+- **Severidad:** Menor. Es una práctica documentada, sin riesgo inmediato sobre datos; los cambios refuerzan controles.
+- **Evidencia:** `docs/gobierno/registro-de-cambios.md`; issues #23 a #28.
+- **Causa:** comparte causa con NC-001: el segundo integrante no tenía acceso para aprobar.
+- **Acción correctiva:** SJOM aprueba o rechaza cada cambio con fecha y responsable. Lo rechazado se revierte. Responsable: SJOM. Fecha: 7 de noviembre de 2026.
+- **Acción preventiva:** ningún código de un cambio Mayor se fusiona sin su CC aprobado (`plan-de-sistema.md`, regla 5).
+- **Verificación de eficacia:** el equipo auditor revisa el registro de aprobaciones.

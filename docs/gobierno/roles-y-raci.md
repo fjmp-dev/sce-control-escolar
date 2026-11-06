@@ -29,9 +29,11 @@ Los roles **no son permanentes**. Se asignan por sprint y se invierten en el sig
 | DevOps | FJMP | SJOM |
 | Administrador del sistema | FJMP | SJOM |
 
-**Sprint vigente:** S3, del 2 al 13 de noviembre de 2026, sprint impar. Product Owner y QA: SJOM. Desarrollo y DevOps: FJMP. La tabla coincide con la columna «Acepta» de `plan-de-trabajo.md`, sección 2: S1, S3 y S5 los acepta SJOM; S2 y S4 los acepta FJMP.
+**La regla prevalece por entregable** (vigente desde el 5 de noviembre de 2026). La tabla es la asignación por omisión y coincide con la columna «Acepta» de `plan-de-trabajo.md`, sección 2. Pero quien produce un entregable nunca lo acepta: **mientras FJMP produzca, SJOM ocupa Product Owner, QA y Seguridad para ese entregable y aprueba el pull request**, sin importar el sprint. Si SJOM produce una parte, la acepta FJMP.
 
-> **Corrección del 5 de noviembre de 2026.** La versión anterior de esta tabla tenía las columnas invertidas respecto al plan de trabajo y trataba el sprint S1 como excepción. Se corrigió para que los tres documentos de gobierno digan lo mismo. Las desviaciones que ocurrieron en S2 se tratan en el registro de no conformidades del equipo.
+**Sprint vigente:** S3, del 2 al 13 de noviembre de 2026.
+
+> **Correcciones del 5 de noviembre de 2026.** La tabla tenía las columnas invertidas respecto al plan de trabajo y trataba el sprint S1 como excepción (NC-005). Se corrigió para que los tres documentos de gobierno digan lo mismo. Las desviaciones que ocurrieron en S2 se tratan en `docs/calidad/registro-no-conformidades.md`.
 
 ---
 
@@ -78,7 +80,21 @@ Se conserva la regla del manual: **ninguna actividad de aceptación o auditoría
 
 ---
 
-## 5. Limitación declarada
+## 5. Organigrama funcional
+
+Sección 5.2 del manual.
+
+| Nivel | Roles | Personas |
+|---|---|---|
+| 1 | Product Owner y Dirección de la facultad piloto | Según el apartado 2. Dirección: sin asignar |
+| 2 | Desarrollo, QA y Seguridad | Según el apartado 2 |
+| 3 | DevOps y Administrador del sistema | Según el apartado 2 |
+| 4 | Usuarios del piloto | Sin asignar: no hay facultad piloto |
+| Línea independiente | Auditor, que no reporta al equipo de desarrollo | PA-SCE-001: equipo Aerial Forge. Auditorías de la Tabla 60: pendiente de designar |
+
+---
+
+## 6. Limitación declarada
 
 Un equipo de dos personas no permite separación plena de funciones. En un sprint dado, la misma persona ocupa Product Owner y QA, que en una organización mayor serían distintas.
 
@@ -90,3 +106,17 @@ Lo que sí se garantiza, y es lo que exige el criterio de separación de funcion
 4. La asignación se invierte cada sprint, de modo que la concentración no es permanente.
 
 Esta limitación se declara de forma expresa ante el equipo auditor, en lugar de presentarse como una separación de funciones que el tamaño del equipo no permite.
+
+**También se declara:**
+
+- Una sola persona puede firmar como Product Owner, QA y Seguridad en un mismo entregable. El manual pide firma de PO y QA, y no exige que sean personas distintas; un documento anterior del equipo sí lo decía, y se corrigió.
+- Si se aprueba CC-007, FJMP suma Desarrollo y Administrador del sistema en sus sprints. Las acciones del administrador quedan en bitácora.
+- **FJMP trabaja con un asistente de IA (Claude Code)**. Se declara en cada commit con `Co-Authored-By`. El asistente no aprueba ni acepta nada, y FJMP rinde cuentas por el código que entrega.
+
+## 7. Aprobación
+
+Sección 5.3 del manual: organigrama funcional y RACI aprobados por el Product Owner.
+
+| Rol | Nombre | Decisión | Firma | Fecha |
+|---|---|---|---|---|
+| Product Owner | Samuel Jezoar Ortiz Martínez | | | |

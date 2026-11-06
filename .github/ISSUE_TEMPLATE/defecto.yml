@@ -1,0 +1,37 @@
+name: Defecto
+description: Error encontrado (sección 30 del manual)
+labels: ["defecto"]
+body:
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción y pasos para reproducir
+    validations: {required: true}
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad (Tabla 52)
+      description: La clasifica QA. Agregar la etiqueta sev- correspondiente.
+      options:
+        - "Crítica: duplica o pierde un expediente, registra un pago que no se refleja, permite acceso indebido o bloquea la inscripción. Contención el mismo día hábil; corrección en 48 horas."
+        - "Alta: impide un flujo Must de un rol sin alternativa segura. Corrección en 5 días hábiles."
+        - "Media: degrada un requisito Should y existe alternativa temporal. Corrección dentro del sprint."
+        - "Baja: cosmético o clasificado como Could. Se agenda en el backlog de mejora."
+    validations: {required: true}
+  - type: input
+    id: requisito
+    attributes:
+      label: Requisito afectado
+    validations: {required: true}
+  - type: input
+    id: caso
+    attributes:
+      label: Caso y ejecución que lo detectó
+  - type: textarea
+    id: ciclo
+    attributes:
+      label: Ciclo de vida (sección 30.2)
+      value: |
+        - Clasificó (QA):
+        - Corrigió (desarrollo) y PR:
+        - Verificó y cerró (no puede ser quien corrigió):

@@ -1,4 +1,4 @@
-// Casos de seguridad de la fase 1 (docs/calidad/matriz-trazabilidad.md).
+// Casos de seguridad de la fase 1, con la numeracion de la Tabla 49 (docs/calidad/matriz-trazabilidad.md).
 // Corre contra la base de desarrollo ya migrada y con seed: npm run db:seed.
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -35,7 +35,7 @@ describe('RF-008 autenticacion', () => {
     expect(a.body.message).toBe(b.body.message);
   });
 
-  it('CS-SEG-04: sin token, token alterado o expirado recibe 401', async () => {
+  it('CS-SEG-04 (sin token) y CS-SEG-07 (sesion expirada): sin token, token alterado o expirado recibe 401', async () => {
     const http = request(app.getHttpServer());
     await http.get('/materias').expect(401);
     await http.get('/materias').set('Authorization', 'Bearer no.es.jwt').expect(401);
@@ -44,7 +44,7 @@ describe('RF-008 autenticacion', () => {
     await http.get('/materias').set('Authorization', `Bearer ${expirado}`).expect(401);
   });
 
-  it('CS-SEG-04: un usuario desactivado pierde el acceso aunque su token siga vigente', async () => {
+  it('CS-SEG-07 (parcial, la revocacion por cierre de sesion llega en el Batch 2): un usuario desactivado pierde el acceso aunque su token siga vigente', async () => {
     const token = await login('caja@sce.test');
     await prisma.usuario.update({ where: { correo: 'caja@sce.test' }, data: { activo: false } });
     try {
@@ -81,8 +81,8 @@ describe('RF-008 autorizacion por rol (CI-AUTH-01, CF-ROL-01)', () => {
   });
 });
 
-describe('RNF-SEG-001 bitacora', () => {
-  it('CS-SEG-06: la base rechaza UPDATE, DELETE y TRUNCATE sobre bitacora', async () => {
+describe('RK-03 bitacora inmutable', () => {
+  it('la base rechaza UPDATE, DELETE y TRUNCATE sobre bitacora', async () => {
     // Sin filas, UPDATE y DELETE no disparan el trigger por fila y "pasarian": se inserta una primero.
     const autor = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'control.escolar@sce.test' } });
     await prisma.bitacora.create({ data: { autor: autor.id, accion: 'prueba_cs_seg_06', entidad: 'bitacora' } });

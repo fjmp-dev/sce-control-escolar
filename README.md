@@ -7,7 +7,8 @@ Sistema de Control Escolar Universitario (SCE). Centro Universitario UAEM Tiangu
 | Manual de calidad | SCE-MC-001 v2.0, 16 de septiembre de 2026 |
 | Fase actual | **1 — Núcleo institucional** (en desarrollo) |
 | Autores | Francisco Javier Martínez Peñas · Samuel Jezoar Ortiz Martínez |
-| Auditoría en curso | PA-SCE-001 v1.0, equipo Aerial Forge |
+| Auditoría en curso | PA-SCE-001 v1.1, equipo Aerial Forge |
+| Plan de construcción | [`docs/gobierno/plan-de-sistema.md`](docs/gobierno/plan-de-sistema.md), batches 0 a 14 |
 
 ---
 
@@ -44,6 +45,7 @@ docker-compose.yml        Ambiente de pruebas: PostgreSQL 16 + API con datos sin
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
 docs/
+  anexos/          Plantillas A a H del manual (sección 43)
   arquitectura/     Las diez figuras de la sección 13 del manual, en PlantUML
     fig01-casos-de-uso.puml
     fig02-componentes.puml
@@ -61,8 +63,16 @@ docs/
     matriz-riesgos.md         Los 10 riesgos RK (sección 17.2)
     plan-de-pruebas.md        Plan de pruebas PP-SCE-001 (sección 21 y Anexo H)
     registro-no-conformidades.md  No conformidades y acciones correctivas (sección 40)
+    reglas-de-negocio.md      Reglas provisionales e inventario de reglas Must
+    contradicciones-manual-v2.0.md  Contradicciones y vacíos del manual
   auditoria/        Respuestas del auditado a las solicitudes de PA-SCE-001
+  evidencias/       Reportes que sustentan cada cierre de fase (Tabla 62)
   gobierno/
+    plan-de-sistema.md        Orden de construcción por batches
+    cambios/                  Solicitudes de cambio desde CC-007
+    matriz-retencion.md       Retención documental (Tabla 62)
+    fichas-de-proveedores.md  Proveedores (Tabla 55)
+    mejora-continua.md        Lecciones y acciones de mejora (sección 41)
     metodologia-de-trabajo.md Cómo trabajamos: cadencia, roles y definición de terminado
     plan-de-trabajo.md        Calendario por fases y backlog priorizado
     roles-y-raci.md           Los seis roles con personas asignadas
@@ -150,17 +160,15 @@ En Visual Studio Code, la extensión *PlantUML* los previsualiza con `Alt+D`.
 
 ## Diferencias respecto del manual v2.0
 
-Tres puntos en los que este repositorio va más allá del manual publicado. Ninguno cambia un requisito; los tres quedan sujetos al control de cambios de la sección 12.4 y pendientes de aprobación por Product Owner y QA.
+Las desviaciones aprobadas están en `docs/gobierno/plan-de-sistema.md`, sección 3, y sus solicitudes de cambio en `docs/gobierno/registro-de-cambios.md`. Las contradicciones del propio manual están en `docs/calidad/contradicciones-manual-v2.0.md`. Todas pasan a la siguiente versión del manual (issue #15).
 
-1. **La matriz de trazabilidad se completó de 10 a 20 filas.** La Tabla 27 del manual cubre la mitad de los requisitos del catálogo. Las filas añadidas usan el criterio de verificación que el propio manual ya fija en las tablas 19 y 20.
-2. **Se reconcilió el conjunto CS-SEG**, que el manual nombra con tres alcances distintos (01 a 04, 01 a 06 y 01 a 08). La reconciliación está explicada en `matriz-trazabilidad.md`, sección 4.
-3. **Se incorporó la entidad `periodo`** al modelo de datos. La sección 13.6 declara veintiuna entidades y la Tabla 29 enumera veinte; `periodo` es la que falta, y es necesaria porque grupo, horario, inscripción y calificación dependen de ella.
+Los render PNG de `docs/arquitectura/render/` de las Figuras 1, 2, 3, 4, 8 y 9 **están desactualizados** respecto a sus fuentes `.puml` del 5 de noviembre de 2026. Se regeneran en el Batch 1, con Docker.
 
 ---
 
 ## Convenciones
 
-- Ramas según la sección 15.2: `feature/*` y `fix/*` se integran por pull request a `Desarrollo` (la rama `develop` del manual); `main` solo recibe desde `release/x.y.z`. `main` y `Desarrollo` están protegidas: pull request obligatorio, CI en verde y aprobación de otro integrante (sección 29).
-- Commits con mensaje descriptivo; etiquetas SemVer por línea base de fase (secciones 15 y 32).
+- Ramas según la sección 15.2 y la Tabla 31: `feature/<issue>-<descripcion>` y `fix/<issue>` se integran por pull request a `develop`; `main` solo recibe desde `release/x.y.z`. `main` y `develop` están protegidas: pull request obligatorio, CI en verde y aprobación de otro integrante (sección 29).
+- Commits convencionales con identificador de requisito cuando aplique, por ejemplo `feat(expediente): RF-001 cambio de plantel` (Tabla 31); etiquetas SemVer por línea base de fase (secciones 15 y 32).
 - Ningún secreto en el repositorio (sección 14.1 y riesgo RK-07).
 - Ningún dato personal real fuera del ambiente piloto (sección 20.2 y riesgo RK-09).

@@ -37,6 +37,8 @@ Los seis roles del manual no se asignan a una persona de forma permanente. Se as
 
 Esto significa que en un sprint dado, quien ocupa Product Owner y QA es el que acepta, y quien ocupa Desarrollo y DevOps es el que produce. Al sprint siguiente se invierte, de modo que ninguno acumula poder de aceptación sobre su propio trabajo a lo largo del proyecto. La tabla coincide con la columna «Acepta» de `plan-de-trabajo.md`, sección 2. El 5 de noviembre de 2026 se corrigió una versión anterior que tenía las columnas invertidas respecto al plan.
 
+**La regla prevalece por entregable** (vigente desde el 5 de noviembre de 2026; `roles-y-raci.md`, apartado 2). La tabla es la asignación por omisión, pero quien produce un entregable nunca lo acepta: si FJMP produce en un sprint par, acepta SJOM, aunque la tabla diga otra cosa. QA no solo firma: ejecuta el conjunto Must, verifica defectos y publica el tablero.
+
 **Excepción que no se negocia:** si por razones de tiempo uno de los dos escribe algo que le tocaría aceptar a él mismo, ese entregable espera al otro. No se aprueba nada en solitario. Si el otro no puede en toda la semana, se registra como impedimento en el acta del sprint y el entregable no cuenta como terminado.
 
 ### 2.1 Matriz RACI operativa
@@ -83,10 +85,14 @@ No hay reunión diaria. Con dos personas y esta carga sería teatro, y el manual
 |---|---|
 | Código, documentación, modelos y matrices | Este repositorio |
 | Backlog, sprint y seguimiento | GitHub Projects, tablero único del repositorio |
-| Defectos | Issues de GitHub con etiqueta `defecto` y severidad |
+| Defectos | Issues de GitHub con etiqueta `defecto` y severidad de la Tabla 52 |
 | Riesgos | `docs/calidad/matriz-riesgos.md`, más issues con etiqueta `riesgo` |
 | Actas de sprint y de fase | `docs/gobierno/actas/` |
-| Evidencias de la auditoría en curso | `docs/gobierno/auditoria/` |
+| Respuestas a la auditoría en curso | `docs/auditoria/` |
+| Evidencias de cierre de fase | `docs/evidencias/` |
+| Solicitudes de cambio | Issues con etiqueta `cambio` y `docs/gobierno/cambios/` |
+| Plantillas de los anexos del manual | `docs/anexos/` |
+| Orden de construcción | `docs/gobierno/plan-de-sistema.md` |
 | Decisiones de arquitectura | `docs/arquitectura/` |
 
 Regla única: **si no está en el repositorio, no es evidencia.** Un archivo en el escritorio de alguno de los dos no cuenta.
@@ -97,7 +103,9 @@ Regla única: **si no está en el repositorio, no es evidencia.** Un archivo en 
 |---|---|
 | `fase-0` … `fase-5` | A qué fase del plan de desarrollo pertenece |
 | `RF-00X` / `RNF-XXX-00X` | Qué requisito satisface. Todo issue de producto lleva una. |
-| `defecto` | Error encontrado, con `sev-1` a `sev-4` |
+| `defecto` | Error encontrado, con `sev-critica`, `sev-alta`, `sev-media` o `sev-baja` (Tabla 52) |
+| `cambio` | Solicitud de cambio (sección 16) |
+| `batch` | Lote de trabajo de `plan-de-sistema.md` |
 | `riesgo` | Acción de mitigación de un riesgo RK |
 | `auditoria` | Acción derivada de un hallazgo o solicitud del auditor |
 | `documental` | Cambio al manual o a los documentos de calidad |
@@ -112,7 +120,8 @@ Tres niveles, tomados de la sección 10 del manual.
 
 ### 5.1 Un issue está terminado cuando
 
-- El código está fusionado a `main` por pull request aprobado por el otro integrante.
+- El código está fusionado a `develop` por pull request aprobado por el otro integrante (Tabla 24: rama integrada).
+- Las pruebas Must del área están en verde, y desde el Batch 3 está desplegado en pruebas con humo en verde.
 - Tiene prueba automatizada si toca una regla de negocio Must.
 - No introduce secretos ni datos personales reales.
 - El issue quedó cerrado con referencia al commit o al pull request.
@@ -121,15 +130,16 @@ Tres niveles, tomados de la sección 10 del manual.
 ### 5.2 Un sprint está terminado cuando
 
 - Todos sus issues están cerrados o devueltos al backlog con motivo escrito.
-- La integración continua está en verde sobre `main`.
+- La integración continua está en verde sobre `develop`.
 - Existe acta de sprint firmada por ambos, con lo entregado, lo pendiente y la acción de mejora.
 - La matriz de riesgos se revisó y se actualizó el estado de los que cambiaron.
 
 ### 5.3 Una fase está terminada cuando
 
-- Se cumplen los criterios de la sección 10.3 del manual.
+- Se cumple la condición de la **Tabla 23** del manual, copiada textual en el acta (Anexo B).
 - Todo requisito Must de la fase tiene evidencia de prueba con resultado favorable.
-- Existe acta de aceptación de fase, firmada por quien ocupa Product Owner y por quien ocupa QA en ese sprint, que deben ser personas distintas.
+- Existe acta de aceptación de fase, firmada por quien ocupa Product Owner y por quien ocupa QA para ese entregable. Pueden ser la misma persona, limitación declarada en `roles-y-raci.md`; nunca quien lo produjo.
+- La rama `release/x.y.z` se fusionó a `main`, con etiqueta, notas de versión y línea base.
 - Los riesgos de nivel Alto abiertos están mitigados o aceptados por escrito con plan fechado.
 
 ---
@@ -138,9 +148,9 @@ Tres niveles, tomados de la sección 10 del manual.
 
 | Elemento | Convención |
 |---|---|
-| Rama principal | `main`, protegida. Sin envío directo. |
-| Ramas de trabajo | `feat/`, `fix/`, `docs/`, `chore/` más una descripción corta |
-| Mensajes de commit | Prefijo semántico: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:` |
+| Ramas protegidas | `main` (solo desde `release/x.y.z` o correcciones autorizadas) y `develop` (integración). Sin envío directo |
+| Ramas de trabajo | `feature/<issue>-<descripcion>`, `fix/<issue>` y `release/x.y.z` (Tabla 31) |
+| Mensajes de commit | Commits convencionales con identificador de requisito cuando aplique: `feat(expediente): RF-001 cambio de plantel` (Tabla 31) |
 | Versión del sistema | Versionado semántico, etiqueta por línea base de fase |
 | Versión del manual | `mayor.menor` según la sección 1.3 del manual |
 | Migraciones de base de datos | Versionadas y nunca aplicadas a mano |
@@ -156,7 +166,7 @@ Todo cambio que afecte un requisito Must, la política de calidad o el alcance d
 1. Se abre un issue con etiqueta `documental` describiendo el cambio y su motivo.
 2. Se evalúa el impacto en alcance, esfuerzo, seguridad y datos.
 3. Lo aprueba quien ocupe Product Owner ese sprint, que no puede ser quien lo propuso si además lo escribió.
-4. Se implementa en una rama `docs/` y se fusiona por pull request.
+4. Se implementa en una rama `feature/` y se fusiona por pull request.
 5. Se actualiza el historial de la sección 1.3 del manual.
 
 No se implementan cambios informales. Sin registro no hay trazabilidad ni aceptación.
