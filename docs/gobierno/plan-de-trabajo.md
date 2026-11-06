@@ -3,9 +3,9 @@
 **Vigente desde:** 15 de octubre de 2026.
 **Equipo:** Francisco Javier Martínez Peñas (FJMP) · Samuel Jezoar Ortiz Martínez (SJOM).
 **Capacidad:** entre cinco y diez horas semanales entre ambos. Sprints de dos semanas.
-**Restricción dominante:** la auditoría PA-SCE-001 corre del 8 de octubre al 1 de diciembre de 2026. Su etapa documental cierra el 23 de octubre y su verificación en campo va del 2 al 10 de noviembre.
+**Restricción dominante:** la auditoría PA-SCE-001 v1.1. Según su sección 7, la verificación en campo fue del 3 al 5 de noviembre, el informe preliminar es el 6 y la réplica el 7.
 
-El semestre debe terminar con el proyecto completo. Este plan cubre lo inmediato: cerrar lo que hace falta y empezar a avanzar. El backlog de las fases 2 a 5 se detalla al cierre de cada fase, no ahora.
+El semestre debe terminar con el proyecto completo. Este plan fija el calendario y los sprints. **El orden de construcción por batches está en `plan-de-sistema.md`, aprobado por FJMP el 5 de noviembre de 2026**; ese documento también recoge los cambios a este plan (apartado 6).
 
 ---
 
@@ -24,7 +24,7 @@ El manual no incluía calendario con fechas, y esa ausencia es uno de los puntos
 
 **Estabilización** es el tramo final de cada fase, normalmente su último sprint. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación de la fase y se redacta el acta. En la fase 5 son las dos primeras semanas del piloto en operación. Las fechas de estabilización se añadieron el 5 de noviembre de 2026, en respuesta al elemento 8 de la solicitud F-01-SCE-002.
 
-Las fechas de las fases 2 a 5 son estimación a validar al cierre de la fase 1. Las de la fase 0 y 1 son firmes.
+Las fechas de cierre son **límite**: si los batches de una fase terminan antes, la fase se cierra antes, con acta de fecha real. Ningún batch que abra fase empieza sin el acta firmada de la fase anterior. Las fechas de las fases 2 a 5 son estimación a validar al cierre de la fase 1. Las de la fase 0 y 1 son firmes.
 
 ---
 
@@ -95,12 +95,12 @@ Arranque real de la fase 1. Ya es desarrollo, no documentación.
 
 Para que el recorte sea una decisión y no un olvido:
 
-- **Fases 2 a 5.** Se planean al cierre de la fase 1, no antes.
-- **Ambientes de staging y piloto.** Corresponden a la fase 3; montarlos antes sería infraestructura sin nada que desplegar.
-- **Pruebas de carga y de seguridad ejecutadas.** Los casos ya están definidos; ejecutarlos exige sistema desplegado.
-- **Integración con Mercado Pago.** Fase 4.
+- **Piloto real.** Depende de una facultad, de la Dirección y de un semestre completo.
+- **Ambiente de piloto.** Se monta en el Batch 13. **Staging** se monta antes de cerrar la fase 2 (Batch 6), porque AU-08, AU-17 y AU-19 lo piden desde esa fase.
+- **Pruebas de carga.** Exigen staging (Batch 13). **OWASP ZAP** corre desde el Batch 2 en el ambiente de pruebas, como dice la Tabla 30.
+- **Integración con Mercado Pago.** Fase 4 (Batch 9).
 
-Todo lo anterior está declarado ante el equipo auditor como *No aplica por fase*, no omitido.
+Todo lo anterior está declarado ante el equipo auditor como *No aplica por fase*, no omitido (`docs/auditoria/respuesta-F-01-SCE-002.md`).
 
 ---
 
@@ -109,3 +109,19 @@ Todo lo anterior está declarado ante el equipo auditor como *No aplica por fase
 Este plan se revisa en la sesión de cierre de cada sprint. Los elementos cumplidos se marcan en el acta correspondiente; los que se recorren cambian de fecha con motivo escrito.
 
 Un elemento P0 o P1 que se recorra dos sprints seguidos se convierte en riesgo y pasa a `docs/calidad/matriz-riesgos.md`.
+
+---
+
+## 6. Cambios a este plan
+
+Motivo escrito, conforme al apartado 5.
+
+| Fecha | Cambio | Motivo |
+|---|---|---|
+| 5 nov 2026 | Se adopta `plan-de-sistema.md`: batches 0 a 14, por fases (Tablas 23, 25 y 27) | El equipo decidió construir el sistema completo, y al contrastar el repositorio con el manual completo se encontraron desviaciones |
+| 5 nov 2026 | Los batches pueden adelantar las fechas de fase | Las fechas de cierre pasan a ser límite; cada fase conserva su acta y sus condiciones |
+| 5 nov 2026 | Staging se adelanta de la fase 3 a antes de cerrar la fase 2 | PA-SCE-001 exige evidencia de staging desde la fase 2 |
+| 5 nov 2026 | OWASP ZAP se adelanta de la fase 3 al ambiente de pruebas, desde el Batch 2 | La Tabla 30 lo ubica en pruebas e integración |
+| 5 nov 2026 | Elementos P1 #7 a #15 pasan al sprint S4, con el manual v2.1 a más tardar el 27 de noviembre de 2026 | Vencieron el 30 de octubre sin reprogramación (NC-004). El sprint S2 priorizó el arranque técnico |
+| 5 nov 2026 | La columna «Acepta» del apartado 2 cede ante la regla por entregable | Si FJMP produce el entregable de un sprint par, lo acepta SJOM. Ver `roles-y-raci.md`, apartado 2 |
+
