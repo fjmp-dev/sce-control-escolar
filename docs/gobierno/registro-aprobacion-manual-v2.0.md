@@ -20,8 +20,8 @@
 
 | Rol (Tabla 2 y `roles-y-raci.md`, apartado 3) | Persona | Alcance de la revisión | Resultado |
 |---|---|---|---|
-| Revisor — QA | Samuel Jezoar Ortiz Martínez (QA del sprint S3) | Completitud, trazabilidad y evidencias | Aprobado con las correcciones registradas en CC-001 a CC-006 y en los issues #7 a #14, que se integran en la versión 2.1 |
-| Revisor — Seguridad | Samuel Jezoar Ortiz Martínez | Controles de acceso, bitácora y datos personales | Aprobado con las mismas correcciones |
+| Revisor — QA | Samuel Jezoar Ortiz Martínez (QA del sprint S3) | Completitud, trazabilidad y evidencias | Propuesto, lo decide el revisor: aprobado con las correcciones registradas en CC-001 a CC-006 y en los issues #7 a #14, que se integran en la siguiente versión |
+| Revisor — Seguridad | Samuel Jezoar Ortiz Martínez | Controles de acceso, bitácora y datos personales | Propuesto, lo decide el revisor: aprobado con las mismas correcciones |
 
 ## 3. Aprobación
 
@@ -35,4 +35,4 @@
 
 La versión 2.0 se emitió el 16 de septiembre de 2026 sin este registro. La aprobación se formaliza con la fecha real de la firma y no se antedata. Hasta esa fecha, la versión 2.0 se consideró vigente de hecho, no de forma auditable. Así se declara ante el equipo auditor en NC-003.
 
-Los dos autores del manual son los dos integrantes del equipo, de modo que la revisión no puede hacerla alguien ajeno a la redacción. Es la limitación declarada en `roles-y-raci.md`, apartado 5. Lo que sí se cumple es que quien aprueba ocupa Product Owner y QA en el sprint de la aprobación, y no ocupa Desarrollo en ese sprint.
+Los dos autores del manual son los dos integrantes del equipo, de modo que la revisión no puede hacerla alguien ajeno a la redacción. Es la limitación declarada en `roles-y-raci.md`, apartado 6. Lo que sí se cumple es que quien aprueba ocupa Product Owner y QA para este entregable, y no ocupa Desarrollo en él.
