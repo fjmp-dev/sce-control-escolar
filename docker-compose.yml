@@ -1,5 +1,5 @@
 # Ambiente de pruebas reproducible: PostgreSQL 16 + API con una cuenta sintetica por rol.
-# docker compose up --build  ->  http://localhost:3000  (cuentas en README.md)
+# docker compose up --build  ->  http://localhost:3001/salud  (cuentas en README.md)
 services:
   db:
     image: postgres:16
@@ -19,5 +19,15 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://sce_app:sce_dev@db:5432/sce?schema=public
-      JWT_SECRET: ${JWT_SECRET:-solo-para-ambiente-local}
-    ports: ['3000:3000']
+      JWT_SECRET: ${JWT_SECRET:-solo-para-el-ambiente-local-de-pruebas}
+    ports: ['3001:3001']
+    healthcheck: # Fig. 9 y Tabla 57. Da tiempo a las migraciones y al seed.
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3001/salud').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+        ]
+      interval: 3s
+      retries: 40

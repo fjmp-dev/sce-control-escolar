@@ -9,6 +9,6 @@ COPY . .
 RUN npx prisma generate && npm run build \
  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 USER node
-EXPOSE 3000
+EXPOSE 3001
 # Migra y carga el seed sintetico en cada arranque (ambos son idempotentes).
 CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node prisma/seed.mts && node dist/main.js"]
