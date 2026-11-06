@@ -11,7 +11,7 @@
     "db:reset": "prisma migrate reset --force",
     "test": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --runInBand",
     "lint": "eslint src test --max-warnings 0",
-    "test:unitarias": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --selectProjects unitarias --passWithNoTests --coverage --coverageDirectory coverage/unitarias",
+    "test:unitarias": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --selectProjects unitarias --coverage --coverageDirectory coverage/unitarias --coverageThreshold='{\"./src/**/dominio/**\":{\"lines\":80}}'",
     "test:integracion": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --selectProjects integracion --runInBand --coverage --coverageDirectory coverage/integracion"
   },
   "license": "UNLICENSED",
@@ -21,6 +21,7 @@
     "@nestjs/core": "^12.2.0",
     "@nestjs/jwt": "^12.0.3",
     "@nestjs/platform-express": "^12.2.0",
+    "@nestjs/swagger": "^12.1.1",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",

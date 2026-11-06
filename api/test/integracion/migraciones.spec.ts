@@ -10,7 +10,7 @@ jest.setTimeout(240_000);
 const BASE = '20261023001637_init';
 const MIGRACIONES = 'prisma/migrations';
 
-type Huellas = Record<string, { columnas: string[]; filas: number; huella: string }>;
+type Huellas = Record<string, { columnas: string[]; filas: string[] }>;
 
 // Compara solo las columnas que existian antes de migrar: una columna nueva no es perdida; una borrada, si.
 async function huellas(db: PrismaClient, antes?: Huellas): Promise<Huellas> {
@@ -23,11 +23,8 @@ async function huellas(db: PrismaClient, antes?: Huellas): Promise<Huellas> {
     const propias = antes ? antes[tabla]?.columnas : columnas.filter((c) => c.tabla === tabla).map((c) => c.columna);
     if (!propias) continue; // tabla creada por una migracion posterior
     const lista = propias.map((c) => `"${c}"`).join(', ');
-    const [{ filas, huella }] = await db.$queryRawUnsafe<{ filas: number; huella: string }[]>(
-      `SELECT count(*)::int AS filas, md5(coalesce(string_agg(f, '|' ORDER BY f), '')) AS huella
-         FROM (SELECT ROW(${lista})::text AS f FROM "${tabla}") t`,
-    );
-    resultado[tabla] = { columnas: propias, filas, huella };
+    const filas = await db.$queryRawUnsafe<{ f: string }[]>(`SELECT ROW(${lista})::text AS f FROM "${tabla}"`);
+    resultado[tabla] = { columnas: propias, filas: filas.map((r) => r.f) };
   }
   return resultado;
 }
@@ -61,7 +58,7 @@ describe('CI-MIG-01', () => {
 
       const antes = await huellas(db);
       expect(Object.keys(antes)).toHaveLength(21);
-      expect(Object.entries(antes).filter(([, h]) => h.filas === 0)).toEqual([]);
+      expect(Object.entries(antes).filter(([, h]) => h.filas.length === 0)).toEqual([]);
 
       // El resto de las migraciones, sobre esos datos.
       const posteriores = readdirSync(MIGRACIONES).filter((m) => /^\d/.test(m) && m > BASE);
@@ -69,7 +66,14 @@ describe('CI-MIG-01', () => {
       prisma(url, 'migrate', 'deploy');
       expect(prisma(url, 'migrate', 'status')).toMatch(/up to date/i);
 
-      expect(await huellas(db, antes)).toEqual(antes);
+      // Una migracion puede agregar filas (roles, usuario tecnico): lo que no puede es perder o alterar las que habia.
+      const despues = await huellas(db, antes);
+      const perdidas = Object.fromEntries(
+        Object.entries(antes)
+          .map(([tabla, h]) => [tabla, h.filas.filter((f) => !despues[tabla]?.filas.includes(f))] as const)
+          .filter(([, faltan]) => faltan.length > 0),
+      );
+      expect(perdidas).toEqual({});
     } finally {
       await db.$disconnect();
       rmSync(parcial, { recursive: true, force: true });

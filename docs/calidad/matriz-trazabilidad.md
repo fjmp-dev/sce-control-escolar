@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.0, 5 de noviembre de 2026.
+**Versión:** 2.1, 6 de noviembre de 2026.
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 
@@ -121,6 +121,15 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 | CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. | 13 y 14 |
 | CO-MAN-01 | RNF-MAN-001 | Reporte de cobertura del pipeline: 100 % de reglas Must y 80 % en el dominio. | 1 y cada módulo |
 | CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. | 11 y 13 |
+
+---
+
+## 3.7 Documentos que acompañan a esta matriz
+
+- `docs/calidad/matriz-rol-endpoint.md`: rol por endpoint (AU-15), ejecutada por CF-ROL-01 y CI-AUTH-01.
+- `docs/calidad/stride.md`: amenazas y controles por componente (Tabla 37).
+- `docs/calidad/revision-cs-seg-08.md`: revisión manual de CS-SEG-08.
+- `docs/api/openapi.json`: contrato de la API, generado desde los decoradores (14.4).
 
 ---
 

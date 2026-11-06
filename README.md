@@ -18,11 +18,11 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 
 - Base de datos PostgreSQL con las veintiuna entidades de la sección 13.6, migradas con Prisma, y sus restricciones de integridad.
 - Auditoría de base de datos con pgAudit (`db/pgaudit.sql`).
-- API NestJS con autenticación JWT, autorización por los seis roles (RF-008) y catálogos institucionales.
-- Pruebas automatizadas sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CS-SEG-04 y 07, CD-DAT-01 y 04).
+- API NestJS por capas (Fig. 2, Tabla 28): gateway con códigos de error de negocio y `/salud`, identidad con sesiones revocables y bloqueo por intentos, autorización por los seis roles y el administrador, bitácora y catálogos institucionales.
+- Pruebas automatizadas: dominio sin base de datos; Supertest sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG-07, CD-DAT-01 y 04); Newman (contratos y CS-SEG-04) y OWASP ZAP (CS-SEG-05) contra Compose.
 - Pipeline de GitHub Actions con las etapas 1 a 5 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51).
 
-Pendiente de fase 1: arquitectura por capas e identidad completa (Batch 2) y presentación en Next.js (Batch 3).
+Pendiente de fase 1: presentación en Next.js (Batch 3).
 
 **Tablero y backlog:** [issues del repositorio](https://github.com/fjmp-dev/sce-control-escolar/issues), agrupados por sprint en [hitos](https://github.com/fjmp-dev/sce-control-escolar/milestones). Los issues #1 a #22 corresponden uno a uno con el backlog de `docs/gobierno/plan-de-trabajo.md`; los cambios al manual se registran con la etiqueta `cambio` (#23 a #28).
 
@@ -37,19 +37,23 @@ api/                NestJS + Prisma (sección 3.6)
     migrations/           init + restricciones que Prisma no expresa de forma nativa
     seed.mts              Datos sintéticos de desarrollo
   src/
-    auth/                 Login JWT y guard por rol (RF-008)
-    catalogos/            Facultades, planes, materias y periodos
-    usuarios/             Alta, baja y cambio de rol con bitácora (#22)
-  prisma/verificacion/    Consultas SQL de calidad de datos, junto a las migraciones (19.1)
-  test/integracion/       CI-MIG, CI-AUTH, CS-SEG y CD-DAT, sobre PostgreSQL efímero
-  test/unitarias/         Dominio, desde el Batch 2
+    gateway/              Validación, errores con código de negocio, registros JSON y /salud
+    identidad/            Sesiones, usuarios y guard por rol (RF-008); dominio puro en dominio/
+    academico/            Catálogos: facultades, planes, materias y periodos
+    bitacora/             Servicio de bitácora (Tabla 28)
+    persistencia/         Prisma y transacción compartida entre repositorios
+  prisma/verificacion/    Consultas SQL de calidad de datos y muestreo de bitácora, junto a las migraciones (19.1)
+  test/unitarias/         Dominio, sin base de datos; umbral de 80 %
+  test/integracion/       CI-MIG, CI-AUTH, CF-ROL, CS-SEG y CD-DAT, sobre PostgreSQL efímero
+  test/contratos/         Colección de Postman: contratos y CS-SEG-04
 .github/workflows/ci.yml  Etapas 1 a 5 de la Tabla 53 (sección 31)
-scripts/                  Puerta de calidad con SonarQube y Gitleaks sobre el historial completo
+scripts/                  Puerta de calidad con SonarQube, Gitleaks sobre todo el historial, Newman y OWASP ZAP
 docker-compose.yml        Ambiente de pruebas: PostgreSQL 16 + API con datos sintéticos
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
 docs/
   anexos/          Plantillas A a H del manual (sección 43)
+  api/openapi.json  Contrato de la API, generado desde los decoradores (14.4)
   arquitectura/     Las diez figuras de la sección 13 del manual, en PlantUML
     fig01-casos-de-uso.puml
     fig02-componentes.puml
@@ -68,6 +72,9 @@ docs/
     plan-de-pruebas.md        Plan de pruebas PP-SCE-001 (sección 21 y Anexo H)
     registro-no-conformidades.md  No conformidades y acciones correctivas (sección 40)
     reglas-de-negocio.md      Reglas provisionales e inventario de reglas Must
+    matriz-rol-endpoint.md    Rol por endpoint; la ejecutan CF-ROL-01 y CI-AUTH-01 (AU-15)
+    stride.md                 Amenazas y controles por componente (Tabla 37)
+    revision-cs-seg-08.md     Revisión manual de secretos en repositorio, registros y respuestas
     contradicciones-manual-v2.0.md  Contradicciones y vacíos del manual
   auditoria/        Respuestas del auditado a las solicitudes de PA-SCE-001
   evidencias/       Reportes que sustentan cada cierre de fase (Tabla 62)
@@ -92,10 +99,10 @@ docs/
 Con Docker instalado:
 
 ```bash
-docker compose up --build    # PostgreSQL 16 + API en http://localhost:3000, migrada y con seed
+docker compose up --build    # PostgreSQL 16 + API en http://localhost:3001, migrada y con seed
 ```
 
-Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@` y `direccion@sce.test`, todas con la contraseña `sce-dev-2026`. CI levanta este mismo ambiente en cada pull request, hace login con los seis roles y escanea la imagen con Trivy.
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, todas con la contraseña `sce-dev-2026`. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman y OWASP ZAP, y escanea la imagen con Trivy.
 
 ## Levantar el ambiente de desarrollo
 
@@ -103,7 +110,7 @@ Requisitos: Node 24 y Docker. En macOS: `brew install node colima docker docker-
 
 ```bash
 npm install                   # raíz: Prettier, Husky, lint-staged y Commitlint; activa los hooks de git
-docker compose up --build     # PostgreSQL 16 + API en http://localhost:3000
+docker compose up --build     # PostgreSQL 16 + API en http://localhost:3001
 
 cd api
 npm install
@@ -117,13 +124,25 @@ npm test                      # unitarias e integración; levanta su propio Post
 | `npm run format:check` (raíz) | Prettier |
 | `npm run lint` (en `api/`) | ESLint con el plugin de TypeScript |
 | `npm run test:unitarias` y `npm run test:integracion` (en `api/`) | Etapas 3 y 4, con cobertura lcov en `api/coverage/` |
+| `ACTUALIZAR_OPENAPI=1 npm run test:integracion -- openapi` (en `api/`) | Regenera `docs/api/openapi.json` tras cambiar una ruta; CI falla si difiere |
+| `scripts/newman.sh` | Contratos de API y CS-SEG-04, contra Compose; reporte HTML en `reportes/newman/` |
+| `scripts/zap.sh` | OWASP ZAP (CS-SEG-05) contra Compose; informe en `reportes/zap/`. Tarda unos minutos |
 | `scripts/gitleaks-historial.sh` | Gitleaks sobre todas las ramas y todo el historial |
 | `scripts/sonar-puerta.sh <commit-base>` | Puerta de calidad de la Tabla 51 sobre el código nuevo. Antes, correr la etapa 4 para tener cobertura |
 | `psql "$DATABASE_URL" -f api/prisma/verificacion/cd-dat-01.sql` | Consultas de calidad de datos; meta: cero filas |
 
 Las etapas del pipeline y su evidencia están en `docs/calidad/plan-de-pruebas.md`, sección 4.1.
 
-Endpoints: `POST /auth/login`, `GET /auth/yo`, y `GET`/`POST` sobre `/facultades`, `/planes`, `/materias` y `/periodos` (alta solo para coordinación); `GET`/`POST /usuarios` y `PATCH /usuarios/:id` para alta, baja y cambio de rol, solo para control escolar, con registro en bitácora.
+**Contrato de la API:** `docs/api/openapi.json`. **Quién usa cada ruta:** `docs/calidad/matriz-rol-endpoint.md`. Todo error responde `{ codigo, mensaje, campos? }`.
+
+| Variable | Para qué | Por omisión |
+|---|---|---|
+| `DATABASE_URL` | Conexión a PostgreSQL | Obligatoria |
+| `JWT_SECRET` | Firma de los tokens; al menos 32 caracteres, distinto por ambiente | Obligatoria; sin ella, la API no arranca |
+| `SESION_MINUTOS` | Duración de un token | 60 |
+| `SESION_PRIVILEGIADA_MINUTOS` | Duración de un token del administrador | 15 |
+| `SESION_MAXIMA_MINUTOS` | Duración máxima de una sesión, con renovaciones | 480 |
+| `PORT` | Puerto de la API (Fig. 9) | 3001 |
 
 
 ---

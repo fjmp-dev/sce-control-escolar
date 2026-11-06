@@ -85,7 +85,7 @@ jobs:
           cache-dependency-path: api/package-lock.json
       - run: npm ci
       - run: npx prisma generate
-      - name: Jest con cobertura (el umbral de 80 % en el dominio entra con la primera clase de dominio, Batch 2)
+      - name: Jest con cobertura, al menos 80 % en el dominio (Tablas 53 y 59)
         run: npm run test:unitarias
       - uses: actions/upload-artifact@v4
         if: always()
@@ -111,13 +111,29 @@ jobs:
           cache-dependency-path: api/package-lock.json
       - run: npm ci
       - run: npx prisma generate
-      - name: Supertest y Testcontainers sobre PostgreSQL 16 efimero (CI-MIG-01, CI-AUTH-01, CS-SEG, CD-DAT)
+      - name: Supertest y Testcontainers sobre PostgreSQL 16 efimero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG, CD-DAT)
         run: npm run test:integracion
+      - name: Levantar PostgreSQL 16 y la API con datos sinteticos
+        working-directory: .
+        run: docker compose up -d --build --wait --wait-timeout 240
+      - name: Newman - contratos de API y CS-SEG-04 (Tablas 30, 42 y 49)
+        working-directory: .
+        run: scripts/newman.sh http://localhost:3001 reportes/newman
+      - if: failure()
+        working-directory: .
+        run: docker compose logs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cobertura-integracion
           path: api/coverage/integracion/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman
+          path: reportes/newman/
+          if-no-files-found: ignore
           retention-days: 90
 
   calidad:
@@ -158,15 +174,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Levantar PostgreSQL 16 y la API con datos sinteticos
-        run: docker compose up -d --build --wait --wait-timeout 180
-      - name: Humo - login y /auth/yo con cada uno de los seis roles (F-01 #2)
+        run: docker compose up -d --build --wait --wait-timeout 240
+      - name: Humo - salud, inicio de sesion y sesion actual con los seis roles y el administrador (F-01 #2)
         shell: bash # explicito: activa pipefail, para que un curl fallido no lo oculte jq
         run: |
-          curl -s --retry 60 --retry-all-errors --retry-delay 2 -o /dev/null localhost:3000/auth/yo
-          for c in alumno profesor control.escolar coordinacion caja direccion; do
-            t=$(curl -sf -X POST localhost:3000/auth/login -H 'Content-Type: application/json' \
-                  -d "{\"correo\":\"$c@sce.test\",\"contrasena\":\"sce-dev-2026\"}" | jq -er .accessToken)
-            curl -sf localhost:3000/auth/yo -H "Authorization: Bearer $t" \
+          curl -sf localhost:3001/salud | jq -e '.estado == "ok"'
+          for c in alumno profesor control.escolar coordinacion caja direccion administrador; do
+            t=$(curl -sf -X POST localhost:3001/sesiones -H 'Content-Type: application/json' \
+                  -d "{\"correo\":\"$c@sce.test\",\"contrasena\":\"sce-dev-2026\"}" | jq -er .token)
+            curl -sf localhost:3001/sesiones/actual -H "Authorization: Bearer $t" \
               | jq -ec --arg rol "${c/./_}" 'select(.roles == [$rol]) | {cuenta: "'$c'", roles}'
           done
       - if: failure()
@@ -191,9 +207,19 @@ jobs:
           exit-code: '1'
           format: table
           output: trivy-repositorio.txt
+      - name: OWASP ZAP - CS-SEG-05 y registros sin datos sensibles (Tablas 30, 42 y 49; AU-20)
+        if: always()
+        run: scripts/zap.sh reportes/zap
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: trivy
           path: trivy-*.txt
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap
+          path: reportes/zap/
+          if-no-files-found: ignore
           retention-days: 90

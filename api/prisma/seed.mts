@@ -13,13 +13,10 @@ const ROLES = [
   [4, 'coordinacion', 'Coordinación académica'],
   [5, 'caja', 'Caja'],
   [6, 'direccion', 'Dirección'],
+  [7, 'administrador', 'Administrador del sistema'],
 ] as const;
 
 async function main() {
-  for (const [id, clave, nombre] of ROLES) {
-    await prisma.rol.upsert({ where: { id }, update: { clave, nombre }, create: { id, clave, nombre } });
-  }
-
   const hash = await bcrypt.hash(CONTRASENA_DEV, 10);
   for (const [rolId, clave] of ROLES) {
     const correo = `${clave.replace('_', '.')}@sce.test`;
@@ -92,7 +89,7 @@ async function main() {
     },
   });
 
-  console.log(`Seed listo. Usuarios <rol>@sce.test, contraseña: ${CONTRASENA_DEV}`);
+  console.log('Seed listo. Las cuentas sinteticas estan en el README.'); // CS-SEG-08: sin contrasenas en registros
 }
 
 main().finally(() => prisma.$disconnect());
