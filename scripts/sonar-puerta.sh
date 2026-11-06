@@ -23,7 +23,7 @@ puerta=SCE-Tabla-51
 url=http://localhost:9000
 
 limpiar() {
-  docker rm -f "$servidor" >/dev/null 2>&1 || true
+  docker rm -fv "$servidor" >/dev/null 2>&1 || true
   docker network rm "$red" >/dev/null 2>&1 || true
   rm -rf "$trabajo"
 }
