@@ -10,6 +10,7 @@ class Usuario {
   + correo : string
   + hash_contrasena : string
   + activo : boolean
+  + sesion_version : int
   + autenticar() : Sesion
 }
 
@@ -54,7 +55,9 @@ class Periodo {
   + fecha_inicio : date
   + fecha_fin : date
   + estado : EstadoPeriodo
+  + oferta_publicada_en : timestamp
   + abrir() : void
+  + publicarOferta() : void
   + cerrar() : void
 }
 
@@ -114,6 +117,7 @@ class Pago {
   + clave_idempotencia : string <<unique>>
   + importe : decimal
   + estado : EstadoPago
+  + fecha_confirmacion : timestamp
   + aplicarUnaVez() : boolean
 }
 
@@ -121,6 +125,7 @@ class Tramite {
   + folio : string
   + tipo : TipoTramite
   + estado : EstadoTramite
+  + motivo_rechazo : string
   + fecha_solicitud : timestamp
   + fecha_actualizacion : timestamp
 }
@@ -130,6 +135,7 @@ class Documento {
   + tipo : TipoTramite
   + fecha_emision : timestamp
   + hash : string
+  + contenido : json
 }
 
 class Bitacora {
@@ -161,6 +167,12 @@ CuentaAlumno "1" -- "0..*" Movimiento
 Movimiento "0..1" -- "0..1" Pago
 Alumno "1" -- "0..*" Tramite
 Tramite "0..1" -- "0..1" Documento
+
+note bottom of Usuario
+  CC-015: el usuario tecnico que firma
+  operaciones automaticas no tiene rol
+  ni acceso.
+end note
 
 note bottom of Alumno
   RF-001: un solo expediente activo

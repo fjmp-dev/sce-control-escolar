@@ -56,6 +56,12 @@ DACA ..> DEXP : servicio
 DPAG ..> DEXP : servicio
 DTRA ..> DEXP : servicio
 
+' CC-014: dependencias que ya exigen otras figuras y requisitos.
+DEXP ..> DACA : validar prerrequisitos\ny choques (Fig. 4)
+DEXP ..> DPAG : validar adeudos (Fig. 4)
+DTRA ..> DPAG : saldo para no adeudo
+IAM --> SBIT
+
 note right of PORTAL
   Interfaces diferenciadas por rol.
   No accede a la base de datos.
