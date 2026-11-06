@@ -1,0 +1,7 @@
+# Falsos positivos de Gitleaks, por huella: commit, archivo, regla y linea. Una coincidencia nueva sigue fallando.
+#
+# 063778f tenia `curl -u admin:admin` en scripts/sonar-puerta.sh: es la credencial publica por omision de la imagen de
+# SonarQube, en un contenedor que solo escucha en 127.0.0.1 y muere con el script. No es un secreto del SCE.
+# El codigo actual ya no tiene ese patron; estas huellas solo cubren ese commit del historial.
+063778f7ddf898de77b5bbe0116ae4a19c16012f:scripts/sonar-puerta.sh:curl-auth-user:41
+063778f7ddf898de77b5bbe0116ae4a19c16012f:scripts/sonar-puerta.sh:curl-auth-user:48

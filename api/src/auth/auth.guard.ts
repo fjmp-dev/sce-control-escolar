@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
     const objetivos = [ctx.getHandler(), ctx.getClass()];
     if (this.reflector.getAllAndOverride<boolean>('publico', objetivos)) return true;
 
-    const req = ctx.switchToHttp().getRequest();
+    const req = ctx.switchToHttp().getRequest<{ headers: { authorization?: string }; usuario?: UsuarioSesion }>();
     const [tipo, token] = (req.headers.authorization ?? '').split(' ');
     if (tipo !== 'Bearer' || !token) throw new UnauthorizedException();
 

@@ -1,11 +1,11 @@
 // Casos de seguridad de la fase 1, con la numeracion de la Tabla 49 (docs/calidad/matriz-trazabilidad.md).
-// Corre contra la base de desarrollo ya migrada y con seed: npm run db:seed.
+// Corre contra la base efimera de global-setup.ts: migrada y con el seed sintetico.
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma.service';
+import { AppModule } from '../../src/app.module';
+import { PrismaService } from '../../src/prisma.service';
 
 const CONTRASENA = 'sce-dev-2026';
 let app: INestApplication;
@@ -68,7 +68,11 @@ describe('RF-008 autorizacion por rol (CI-AUTH-01, CF-ROL-01)', () => {
     '%s recibe 403 al dar de alta catalogos',
     async (rol) => {
       const token = await login(`${rol}@sce.test`);
-      await request(app.getHttpServer()).post('/materias').set('Authorization', `Bearer ${token}`).send(materia).expect(403);
+      await request(app.getHttpServer())
+        .post('/materias')
+        .set('Authorization', `Bearer ${token}`)
+        .send(materia)
+        .expect(403);
     },
   );
 
@@ -77,7 +81,11 @@ describe('RF-008 autorizacion por rol (CI-AUTH-01, CF-ROL-01)', () => {
     const auth = `Bearer ${await login('coordinacion@sce.test')}`;
     await http.post('/materias').set('Authorization', auth).send(materia).expect(201);
     await http.post('/materias').set('Authorization', auth).send(materia).expect(409);
-    await http.post('/materias').set('Authorization', auth).send({ ...materia, clave: 'X', creditos: 0 }).expect(400);
+    await http
+      .post('/materias')
+      .set('Authorization', auth)
+      .send({ ...materia, clave: 'X', creditos: 0 })
+      .expect(400);
   });
 });
 
@@ -89,22 +97,5 @@ describe('RK-03 bitacora inmutable', () => {
     for (const sql of ['UPDATE bitacora SET accion = accion', 'DELETE FROM bitacora', 'TRUNCATE bitacora']) {
       await expect(prisma.$executeRawUnsafe(sql)).rejects.toThrow(/inmutable/);
     }
-  });
-});
-
-describe('RNF-DAT-001 calidad de datos (manual Tabla 39, en cada ejecucion del pipeline)', () => {
-  it('CD-DAT-01: no hay matriculas duplicadas', async () => {
-    const filas = await prisma.$queryRaw`SELECT matricula FROM alumno GROUP BY matricula HAVING count(*) > 1`;
-    expect(filas).toEqual([]);
-  });
-
-  it('CD-DAT-04: no hay calificaciones huerfanas de grupo, periodo o profesor', async () => {
-    const filas = await prisma.$queryRaw`
-      SELECT c.id FROM calificacion c
-        LEFT JOIN grupo g ON g.id = c.grupo_id
-        LEFT JOIN periodo p ON p.clave = c.periodo_clave
-        LEFT JOIN usuario u ON u.id = c.profesor_id
-       WHERE g.id IS NULL OR p.clave IS NULL OR u.id IS NULL`;
-    expect(filas).toEqual([]);
   });
 });

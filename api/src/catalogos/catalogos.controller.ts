@@ -8,29 +8,29 @@ import { PrismaService } from '../prisma.service';
 // autenticado los lee; solo coordinacion academica los da de alta (Tabla 5).
 
 class FacultadDto {
-  @IsString() clave: string;
-  @IsString() nombre: string;
+  @IsString() clave!: string;
+  @IsString() nombre!: string;
 }
 
 class PlanDto {
-  @IsString() clave: string;
-  @IsString() facultadClave: string;
-  @IsInt() @Min(1) creditosTotales: number;
-  @Type(() => Date) @IsDate() vigenteDesde: Date;
+  @IsString() clave!: string;
+  @IsString() facultadClave!: string;
+  @IsInt() @Min(1) creditosTotales!: number;
+  @Type(() => Date) @IsDate() vigenteDesde!: Date;
 }
 
 class MateriaDto {
-  @IsString() clave: string;
-  @IsString() planClave: string;
-  @IsString() nombre: string;
-  @IsInt() @Min(1) creditos: number;
+  @IsString() clave!: string;
+  @IsString() planClave!: string;
+  @IsString() nombre!: string;
+  @IsInt() @Min(1) creditos!: number;
 }
 
 class PeriodoDto {
-  @Matches(/^\d{4}[AB]$/) clave: string;
-  @Type(() => Date) @IsDate() fechaInicio: Date;
-  @Type(() => Date) @IsDate() fechaFin: Date;
-  @IsIn(['abierto', 'en_curso', 'cerrado']) estado: string;
+  @Matches(/^\d{4}[AB]$/) clave!: string;
+  @Type(() => Date) @IsDate() fechaInicio!: Date;
+  @Type(() => Date) @IsDate() fechaFin!: Date;
+  @IsIn(['abierto', 'en_curso', 'cerrado']) estado!: string;
 }
 
 @Controller()

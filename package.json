@@ -1,0 +1,21 @@
+{
+  "name": "sce-control-escolar",
+  "private": true,
+  "description": "Herramientas del repositorio: formato, verificacion previa al commit y convencion de commits (manual, sec. 14.5)",
+  "scripts": {
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown",
+    "api/{src,test}/**/*.ts": "api/node_modules/.bin/eslint --max-warnings 0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10"
+  }
+}

@@ -2,8 +2,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma.service';
+import { AppModule } from '../../src/app.module';
+import { PrismaService } from '../../src/prisma.service';
 
 const CORREO = 'nuevo.profesor@sce.test';
 let app: INestApplication;
@@ -41,18 +41,34 @@ it('control escolar da de alta, cambia rol y da de baja; cada paso queda en bita
     usuario = await prisma.usuario.findUniqueOrThrow({ where: { correo: CORREO } });
   }
   await http.post('/usuarios').set('Authorization', auth).send(cuerpo).expect(409);
-  await http.post('/usuarios').set('Authorization', auth).send({ ...cuerpo, correo: 'x@sce.test', contrasena: 'corta' }).expect(400);
-  await http.post('/usuarios').set('Authorization', auth).send({ ...cuerpo, correo: 'x@sce.test', roles: ['root'] }).expect(400);
+  await http
+    .post('/usuarios')
+    .set('Authorization', auth)
+    .send({ ...cuerpo, correo: 'x@sce.test', contrasena: 'corta' })
+    .expect(400);
+  await http
+    .post('/usuarios')
+    .set('Authorization', auth)
+    .send({ ...cuerpo, correo: 'x@sce.test', roles: ['root'] })
+    .expect(400);
 
   const nuevo = await token(CORREO, cuerpo.contrasena);
   await http.get('/usuarios').set('Authorization', nuevo).expect(403);
 
-  const cambio = await http.patch(`/usuarios/${usuario.id}`).set('Authorization', auth).send({ roles: ['coordinacion'] }).expect(200);
+  const cambio = await http
+    .patch(`/usuarios/${usuario.id}`)
+    .set('Authorization', auth)
+    .send({ roles: ['coordinacion'] })
+    .expect(200);
   expect(cambio.body.roles).toEqual(['coordinacion']);
   // El rol se lee de la base en cada peticion: el cambio surte efecto con el mismo token.
   await http.post('/periodos').set('Authorization', nuevo).send({}).expect(400);
 
-  await http.patch(`/usuarios/${usuario.id}`).set('Authorization', auth).send({ activo: false, roles: ['profesor'] }).expect(200);
+  await http
+    .patch(`/usuarios/${usuario.id}`)
+    .set('Authorization', auth)
+    .send({ activo: false, roles: ['profesor'] })
+    .expect(200);
   await http.get('/materias').set('Authorization', nuevo).expect(401);
 
   const ultima = await prisma.bitacora.findFirstOrThrow({
@@ -65,6 +81,10 @@ it('control escolar da de alta, cambia rol y da de baja; cada paso queda en bita
 it('responde 404 a un usuario inexistente y 400 a un id que no es UUID', async () => {
   const http = request(app.getHttpServer());
   const auth = await token('control.escolar@sce.test');
-  await http.patch('/usuarios/00000000-0000-0000-0000-000000000000').set('Authorization', auth).send({ activo: true }).expect(404);
+  await http
+    .patch('/usuarios/00000000-0000-0000-0000-000000000000')
+    .set('Authorization', auth)
+    .send({ activo: true })
+    .expect(404);
   await http.patch('/usuarios/abc').set('Authorization', auth).send({ activo: true }).expect(400);
 });

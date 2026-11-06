@@ -25,7 +25,7 @@ Una contradicción no se resuelve en silencio: mientras el manual no se corrija,
 | X-12 | RF-009 frente a Tabla 5 | Reportes "de la facultad" frente a "de su facultad o de la universidad" | Filtro por facultad o universidad | Manual |
 | X-13 | Tabla 30 frente a secciones 3.5 y 20.2 | Staging con "datos anonimizados" frente a "sintéticos o anonimizados". Antes del piloto no hay datos reales que anonimizar | Sintéticos o anonimizados | Manual |
 | X-14 | Tabla 25 frente a RF-002 | La fase 2 incluye inscripción, que verifica choques y necesita oferta; la oferta es de la fase 3 | Oferta mínima en API en la fase 2; interfaz en la fase 3 | Manual |
-| X-15 | Tabla 53 frente a Tablas 30, 42 y 48 | Newman, Cypress, ZAP y k6 están en el pipeline según unas tablas y no aparecen en las etapas de la Tabla 53 | Se les asigna etapa en el Batch 1 | Manual |
+| X-15 | Tabla 53 frente a Tablas 30, 42 y 48 | Newman, Cypress, ZAP y k6 están en el pipeline según unas tablas y no aparecen en las etapas de la Tabla 53 | Asignadas en `plan-de-pruebas.md`, 4.1: Newman en la etapa 4, ZAP en la 5, Cypress y k6 en la 7 | Manual |
 | X-16 | Tablas 11 y 12 frente a RF-008 y Fig. 1 | El Administrador del sistema hace altas de usuarios y catálogos, pero no es uno de los seis roles de uso ni tiene caso de uso | Rol técnico `administrador` (D-2, CC-007) | Manual y Fig. 1 |
 | X-17 | Fig. 3 frente a Tabla 29 | Usuario y Rol con multiplicidad `1` a `1..*` en la Fig. 3 frente a relación muchos a muchos en la Tabla 29 | Muchos a muchos | Fig. 3 |
 | X-18 | CF-TRA-01 frente a Fig. 6 | Cuatro estados en el caso (recibida, en proceso, lista, rechazada) frente a cinco en la figura (también entregada) | Cinco estados | Manual |
