@@ -1,0 +1,1098 @@
+{
+  "info": {
+    "name": "SCE - contratos de API",
+    "description": "Contratos de API (Tabla 42) y CS-SEG-04 (Tabla 49). Ejecutar con scripts/newman.sh.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('sufijo')) pm.collectionVariables.set('sufijo', String(Date.now()).slice(-9));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "CS-SEG-04 Endpoint sin token responde 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+              "pm.test('responde 401', () => pm.response.to.have.status(401));",
+              "pm.test('error en el formato de la API, codigo NO_AUTENTICADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_AUTENTICADO'); });"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "GET /sesiones/actual",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /sesiones/actual/renovacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones/actual/renovacion",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual", "renovacion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "DELETE /sesiones/actual",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /usuarios/actual/contrasena",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/usuarios/actual/contrasena",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "actual", "contrasena"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /usuarios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /usuarios",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PATCH /usuarios/5ce00000-0000-4000-8000-00000000ffff",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base}}/usuarios/5ce00000-0000-4000-8000-00000000ffff",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "5ce00000-0000-4000-8000-00000000ffff"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /facultades",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /facultades",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /planes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /planes",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /materias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /materias",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /periodos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contratos",
+      "item": [
+        {
+          "name": "Salud sin token",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/salud",
+              "host": ["{{base}}"],
+              "path": ["salud"]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"estado\"], \"properties\": {\"estado\": {\"const\": \"ok\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Credenciales invalidas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"nadie.{{sufijo}}@sce.test\",\n  \"contrasena\": \"no-es-la-contrasena-1\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('error en el formato de la API, codigo CREDENCIALES_INVALIDAS', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('CREDENCIALES_INVALIDAS'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entrada malformada",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"esto no es un correo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });",
+                  "pm.test('dice que campos revisar', () => pm.expect(pm.response.json().campos).to.include.members(['correo', 'contrasena']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de administrador",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"administrador@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"expiraEn\"], \"properties\": {\"token\": {\"type\": \"string\"}, \"expiraEn\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('admin', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de coordinacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"coordinacion@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"expiraEn\"], \"properties\": {\"token\": {\"type\": \"string\"}, \"expiraEn\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('coordinacion', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion actual",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"correo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"roles\": {\"type\": \"array\"}}, \"additionalProperties\": false}));",
+                  "pm.test('rol administrador', () => pm.expect(pm.response.json().roles).to.eql(['administrador']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Renovacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones/actual/renovacion",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual", "renovacion"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"expiraEn\"], \"properties\": {\"token\": {\"type\": \"string\"}, \"expiraEn\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('admin', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar usuarios, sin hash",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"correo\", \"activo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"activo\": {\"type\": \"boolean\"}, \"roles\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar facultades",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"nombre\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de facultad",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"F{{sufijo}}\",\n  \"nombre\": \"Facultad de contrato\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"nombre\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Facultad duplicada",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"F{{sufijo}}\",\n  \"nombre\": \"Facultad de contrato\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo YA_EXISTE', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('YA_EXISTE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar planes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"facultadClave\", \"creditosTotales\", \"vigenteDesde\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"creditosTotales\": {\"type\": \"integer\"}, \"vigenteDesde\": {\"type\": \"string\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de plan",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"P{{sufijo}}\",\n  \"facultadClave\": \"F{{sufijo}}\",\n  \"creditosTotales\": 300,\n  \"vigenteDesde\": \"2030-01-01\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"facultadClave\", \"creditosTotales\", \"vigenteDesde\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"creditosTotales\": {\"type\": \"integer\"}, \"vigenteDesde\": {\"type\": \"string\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Plan sin facultad",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"Q{{sufijo}}\",\n  \"facultadClave\": \"NO-EXISTE\",\n  \"creditosTotales\": 300,\n  \"vigenteDesde\": \"2030-01-01\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo REFERENCIA_INEXISTENTE', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('REFERENCIA_INEXISTENTE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El administrador no da de alta materias",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"M{{sufijo}}\",\n  \"planClave\": \"P{{sufijo}}\",\n  \"nombre\": \"Materia\",\n  \"creditos\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de materia",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"M{{sufijo}}\",\n  \"planClave\": \"P{{sufijo}}\",\n  \"nombre\": \"Materia\",\n  \"creditos\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"planClave\", \"nombre\", \"creditos\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"planClave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"requiereDe\": {\"type\": \"array\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar materias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"planClave\", \"nombre\", \"creditos\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"planClave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"requiereDe\": {\"type\": \"array\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar periodos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Periodo con rango invertido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"2099A\",\n  \"fechaInicio\": \"2099-06-30\",\n  \"fechaFin\": \"2099-01-10\",\n  \"estado\": \"abierto\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirmacion equivocada",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"no-es-la-contrasena-1\",\n  \"correo\": \"u{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo REAUTENTICACION_FALLIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('REAUTENTICACION_FALLIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contrasena debil",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"u{{sufijo}}@sce.test\",\n  \"contrasena\": \"corta\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo CONTRASENA_DEBIL', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('CONTRASENA_DEBIL'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de usuario",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"u{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"correo\", \"activo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"activo\": {\"type\": \"boolean\"}, \"roles\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('usuarioId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Baja de usuario",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base}}/usuarios/{{usuarioId}}",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "{{usuarioId}}"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"activo\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"correo\", \"activo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"activo\": {\"type\": \"boolean\"}, \"roles\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"additionalProperties\": false}));",
+                  "pm.test('queda inactivo', () => pm.expect(pm.response.json().activo).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambio de contrasena sin datos",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/usuarios/actual/contrasena",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "actual", "contrasena"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cierre de sesion",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 204', () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-07 el token revocado no se reutiliza",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('error en el formato de la API, codigo NO_AUTENTICADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_AUTENTICADO'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

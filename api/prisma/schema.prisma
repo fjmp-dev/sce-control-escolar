@@ -26,6 +26,7 @@ model Usuario {
   correo         String        @unique
   hashContrasena String        @map("hash_contrasena")
   activo         Boolean       @default(true)
+  sesionVersion  Int           @default(0) @map("sesion_version")
   creadoEn       DateTime      @default(now()) @map("creado_en") @db.Timestamptz
   roles          UsuarioRol[]
   alumno         Alumno?
@@ -38,7 +39,7 @@ model Usuario {
 
 model Rol {
   id       Int          @id @db.SmallInt
-  clave    String       @unique // alumno, profesor, control_escolar, coordinacion, caja, direccion
+  clave    String       @unique // alumno, profesor, control_escolar, coordinacion, caja, direccion, administrador
   nombre   String
   usuarios UsuarioRol[]
 

@@ -1,0 +1,1469 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/salud": {
+      "get": {
+        "operationId": "SaludController_salud",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaludRespuesta"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Salud"
+        ]
+      }
+    },
+    "/sesiones": {
+      "post": {
+        "operationId": "SesionesController_iniciar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredencialesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Iniciar sesión",
+        "tags": [
+          "Sesiones"
+        ]
+      }
+    },
+    "/sesiones/actual": {
+      "get": {
+        "operationId": "SesionesController_actual",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SesionRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Consultar la sesión actual",
+        "tags": [
+          "Sesiones"
+        ]
+      },
+      "delete": {
+        "operationId": "SesionesController_cerrar",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cerrar sesión y revocar los tokens de la cuenta",
+        "tags": [
+          "Sesiones"
+        ]
+      }
+    },
+    "/sesiones/actual/renovacion": {
+      "post": {
+        "operationId": "SesionesController_renovar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Renovar el token, sin rebasar la sesión máxima",
+        "tags": [
+          "Sesiones"
+        ]
+      }
+    },
+    "/usuarios": {
+      "get": {
+        "operationId": "UsuariosController_listar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsuarioRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar usuarios",
+        "tags": [
+          "Usuarios"
+        ]
+      },
+      "post": {
+        "operationId": "UsuariosController_alta",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AltaUsuarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de alta un usuario; pide confirmar la contraseña del administrador",
+        "tags": [
+          "Usuarios"
+        ]
+      }
+    },
+    "/usuarios/{id}": {
+      "patch": {
+        "operationId": "UsuariosController_cambiar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambioUsuarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de baja o cambiar roles; revoca las sesiones del usuario",
+        "tags": [
+          "Usuarios"
+        ]
+      }
+    },
+    "/usuarios/actual/contrasena": {
+      "put": {
+        "operationId": "UsuariosController_cambiarContrasena",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambioContrasenaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambiar la contraseña propia; revoca las sesiones de la cuenta",
+        "tags": [
+          "Usuarios"
+        ]
+      }
+    },
+    "/facultades": {
+      "get": {
+        "operationId": "CatalogosController_facultades",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FacultadRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar facultades",
+        "tags": [
+          "Catálogos"
+        ]
+      },
+      "post": {
+        "operationId": "CatalogosController_crearFacultad",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacultadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacultadRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de alta una facultad",
+        "tags": [
+          "Catálogos"
+        ]
+      }
+    },
+    "/planes": {
+      "get": {
+        "operationId": "CatalogosController_planes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar planes de estudio",
+        "tags": [
+          "Catálogos"
+        ]
+      },
+      "post": {
+        "operationId": "CatalogosController_crearPlan",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de alta un plan de estudios",
+        "tags": [
+          "Catálogos"
+        ]
+      }
+    },
+    "/materias": {
+      "get": {
+        "operationId": "CatalogosController_materias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MateriaRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar materias con sus prerrequisitos",
+        "tags": [
+          "Catálogos"
+        ]
+      },
+      "post": {
+        "operationId": "CatalogosController_crearMateria",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MateriaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MateriaRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de alta una materia",
+        "tags": [
+          "Catálogos"
+        ]
+      }
+    },
+    "/periodos": {
+      "get": {
+        "operationId": "CatalogosController_periodos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PeriodoRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar periodos",
+        "tags": [
+          "Catálogos"
+        ]
+      },
+      "post": {
+        "operationId": "CatalogosController_crearPeriodo",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PeriodoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de alta un periodo",
+        "tags": [
+          "Catálogos"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API del SCE",
+    "description": "",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "SaludRespuesta": {
+        "type": "object",
+        "properties": {
+          "estado": {
+            "type": "string",
+            "example": "ok"
+          }
+        },
+        "required": [
+          "estado"
+        ]
+      },
+      "ErrorRespuesta": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "example": "ENTRADA_INVALIDA"
+          },
+          "mensaje": {
+            "type": "string"
+          },
+          "campos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "codigo",
+          "mensaje"
+        ]
+      },
+      "CredencialesDto": {
+        "type": "object",
+        "properties": {
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "contrasena": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "correo",
+          "contrasena"
+        ]
+      },
+      "TokenRespuesta": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "expiraEn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "token",
+          "expiraEn"
+        ]
+      },
+      "SesionRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "alumno",
+                "profesor",
+                "control_escolar",
+                "coordinacion",
+                "caja",
+                "direccion",
+                "administrador"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "correo",
+          "roles"
+        ]
+      },
+      "UsuarioRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "alumno",
+                "profesor",
+                "control_escolar",
+                "coordinacion",
+                "caja",
+                "direccion",
+                "administrador"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "correo",
+          "activo",
+          "roles"
+        ]
+      },
+      "AltaUsuarioDto": {
+        "type": "object",
+        "properties": {
+          "confirmacion": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          },
+          "contrasena": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "alumno",
+                "profesor",
+                "control_escolar",
+                "coordinacion",
+                "caja",
+                "direccion",
+                "administrador"
+              ]
+            }
+          }
+        },
+        "required": [
+          "confirmacion",
+          "correo",
+          "contrasena",
+          "roles"
+        ]
+      },
+      "CambioUsuarioDto": {
+        "type": "object",
+        "properties": {
+          "confirmacion": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "activo": {
+            "type": "boolean"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "alumno",
+                "profesor",
+                "control_escolar",
+                "coordinacion",
+                "caja",
+                "direccion",
+                "administrador"
+              ]
+            }
+          }
+        },
+        "required": [
+          "confirmacion"
+        ]
+      },
+      "CambioContrasenaDto": {
+        "type": "object",
+        "properties": {
+          "actual": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "nueva": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "actual",
+          "nueva"
+        ]
+      },
+      "FacultadRespuesta": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "clave",
+          "nombre"
+        ]
+      },
+      "FacultadDto": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "clave",
+          "nombre"
+        ]
+      },
+      "PlanRespuesta": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "facultadClave": {
+            "type": "string"
+          },
+          "creditosTotales": {
+            "type": "number"
+          },
+          "vigenteDesde": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "clave",
+          "facultadClave",
+          "creditosTotales",
+          "vigenteDesde"
+        ]
+      },
+      "PlanDto": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "facultadClave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "creditosTotales": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "vigenteDesde": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "clave",
+          "facultadClave",
+          "creditosTotales",
+          "vigenteDesde"
+        ]
+      },
+      "PrerequisitoRespuesta": {
+        "type": "object",
+        "properties": {
+          "materiaClave": {
+            "type": "string"
+          },
+          "requiereClave": {
+            "type": "string"
+          },
+          "obligatorio": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "materiaClave",
+          "requiereClave",
+          "obligatorio"
+        ]
+      },
+      "MateriaRespuesta": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "planClave": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "creditos": {
+            "type": "number"
+          },
+          "requiereDe": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrerequisitoRespuesta"
+            }
+          }
+        },
+        "required": [
+          "clave",
+          "planClave",
+          "nombre",
+          "creditos"
+        ]
+      },
+      "MateriaDto": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "planClave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "creditos": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10000
+          }
+        },
+        "required": [
+          "clave",
+          "planClave",
+          "nombre",
+          "creditos"
+        ]
+      },
+      "PeriodoRespuesta": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "fechaInicio": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fechaFin": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "clave",
+          "fechaInicio",
+          "fechaFin",
+          "estado"
+        ]
+      },
+      "PeriodoDto": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string",
+            "example": "2027A",
+            "pattern": "^\\d{4}[AB]$"
+          },
+          "fechaInicio": {
+            "format": "date",
+            "type": "string"
+          },
+          "fechaFin": {
+            "format": "date",
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "en_curso",
+              "cerrado"
+            ]
+          }
+        },
+        "required": [
+          "clave",
+          "fechaInicio",
+          "fechaFin",
+          "estado"
+        ]
+      }
+    }
+  }
+}

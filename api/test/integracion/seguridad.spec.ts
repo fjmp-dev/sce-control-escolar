@@ -1,99 +1,98 @@
-// Casos de seguridad de la fase 1, con la numeracion de la Tabla 49 (docs/calidad/matriz-trazabilidad.md).
-// Corre contra la base efimera de global-setup.ts: migrada y con el seed sintetico.
+// Autorizacion y catalogos de la fase 1 (RF-008, CC-007) y bitacora (Tabla 28, RK-03).
+// La matriz completa de rol por endpoint esta en roles.spec.ts.
 import { INestApplication } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../../src/app.module';
-import { PrismaService } from '../../src/prisma.service';
+import { BitacoraService, USUARIO_TECNICO } from '../../src/bitacora/bitacora.service';
+import { PrismaService } from '../../src/persistencia/prisma.service';
+import { crearApp, entrar } from './app';
 
-const CONTRASENA = 'sce-dev-2026';
 let app: INestApplication;
 let prisma: PrismaService;
-
-const login = async (correo: string) =>
-  (await request(app.getHttpServer()).post('/auth/login').send({ correo, contrasena: CONTRASENA }).expect(200)).body
-    .accessToken as string;
+const http = () => request(app.getHttpServer());
 
 beforeAll(async () => {
-  const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-  app = mod.createNestApplication();
-  await app.init();
-  prisma = app.get(PrismaService);
+  ({ app, prisma } = await crearApp());
 });
 
-afterAll(async () => {
-  await prisma.materia.deleteMany({ where: { clave: 'TEST-001' } });
-  await app.close();
-});
+afterAll(() => app.close());
 
-describe('RF-008 autenticacion', () => {
-  it('rechaza credenciales invalidas con el mismo 401 exista o no la cuenta', async () => {
-    const http = request(app.getHttpServer());
-    const a = await http.post('/auth/login').send({ correo: 'alumno@sce.test', contrasena: 'mala' }).expect(401);
-    const b = await http.post('/auth/login').send({ correo: 'nadie@sce.test', contrasena: 'mala' }).expect(401);
-    expect(a.body.message).toBe(b.body.message);
-  });
-
-  it('CS-SEG-04 (sin token) y CS-SEG-07 (sesion expirada): sin token, token alterado o expirado recibe 401', async () => {
-    const http = request(app.getHttpServer());
-    await http.get('/materias').expect(401);
-    await http.get('/materias').set('Authorization', 'Bearer no.es.jwt').expect(401);
-    const usuario = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'alumno@sce.test' } });
-    const expirado = await app.get(JwtService).signAsync({ sub: usuario.id }, { expiresIn: -1 });
-    await http.get('/materias').set('Authorization', `Bearer ${expirado}`).expect(401);
-  });
-
-  it('CS-SEG-07 (parcial, la revocacion por cierre de sesion llega en el Batch 2): un usuario desactivado pierde el acceso aunque su token siga vigente', async () => {
-    const token = await login('caja@sce.test');
-    await prisma.usuario.update({ where: { correo: 'caja@sce.test' }, data: { activo: false } });
-    try {
-      await request(app.getHttpServer()).get('/materias').set('Authorization', `Bearer ${token}`).expect(401);
-    } finally {
-      await prisma.usuario.update({ where: { correo: 'caja@sce.test' }, data: { activo: true } });
-    }
-  });
-});
-
-describe('RF-008 autorizacion por rol (CI-AUTH-01, CF-ROL-01)', () => {
+describe('Catalogos institucionales: quien da de alta que (Tablas 5, 11 y 12; CC-007)', () => {
   const materia = { clave: 'TEST-001', planClave: 'ISW-2024', nombre: 'Materia de prueba', creditos: 4 };
 
   it('todos los roles leen catalogos', async () => {
-    const token = await login('alumno@sce.test');
-    const res = await request(app.getHttpServer()).get('/materias').set('Authorization', `Bearer ${token}`).expect(200);
+    const auth = await entrar(app, 'alumno@sce.test');
+    const res = await http().get('/materias').set('Authorization', auth).expect(200);
     expect(res.body.length).toBeGreaterThan(0);
   });
 
-  it.each(['alumno', 'profesor', 'control.escolar', 'caja', 'direccion'])(
-    '%s recibe 403 al dar de alta catalogos',
-    async (rol) => {
-      const token = await login(`${rol}@sce.test`);
-      await request(app.getHttpServer())
-        .post('/materias')
-        .set('Authorization', `Bearer ${token}`)
-        .send(materia)
-        .expect(403);
-    },
-  );
-
-  it('coordinacion da de alta una materia; el duplicado da 409 y la entrada invalida 400', async () => {
-    const http = request(app.getHttpServer());
-    const auth = `Bearer ${await login('coordinacion@sce.test')}`;
-    await http.post('/materias').set('Authorization', auth).send(materia).expect(201);
-    await http.post('/materias').set('Authorization', auth).send(materia).expect(409);
-    await http
+  it('coordinacion da de alta materias; el duplicado da 409 y la entrada invalida 400', async () => {
+    const auth = await entrar(app, 'coordinacion@sce.test');
+    await http().post('/materias').set('Authorization', auth).send(materia).expect(201);
+    const dup = await http().post('/materias').set('Authorization', auth).send(materia).expect(409);
+    expect(dup.body.codigo).toBe('YA_EXISTE');
+    const invalida = await http()
       .post('/materias')
       .set('Authorization', auth)
       .send({ ...materia, clave: 'X', creditos: 0 })
       .expect(400);
+    expect(invalida.body).toMatchObject({ codigo: 'ENTRADA_INVALIDA', campos: ['creditos'] });
+  });
+
+  it('coordinacion da de alta periodos con fecha simple; la base rechaza un rango invertido con 400', async () => {
+    const auth = await entrar(app, 'coordinacion@sce.test');
+    const periodo = { clave: '2030A', fechaInicio: '2030-01-10', fechaFin: '2030-06-30', estado: 'abierto' };
+    await http().post('/periodos').set('Authorization', auth).send(periodo).expect(201);
+    const invertido = await http()
+      .post('/periodos')
+      .set('Authorization', auth)
+      .send({ ...periodo, clave: '2030B', fechaFin: '2029-01-01' })
+      .expect(400);
+    expect(invertido.body.codigo).toBe('ENTRADA_INVALIDA');
+  });
+
+  it('el administrador da de alta facultades y planes, con bitacora; un plan sin facultad da 400', async () => {
+    const auth = await entrar(app, 'administrador@sce.test');
+    const yo = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'administrador@sce.test' } });
+    await http()
+      .post('/facultades')
+      .set('Authorization', auth)
+      .send({ clave: 'TESTF', nombre: 'Facultad' })
+      .expect(201);
+    const plan = { clave: 'TEST-P', facultadClave: 'TESTF', creditosTotales: 300, vigenteDesde: '2030-01-01' };
+    await http().post('/planes').set('Authorization', auth).send(plan).expect(201);
+
+    const sinFacultad = await http()
+      .post('/planes')
+      .set('Authorization', auth)
+      .send({ ...plan, clave: 'TEST-Q', facultadClave: 'NO-EXISTE' })
+      .expect(400);
+    expect(sinFacultad.body.codigo).toBe('REFERENCIA_INEXISTENTE');
+
+    for (const [accion, entidad] of [
+      ['alta_facultad', 'facultad:TESTF'],
+      ['alta_plan', 'plan_estudios:TEST-P'],
+    ]) {
+      expect(await prisma.bitacora.count({ where: { autor: yo.id, accion, entidad } })).toBe(1);
+    }
+  });
+
+  it('14.1-6: si la bitacora falla, el alta se revierte', async () => {
+    const auth = await entrar(app, 'administrador@sce.test');
+    const espia = jest.spyOn(app.get(BitacoraService), 'registrar').mockRejectedValueOnce(new Error('falla simulada'));
+    await http()
+      .post('/facultades')
+      .set('Authorization', auth)
+      .send({ clave: 'REVERTIDA', nombre: 'No queda' })
+      .expect(500);
+    espia.mockRestore();
+    expect(await prisma.facultad.count({ where: { clave: 'REVERTIDA' } })).toBe(0);
   });
 });
 
 describe('RK-03 bitacora inmutable', () => {
   it('la base rechaza UPDATE, DELETE y TRUNCATE sobre bitacora', async () => {
     // Sin filas, UPDATE y DELETE no disparan el trigger por fila y "pasarian": se inserta una primero.
-    const autor = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'control.escolar@sce.test' } });
-    await prisma.bitacora.create({ data: { autor: autor.id, accion: 'prueba_cs_seg_06', entidad: 'bitacora' } });
+    await prisma.bitacora.create({ data: { autor: USUARIO_TECNICO, accion: 'prueba_inmutable', entidad: 'bitacora' } });
     for (const sql of ['UPDATE bitacora SET accion = accion', 'DELETE FROM bitacora', 'TRUNCATE bitacora']) {
       await expect(prisma.$executeRawUnsafe(sql)).rejects.toThrow(/inmutable/);
     }
