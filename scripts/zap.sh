@@ -7,7 +7,7 @@ set -euo pipefail
 
 API="http://localhost:3001"
 REPORTES="${1:-reportes/zap}"
-IMAGEN="ghcr.io/zaproxy/zaproxy:stable"
+IMAGEN="ghcr.io/zaproxy/zaproxy:2.17.0"
 
 mkdir -p "$REPORTES"
 chmod a+rwx "$REPORTES"

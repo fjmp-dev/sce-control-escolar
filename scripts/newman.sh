@@ -6,7 +6,7 @@ set -euo pipefail
 
 API="${1:-http://localhost:3001}"
 REPORTES="${2:-reportes/newman}"
-IMAGEN="postman/newman:6-alpine"
+IMAGEN="postman/newman:6.1.3-alpine"
 REPORTERO="newman-reporter-html@1.0.5"
 
 mkdir -p "$REPORTES"

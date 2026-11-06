@@ -78,7 +78,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Secretos en el envío | Escaneo de secretos de GitHub con protección de envío | — | — | **Activo** |
 | Auditoría de base de datos | pgAudit | — | 18.0 | Solo en el ambiente local donde se corrió `db/pgaudit.sql`. Compose y CI no lo activan. **Batch 6:** se activa en staging, o se retira CC-005 |
 | Calidad de datos | Consultas SQL de verificación y Great Expectations | 0.18 | Vigente | SQL **en uso** (CD-DAT-01, 04); Great Expectations en el Batch 4 |
-| Contratos de API | Postman y Newman | Newman 6 | Newman 6 | **En uso** en la etapa 4, contra Compose, con reporte HTML (`scripts/newman.sh`) |
+| Contratos de API | Postman y Newman | Newman 6 | Newman 6.1.3 | **En uso** en la etapa 4, contra Compose, con reporte HTML (`scripts/newman.sh`) |
 | Extremo a extremo | Cypress | 13 | Vigente | Batch 3 |
 | Unitarias de frontend | Vitest y React Testing Library | Vitest 1.x | Vigente | Batch 3 |
 | Compatibilidad | Playwright | 1.4x | Vigente | Batch 12 |
@@ -86,7 +86,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
 | Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
-| Seguridad de aplicación | OWASP ZAP | 2.15 | Imagen `stable` | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). Batch 6: también en staging |
+| Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). Batch 6: también en staging |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
 | Accesibilidad | axe y Lighthouse | 4 / 11 | Vigente | Batch 3, con la interfaz |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
