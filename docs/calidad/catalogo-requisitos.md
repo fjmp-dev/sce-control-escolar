@@ -1,7 +1,7 @@
 # Catálogo de requisitos — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 9 (tablas 18, 19 y 20).
-**Estado:** línea base de fase 0.
+**Estado:** línea base de fase 0, con clasificación añadida el 5 de noviembre de 2026.
 **Convención de identificadores:** sección 9.1 del manual.
 
 La prioridad se expresa como **Must**, que bloquea la aceptación; **Should**, que exige plan de corrección antes de ampliar facultades; y **Could**, que se documenta como mejora.
@@ -68,3 +68,33 @@ La prioridad se expresa como **Must**, que bloquea la aceptación; **Should**, q
 | De prioridad Should | 3 (RF-009, RF-010, RNF-FLE-001) |
 
 > Ningún incremento de las fases 1 a 5 se acepta si queda abierto un requisito Must sin evidencia de prueba o con resultado fallido (manual, sección 9.4).
+
+---
+
+## 5. Clasificación por subcaracterística
+
+Sección 8.4 del manual: todo requisito se clasifica en al menos una subcaracterística de ISO/IEC 25010:2023 (Tabla 15) o atributo de ISO/IEC 25012:2008 (Tabla 16). Clasificación propuesta el 5 de noviembre de 2026; la valida QA.
+
+| Requisito | Subcaracterística (Tabla 15) | Atributo de datos (Tabla 16) | Prioridad de la subcaracterística |
+|---|---|---|---|
+| RF-001 | Corrección funcional | Consistencia | Alta |
+| RF-002 | Corrección funcional, Protección contra errores de usuario | Completitud | Alta |
+| RF-003 | Corrección funcional, Operabilidad | — | Alta |
+| RF-004 | Completitud funcional, Protección contra errores de usuario | Credibilidad, Actualidad | Alta |
+| RF-005 | Corrección funcional | Exactitud, Precisión | Alta |
+| RF-006 | Corrección funcional, Interoperabilidad, Tolerancia a fallos | Actualidad, Consistencia | Alta |
+| RF-007 | Completitud funcional, No repudio | Completitud, Trazabilidad | Alta |
+| RF-008 | Pertinencia funcional, Autenticidad, Confidencialidad | Accesibilidad | Alta |
+| RF-009 | Pertinencia funcional | Accesibilidad | Alta |
+| RF-010 | Pertinencia funcional, Operabilidad | Comprensibilidad | Alta |
+| RNF-REN-001 | Comportamiento temporal | Eficiencia | Alta |
+| RNF-REN-002 | Capacidad | — | Alta |
+| RNF-FIA-001 | Disponibilidad | Disponibilidad | Alta |
+| RNF-FIA-002 | Recuperabilidad | Recuperabilidad | Alta |
+| RNF-SEG-001 | Integridad, No repudio, Responsabilidad, Autenticidad | Trazabilidad | Alta |
+| RNF-SEG-002 | Confidencialidad, Resistencia | Confidencialidad | Alta |
+| RNF-DAT-001 | Corrección funcional | Exactitud, Consistencia | Alta |
+| RNF-USU-001 | Operabilidad, Autodescripción | Comprensibilidad | Alta |
+| RNF-MAN-001 | Capacidad de ser probado | — | Alta |
+| RNF-FLE-001 | Escalabilidad, Reusabilidad | — | Media |
+
