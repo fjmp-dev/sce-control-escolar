@@ -12,9 +12,9 @@ const CLAVES: ClaveRol[] = ['alumno', 'profesor', 'control_escolar', 'coordinaci
 const SELECCION = { id: true, correo: true, activo: true, roles: { select: { rol: { select: { clave: true } } } } };
 
 class AltaUsuarioDto {
-  @IsEmail() correo: string;
-  @IsString() @MinLength(12) contrasena: string;
-  @ArrayNotEmpty() @ArrayUnique() @IsIn(CLAVES, { each: true }) roles: ClaveRol[];
+  @IsEmail() correo!: string;
+  @IsString() @MinLength(12) contrasena!: string;
+  @ArrayNotEmpty() @ArrayUnique() @IsIn(CLAVES, { each: true }) roles!: ClaveRol[];
 }
 
 class CambioUsuarioDto {
@@ -46,7 +46,10 @@ export class UsuariosController {
     const hashContrasena = await bcrypt.hash(contrasena, 10);
     const creados = await this.idsDeRoles(roles);
     return this.prisma.$transaction(async (tx) => {
-      const u = await tx.usuario.create({ data: { correo, hashContrasena, roles: { create: creados } }, select: SELECCION });
+      const u = await tx.usuario.create({
+        data: { correo, hashContrasena, roles: { create: creados } },
+        select: SELECCION,
+      });
       await tx.bitacora.create({ data: { autor: req.usuario.id, accion: 'alta_usuario', entidad: `usuario:${u.id}` } });
       return plano(u);
     });
@@ -68,7 +71,12 @@ export class UsuariosController {
         select: SELECCION,
       });
       await tx.bitacora.create({
-        data: { autor: req.usuario.id, accion: 'cambio_usuario', entidad: `usuario:${id}`, valorAnterior: plano(antes) },
+        data: {
+          autor: req.usuario.id,
+          accion: 'cambio_usuario',
+          entidad: `usuario:${id}`,
+          valorAnterior: plano(antes),
+        },
       });
       return plano(u);
     });

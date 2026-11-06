@@ -6,8 +6,8 @@ import { PrismaService } from '../prisma.service';
 import { Publico, UsuarioSesion } from './auth.guard';
 
 class LoginDto {
-  @IsEmail() correo: string;
-  @IsString() contrasena: string;
+  @IsEmail() correo!: string;
+  @IsString() contrasena!: string;
 }
 
 @Controller('auth')
