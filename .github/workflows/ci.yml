@@ -1,5 +1,6 @@
-# Integracion continua (manual sec. 31.1, etapas 1 a 4; plan de trabajo #17).
-# Ningun pull request entra a main sin estos dos trabajos en verde.
+# Pipeline de integracion: etapas 1 a 5 de la Tabla 53 (sec. 31.1). Cada etapa es criterio de avance de la siguiente.
+# Las etapas 6 y 7 llegan en el Batch 3 y la 8 en el Batch 6. Dentro de que etapa corre cada herramienta que
+# la Tabla 53 no nombra: docs/calidad/plan-de-pruebas.md, seccion 4.1.
 name: CI
 
 on:
@@ -7,28 +8,13 @@ on:
   push:
     branches: [main, develop]
 
-# Minimo privilegio para el token del workflow; gitleaks-action lee los commits del pull request.
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
-  api:
-    name: API - build y pruebas
+  construccion:
+    name: 1 Construcción
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16 # version del manual, Tabla 7
-        env:
-          POSTGRES_USER: sce_app
-          POSTGRES_PASSWORD: sce_ci
-          POSTGRES_DB: sce
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U sce_app" --health-interval 5s --health-timeout 5s --health-retries 10
-    env:
-      DATABASE_URL: postgresql://sce_app:sce_ci@localhost:5432/sce?schema=public
-      JWT_SECRET: solo-para-ci-no-es-un-secreto
     defaults:
       run:
         working-directory: api
@@ -40,27 +26,134 @@ jobs:
           cache: npm
           cache-dependency-path: api/package-lock.json
       - run: npm ci
-      - name: Dependencias sin vulnerabilidades altas o criticas (AU-20, sec. 14.5)
-        run: npm audit --audit-level=high
       - run: npx prisma generate
-      - name: Estandares de programacion - ESLint, sin any (AU-10, sec. 14)
+      - name: TypeScript estricto (Tabla 32)
+        run: npm run build
+
+  analisis:
+    name: 2 Análisis estático
+    needs: construccion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Commitlint y Gitleaks necesitan el historial
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api/package-lock.json
+      - run: npm ci
+      - name: Prettier (Tabla 32)
+        run: npm run format:check
+      - name: Commitlint (Tablas 31 y 32)
+        run: >-
+          npx commitlint --verbose
+          --from ${{ github.event.pull_request.base.sha || github.event.before }}
+          --to ${{ github.event.pull_request.head.sha || github.sha }}
+      - run: npm ci
+        working-directory: api
+      - run: npx prisma generate
+        working-directory: api
+      - name: ESLint con el plugin de TypeScript, sin any (Tabla 32, AU-10)
         run: npm run lint
-      - name: Migraciones sobre base limpia (CI-MIG-01)
-        run: npx prisma migrate deploy
-      - run: npm run db:seed
-      - run: npm run build
-      - name: Pruebas con cobertura (CS-SEG, CI-AUTH, CD-DAT; RNF-MAN-001)
-        run: npm run test:cov
-      # Evidencia descargable por ejecucion para el auditor (F-01 #5, AU-29 y AU-30).
+        working-directory: api
+      - name: Gitleaks sobre el historial completo (CS-SEG-08, AU-13)
+        run: scripts/gitleaks-historial.sh gitleaks.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cobertura-lcov
-          path: api/coverage/
+          name: gitleaks
+          path: gitleaks.json
           retention-days: 90
 
-  ambiente:
-    name: Ambiente de pruebas - Docker Compose y Trivy
+  unitarias:
+    name: 3 Pruebas unitarias
+    needs: analisis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Jest con cobertura (el umbral de 80 % en el dominio entra con la primera clase de dominio, Batch 2)
+        run: npm run test:unitarias
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-unitarias
+          path: api/coverage/unitarias/
+          if-no-files-found: ignore
+          retention-days: 90
+
+  integracion:
+    name: 4 Pruebas de integración
+    needs: unitarias
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Supertest y Testcontainers sobre PostgreSQL 16 efimero (CI-MIG-01, CI-AUTH-01, CS-SEG, CD-DAT)
+        run: npm run test:integracion
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-integracion
+          path: api/coverage/integracion/
+          retention-days: 90
+
+  calidad:
+    name: 5 Calidad - SonarQube y npm audit
+    needs: integracion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # el commit base de la puerta de calidad
+      - uses: actions/download-artifact@v4
+        with:
+          name: cobertura-integracion
+          path: api/coverage/integracion
+      - name: npm audit, cero altas o criticas (Tabla 32, AU-20)
+        run: |
+          mkdir -p reportes
+          npm audit --json > reportes/npm-audit-raiz.json || true
+          (cd api && npm audit --json > ../reportes/npm-audit-api.json || true)
+          npm audit --audit-level=high
+          (cd api && npm audit --audit-level=high)
+      - name: Puerta de calidad sobre codigo nuevo (Tabla 51)
+        run: scripts/sonar-puerta.sh "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD reportes/sonar
+      - name: Resumen de la puerta
+        if: always()
+        run: cat reportes/sonar/resumen.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calidad
+          path: reportes/
+          retention-days: 90
+
+  seguridad-imagen:
+    name: 5 Seguridad - Trivy y humo del ambiente
+    needs: integracion
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,7 +171,7 @@ jobs:
           done
       - if: failure()
         run: docker compose logs
-      - name: Trivy - imagen de la API (AU-20, sec. 14.5)
+      - name: Trivy - imagen de la API (AU-20)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: sce-api:local
@@ -95,6 +188,7 @@ jobs:
           scan-ref: .
           scanners: vuln,secret,misconfig
           severity: HIGH,CRITICAL
+          exit-code: '1'
           format: table
           output: trivy-repositorio.txt
       - uses: actions/upload-artifact@v4
@@ -103,14 +197,3 @@ jobs:
           name: trivy
           path: trivy-*.txt
           retention-days: 90
-
-  secretos:
-    name: Secretos - Gitleaks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
