@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { BitacoraService } from '../bitacora/bitacora.service';
 import { PrismaService } from '../persistencia/prisma.service';
 import { CatalogosRepository } from './catalogos.repository';
+import { validarPrerequisito } from './dominio/prerequisito';
 
 /**
  * Catálogos institucionales (RNF-FLE-001). Con CC-007, el administrador da de alta facultades y planes,
@@ -46,6 +47,15 @@ export class CatalogosService {
 
   crearMateria(datos: Prisma.MateriaUncheckedCreateInput) {
     return this.catalogos.crearMateria(datos);
+  }
+
+  async agregarPrerrequisito(materiaClave: string, requiereClave: string, obligatorio: boolean) {
+    validarPrerequisito(materiaClave, requiereClave, await this.catalogos.prerrequisitos());
+    return this.catalogos.crearPrerrequisito({ materiaClave, requiereClave, obligatorio });
+  }
+
+  quitarPrerrequisito(materiaClave: string, requiereClave: string) {
+    return this.catalogos.quitarPrerrequisito(materiaClave, requiereClave);
   }
 
   periodos() {

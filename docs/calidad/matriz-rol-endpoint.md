@@ -1,9 +1,9 @@
 # Matriz de rol por endpoint — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 y Tablas 5, 11, 12 y 38; CC-007. **Criterio de auditoría:** AU-15.
-**Versión:** 1.0, 6 de noviembre de 2026 (Batch 2). Crece con cada batch.
+**Versión:** 1.1, 6 de noviembre de 2026 (Batch 3). Crece con cada batch.
 
-Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7).
+Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7). El portal solo presenta lo que esta matriz permite, y `web/test/roles.test.ts` lo comprueba; quien autoriza siempre es la API.
 
 | Método | Ruta | Alumno | Profesor | Control escolar | Coordinación | Caja | Dirección | Administrador |
 |---|---|---|---|---|---|---|---|---|
@@ -22,6 +22,8 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
 | POST | `/planes` | No | No | No | No | No | No | Sí |
 | GET | `/materias` | Sí | Sí | Sí | Sí | Sí | Sí | Sí |
 | POST | `/materias` | No | No | No | Sí | No | No | No |
+| POST | `/materias/{clave}/prerrequisitos` | No | No | No | Sí | No | No | No |
+| DELETE | `/materias/{clave}/prerrequisitos/{requiere}` | No | No | No | Sí | No | No | No |
 | GET | `/periodos` | Sí | Sí | Sí | Sí | Sí | Sí | Sí |
 | POST | `/periodos` | No | No | No | Sí | No | No | No |
 

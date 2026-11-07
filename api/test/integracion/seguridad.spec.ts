@@ -76,6 +76,28 @@ describe('Catalogos institucionales: quien da de alta que (Tablas 5, 11 y 12; CC
     }
   });
 
+  it('RF-002: coordinacion agrega y quita prerrequisitos; rechaza el ciclo y el duplicado', async () => {
+    const auth = await entrar(app, 'coordinacion@sce.test');
+    const agregar = (materia: string, requiereClave: string) =>
+      http().post(`/materias/${materia}/prerrequisitos`).set('Authorization', auth).send({ requiereClave });
+
+    // El seed trae ISW-301 -> ISW-201 -> ISW-101.
+    expect((await agregar('ISW-101', 'ISW-301').expect(409)).body.codigo).toBe('PRERREQUISITO_CIRCULAR');
+    expect((await agregar('ISW-701', 'ISW-701').expect(409)).body.codigo).toBe('PRERREQUISITO_CIRCULAR');
+    expect((await agregar('ISW-201', 'ISW-101').expect(409)).body.codigo).toBe('YA_EXISTE');
+    expect((await agregar('ISW-701', 'NO-EXISTE').expect(400)).body.codigo).toBe('REFERENCIA_INEXISTENTE');
+    await agregar('ISW-701', 'mala clave').expect(400);
+
+    expect((await agregar('ISW-701', 'ISW-301').expect(201)).body).toEqual({
+      materiaClave: 'ISW-701',
+      requiereClave: 'ISW-301',
+      obligatorio: true,
+    });
+    const quitar = () => http().delete('/materias/ISW-701/prerrequisitos/ISW-301').set('Authorization', auth);
+    await quitar().expect(204);
+    await quitar().expect(404);
+  });
+
   it('14.1-6: si la bitacora falla, el alta se revierte', async () => {
     const auth = await entrar(app, 'administrador@sce.test');
     const espia = jest.spyOn(app.get(BitacoraService), 'registrar').mockRejectedValueOnce(new Error('falla simulada'));

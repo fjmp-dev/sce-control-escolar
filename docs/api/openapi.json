@@ -872,6 +872,178 @@
         ]
       }
     },
+    "/materias/{clave}/prerrequisitos": {
+      "post": {
+        "operationId": "CatalogosController_agregarPrerrequisito",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maxLength": 20,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+              "example": "ISW-101",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrerrequisitoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrerequisitoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Agregar un prerrequisito a una materia",
+        "tags": [
+          "Catálogos"
+        ]
+      }
+    },
+    "/materias/{clave}/prerrequisitos/{requiere}": {
+      "delete": {
+        "operationId": "CatalogosController_quitarPrerrequisito",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maxLength": 20,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+              "example": "ISW-101",
+              "type": "string"
+            }
+          },
+          {
+            "name": "requiere",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maxLength": 20,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+              "example": "ISW-101",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quitar un prerrequisito de una materia",
+        "tags": [
+          "Catálogos"
+        ]
+      }
+    },
     "/periodos": {
       "get": {
         "operationId": "CatalogosController_periodos",
@@ -1405,6 +1577,24 @@
           "planClave",
           "nombre",
           "creditos"
+        ]
+      },
+      "PrerrequisitoDto": {
+        "type": "object",
+        "properties": {
+          "requiereClave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "obligatorio": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "requiereClave"
         ]
       },
       "PeriodoRespuesta": {

@@ -57,7 +57,12 @@ it('CS-SEG-04: la coleccion de Newman prueba sin token cada operacion protegida'
   };
   const sinToken = coleccion.item.find((c) => c.name.startsWith('CS-SEG-04'));
   const probadas = (sinToken?.item ?? []).map(
-    ({ request }) => `${request.method} ${request.url.raw.replace('{{base}}', '').replace(/[0-9a-f-]{36}/, '{id}')}`,
+    ({ request }) =>
+      `${request.method} ${request.url.raw
+        .replace('{{base}}', '')
+        .replace(/[0-9a-f-]{36}/, '{id}')
+        .replace('NO-EXISTE', '{clave}')
+        .replace('NO-EXISTE', '{requiere}')}`,
   );
   expect(probadas.sort()).toEqual(
     operaciones()

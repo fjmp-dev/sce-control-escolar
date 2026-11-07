@@ -24,6 +24,17 @@ export class CatalogosRepository {
   crearMateria(data: Prisma.MateriaUncheckedCreateInput) {
     return this.prisma.cliente().materia.create({ data });
   }
+  prerrequisitos() {
+    return this.prisma.cliente().prerequisito.findMany();
+  }
+  crearPrerrequisito(data: Prisma.PrerequisitoUncheckedCreateInput) {
+    return this.prisma.cliente().prerequisito.create({ data });
+  }
+  async quitarPrerrequisito(materiaClave: string, requiereClave: string) {
+    await this.prisma
+      .cliente()
+      .prerequisito.delete({ where: { materiaClave_requiereClave: { materiaClave, requiereClave } } });
+  }
   periodos() {
     return this.prisma.cliente().periodo.findMany({ orderBy: { clave: 'desc' } });
   }

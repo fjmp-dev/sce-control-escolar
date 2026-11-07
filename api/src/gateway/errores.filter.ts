@@ -10,6 +10,7 @@ const ESTADO_DE: Record<CodigoDeNegocio, number> = {
   CONTRASENA_DEBIL: 400,
   REAUTENTICACION_FALLIDA: 403,
   AUTOMODIFICACION: 409,
+  PRERREQUISITO_CIRCULAR: 409,
 };
 
 const POR_ESTADO: Record<number, [codigo: string, mensaje: string]> = {
@@ -17,14 +18,14 @@ const POR_ESTADO: Record<number, [codigo: string, mensaje: string]> = {
   401: ['NO_AUTENTICADO', 'Inicia sesión para continuar.'],
   403: ['SIN_PERMISO', 'Tu rol no permite esta operación.'],
   404: ['NO_ENCONTRADO', 'El recurso no existe.'],
-  409: ['YA_EXISTE', 'El registro ya existe.'],
+  409: ['YA_EXISTE', 'Ya existe un registro con esos datos. Cambia la clave o el correo.'],
   503: ['SERVICIO_NO_DISPONIBLE', 'El servicio no está disponible por ahora.'],
 };
 
 const POR_CODIGO_PRISMA: Record<string, [estado: number, codigo?: string, mensaje?: string]> = {
   P2000: [400],
   P2002: [409],
-  P2003: [400, 'REFERENCIA_INEXISTENTE', 'Se hace referencia a un registro que no existe.'],
+  P2003: [400, 'REFERENCIA_INEXISTENTE', 'Se hace referencia a un registro que no existe. Elige uno de la lista.'],
   P2025: [404],
 };
 

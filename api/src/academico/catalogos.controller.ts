@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsIn, IsInt, Matches, Max, Min } from 'class-validator';
+import { IsBoolean, IsDate, IsIn, IsInt, IsOptional, Matches, Max, Min } from 'class-validator';
 import { ApiErrores, Clave, Texto } from '../gateway/validacion';
 import { Actual, Roles } from '../identidad/autenticacion.guard';
 import { Autenticado } from '../identidad/autenticacion.service';
@@ -35,6 +35,19 @@ class MateriaDto {
   @Min(1)
   @Max(CREDITOS_MAXIMOS)
   creditos!: number;
+}
+
+class MateriaParam {
+  @Clave() clave!: string;
+}
+
+class PrerrequisitoParam extends MateriaParam {
+  @Clave() requiere!: string;
+}
+
+class PrerrequisitoDto {
+  @Clave() requiereClave!: string;
+  @ApiProperty({ required: false, default: true }) @IsOptional() @IsBoolean() obligatorio?: boolean;
 }
 
 class PeriodoDto {
@@ -132,6 +145,25 @@ export class CatalogosController {
   @ApiErrores(400, 409)
   crearMateria(@Body() datos: MateriaDto) {
     return this.catalogos.crearMateria({ ...datos });
+  }
+
+  @Roles('coordinacion')
+  @Post('materias/:clave/prerrequisitos')
+  @ApiOperation({ summary: 'Agregar un prerrequisito a una materia' })
+  @ApiResponse({ status: 201, type: PrerequisitoRespuesta })
+  @ApiErrores(400, 409)
+  agregarPrerrequisito(@Param() { clave }: MateriaParam, @Body() { requiereClave, obligatorio }: PrerrequisitoDto) {
+    return this.catalogos.agregarPrerrequisito(clave, requiereClave, obligatorio ?? true);
+  }
+
+  @Roles('coordinacion')
+  @Delete('materias/:clave/prerrequisitos/:requiere')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Quitar un prerrequisito de una materia' })
+  @ApiResponse({ status: 204 })
+  @ApiErrores(400, 404)
+  quitarPrerrequisito(@Param() { clave, requiere }: PrerrequisitoParam) {
+    return this.catalogos.quitarPrerrequisito(clave, requiere);
   }
 
   @Roles(...ROLES)
