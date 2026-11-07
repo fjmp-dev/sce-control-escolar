@@ -104,9 +104,9 @@ describe('Layout y navegacion por rol', () => {
   it('el inicio lista lo que el rol puede hacer', async () => {
     api(['administrador']);
     mostrar(await PaginaInicio());
-    screen.getByText(/Entraste como Administrador del sistema/);
-    screen.getByRole('link', { name: 'Usuarios' });
-    screen.getByText('Dar de alta, cambiar roles y dar de baja');
+    expect(screen.getByText(/Entraste como Administrador del sistema/)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Usuarios' }).getAttribute('href')).toBe('/usuarios');
+    expect(screen.getByText('Dar de alta, cambiar roles y dar de baja')).toBeTruthy();
   });
 
   it('la raiz declara el idioma y el salto al contenido', () => {
@@ -125,8 +125,8 @@ describe('Paginas de catalogos: solo el rol autorizado ve el alta (CF-ROL-01)', 
   ] as const)('%s', async (_, Pagina, rolConAlta, dato) => {
     api([rolConAlta]);
     mostrar(await Pagina());
-    screen.getByRole('button', { name: 'Dar de alta' });
-    screen.getByRole('cell', { name: dato });
+    expect(screen.getByRole('button', { name: 'Dar de alta' })).toBeTruthy();
+    expect(screen.getByRole('cell', { name: dato })).toBeTruthy();
     cleanup();
 
     api(['alumno']);
@@ -146,7 +146,7 @@ describe('Paginas de catalogos: solo el rol autorizado ve el alta (CF-ROL-01)', 
     screen.getByRole('cell', { name: 'ISW-101 (obligatorio)' });
     screen.getByRole('cell', { name: 'ISW-101 (opcional)' });
     screen.getByRole('cell', { name: 'Ninguno' });
-    screen.getByRole('button', { name: 'Agregar prerrequisito' });
+    expect(screen.getByRole('button', { name: 'Agregar prerrequisito' })).toBeTruthy();
     const quitar = screen.getByLabelText<HTMLSelectElement>('Prerrequisito a quitar');
     within(quitar).getByRole('option', { name: 'ISW-201 requiere ISW-101' });
     expect(screen.getByRole<HTMLOptionElement>('option', { name: 'ISW-201 requiere ISW-101' }).value).toBe(
@@ -164,8 +164,8 @@ describe('Paginas de catalogos: solo el rol autorizado ve el alta (CF-ROL-01)', 
       ),
     );
     mostrar(await PaginaPeriodos());
-    screen.getByRole('cell', { name: 'otro' });
-    screen.getByRole('cell', { name: /12 ene/ });
+    expect(screen.getByRole('cell', { name: 'otro' })).toBeTruthy();
+    expect(screen.getByRole('cell', { name: /12 ene/ })).toBeTruthy();
   });
 });
 
@@ -193,7 +193,7 @@ describe('Paginas sin datos', () => {
     screen.getByText(/Tu sesión terminó/);
     cleanup();
     mostrar(await PaginaIngresar({ searchParams: Promise.resolve({ motivo: 'contrasena' }) }));
-    screen.getByText(/Tu contraseña cambió/);
+    expect(screen.getByText(/Tu contraseña cambió/)).toBeTruthy();
     cleanup();
     for (const motivo of ['<script>', 'constructor', undefined]) {
       mostrar(await PaginaIngresar({ searchParams: Promise.resolve({ motivo }) }));
@@ -212,7 +212,7 @@ describe('Paginas sin datos', () => {
     screen.getByRole('link', { name: 'inicio' });
     cleanup();
     mostrar(PaginaNoEncontrada());
-    screen.getByRole('heading', { name: 'Esta página no existe' });
+    expect(screen.getByRole('heading', { name: 'Esta página no existe' })).toBeTruthy();
   });
 
   it('/salud responde sin detalle', async () => {

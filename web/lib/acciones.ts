@@ -7,8 +7,12 @@ import type { Esquemas, Rol } from './contrato';
 import { COOKIE_SESION, cookieDeSesion } from './cookie-sesion';
 import type { EstadoDeFormulario } from './estado';
 
-const texto = (datos: FormData, campo: string) => String(datos.get(campo) ?? '').trim();
-const contrasena = (datos: FormData, campo: string) => String(datos.get(campo) ?? ''); // sin recortar
+// Un archivo enviado donde se espera texto cuenta como vacío.
+function contrasena(datos: FormData, campo: string) {
+  const valor = datos.get(campo);
+  return typeof valor === 'string' ? valor : ''; // sin recortar: un espacio puede ser parte de la contraseña
+}
+const texto = (datos: FormData, campo: string) => contrasena(datos, campo).trim();
 const roles = (datos: FormData) => datos.getAll('roles').map(String) as Rol[];
 
 function aEstado(error: unknown, valores?: EstadoDeFormulario['valores']): EstadoDeFormulario {

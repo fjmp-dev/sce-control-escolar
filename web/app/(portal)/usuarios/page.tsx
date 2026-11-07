@@ -11,6 +11,32 @@ const OPCIONES_DE_ROL = ROLES.map((valor) => ({ valor, etiqueta: ETIQUETA_ROL[va
 const CORRECCION_ROLES = 'Marca al menos un rol.';
 const CORRECCION_CONFIRMACION = 'Escribe tu contraseña para confirmar.';
 
+function CambioDeAcceso({ usuario }: Readonly<{ usuario: Esquemas['UsuarioRespuesta'] }>) {
+  return (
+    <details>
+      <summary>Cambiar acceso de {usuario.correo}</summary>
+      <Formulario accion={cambiarUsuario} envio={`Guardar cambios de ${usuario.correo}`}>
+        <input type="hidden" name="id" value={usuario.id} />
+        <Casilla nombre="activo" etiqueta="Cuenta activa" marcada={usuario.activo} />
+        <Casillas
+          nombre="roles"
+          etiqueta="Roles"
+          correccion={CORRECCION_ROLES}
+          opciones={OPCIONES_DE_ROL}
+          marcadas={usuario.roles}
+        />
+        <Campo
+          nombre="confirmacion"
+          etiqueta="Tu contraseña, para confirmar"
+          tipo="password"
+          autoComplete="current-password"
+          correccion={CORRECCION_CONFIRMACION}
+        />
+      </Formulario>
+    </details>
+  );
+}
+
 export default async function PaginaUsuarios() {
   const [sesion, usuarios] = await Promise.all([
     sesionActual(),
@@ -60,27 +86,7 @@ export default async function PaginaUsuarios() {
               u.id === sesion.id ? (
                 'Tu propia cuenta: otro administrador debe cambiarla.'
               ) : (
-                <details>
-                  <summary>Cambiar acceso de {u.correo}</summary>
-                  <Formulario accion={cambiarUsuario} envio={`Guardar cambios de ${u.correo}`}>
-                    <input type="hidden" name="id" value={u.id} />
-                    <Casilla nombre="activo" etiqueta="Cuenta activa" marcada={u.activo} />
-                    <Casillas
-                      nombre="roles"
-                      etiqueta="Roles"
-                      correccion={CORRECCION_ROLES}
-                      opciones={OPCIONES_DE_ROL}
-                      marcadas={u.roles}
-                    />
-                    <Campo
-                      nombre="confirmacion"
-                      etiqueta="Tu contraseña, para confirmar"
-                      tipo="password"
-                      autoComplete="current-password"
-                      correccion={CORRECCION_CONFIRMACION}
-                    />
-                  </Formulario>
-                </details>
+                <CambioDeAcceso usuario={u} />
               ),
           },
         ]}

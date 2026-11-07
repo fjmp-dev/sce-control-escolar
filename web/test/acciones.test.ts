@@ -222,3 +222,13 @@ describe('quitarPrerrequisito', () => {
     expect(espia).not.toHaveBeenCalled();
   });
 });
+
+describe('entradas inesperadas', () => {
+  it('un archivo enviado donde se espera texto cuenta como vacio', async () => {
+    const espia = responder(400, { codigo: 'ENTRADA_INVALIDA', mensaje: 'x', campos: ['clave'] });
+    const datos = formulario({ nombre: 'Uno' });
+    datos.append('clave', new File(['contenido'], 'a.txt'));
+    await crearFacultad({}, datos);
+    expect(enviado(espia).cuerpo).toEqual({ clave: '', nombre: 'Uno' });
+  });
+});
