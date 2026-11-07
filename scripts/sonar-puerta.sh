@@ -94,7 +94,7 @@ arbol "$base"
 # La configuracion del analisis es la del commit evaluado: el base puede no tenerla.
 git -C "$raiz" show "$evaluado:sonar-project.properties" >"$trabajo/repo/sonar-project.properties"
 # El escaner falla si una fuente declarada no existe, y el commit base puede ser anterior a ella.
-fuentes="$(sed -n 's/^sonar\.\(sources\|tests\)=//p' "$trabajo/repo/sonar-project.properties" | tr ',' '\n')"
+fuentes="$(sed -nE 's/^sonar\.(sources|tests)=//p' "$trabajo/repo/sonar-project.properties" | tr ',' '\n')"
 while IFS= read -r fuente; do
   [ -e "$trabajo/repo/$fuente" ] && continue
   case "$fuente" in

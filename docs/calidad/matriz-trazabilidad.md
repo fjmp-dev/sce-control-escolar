@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.1, 6 de noviembre de 2026.
+**Versión:** 2.2, 6 de noviembre de 2026.
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 
@@ -60,7 +60,7 @@ La definición y la herramienta de cada caso son las del manual. El **Batch** es
 | CF-PAG-01 | RF-006 | El pago confirmado se refleja una sola vez en el estado de cuenta. | Newman y Cypress | 9 |
 | CF-TRA-01 | RF-007 | La solicitud de constancia muestra estado y fecha. | Cypress | 10 |
 | CF-TRA-02 | RF-010 | El alumno consulta el estado de cada trámite con marca de tiempo. | Cypress | 10 |
-| CF-ROL-01 | RF-008 | Cada rol ve solo su parte; el alumno no edita calificaciones. | Supertest | 2 y siguientes |
+| CF-ROL-01 | RF-008 | Cada rol ve solo su parte; el alumno no edita calificaciones. | Supertest; en el portal, también Cypress | 2 y siguientes |
 | CF-REP-01 | RF-009 | Dirección obtiene reportes agregados y no puede escribir en el historial. | Supertest | 11 |
 
 ### 3.2 Integración (Tabla 45)
@@ -129,6 +129,8 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 - `docs/calidad/matriz-rol-endpoint.md`: rol por endpoint (AU-15), ejecutada por CF-ROL-01 y CI-AUTH-01.
 - `docs/calidad/stride.md`: amenazas y controles por componente (Tabla 37).
 - `docs/calidad/revision-cs-seg-08.md`: revisión manual de CS-SEG-08.
+- `docs/calidad/accesibilidad.md`: lista de 28.1, hallazgos y compatibilidad (AU-32).
+- `docs/calidad/informe-fase-1.md`: tablero de la Tabla 59 y lista de QA.
 - `docs/api/openapi.json`: contrato de la API, generado desde los decoradores (14.4).
 
 ---

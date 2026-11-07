@@ -35,6 +35,8 @@ Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://gith
 
 **Implementación del 6 de noviembre de 2026 (Batch 2, [#42](https://github.com/fjmp-dev/sce-control-escolar/issues/42)):** CC-007, CC-010 y CC-015, en la migración `20261106120000_identidad_y_bitacora` y los módulos `identidad/`, `bitacora/` y `academico/`. **Su código no se fusiona sin la aprobación de la tabla de abajo.** CC-014 y CC-015 se ampliaron: la Fig. 2 dibuja la dependencia del gateway hacia persistencia para `/salud`, y el usuario técnico también firma los accesos fallidos.
 
+**Implementación del 6 de noviembre de 2026 (Batch 3, [#43](https://github.com/fjmp-dev/sce-control-escolar/issues/43)):** Next.js 16 y React 19 (CC-006) en `web/`, y la conexión del servidor Next.js a la API (CC-014). Versiones adoptadas: `plan-de-pruebas.md`, sección 4. Prerrequisitos en la API y regla de no circularidad: no cambia el modelo de datos.
+
 **Desviación registrada:** CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 
 ---

@@ -20,9 +20,10 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Auditoría de base de datos con pgAudit (`db/pgaudit.sql`).
 - API NestJS por capas (Fig. 2, Tabla 28): gateway con códigos de error de negocio y `/salud`, identidad con sesiones revocables y bloqueo por intentos, autorización por los seis roles y el administrador, bitácora y catálogos institucionales.
 - Pruebas automatizadas: dominio sin base de datos; Supertest sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG-07, CD-DAT-01 y 04); Newman (contratos y CS-SEG-04) y OWASP ZAP (CS-SEG-05) contra Compose.
-- Pipeline de GitHub Actions con las etapas 1 a 5 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51).
+- Portal Next.js (Fig. 9): inicio y cierre de sesión, navegación por rol y pantallas de usuarios y catálogos, con pruebas de Vitest, Cypress, axe y Lighthouse.
+- Pipeline de GitHub Actions con las etapas 1 a 7 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas.
 
-Pendiente de fase 1: presentación en Next.js (Batch 3).
+Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
 
 **Tablero y backlog:** [issues del repositorio](https://github.com/fjmp-dev/sce-control-escolar/issues), agrupados por sprint en [hitos](https://github.com/fjmp-dev/sce-control-escolar/milestones). Los issues #1 a #22 corresponden uno a uno con el backlog de `docs/gobierno/plan-de-trabajo.md`; los cambios al manual se registran con la etiqueta `cambio` (#23 a #28).
 
@@ -31,6 +32,13 @@ Pendiente de fase 1: presentación en Next.js (Batch 3).
 ## Estructura
 
 ```
+web/                Portal Next.js (Fig. 9): nunca toca la base de datos ni expone el token al navegador
+  app/                    Páginas por rol, /salud y estilos
+  componentes/            Formularios, tabla, avisos y navegación accesibles (28.1)
+  lib/                    Llamadas a la API, acciones de servidor y tipos generados del OpenAPI
+  proxy.ts                Sesión: redirige sin token y renueva el que está por vencer
+  test/                   Vitest y React Testing Library
+  cypress/                Extremo a extremo, axe y demostración por rol
 api/                NestJS + Prisma (sección 3.6)
   prisma/
     schema.prisma         Veintiuna entidades (sección 13.6, Tabla 29)
@@ -46,9 +54,9 @@ api/                NestJS + Prisma (sección 3.6)
   test/unitarias/         Dominio, sin base de datos; umbral de 80 %
   test/integracion/       CI-MIG, CI-AUTH, CF-ROL, CS-SEG y CD-DAT, sobre PostgreSQL efímero
   test/contratos/         Colección de Postman: contratos y CS-SEG-04
-.github/workflows/ci.yml  Etapas 1 a 5 de la Tabla 53 (sección 31)
-scripts/                  Puerta de calidad con SonarQube, Gitleaks sobre todo el historial, Newman y OWASP ZAP
-docker-compose.yml        Ambiente de pruebas: PostgreSQL 16 + API con datos sintéticos
+.github/workflows/ci.yml  Etapas 1 a 7 de la Tabla 53 (sección 31)
+scripts/                  Puerta de calidad, Gitleaks, Newman, OWASP ZAP, humo, Cypress, Lighthouse y publicación de imágenes
+docker-compose.yml        Ambiente de pruebas: PostgreSQL 16, API y portal, con datos sintéticos
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
 docs/
@@ -75,6 +83,8 @@ docs/
     matriz-rol-endpoint.md    Rol por endpoint; la ejecutan CF-ROL-01 y CI-AUTH-01 (AU-15)
     stride.md                 Amenazas y controles por componente (Tabla 37)
     revision-cs-seg-08.md     Revisión manual de secretos en repositorio, registros y respuestas
+    accesibilidad.md          Lista de 28.1, hallazgos y compatibilidad (AU-32)
+    informe-fase-1.md         Tablero de la Tabla 59 y lista de QA de la fase
     contradicciones-manual-v2.0.md  Contradicciones y vacíos del manual
   auditoria/        Respuestas del auditado a las solicitudes de PA-SCE-001
   evidencias/       Reportes que sustentan cada cierre de fase (Tabla 62)
@@ -90,6 +100,7 @@ docs/
     registro-de-cambios.md    Solicitudes de cambio CC (sección 16)
     registro-aprobacion-manual-v2.0.md  Revisión y aprobación del manual (sección 1.2)
     actas/                    Actas de aceptación de fase y de sprint
+    notas-version/            Notas de cada etiqueta vX.Y.Z (14.4)
 ```
 
 ---
@@ -99,10 +110,10 @@ docs/
 Con Docker instalado:
 
 ```bash
-docker compose up --build    # PostgreSQL 16 + API en http://localhost:3001, migrada y con seed
+docker compose up --build    # Portal en http://localhost:3000 y API en http://localhost:3001, migrada y con seed
 ```
 
-Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, todas con la contraseña `sce-dev-2026`. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman y OWASP ZAP, y escanea la imagen con Trivy.
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, todas con la contraseña `sce-dev-2026`. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
 
 ## Levantar el ambiente de desarrollo
 
@@ -110,13 +121,18 @@ Requisitos: Node 24 y Docker. En macOS: `brew install node colima docker docker-
 
 ```bash
 npm install                   # raíz: Prettier, Husky, lint-staged y Commitlint; activa los hooks de git
-docker compose up --build     # PostgreSQL 16 + API en http://localhost:3001
+docker compose up --build     # PostgreSQL 16, API en :3001 y portal en :3000
 
 cd api
 npm install
 npx prisma generate
 cp .env.example .env          # con Colima, descomentar DOCKER_HOST y TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE
 npm test                      # unitarias e integración; levanta su propio PostgreSQL 16 con Testcontainers
+
+cd ../web
+npm install                   # no descarga Cypress: corre en su imagen de Docker
+npm run test:unitarias        # Vitest con cobertura
+npm run dev                   # portal en :3000, contra API_URL (ver .env.example)
 ```
 
 | Comando | Qué hace |
@@ -125,6 +141,11 @@ npm test                      # unitarias e integración; levanta su propio Post
 | `npm run lint` (en `api/`) | ESLint con el plugin de TypeScript |
 | `npm run test:unitarias` y `npm run test:integracion` (en `api/`) | Etapas 3 y 4, con cobertura lcov en `api/coverage/` |
 | `ACTUALIZAR_OPENAPI=1 npm run test:integracion -- openapi` (en `api/`) | Regenera `docs/api/openapi.json` tras cambiar una ruta; CI falla si difiere |
+| `npm run lint`, `npm run tipos` y `npm run test:unitarias` (en `web/`) | ESLint, TypeScript y Vitest del portal |
+| `npm run tipos:api` (en `web/`) | Regenera los tipos del portal desde el OpenAPI |
+| `scripts/humo.sh` | Salud e inicio de sesión de cada rol, contra Compose |
+| `scripts/cypress.sh` | Extremo a extremo y axe, contra Compose; video y capturas en `reportes/cypress/` |
+| `scripts/lighthouse.sh` | Lighthouse contra Compose; requiere Chrome. Informe en `reportes/lighthouse/` |
 | `scripts/newman.sh` | Contratos de API y CS-SEG-04, contra Compose; reporte HTML en `reportes/newman/` |
 | `scripts/zap.sh` | OWASP ZAP (CS-SEG-05) contra Compose; informe en `reportes/zap/`. Tarda unos minutos |
 | `scripts/gitleaks-historial.sh` | Gitleaks sobre todas las ramas y todo el historial |
@@ -143,6 +164,8 @@ Las etapas del pipeline y su evidencia están en `docs/calidad/plan-de-pruebas.m
 | `SESION_PRIVILEGIADA_MINUTOS` | Duración de un token del administrador | 15 |
 | `SESION_MAXIMA_MINUTOS` | Duración máxima de una sesión, con renovaciones | 480 |
 | `PORT` | Puerto de la API (Fig. 9) | 3001 |
+| `API_URL` (portal) | URL de la API, usada solo desde el servidor de Next.js | `http://localhost:3001` |
+| `COOKIE_SEGURA` (portal) | `false` apaga `Secure` en la cookie de sesión; solo sin HTTPS | Encendida |
 
 
 ---
