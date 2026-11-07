@@ -6,7 +6,7 @@
 # lo nuevo es exactamente el diff entre ambos, sin depender de las fechas de los commits reales.
 #
 # Uso: scripts/sonar-puerta.sh <commit-base> [commit-evaluado] [dir-reportes]
-# Requiere docker, curl y jq. Lee la cobertura de api/coverage/. Sale con 1 si la puerta no aprueba.
+# Requiere docker, curl y jq. Lee la cobertura de api/coverage/ y web/coverage/. Sale con 1 si la puerta no aprueba.
 set -euo pipefail
 
 base=${1:?Uso: sonar-puerta.sh <commit-base> [commit-evaluado] [dir-reportes]}
@@ -93,12 +93,22 @@ git init -q "$trabajo/repo"
 arbol "$base"
 # La configuracion del analisis es la del commit evaluado: el base puede no tenerla.
 git -C "$raiz" show "$evaluado:sonar-project.properties" >"$trabajo/repo/sonar-project.properties"
+# El escaner falla si una fuente declarada no existe, y el commit base puede ser anterior a ella.
+fuentes="$(sed -n 's/^sonar\.\(sources\|tests\)=//p' "$trabajo/repo/sonar-project.properties" | tr ',' '\n')"
+while IFS= read -r fuente; do
+  [ -e "$trabajo/repo/$fuente" ] && continue
+  case "$fuente" in
+    *.*) mkdir -p "$(dirname "$trabajo/repo/$fuente")" && : >"$trabajo/repo/$fuente" ;;
+    *) mkdir -p "$trabajo/repo/$fuente" ;;
+  esac
+done <<<"$fuentes"
 commit "$(hace 72)" base
 analizar base "$(hace 48)" >"$salida/escaner-base.log" 2>&1 || { cat "$salida/escaner-base.log"; exit 1; }
 
 find "$trabajo/repo" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 arbol "$evaluado"
 [ -d "$raiz/api/coverage" ] && cp -R "$raiz/api/coverage" "$trabajo/repo/api/"
+[ -d "$raiz/web/coverage" ] && cp -R "$raiz/web/coverage" "$trabajo/repo/web/"
 commit "$(hace 24)" evaluado
 analizar evaluado "$(hace 1)" >"$salida/escaner-evaluado.log" 2>&1 || { cat "$salida/escaner-evaluado.log"; exit 1; }
 
