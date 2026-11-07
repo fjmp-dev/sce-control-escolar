@@ -1,0 +1,382 @@
+/* Paleta del planteamiento del proyecto. Contraste de texto y botones principales >= 4.5:1 (28.1). */
+:root {
+  color-scheme: light;
+  --tinta: #232323;
+  --suave: #5f5f5f;
+  --linea: #8a8a8a;
+  --linea-suave: #d8d8d8;
+  --tenue: #f6f6f5;
+  --fondo: #ffffff;
+  --azul: #2f5d8a;
+  --azul-oscuro: #244a6f;
+  --verde: #3f6b4a;
+  --verde-t: #ecf2ed;
+  --rojo: #8a3d3d;
+  --rojo-t: #f6eded;
+  --azul-t: #eaf0f6;
+  --objetivo: 2.75rem; /* 44 px: por encima del minimo de 24 px de WCAG 2.2 */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font:
+    1rem/1.5 system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin: 0 0 1rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  margin: 2rem 0 0.75rem;
+}
+
+a {
+  color: var(--azul);
+}
+
+:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.saltar {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 1;
+  padding: 0.75rem 1rem;
+  background: var(--fondo);
+  border: 2px solid var(--azul);
+}
+
+.saltar:focus {
+  top: 0.5rem;
+}
+
+.cabecera {
+  border-bottom: 1px solid var(--linea-suave);
+  background: var(--tenue);
+}
+
+.cabecera-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+.marca {
+  font-weight: 700;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.persona {
+  margin: 0;
+  color: var(--suave);
+  font-size: 0.9375rem;
+}
+
+.navegacion {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+.navegacion ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navegacion a {
+  display: flex;
+  align-items: center;
+  min-height: var(--objetivo);
+  padding: 0 0.5rem;
+  color: var(--azul);
+  text-decoration: none;
+}
+
+.navegacion a:hover {
+  text-decoration: underline;
+}
+
+/* La pagina actual se distingue por peso y subrayado, no solo por color. */
+.navegacion a[aria-current='page'] {
+  font-weight: 700;
+  color: var(--tinta);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.contenido {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.contenido-angosto {
+  max-width: 28rem;
+}
+
+.lista-enlaces {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-enlaces li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--linea-suave);
+}
+
+.lista-enlaces span {
+  display: block;
+  color: var(--suave);
+}
+
+.boton {
+  min-height: var(--objetivo);
+  min-width: var(--objetivo);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--azul);
+  border-radius: 0.25rem;
+  background: var(--azul);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton:hover {
+  background: var(--azul-oscuro);
+}
+
+.boton:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+.boton-secundario {
+  background: var(--fondo);
+  color: var(--azul);
+}
+
+.boton-secundario:hover {
+  background: var(--azul-t);
+}
+
+.formulario {
+  display: grid;
+  gap: 1rem;
+  max-width: 40rem;
+  padding: 1rem;
+  border: 1px solid var(--linea-suave);
+  border-radius: 0.25rem;
+  background: var(--tenue);
+}
+
+.formulario > .boton {
+  justify-self: start;
+}
+
+.campo {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.campo label,
+.campo legend {
+  padding: 0;
+  font-weight: 600;
+}
+
+.campo input:not([type='checkbox']),
+.campo select {
+  width: 100%;
+  min-height: var(--objetivo);
+  padding: 0.5rem;
+  border: 1px solid var(--linea);
+  border-radius: 0.25rem;
+  background: var(--fondo);
+  color: var(--tinta);
+  font: inherit;
+}
+
+.campo [aria-invalid='true'] {
+  border: 2px solid var(--rojo);
+}
+
+.ayuda {
+  margin: 0;
+  color: var(--suave);
+  font-size: 0.9375rem;
+}
+
+.error-campo {
+  margin: 0;
+  color: var(--rojo);
+  font-size: 0.9375rem;
+}
+
+.campo .casilla,
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--objetivo);
+  font-weight: 400;
+}
+
+.casilla input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+.aviso {
+  padding: 0.75rem 1rem;
+  border: 1px solid;
+  border-left-width: 0.375rem;
+  border-radius: 0.25rem;
+}
+
+.aviso:focus {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.aviso-error {
+  border-color: var(--rojo);
+  background: var(--rojo-t);
+  color: #5f2626;
+}
+
+.aviso-exito {
+  border-color: var(--verde);
+  background: var(--verde-t);
+  color: #2a4a33;
+}
+
+.aviso-informacion {
+  border-color: var(--azul);
+  background: var(--azul-t);
+  color: var(--azul-oscuro);
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla th,
+.tabla td {
+  padding: 0.625rem 0.5rem;
+  border-bottom: 1px solid var(--linea-suave);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tabla th {
+  border-bottom: 2px solid var(--linea);
+}
+
+details summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--objetivo);
+  color: var(--azul);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+details .formulario {
+  margin-top: 0.5rem;
+}
+
+/* Tabla 50: en 390x844 cada fila se apila, sin desborde ni controles fuera de la pantalla. */
+@media (max-width: 40rem) {
+  .tabla,
+  .tabla tbody,
+  .tabla tr,
+  .tabla td {
+    display: block;
+  }
+
+  .tabla thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .tabla tr {
+    padding: 0.5rem 0;
+    border-bottom: 2px solid var(--linea);
+  }
+
+  .tabla td {
+    padding: 0.25rem 0;
+    border: 0;
+  }
+
+  .tabla td::before {
+    content: attr(data-etiqueta);
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--suave);
+  }
+}

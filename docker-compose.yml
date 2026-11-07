@@ -1,5 +1,6 @@
-# Ambiente de pruebas reproducible: PostgreSQL 16 + API con una cuenta sintetica por rol.
-# docker compose up --build  ->  http://localhost:3001/salud  (cuentas en README.md)
+# Ambiente de pruebas reproducible (Tabla 30): PostgreSQL 16, API y portal, con una cuenta sintetica por rol.
+# docker compose up --build  ->  http://localhost:3000  (cuentas en README.md)
+# IMAGEN_API e IMAGEN_PORTAL permiten desplegar las imagenes registradas (etapa 7, Tabla 53).
 services:
   db:
     image: postgres:16
@@ -13,7 +14,9 @@ services:
       retries: 20
   api:
     build: ./api
-    image: sce-api:local
+    image: ${IMAGEN_API:-sce-api:local}
+    # La imagen solo arranca la API. El seed sintetico lo pide este ambiente, nunca staging ni piloto (RK-09).
+    command: ['sh', '-c', 'node_modules/.bin/prisma migrate deploy && node prisma/seed.mts && node dist/main.js']
     depends_on:
       db:
         condition: service_healthy
@@ -31,3 +34,23 @@ services:
         ]
       interval: 3s
       retries: 40
+  web:
+    build: ./web
+    image: ${IMAGEN_PORTAL:-sce-portal:local}
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_URL: http://api:3001 # del servidor de Next.js a la API; el navegador no la ve (Fig. 9)
+      COOKIE_SEGURA: 'false' # este ambiente no tiene HTTPS; staging y piloto si (Tabla 38)
+    ports: ['3000:3000']
+    healthcheck: # Tabla 57
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/salud').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+        ]
+      interval: 3s
+      retries: 20

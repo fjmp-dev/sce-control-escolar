@@ -11,3 +11,10 @@ sonar-reporte/
 .scannerwork/
 reportes/
 gitleaks.json
+.next/
+next-env.d.ts
+*.tsbuildinfo
+web/coverage/
+web/cypress/videos/
+web/cypress/screenshots/
+web/cypress/reportes/
