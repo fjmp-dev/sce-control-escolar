@@ -21,13 +21,14 @@ iniciar() {
     -d "{\"correo\":\"$1\",\"contrasena\":\"$2\"}" | jq -er .token
 }
 
-# Cuenta del escaneo, con los roles que escriben: administrador, coordinacion y control escolar. Con menos, los
-# endpoints de los demas responden 403 antes de validar la entrada, y esa validacion quedaria sin probar. 409 si el ambiente ya la tiene.
+# Cuenta del escaneo, con los roles que escriben: administrador, coordinacion, control escolar y alumno (inscripcion,
+# Batch 5). Con menos, los endpoints de los demas responden 403 antes de validar la entrada, y esa validacion quedaria
+# sin probar. Sin expediente vinculado, el alumno del escaneo no llega a inscribirse. 409 si el ambiente ya la tiene.
 ADMIN="$(iniciar administrador@sce.test sce-dev-2026)"
 CONTRASENA_ZAP="sintetica-de-zap-1"
 alta="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$API/usuarios" \
   -H "Authorization: Bearer $ADMIN" -H 'Content-Type: application/json' \
-  -d "{\"confirmacion\":\"sce-dev-2026\",\"correo\":\"escaneo@sce.test\",\"contrasena\":\"$CONTRASENA_ZAP\",\"roles\":[\"administrador\",\"coordinacion\",\"control_escolar\"]}")"
+  -d "{\"confirmacion\":\"sce-dev-2026\",\"correo\":\"escaneo@sce.test\",\"contrasena\":\"$CONTRASENA_ZAP\",\"roles\":[\"administrador\",\"coordinacion\",\"control_escolar\",\"alumno\"]}")"
 [ "$alta" = 201 ] || [ "$alta" = 409 ] || { echo "::error::alta de la cuenta del escaneo: $alta" >&2; exit 1; }
 TOKEN="$(iniciar escaneo@sce.test "$CONTRASENA_ZAP")"
 

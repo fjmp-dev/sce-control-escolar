@@ -30,6 +30,9 @@ Una contradicción no se resuelve en silencio: mientras el manual no se corrija,
 | X-17 | Fig. 3 frente a Tabla 29 | Usuario y Rol con multiplicidad `1` a `1..*` en la Fig. 3 frente a relación muchos a muchos en la Tabla 29 | Muchos a muchos | Fig. 3 |
 | X-18 | CF-TRA-01 frente a Fig. 6 | Cuatro estados en el caso (recibida, en proceso, lista, rechazada) frente a cinco en la figura (también entregada) | Cinco estados | Manual |
 | X-19 | Tabla 7 frente a soporte vigente | React 18, Next.js 14 y Node 20; Node 20 perdió soporte el 30 de abril de 2026 y 14.5 pide cero vulnerabilidades altas | Versiones con soporte (D-1, CC-006) | Tablas 7 y 42 |
+| X-22 | Fig. 6 frente a 13.1 | Ajustada solo sale a Confirmada ("revalidar"); 13.1 exige verificar requisitos, adeudos y choques antes de confirmar. La figura no dice qué pasa si la revalidación falla | El ajuste revalida todo y, si no pasa, se descarta y la inscripción conserva la carga confirmada (D-15) | Fig. 6 |
+| X-23 | Fig. 3 frente a Fig. 4 | La Fig. 3 pone `validar*` en Inscripcion; la Fig. 4 hace que académico y pagos consulten la base | Académico y pagos entregan el resultado y `Inscripcion.validar*` decide (CC-017) | Fig. 3 |
+| X-24 | CD-DAT-05 frente a CC-013 | "Inscripciones sin carga" es un defecto; con CC-013 también se guarda la inscripción rechazada | La rechazada guarda la carga que se intentó, sin ocupar lugar | Tabla 39 |
 
 ---
 

@@ -36,6 +36,7 @@ medir control-escolar-expediente /expedientes/2420003 "$CONTROL"
 medir administrador-usuarios /usuarios "$ADMIN"
 medir coordinacion-materias /materias "$COORDINACION"
 medir alumno-inicio / "$ALUMNO"
+medir alumno-inscripcion /inscripcion "$ALUMNO"
 
 echo '| Pagina | Accesibilidad | Rendimiento | Buenas practicas | Peso total (KB) |' | tee "$REPORTES/resumen.md"
 echo '|---|---|---|---|---|' | tee -a "$REPORTES/resumen.md"

@@ -1,7 +1,7 @@
 # Reglas de negocio — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, secciones 8.3, 9, 12.1 y 38 (Tablas 16 y 59).
-**Versión:** 1.0, 5 de noviembre de 2026.
+**Versión:** 1.1, 8 de noviembre de 2026 (Batch 5; v1.0: 5 de noviembre de 2026).
 **Estado:** provisional hasta que el Product Owner lo ratifique.
 
 El manual exige que promedio, créditos y montos coincidan con las "reglas publicadas del periodo" (Tabla 16), pero no publica esas reglas. Este documento las reúne, separa lo que el manual fija de lo que el equipo propone, y sirve de inventario para medir la cobertura de reglas Must (Tabla 59).
@@ -23,7 +23,8 @@ Son propuestas del equipo, no reglas de la UAEM. **El Product Owner debe contras
 | D-11 | Formatos: matrícula de 7 a 10 dígitos; clave de materia alfanumérica con guion (`ISW-101`); periodo con año de cuatro dígitos más A o B (`2027A`) | La Tabla 16 pide seguir "el catálogo institucional", que el equipo no tiene | Batch 3 | Aplicada de forma provisional en claves de catálogo, periodo y matrícula, y verificada por Great Expectations. Por ratificar con el catálogo real |
 | D-12 | El intento de pago "sobre un movimiento" (Fig. 5) se liga al cargo mediante `referencia`, sin columna nueva | El modelo no liga pago con cargo; `movimiento.pago_id` solo liga el abono | Batch 9 | Por ratificar |
 | D-13 | Al definir grupos, aula y profesor no pueden traslaparse en el mismo periodo | La Tabla 29 solo dice "restricciones de cupo y traslape" | Batch 7 | Por ratificar |
-| D-14 | Control escolar consulta inscripciones. La Tabla 5 dice que las "administra", y la Figura 1 no le da caso de uso de inscripción. El PO define si además puede ajustarlas | Hay que fijar el alcance antes de construir la pantalla | Batch 5 | Por decidir |
+| D-14 | Control escolar consulta inscripciones. La Tabla 5 dice que las "administra", y la Figura 1 no le da caso de uso de inscripción. El PO define si además puede ajustarlas | Hay que fijar el alcance antes de construir la pantalla | Batch 5 | Aplicada como provisional en el Batch 5: solo consulta. Por ratificar |
+| D-15 | Un ajuste de la carga (Fig. 6, Ajustada → Confirmada) revalida las tres reglas de la Fig. 4, también el adeudo, y el cupo de los grupos nuevos. Si no pasa, el ajuste se descarta y la inscripción conserva la carga confirmada, porque la Fig. 6 no da a Ajustada otra salida | 13.1: "ninguna inscripción se confirma sin verificar requisitos, adeudos y choques". Consecuencia: un alumno con adeudo no puede ajustar hasta liquidarlo | Batch 5 | Por ratificar |
 
 ---
 
@@ -37,12 +38,12 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 |---|---|---|---|---|---|
 | R-01 | Un solo expediente por matrícula | RF-001, Fig. 8 | CF-EXP-01, CD-DAT-01 | 1 y 4 | Sí |
 | R-02 | El cambio de plantel no duplica el expediente ni pierde historial | RF-001, RK-01 | CF-EXP-01 | 4 | Sí |
-| R-03 | Sin prerrequisitos obligatorios no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | No |
-| R-04 | Con adeudo vigente no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | No |
-| R-05 | Con choque de horario no se confirma la carga, y se avisa antes | RF-003, Fig. 4 | CF-HOR-01 | 5 y 7 | No |
-| R-06 | Sin cupo la transacción revierte y la inscripción termina rechazada | Fig. 4, Tabla 29 | CF-INS-02, CI-API-01 | 5 | No |
-| R-07 | Las validaciones van en orden fijo: prerrequisitos, adeudos y choques | Fig. 4 | CF-INS-01 | 5 | No |
-| R-08 | Toda inscripción inválida termina en estado explícito con su causa | RNF-USU-001, Fig. 6 | CF-INS-02 | 5 | No |
+| R-03 | Sin prerrequisitos obligatorios no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | Sí |
+| R-04 | Con adeudo vigente no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | Sí |
+| R-05 | Con choque de horario no se confirma la carga, y se avisa antes | RF-003, Fig. 4 | CF-HOR-01 | 5 y 7 | Sí |
+| R-06 | Sin cupo la transacción revierte y la inscripción termina rechazada | Fig. 4, Tabla 29 | CF-INS-02, CI-API-01 | 5 | Sí |
+| R-07 | Las validaciones van en orden fijo: prerrequisitos, adeudos y choques | Fig. 4 | CF-INS-01 | 5 | Sí |
+| R-08 | Toda inscripción inválida termina en estado explícito con su causa | RNF-USU-001, Fig. 6 | CF-INS-02 | 5 | Sí |
 | R-09 | El profesor captura solo en sus grupos asignados | RF-004 | CF-CAL-01 | 8 | No |
 | R-10 | El alumno consulta la calificación al momento de la captura | RF-004 | CF-CAL-01, CI-CAL-01 | 8 | No |
 | R-11 | Promedio con dos decimales y redondeo en una sola función | Tabla 16, RF-005 | CD-DAT-02 | 8 | No |
@@ -60,7 +61,7 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 | R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4 | Sí, sobre el expediente |
 | R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | Parcial: hasta que existan calificaciones y pagos |
 
-**Situación al 7 de noviembre de 2026, en la rama del Batch 4: 7 de 24 con prueba completa (R-01, R-02, R-18, R-19, R-20, R-22 y R-23) y 2 parciales (R-21 y R-24).** Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
+**Situación al 8 de noviembre de 2026, en la rama del Batch 5: 13 de 24 con prueba completa (R-01 a R-08, R-18, R-19, R-20, R-22 y R-23) y 2 parciales (R-21 y R-24).** R-05 se repite con la interfaz de oferta del Batch 7. Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
 
 ---
 

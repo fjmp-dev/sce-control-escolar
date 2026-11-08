@@ -1,7 +1,7 @@
 # Registro de cambios — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 16 (gestión de cambios) y 12.4 (control de cambios a requisitos).
-**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 6 de noviembre de 2026.
+**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 8 de noviembre de 2026.
 
 Cada cambio tiene un issue en GitHub con la etiqueta `cambio`, con la solicitud, el análisis de impacto y la aprobación con fecha y responsable. Desde CC-007, la solicitud también está versionada en `docs/gobierno/cambios/`. Este archivo es el índice que se versiona junto con el código, para que el auditor lo encuentre sin entrar al tablero.
 
@@ -40,6 +40,8 @@ Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://gith
 **Implementación del 6 de noviembre de 2026 (Batch 3, [#43](https://github.com/fjmp-dev/sce-control-escolar/issues/43)):** Next.js 16 y React 19 (CC-006) en `web/`, y la conexión del servidor Next.js a la API (CC-014). Versiones adoptadas: `plan-de-pruebas.md`, sección 4. Prerrequisitos en la API y regla de no circularidad: no cambia el modelo de datos.
 
 **Implementación del 7 de noviembre de 2026 (Batch 4, [#44](https://github.com/fjmp-dev/sce-control-escolar/issues/44)):** expediente único (RF-001) sin cambios al modelo de datos. CC-014 se amplía con la dependencia del expediente hacia identidad, y CC-016 añade `cambiarEstatus` a la Fig. 3. **El batch abre la fase 2 sin el acta de la fase 1 firmada:** NC-009.
+
+**Implementación del 8 de noviembre de 2026 (Batch 5, [#45](https://github.com/fjmp-dev/sce-control-escolar/issues/45)):** inscripción (RF-002, RNF-USU-001) sin cambios al modelo de datos. CC-013 se implementa: el rechazo se guarda con su motivo y su carga en una transacción aparte. CC-017 añade a la Fig. 3 las transiciones de la Fig. 6. De CC-012 solo se usa la oferta mínima en consulta: `oferta_publicada_en` y la publicación llegan en el Batch 7, así que por ahora el alumno ve todos los grupos del periodo abierto. **El código de CC-013, Mayor, no se fusiona sin su aprobación,** y el batch sigue en la fase 2 sin el acta de la fase 1 (NC-009).
 
 **Desviación registrada:** CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 

@@ -1,9 +1,9 @@
 # Modelo de amenazas STRIDE — SCE
 
 **Fuente:** SCE-MC-001 v2.0, Tabla 37 ("riesgos de seguridad por componente"), sección 18 y Tabla 28.
-**Versión:** 1.2, 7 de noviembre de 2026 (Batch 4). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
+**Versión:** 1.3, 8 de noviembre de 2026 (Batch 5). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
 
-Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
+Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscripción, oferta, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
 
 | Componente | Tipo | Amenaza | Control | Evidencia | Riesgo que queda |
 |---|---|---|---|---|---|
@@ -31,6 +31,13 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, catálo
 | Expediente | T | Duplicar o perder un expediente al cambiar de plantel (RK-01) | Matrícula como clave primaria; el cambio modifica el mismo registro | CF-EXP-01, CD-DAT-01, Great Expectations | — |
 | Expediente | R | Negar un cambio de plantel o de estatus | Bitácora con autor y valor anterior en la misma transacción | CF-EXP-01, CS-SEG-06 en plantel | Un cambio directo en la base no deja asiento: pgAudit (Batch 6) |
 | Expediente | I | Exposición excesiva en búsquedas | La búsqueda devuelve solo matrícula, nombre, facultad y estatus, hasta 50 | `expediente.spec.ts` | — |
+| Inscripción | E | Un alumno inscribe o ajusta la carga de otro (18.2) | La matrícula sale de la sesión; la petición no acepta matrícula; un folio ajeno responde 404 igual que uno inexistente | CS-SEG-03 con Supertest y Newman | ZAP no prueba acceso cruzado; Batch 12 |
+| Inscripción | T | Saltarse una validación o su orden para confirmar | El dominio no confirma sin las tres validaciones de la Fig. 4, en su orden; la API no recibe estado ni motivo | Jest (tabla de decisión), Supertest | — |
+| Inscripción | T | Sobrecupo por inscripciones simultáneas | Bloqueo de la fila del grupo dentro de la transacción y `CHECK ck_grupo_cupo`; ocupación conciliada con inscritos | CI-API-01 con cinco alumnos simultáneos; consulta de ocupación con Great Expectations | La concurrencia real de la semana de inscripción se mide en el Batch 13 |
+| Inscripción | T | Dos envíos del mismo alumno que se pisan | Bloqueo de la fila de la inscripción y comprobación de que no cambió desde que se leyó | CI-API-01 | — |
+| Inscripción | R | Negar una inscripción, un rechazo o un ajuste | Bitácora con autor y estado anterior en la misma transacción, también del rechazo (CC-013) | CI-API-01 | Un ajuste rechazado deja asiento, pero no su motivo, porque la inscripción no cambia |
+| Inscripción | D | Llenar la bitácora con envíos rechazados | Cada envío exige sesión de alumno con expediente activo y periodo abierto | — | Sin límite de peticiones hasta nginx (Batch 13) |
+| Oferta | I | Exponer datos del profesor | La oferta devuelve materia, grupo, cupo, ocupación y horarios; no el profesor | `inscripcion.spec.ts` | La consulta diferenciada por rol es del Batch 7 |
 | Catálogos | T | Altas fuera de rol | Solo administrador (facultades y planes) o coordinación (materias y periodos) | CF-ROL-01 | — |
 | Bitácora | T | Alterar o borrar asientos | Disparadores que rechazan UPDATE, DELETE y TRUNCATE | Control de RK-03 | Un superusuario de la base puede desactivarlos. pgAudit en staging (Batch 6) |
 | Bitácora | R | Negar una operación | Autor, acción, valor anterior y fecha, en la misma transacción que la operación: si la bitácora falla, la operación se revierte | `seguridad.spec.ts`, `usuarios.spec.ts` | — |

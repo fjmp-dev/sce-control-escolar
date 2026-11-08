@@ -5,7 +5,7 @@
 
 ## 1. Lista de verificación (28.1)
 
-Los criterios de 28.1 nombran los formularios de inscripción y pago, que todavía no existen. Se aplican desde ahora a todo el portal, para que esos formularios nazcan con los mismos componentes.
+Los criterios de 28.1 nombran los formularios de inscripción y pago. El de inscripción existe desde el Batch 5 y usa los mismos componentes que el resto del portal: casillas con etiqueta, aviso que recibe el foco, estado escrito con su corrección y comprobante imprimible sin menú. El de pago llega en el Batch 9.
 
 | Criterio | Cómo se cumple | Cómo se verifica | Estado |
 |---|---|---|---|
@@ -23,8 +23,8 @@ Los criterios de 28.1 nombran los formularios de inscripción y pago, que todav�
 
 | Herramienta | Alcance | Resultado | Evidencia |
 |---|---|---|---|
-| axe-core 4.14, reglas WCAG 2.0, 2.1 y 2.2 A y AA | 19 páginas y estados: inicio de sesión con y sin errores; todas las del administrador; expedientes de control escolar, con y sin errores; coordinación; mi expediente; sin permiso | Ver la corrida del PR | Artefacto `despliegue-pruebas`, `cypress/reportes/axe/` |
-| Lighthouse 13 | 4 páginas, dos de ellas con formularios | Ver la corrida del PR; umbral de accesibilidad de 90 | Artefacto `despliegue-pruebas`, `lighthouse/` |
+| axe-core 4.14, reglas WCAG 2.0, 2.1 y 2.2 A y AA | 22 páginas y estados: inicio de sesión con y sin errores; todas las del administrador; expedientes de control escolar, con y sin errores; coordinación; mi expediente; inscripción, con aviso de choque y con rechazo; sin permiso | Ver la corrida del PR | Artefacto `despliegue-pruebas`, `cypress/reportes/axe/` |
+| Lighthouse 13 | 6 páginas, cuatro de ellas con formularios, entre ellas la inscripción | Ver la corrida del PR; umbral de accesibilidad de 90 | Artefacto `despliegue-pruebas`, `lighthouse/` |
 | Teclado, revisión manual | — | **Pendiente: la hace QA** | Sección 4 |
 | NVDA | — | **Pendiente, Batch 12:** requiere un equipo con Windows | — |
 

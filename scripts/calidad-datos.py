@@ -1,7 +1,7 @@
-"""Calidad de datos del expediente con Great Expectations (Tabla 39, Tabla 42 y AU-22).
+"""Calidad de datos del expediente y la inscripcion con Great Expectations (Tabla 39, Tabla 42 y AU-22).
 
-Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01 y 04, y CS-SEG-06
-en plantel) y con expectativas de unicidad, completitud y formato. Escribe Data Docs en HTML y un resumen en JSON.
+Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01, 04 y 05,
+ocupacion de grupos y CS-SEG-06 en plantel) y con expectativas de unicidad, completitud y formato. Escribe Data Docs en HTML y un resumen en JSON.
 Falla si alguna expectativa no se cumple, si no evaluo nada o si la tabla alumno esta vacia (una tabla vacia lo aprueba todo).
 Uso: python calidad-datos.py <url-postgres> <dir-de-consultas> <dir-de-salida>
 """
@@ -66,6 +66,37 @@ validaciones = [
                 unexpected_rows_query=consulta("cd-dat-04.sql"),
                 description="CD-DAT-04: calificaciones sin grupo, periodo o profesor",
             )
+        ],
+    ),
+    suite(
+        "inscripcion",
+        "inscripcion",
+        [
+            gxe.ExpectTableRowCountToBeBetween(min_value=1),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cd-dat-05.sql"),
+                description="CD-DAT-05: inscripciones sin matricula, periodo o carga",
+            ),
+            gxe.ExpectColumnValuesToBeInSet(
+                column="estado",
+                value_set=["borrador", "en_validacion", "rechazada", "confirmada", "ajustada", "cerrada"],
+            ),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=(
+                    "SELECT folio FROM inscripcion WHERE (estado = 'rechazada') <> (motivo_rechazo IS NOT NULL)"
+                ),
+                description="RNF-USU-001: toda inscripcion rechazada declara su motivo, y ninguna otra lo tiene",
+            ),
+        ],
+    ),
+    suite(
+        "ocupacion",
+        "grupo",
+        [
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("ocupacion-de-grupos.sql"),
+                description="RK-05: la ocupacion de cada grupo coincide con sus inscritos",
+            ),
         ],
     ),
     suite(
