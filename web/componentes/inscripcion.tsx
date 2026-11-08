@@ -77,8 +77,9 @@ export function ListaDeInscripciones({ inscripciones }: Readonly<{ inscripciones
 export const opcionesDeOferta = (oferta: Grupo[]) =>
   oferta.map((g) => {
     const lugares = g.cupo - g.ocupacion;
+    const disponibles = lugares > 0 ? `${lugares} lugares` : 'Sin lugares';
     return {
       valor: String(g.id),
-      etiqueta: `${g.materiaClave} ${g.materiaNombre}, grupo ${g.clave}: ${horarios(g)}. ${lugares > 0 ? `${lugares} lugares` : 'Sin lugares'}`,
+      etiqueta: `${g.materiaClave} ${g.materiaNombre}, grupo ${g.clave}: ${horarios(g)}. ${disponibles}`,
     };
   });

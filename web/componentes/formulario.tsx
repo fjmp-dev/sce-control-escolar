@@ -17,12 +17,12 @@ export function Formulario({
   envio,
   alterno,
   children,
-}: {
+}: Readonly<{
   accion: Accion;
   envio: string;
   alterno?: { valor: string; etiqueta: string };
   children: ReactNode;
-}) {
+}>) {
   const [estado, despachar, pendiente] = useActionState(accion, ESTADO_INICIAL);
   const aviso = useRef<HTMLDivElement>(null);
   useEffect(() => {
