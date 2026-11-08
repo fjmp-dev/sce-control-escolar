@@ -73,21 +73,41 @@ async function main() {
     },
   });
 
-  const alumnoUsuario = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'alumno@sce.test' } });
-  await prisma.alumno.upsert({
-    where: { matricula: '2420001' },
+  // Segunda facultad, para el cambio de plantel (RF-001). Sintetica, como todo el seed (RK-09).
+  await prisma.facultad.upsert({
+    where: { clave: 'FSD' },
     update: {},
-    create: {
-      matricula: '2420001',
-      nombre: 'Alumno Sintético Uno',
-      facultadClave: 'CUTG',
-      usuarioId: alumnoUsuario.id,
-      fechaIngreso: new Date('2024-08-05'),
-      estatus: 'activo',
-      historial: { create: {} },
-      cuenta: { create: {} },
-    },
+    create: { clave: 'FSD', nombre: 'Facultad Sintética Dos' },
   });
+
+  // Segunda cuenta de alumno: CS-SEG-03 necesita dos alumnos, cada uno con su expediente.
+  await prisma.usuario.upsert({
+    where: { correo: 'alumno.dos@sce.test' },
+    update: {},
+    create: { correo: 'alumno.dos@sce.test', hashContrasena: hash, roles: { create: { rolId: 1 } } },
+  });
+
+  const NUMEROS = ['Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis', 'Siete', 'Ocho', 'Nueve', 'Diez'];
+  const CUENTAS: Record<number, string> = { 0: 'alumno@sce.test', 1: 'alumno.dos@sce.test' };
+  for (const [i, numero] of NUMEROS.entries()) {
+    const matricula = `24200${String(i + 1).padStart(2, '0')}`;
+    const correo = CUENTAS[i];
+    const usuario = correo ? await prisma.usuario.findUniqueOrThrow({ where: { correo } }) : null;
+    await prisma.alumno.upsert({
+      where: { matricula },
+      update: {},
+      create: {
+        matricula,
+        nombre: `Alumno Sintético ${numero}`,
+        facultadClave: i % 3 === 2 ? 'FSD' : 'CUTG',
+        usuarioId: usuario?.id,
+        fechaIngreso: new Date(`202${2 + (i % 3)}-08-0${1 + (i % 5)}`),
+        estatus: i === 8 ? 'baja' : i === 9 ? 'egresado' : 'activo',
+        historial: { create: {} },
+        cuenta: { create: {} },
+      },
+    });
+  }
 
   console.log('Seed listo. Las cuentas sinteticas estan en el README.'); // CS-SEG-08: sin contrasenas en registros
 }

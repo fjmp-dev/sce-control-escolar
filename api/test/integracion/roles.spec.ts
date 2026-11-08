@@ -31,7 +31,8 @@ it.each(casos)('%s %s con token de %s: permitido = %s', async (metodo, ruta, cue
   const url = ruta
     .replace('{id}', '5ce00000-0000-4000-8000-00000000ffff')
     .replace('{clave}', 'NO-EXISTE')
-    .replace('{requiere}', 'NO-EXISTE');
+    .replace('{requiere}', 'NO-EXISTE')
+    .replace('{matricula}', '0000000');
   const token = await entrar(app, `${cuenta}@sce.test`);
   const res = await request(app.getHttpServer())[verbo](url).set('Authorization', token).send({});
   if (permitido) {

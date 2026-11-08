@@ -31,5 +31,6 @@ function secretoDelAmbiente() {
     // Global: toda ruta pasa por aquí (14.1-7).
     { provide: APP_GUARD, useClass: AutenticacionGuard },
   ],
+  exports: [UsuariosService],
 })
 export class IdentidadModule {}

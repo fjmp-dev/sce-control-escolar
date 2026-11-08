@@ -1,5 +1,6 @@
 // 14.4: el contrato se genera desde los decoradores y se versiona en docs/api/openapi.json.
 // Tras cambiar una ruta: ACTUALIZAR_OPENAPI=1 npm run test:integracion -- openapi
+import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
@@ -62,7 +63,8 @@ it('CS-SEG-04: la coleccion de Newman prueba sin token cada operacion protegida'
         .replace('{{base}}', '')
         .replace(/[0-9a-f-]{36}/, '{id}')
         .replace('NO-EXISTE', '{clave}')
-        .replace('NO-EXISTE', '{requiere}')}`,
+        .replace('NO-EXISTE', '{requiere}')
+        .replace('0000000', '{matricula}')}`,
   );
   expect(probadas.sort()).toEqual(
     operaciones()
@@ -70,4 +72,10 @@ it('CS-SEG-04: la coleccion de Newman prueba sin token cada operacion protegida'
       .map((o) => o.clave)
       .sort(),
   );
+});
+
+it('cada esquema del contrato sale de una sola clase: Swagger fusiona en silencio las que se llaman igual', () => {
+  const clases = execFileSync('grep', ['-rhoE', '^(export )?class [A-Za-z]+', 'src']).toString().trim().split('\n');
+  const nombres = clases.map((linea) => linea.replace(/^(export )?class /, ''));
+  expect(nombres.filter((nombre, i) => nombres.indexOf(nombre) !== i)).toEqual([]);
 });

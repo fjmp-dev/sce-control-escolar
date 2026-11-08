@@ -13,6 +13,11 @@ export class BitacoraService {
     await this.repositorio.insertar(asiento);
   }
 
+  /** Asientos de una entidad, del más antiguo al más reciente. */
+  asientos(entidad: string, accion: string) {
+    return this.repositorio.deEntidad(entidad, accion);
+  }
+
   /** El bloqueo por intentos se calcula de aquí, sin columna nueva en usuario (Tabla 15, Resistencia). */
   contarDesde(entidad: string, accion: string, desde: Date): Promise<number> {
     return this.repositorio.contar(entidad, accion, desde);

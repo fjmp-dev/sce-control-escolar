@@ -1168,6 +1168,580 @@
           "Catálogos"
         ]
       }
+    },
+    "/alumnos": {
+      "get": {
+        "operationId": "AlumnosController_buscar",
+        "parameters": [
+          {
+            "name": "buscar",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlumnoResumen"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar expedientes por matrícula o nombre (hasta 50)",
+        "tags": [
+          "Expedientes"
+        ]
+      },
+      "post": {
+        "operationId": "AlumnosController_alta",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AltaAlumnoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpedienteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dar de alta un expediente, con su historial y su cuenta en cero",
+        "tags": [
+          "Expedientes"
+        ]
+      }
+    },
+    "/alumnos/actual": {
+      "get": {
+        "operationId": "AlumnosController_actual",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpedienteRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mi expediente",
+        "tags": [
+          "Expedientes"
+        ]
+      }
+    },
+    "/alumnos/{matricula}": {
+      "get": {
+        "operationId": "AlumnosController_consultar",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpedienteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Consultar un expediente",
+        "tags": [
+          "Expedientes"
+        ]
+      }
+    },
+    "/alumnos/{matricula}/facultad": {
+      "put": {
+        "operationId": "AlumnosController_cambiarFacultad",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambioDePlantelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpedienteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambiar de plantel el mismo expediente, con bitácora",
+        "tags": [
+          "Expedientes"
+        ]
+      }
+    },
+    "/alumnos/{matricula}/estatus": {
+      "put": {
+        "operationId": "AlumnosController_cambiarEstatus",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambioDeEstatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpedienteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambiar el estatus: baja, reingreso o egreso, con bitácora",
+        "tags": [
+          "Expedientes"
+        ]
+      }
+    },
+    "/alumnos/{matricula}/cuenta": {
+      "put": {
+        "operationId": "AlumnosController_vincular",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VinculoDeCuentaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpedienteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Vincular la cuenta de alumno con la que la persona consulta su expediente",
+        "tags": [
+          "Expedientes"
+        ]
+      }
     }
   },
   "info": {
@@ -1652,6 +2226,202 @@
           "fechaInicio",
           "fechaFin",
           "estado"
+        ]
+      },
+      "AlumnoResumen": {
+        "type": "object",
+        "properties": {
+          "matricula": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "facultadClave": {
+            "type": "string"
+          },
+          "estatus": {
+            "type": "string",
+            "enum": [
+              "activo",
+              "baja",
+              "egresado"
+            ]
+          }
+        },
+        "required": [
+          "matricula",
+          "nombre",
+          "facultadClave",
+          "estatus"
+        ]
+      },
+      "AltaAlumnoDto": {
+        "type": "object",
+        "properties": {
+          "matricula": {
+            "type": "string",
+            "pattern": "^\\d{7,10}$",
+            "example": "2420001"
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "facultadClave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "fechaIngreso": {
+            "format": "date",
+            "type": "string"
+          },
+          "correo": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "matricula",
+          "nombre",
+          "facultadClave",
+          "fechaIngreso"
+        ]
+      },
+      "HistorialRespuesta": {
+        "type": "object",
+        "properties": {
+          "promedio": {
+            "type": "number"
+          },
+          "creditosAcumulados": {
+            "type": "number"
+          },
+          "avance": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "promedio",
+          "creditosAcumulados",
+          "avance"
+        ]
+      },
+      "CambioDePlantel": {
+        "type": "object",
+        "properties": {
+          "de": {
+            "type": "string"
+          },
+          "a": {
+            "type": "string"
+          },
+          "fecha": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "de",
+          "a",
+          "fecha"
+        ]
+      },
+      "ExpedienteRespuesta": {
+        "type": "object",
+        "properties": {
+          "matricula": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "facultadClave": {
+            "type": "string"
+          },
+          "estatus": {
+            "type": "string",
+            "enum": [
+              "activo",
+              "baja",
+              "egresado"
+            ]
+          },
+          "facultadNombre": {
+            "type": "string"
+          },
+          "fechaIngreso": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "correo": {
+            "type": "string",
+            "nullable": true
+          },
+          "historial": {
+            "$ref": "#/components/schemas/HistorialRespuesta"
+          },
+          "trayectoria": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CambioDePlantel"
+            }
+          }
+        },
+        "required": [
+          "matricula",
+          "nombre",
+          "facultadClave",
+          "estatus",
+          "facultadNombre",
+          "fechaIngreso",
+          "correo",
+          "historial",
+          "trayectoria"
+        ]
+      },
+      "CambioDePlantelDto": {
+        "type": "object",
+        "properties": {
+          "facultadClave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          }
+        },
+        "required": [
+          "facultadClave"
+        ]
+      },
+      "CambioDeEstatusDto": {
+        "type": "object",
+        "properties": {
+          "estatus": {
+            "type": "string",
+            "enum": [
+              "activo",
+              "baja",
+              "egresado"
+            ]
+          }
+        },
+        "required": [
+          "estatus"
+        ]
+      },
+      "VinculoDeCuentaDto": {
+        "type": "object",
+        "properties": {
+          "correo": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "correo"
         ]
       }
     }

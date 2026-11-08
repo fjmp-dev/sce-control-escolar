@@ -24,6 +24,18 @@ export class UsuariosService {
     return (await this.usuarios.listar(USUARIO_TECNICO)).map(vistaDe);
   }
 
+  /** Para vincular un expediente (RF-001): la cuenta existe, está activa y tiene el rol de alumno. */
+  async cuentaDeAlumno(correo: string): Promise<string> {
+    const usuario = await this.usuarios.porCorreo(correo);
+    if (!usuario?.activo || !usuario.roles.includes('alumno')) {
+      throw new ErrorDeNegocio(
+        'CUENTA_NO_ALUMNO',
+        'No hay una cuenta activa de alumno con ese correo. Pide al administrador que la dé de alta.',
+      );
+    }
+    return usuario.id;
+  }
+
   async alta(autor: Usuario, confirmacion: string, correo: string, contrasena: string, roles: ClaveRol[]) {
     await this.autenticacion.confirmarContrasena(autor, confirmacion);
     validarContrasena(contrasena, correo);

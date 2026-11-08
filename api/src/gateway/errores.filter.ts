@@ -11,6 +11,11 @@ const ESTADO_DE: Record<CodigoDeNegocio, number> = {
   REAUTENTICACION_FALLIDA: 403,
   AUTOMODIFICACION: 409,
   PRERREQUISITO_CIRCULAR: 409,
+  EXPEDIENTE_NO_ACTIVO: 409,
+  SIN_CAMBIO: 409,
+  TRANSICION_INVALIDA: 409,
+  SIN_EXPEDIENTE: 404,
+  CUENTA_NO_ALUMNO: 409,
 };
 
 const POR_ESTADO: Record<number, [codigo: string, mensaje: string]> = {

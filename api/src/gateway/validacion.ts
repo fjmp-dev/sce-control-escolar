@@ -33,10 +33,18 @@ export const Clave = () =>
     Matches(/^[A-Za-z0-9][A-Za-z0-9-]*$/),
   );
 
-/** En minúsculas, para que `Ana@` y `ana@` no sean dos cuentas. */
-export const Correo = () =>
+/** Matrícula: de 7 a 10 dígitos (D-11, provisional hasta ratificarla con el catálogo institucional). */
+export const Matricula = () =>
   applyDecorators(
-    ApiProperty({ format: 'email' }),
+    ApiProperty({ pattern: String.raw`^\d{7,10}$`, example: '2420001' }),
+    IsString(),
+    Matches(/^\d{7,10}$/),
+  );
+
+/** En minúsculas, para que `Ana@` y `ana@` no sean dos cuentas. */
+export const Correo = (requerido = true) =>
+  applyDecorators(
+    ApiProperty({ format: 'email', required: requerido }),
     IsEmail(),
     Transform(({ value }: { value: unknown }) => (typeof value === 'string' ? value.toLowerCase() : value)),
   );
