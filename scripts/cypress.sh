@@ -8,7 +8,7 @@ REPORTES="${1:-reportes/cypress}"
 shift || true
 IMAGEN="cypress/included:16.2.1"
 
-rm -rf web/cypress/videos web/cypress/screenshots web/cypress/reportes
+rm -rf web/cypress/videos web/cypress/screenshots web/cypress/reportes "$REPORTES"
 mkdir -p "$REPORTES" web/cypress/reportes
 chmod -R a+rwx web/cypress
 

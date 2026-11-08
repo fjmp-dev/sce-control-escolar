@@ -77,6 +77,7 @@ describe('Inscripcion', () => {
   it('CF-INS-01: con adeudo vigente la carga queda rechazada con su estado y no se confirma', () => {
     cy.iniciar('alumno.dos@sce.test');
     cy.visit('/inscripcion');
+    cy.get('input[name=grupos]').uncheck(); // si ya hubo un rechazo, su carga viene marcada
     oferta('ISW-701-B').check();
     cy.contains('button', 'Enviar carga').click();
     cy.get('[role=alert]').should('contain', 'Tienes un adeudo vigente');

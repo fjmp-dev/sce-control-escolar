@@ -250,6 +250,6 @@ export async function enviarCarga(_: EstadoDeFormulario, datos: FormData): Promi
   }
   revalidatePath('/inscripcion');
   return {
-    exito: folio ? 'Carga ajustada y validada de nuevo.' : 'Inscripción confirmada. Tu comprobante está abajo.',
+    exito: folio ? 'Carga ajustada y validada de nuevo.' : 'Inscripción confirmada. Ya puedes imprimir tu comprobante.',
   };
 }
