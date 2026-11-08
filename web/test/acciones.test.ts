@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   agregarPrerrequisito,
+  altaExpediente,
+  cambiarEstatusDeExpediente,
+  cambiarPlantel,
+  vincularCuenta,
   altaUsuario,
   cambiarContrasena,
   cambiarUsuario,
@@ -230,5 +234,60 @@ describe('entradas inesperadas', () => {
     datos.append('clave', new File(['contenido'], 'a.txt'));
     await crearFacultad({}, datos);
     expect(enviado(espia).cuerpo).toEqual({ clave: '', nombre: 'Uno' });
+  });
+});
+
+describe('expediente (RF-001, contrato de la API)', () => {
+  const ALTA = { matricula: '2420011', nombre: 'Ana', facultadClave: 'CUTG', fechaIngreso: '2025-08-04' };
+  it.each([
+    [
+      'alta sin cuenta',
+      altaExpediente,
+      { ...ALTA, correo: '' },
+      { ruta: '/alumnos', metodo: 'POST', cuerpo: ALTA },
+      'Expediente 2420011 creado.',
+    ],
+    [
+      'alta con cuenta',
+      altaExpediente,
+      { ...ALTA, correo: 'a@b.mx' },
+      { ruta: '/alumnos', metodo: 'POST', cuerpo: { ...ALTA, correo: 'a@b.mx' } },
+      'Expediente 2420011 creado.',
+    ],
+    [
+      'cambio de plantel',
+      cambiarPlantel,
+      { matricula: '2420001', facultadClave: 'FSD' },
+      { ruta: '/alumnos/2420001/facultad', metodo: 'PUT', cuerpo: { facultadClave: 'FSD' } },
+      'Cambio de plantel a FSD registrado.',
+    ],
+    [
+      'estatus',
+      cambiarEstatusDeExpediente,
+      { matricula: '2420001', estatus: 'egresado' },
+      { ruta: '/alumnos/2420001/estatus', metodo: 'PUT', cuerpo: { estatus: 'egresado' } },
+      'Estatus actualizado.',
+    ],
+    [
+      'vinculo de cuenta',
+      vincularCuenta,
+      { matricula: '2420001', correo: 'a@b.mx' },
+      { ruta: '/alumnos/2420001/cuenta', metodo: 'PUT', cuerpo: { correo: 'a@b.mx' } },
+      'Cuenta a@b.mx vinculada.',
+    ],
+  ])('%s', async (_, accion, datos, esperado, mensaje) => {
+    const espia = responder(200, {});
+    expect(await accion({}, formulario(datos))).toEqual({ exito: mensaje });
+    expect(enviado(espia)).toEqual(esperado);
+    expect(m.revalidar).toHaveBeenCalledWith(esperado.ruta === '/alumnos' ? '/expedientes' : '/expedientes/2420001');
+  });
+
+  it('una regla de negocio rechazada se muestra con su causa', async () => {
+    responder(409, { codigo: 'EXPEDIENTE_NO_ACTIVO', mensaje: 'Solo un alumno activo cambia de plantel.' });
+    expect(await cambiarPlantel({}, formulario({ matricula: '2420001', facultadClave: 'FSD' }))).toEqual({
+      error: 'Solo un alumno activo cambia de plantel.',
+      campos: [],
+      valores: undefined,
+    });
   });
 });

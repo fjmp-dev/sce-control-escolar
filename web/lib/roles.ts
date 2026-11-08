@@ -46,8 +46,28 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
     etiqueta,
     descripcion: puedeDarDeAlta(catalogo, roles) ? 'Consultar y dar de alta' : 'Consultar',
   }));
-  const usuarios = roles.includes('administrador')
-    ? [{ ruta: '/usuarios', etiqueta: 'Usuarios', descripcion: 'Dar de alta, cambiar roles y dar de baja' }]
-    : [];
-  return [...usuarios, ...catalogos, { ruta: '/contrasena', etiqueta: 'Mi contraseña', descripcion: 'Cambiarla' }];
+  const propios: Enlace[] = [
+    ...(roles.includes('alumno')
+      ? [
+          {
+            ruta: '/mi-expediente',
+            etiqueta: 'Mi expediente',
+            descripcion: 'Consultar tus datos, historial y trayectoria',
+          },
+        ]
+      : []),
+    ...(roles.includes('control_escolar')
+      ? [
+          {
+            ruta: '/expedientes',
+            etiqueta: 'Expedientes',
+            descripcion: 'Buscar, dar de alta, cambiar de plantel y de estatus',
+          },
+        ]
+      : []),
+    ...(roles.includes('administrador')
+      ? [{ ruta: '/usuarios', etiqueta: 'Usuarios', descripcion: 'Dar de alta, cambiar roles y dar de baja' }]
+      : []),
+  ];
+  return [...propios, ...catalogos, { ruta: '/contrasena', etiqueta: 'Mi contraseña', descripcion: 'Cambiarla' }];
 }

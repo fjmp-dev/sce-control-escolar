@@ -2,24 +2,29 @@
 const COMUNES = ['Inicio', 'Facultades', 'Planes de estudio', 'Materias', 'Periodos', 'Mi contraseña'];
 
 const CUENTAS = [
-  { cuenta: 'alumno', rol: 'Alumno', altas: [] },
-  { cuenta: 'profesor', rol: 'Profesor', altas: [] },
-  { cuenta: 'control.escolar', rol: 'Control escolar', altas: [] },
-  { cuenta: 'coordinacion', rol: 'Coordinación académica', altas: ['/materias', '/periodos'] },
-  { cuenta: 'caja', rol: 'Caja', altas: [] },
-  { cuenta: 'direccion', rol: 'Dirección', altas: [] },
-  { cuenta: 'administrador', rol: 'Administrador del sistema', altas: ['/facultades', '/planes'] },
+  { cuenta: 'alumno', rol: 'Alumno', altas: [], propios: ['Mi expediente'] },
+  { cuenta: 'profesor', rol: 'Profesor', altas: [], propios: [] },
+  { cuenta: 'control.escolar', rol: 'Control escolar', altas: [], propios: ['Expedientes'] },
+  { cuenta: 'coordinacion', rol: 'Coordinación académica', altas: ['/materias', '/periodos'], propios: [] },
+  { cuenta: 'caja', rol: 'Caja', altas: [], propios: [] },
+  { cuenta: 'direccion', rol: 'Dirección', altas: [], propios: [] },
+  {
+    cuenta: 'administrador',
+    rol: 'Administrador del sistema',
+    altas: ['/facultades', '/planes'],
+    propios: ['Usuarios'],
+  },
 ];
 
 describe('Demostracion por rol', () => {
-  for (const { cuenta, rol, altas } of CUENTAS) {
+  for (const { cuenta, rol, altas, propios } of CUENTAS) {
     it(`${rol}: inicia sesion, ve solo lo suyo y cierra sesion`, () => {
       const esAdministrador = cuenta === 'administrador';
       cy.iniciar(`${cuenta}@sce.test`);
       cy.contains(rol);
       cy.get('nav a')
         .then((enlaces) => [...enlaces].map((a) => a.textContent))
-        .should('deep.equal', esAdministrador ? ['Inicio', 'Usuarios', ...COMUNES.slice(1)] : COMUNES);
+        .should('deep.equal', ['Inicio', ...propios, ...COMUNES.slice(1)]);
       cy.screenshot(`rol-${cuenta}-inicio`);
 
       for (const pagina of ['/facultades', '/planes', '/materias', '/periodos']) {
@@ -36,6 +41,12 @@ describe('Demostracion por rol', () => {
         cy.contains('Tu rol no incluye esa función');
       }
       cy.screenshot(`rol-${cuenta}-usuarios`);
+
+      // RF-001: solo control escolar administra expedientes; el alumno solo consulta el suyo.
+      cy.visit('/expedientes');
+      cy.location('pathname').should('eq', cuenta === 'control.escolar' ? '/expedientes' : '/sin-permiso');
+      cy.visit('/mi-expediente');
+      cy.location('pathname').should('eq', cuenta === 'alumno' ? '/mi-expediente' : '/sin-permiso');
 
       cy.contains('button', 'Cerrar sesión').click();
       cy.location('pathname').should('eq', '/ingresar');

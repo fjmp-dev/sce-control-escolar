@@ -23,9 +23,13 @@ describe('El portal ofrece lo que la matriz rol por endpoint permite (AU-15)', (
     expect([...ALTAS[catalogo]].sort()).toEqual(rolesPermitidos('POST', `/${catalogo}`).sort());
   });
 
-  it('usuarios: solo quien puede listarlos los ve en el menu', () => {
-    const conUsuarios = ROLES.filter((rol) => menuDe([rol]).some((enlace) => enlace.ruta === '/usuarios'));
-    expect(conUsuarios).toEqual(rolesPermitidos('GET', '/usuarios'));
+  it.each([
+    ['/usuarios', 'GET', '/usuarios'],
+    ['/expedientes', 'GET', '/alumnos'],
+    ['/mi-expediente', 'GET', '/alumnos/actual'],
+  ])('%s: solo quien puede consultar %s %s lo ve en el menu', (pagina, metodo, ruta) => {
+    const conPagina = ROLES.filter((rol) => menuDe([rol]).some((enlace) => enlace.ruta === pagina));
+    expect(conPagina).toEqual(rolesPermitidos(metodo, ruta));
   });
 
   it('todos los roles del contrato tienen etiqueta legible, sin diccionario tecnico (Tabla 16)', () => {

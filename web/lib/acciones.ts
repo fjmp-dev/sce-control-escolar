@@ -165,3 +165,50 @@ export async function cambiarUsuario(_: EstadoDeFormulario, datos: FormData) {
     roles: elegidos,
   });
 }
+
+export async function altaExpediente(_: EstadoDeFormulario, datos: FormData) {
+  const valores = {
+    matricula: texto(datos, 'matricula'),
+    nombre: texto(datos, 'nombre'),
+    facultadClave: texto(datos, 'facultadClave'),
+    fechaIngreso: texto(datos, 'fechaIngreso'),
+    correo: texto(datos, 'correo'),
+  };
+  const { correo, ...resto } = valores;
+  const cuerpo: Esquemas['AltaAlumnoDto'] = correo ? { ...resto, correo } : resto;
+  return enviar('POST', '/alumnos', cuerpo, '/expedientes', `Expediente ${valores.matricula} creado.`, valores);
+}
+
+const rutaDeExpediente = (datos: FormData) => `/alumnos/${encodeURIComponent(texto(datos, 'matricula'))}`;
+const paginaDeExpediente = (datos: FormData) => `/expedientes/${encodeURIComponent(texto(datos, 'matricula'))}`;
+
+export async function cambiarPlantel(_: EstadoDeFormulario, datos: FormData) {
+  const cuerpo: Esquemas['CambioDePlantelDto'] = { facultadClave: texto(datos, 'facultadClave') };
+  return enviar(
+    'PUT',
+    `${rutaDeExpediente(datos)}/facultad`,
+    cuerpo,
+    paginaDeExpediente(datos),
+    `Cambio de plantel a ${cuerpo.facultadClave} registrado.`,
+  );
+}
+
+export async function cambiarEstatusDeExpediente(_: EstadoDeFormulario, datos: FormData) {
+  const cuerpo: Esquemas['CambioDeEstatusDto'] = {
+    estatus: texto(datos, 'estatus') as Esquemas['CambioDeEstatusDto']['estatus'],
+  };
+  return enviar('PUT', `${rutaDeExpediente(datos)}/estatus`, cuerpo, paginaDeExpediente(datos), 'Estatus actualizado.');
+}
+
+export async function vincularCuenta(_: EstadoDeFormulario, datos: FormData) {
+  const correo = texto(datos, 'correo');
+  const cuerpo: Esquemas['VinculoDeCuentaDto'] = { correo };
+  return enviar(
+    'PUT',
+    `${rutaDeExpediente(datos)}/cuenta`,
+    cuerpo,
+    paginaDeExpediente(datos),
+    `Cuenta ${correo} vinculada.`,
+    { correo },
+  );
+}

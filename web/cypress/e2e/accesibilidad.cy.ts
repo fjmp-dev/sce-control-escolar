@@ -31,6 +31,24 @@ describe('Accesibilidad', () => {
     cy.revisarAxe('administrador-usuarios-con-errores');
   });
 
+  it('axe: expedientes de control escolar, con y sin errores, y mi expediente', () => {
+    cy.iniciar('control.escolar@sce.test');
+    cy.visit('/expedientes?buscar=2420');
+    cy.get('h1');
+    cy.revisarAxe('control-escolar-expedientes');
+    cy.contains('button', 'Dar de alta').click();
+    cy.get('[role=alert]');
+    cy.revisarAxe('control-escolar-expedientes-con-errores');
+    cy.visit('/expedientes/2420003');
+    cy.get('h1');
+    cy.revisarAxe('control-escolar-expediente');
+    cy.contains('button', 'Cerrar sesión').click();
+    cy.iniciar('alumno@sce.test');
+    cy.visit('/mi-expediente');
+    cy.get('h1');
+    cy.revisarAxe('alumno-mi-expediente');
+  });
+
   it('axe: paginas de coordinacion y de alumno, y sin permiso', () => {
     cy.iniciar('coordinacion@sce.test');
     for (const pagina of ['/materias', '/periodos']) {
@@ -96,6 +114,17 @@ describe('Accesibilidad', () => {
       }
       cy.visit('/usuarios');
       cy.screenshot(`usuarios-${ancho}x${alto}`, { capture: 'fullPage' });
+      cy.contains('button', 'Cerrar sesión').click();
+      cy.iniciar('control.escolar@sce.test');
+      for (const pagina of ['/expedientes?buscar=2420', '/expedientes/2420003']) {
+        cy.visit(pagina);
+        cy.get('h1');
+        cy.document().then((documento) => {
+          const raiz = documento.documentElement;
+          expect(raiz.scrollWidth, `desborde horizontal en ${pagina}`).to.be.at.most(raiz.clientWidth);
+        });
+      }
+      cy.screenshot(`expediente-${ancho}x${alto}`, { capture: 'fullPage' });
     });
   }
 });

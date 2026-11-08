@@ -78,6 +78,7 @@ export function Campo({
   ayuda,
   tipo = 'text',
   autoComplete,
+  opcional = false,
 }: {
   nombre: string;
   etiqueta: string;
@@ -85,6 +86,7 @@ export function Campo({
   ayuda?: string;
   tipo?: HTMLInputTypeAttribute;
   autoComplete?: string;
+  opcional?: boolean;
 }) {
   const { id, invalido, describe, valor } = useCampo(nombre, ayuda);
   return (
@@ -95,7 +97,7 @@ export function Campo({
         id={id}
         name={nombre}
         type={tipo}
-        required
+        required={!opcional}
         autoComplete={autoComplete}
         aria-invalid={invalido || undefined}
         aria-describedby={describe}
