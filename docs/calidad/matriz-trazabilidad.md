@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.2, 6 de noviembre de 2026.
+**Versión:** 2.3, 7 de noviembre de 2026.
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 
@@ -131,6 +131,7 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 - `docs/calidad/revision-cs-seg-08.md`: revisión manual de CS-SEG-08.
 - `docs/calidad/accesibilidad.md`: lista de 28.1, hallazgos y compatibilidad (AU-32).
 - `docs/calidad/informe-fase-1.md`: tablero de la Tabla 59 y lista de QA.
+- `docs/gobierno/respuesta-a-incidentes.md`: procedimiento de la Tabla 38 (AU-18).
 - `docs/api/openapi.json`: contrato de la API, generado desde los decoradores (14.4).
 
 ---

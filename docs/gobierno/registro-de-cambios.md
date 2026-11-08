@@ -28,6 +28,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-013 | [#38](https://github.com/fjmp-dev/sce-control-escolar/issues/38) | Persistir el rechazo de la inscripción | Mayor o Must | PO y QA | Batch 5 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
 | CC-014 | [#39](https://github.com/fjmp-dev/sce-control-escolar/issues/39) | Dependencias en las Figuras 2 y 9 | Documental | PO y QA | Batch 0 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
 | CC-015 | [#40](https://github.com/fjmp-dev/sce-control-escolar/issues/40) | Usuario técnico sin rol | Mayor o Must | PO, QA y Seguridad | Batch 2 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
+| CC-016 | Sin issue: `cambios/CC-016.md` | Operación `cambiarEstatus` del alumno en la Fig. 3 | Documental | PO y QA | Batch 4 | Solicitado; pendiente de aprobación. Figura ya actualizada |
 
 Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15)). Ninguno modifica un requisito RF o RNF, la política de calidad ni el alcance de la primera versión.
 
@@ -36,6 +37,8 @@ Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://gith
 **Implementación del 6 de noviembre de 2026 (Batch 2, [#42](https://github.com/fjmp-dev/sce-control-escolar/issues/42)):** CC-007, CC-010 y CC-015, en la migración `20261106120000_identidad_y_bitacora` y los módulos `identidad/`, `bitacora/` y `academico/`. **Su código no se fusiona sin la aprobación de la tabla de abajo.** CC-014 y CC-015 se ampliaron: la Fig. 2 dibuja la dependencia del gateway hacia persistencia para `/salud`, y el usuario técnico también firma los accesos fallidos.
 
 **Implementación del 6 de noviembre de 2026 (Batch 3, [#43](https://github.com/fjmp-dev/sce-control-escolar/issues/43)):** Next.js 16 y React 19 (CC-006) en `web/`, y la conexión del servidor Next.js a la API (CC-014). Versiones adoptadas: `plan-de-pruebas.md`, sección 4. Prerrequisitos en la API y regla de no circularidad: no cambia el modelo de datos.
+
+**Implementación del 7 de noviembre de 2026 (Batch 4, [#44](https://github.com/fjmp-dev/sce-control-escolar/issues/44)):** expediente único (RF-001) sin cambios al modelo de datos. CC-014 se amplía con la dependencia del expediente hacia identidad, y CC-016 añade `cambiarEstatus` a la Fig. 3. **El batch abre la fase 2 sin el acta de la fase 1 firmada:** NC-009.
 
 **Desviación registrada:** CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 
@@ -62,3 +65,4 @@ Se llena al aprobar cada cambio. Quien aprueba no es quien solicitó el cambio (
 | CC-013 | | | | No aplica | |
 | CC-014 | | | | No aplica | |
 | CC-015 | | | | | |
+| CC-016 | | | | No aplica | |

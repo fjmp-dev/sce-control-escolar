@@ -1,9 +1,9 @@
 # Modelo de amenazas STRIDE — SCE
 
 **Fuente:** SCE-MC-001 v2.0, Tabla 37 ("riesgos de seguridad por componente"), sección 18 y Tabla 28.
-**Versión:** 1.1, 6 de noviembre de 2026 (Batch 3). Se actualiza en cada batch que agrega un componente: expediente (4), inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
+**Versión:** 1.2, 7 de noviembre de 2026 (Batch 4). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
 
-Cubre lo que ya existe: portal, gateway, identidad y acceso, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
+Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
 
 | Componente | Tipo | Amenaza | Control | Evidencia | Riesgo que queda |
 |---|---|---|---|---|---|
@@ -27,6 +27,10 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, catálogos, bitáco
 | Gateway | I | Trazas o secretos en errores | Filtro global: código de negocio y mensaje fijo, sin eco de la entrada | CS-SEG-05, `gateway.spec.ts` | — |
 | Gateway | I | Datos sensibles en registros | Solo método, plantilla de ruta, estado, duración, id de usuario y código; en errores, nombre y pila sin mensaje | CS-SEG-08, `gateway.spec.ts` y comprobación tras el escaneo de ZAP | El id de usuario es un identificador interno, no un dato personal directo |
 | Gateway | D | Cuerpos enormes | Límite del lector del cuerpo, que responde 413, y largo máximo por campo | `gateway.spec.ts` | Sin límite de peticiones por origen hasta nginx (Batch 13). También permitiría llenar la bitácora con accesos fallidos |
+| Expediente | I | Un alumno lee el expediente de otro cambiando la matrícula (18.2) | Ninguna ruta acepta matrícula del rol alumno: `/alumnos/actual` la toma de la sesión | CS-SEG-03 con Supertest y Cypress | ZAP no prueba acceso cruzado; Batch 12 |
+| Expediente | T | Duplicar o perder un expediente al cambiar de plantel (RK-01) | Matrícula como clave primaria; el cambio modifica el mismo registro | CF-EXP-01, CD-DAT-01, Great Expectations | — |
+| Expediente | R | Negar un cambio de plantel o de estatus | Bitácora con autor y valor anterior en la misma transacción | CF-EXP-01, CS-SEG-06 en plantel | Un cambio directo en la base no deja asiento: pgAudit (Batch 6) |
+| Expediente | I | Exposición excesiva en búsquedas | La búsqueda devuelve solo matrícula, nombre, facultad y estatus, hasta 50 | `expediente.spec.ts` | — |
 | Catálogos | T | Altas fuera de rol | Solo administrador (facultades y planes) o coordinación (materias y periodos) | CF-ROL-01 | — |
 | Bitácora | T | Alterar o borrar asientos | Disparadores que rechazan UPDATE, DELETE y TRUNCATE | Control de RK-03 | Un superusuario de la base puede desactivarlos. pgAudit en staging (Batch 6) |
 | Bitácora | R | Negar una operación | Autor, acción, valor anterior y fecha, en la misma transacción que la operación: si la bitácora falla, la operación se revierte | `seguridad.spec.ts`, `usuarios.spec.ts` | — |

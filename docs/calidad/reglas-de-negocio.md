@@ -20,7 +20,7 @@ Son propuestas del equipo, no reglas de la UAEM. **El Product Owner debe contras
 | D-8 | Los créditos del plan son los del plan de las materias que el alumno cursa | La Fig. 8 no liga alumno con plan de estudios | Batch 8 | Por ratificar |
 | D-9 | `evento.id` de la Fig. 5 se interpreta como `external_reference` = `clave_idempotencia`, generada al crear el intento | Mercado Pago identifica el pago con otro id; el webhook consulta el pago y lee esa referencia | Batch 9 | Por ratificar |
 | D-10 | Adeudo vigente = saldo mayor que cero. Máximo 4 parciales por materia | La Fig. 6 dice "adeudo vigente" sin definirlo; la restricción de la base ya limita los parciales de 1 a 4 | Batches 5 y 8 | Por ratificar |
-| D-11 | Formatos: matrícula de 7 a 10 dígitos; clave de materia alfanumérica con guion (`ISW-101`); periodo con año de cuatro dígitos más A o B (`2027A`) | La Tabla 16 pide seguir "el catálogo institucional", que el equipo no tiene | Batch 3 | Aplicada de forma provisional en claves de catálogo y periodo; la matrícula llega en el Batch 4. Por ratificar con el catálogo real |
+| D-11 | Formatos: matrícula de 7 a 10 dígitos; clave de materia alfanumérica con guion (`ISW-101`); periodo con año de cuatro dígitos más A o B (`2027A`) | La Tabla 16 pide seguir "el catálogo institucional", que el equipo no tiene | Batch 3 | Aplicada de forma provisional en claves de catálogo, periodo y matrícula, y verificada por Great Expectations. Por ratificar con el catálogo real |
 | D-12 | El intento de pago "sobre un movimiento" (Fig. 5) se liga al cargo mediante `referencia`, sin columna nueva | El modelo no liga pago con cargo; `movimiento.pago_id` solo liga el abono | Batch 9 | Por ratificar |
 | D-13 | Al definir grupos, aula y profesor no pueden traslaparse en el mismo periodo | La Tabla 29 solo dice "restricciones de cupo y traslape" | Batch 7 | Por ratificar |
 | D-14 | Control escolar consulta inscripciones. La Tabla 5 dice que las "administra", y la Figura 1 no le da caso de uso de inscripción. El PO define si además puede ajustarlas | Hay que fijar el alcance antes de construir la pantalla | Batch 5 | Por decidir |
@@ -35,8 +35,8 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 
 | ID | Regla | Fuente | Caso | Batch | Prueba integrada |
 |---|---|---|---|---|---|
-| R-01 | Un solo expediente por matrícula | RF-001, Fig. 8 | CF-EXP-01, CD-DAT-01 | 1 y 4 | Parcial: CD-DAT-01 |
-| R-02 | El cambio de plantel no duplica el expediente ni pierde historial | RF-001, RK-01 | CF-EXP-01 | 4 | No |
+| R-01 | Un solo expediente por matrícula | RF-001, Fig. 8 | CF-EXP-01, CD-DAT-01 | 1 y 4 | Sí |
+| R-02 | El cambio de plantel no duplica el expediente ni pierde historial | RF-001, RK-01 | CF-EXP-01 | 4 | Sí |
 | R-03 | Sin prerrequisitos obligatorios no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | No |
 | R-04 | Con adeudo vigente no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | No |
 | R-05 | Con choque de horario no se confirma la carga, y se avisa antes | RF-003, Fig. 4 | CF-HOR-01 | 5 y 7 | No |
@@ -55,12 +55,12 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 | R-18 | La autorización se comprueba por rol y se deniega por omisión | RF-008, 14.1-7 | CI-AUTH-01, CF-ROL-01 | 2 | Sí, matriz completa sobre lo que existe |
 | R-19 | Toda operación requiere autenticación; ningún endpoint Must es anónimo | RNF-SEG-001, Tabla 38 | CS-SEG-04 | 2 | Sí, con Newman |
 | R-20 | La sesión expira y un token revocado no se reutiliza | Tabla 38 | CS-SEG-07 | 2 | Sí |
-| R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9 y 10 | No |
+| R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9 y 10 | Parcial: cambio de plantel |
 | R-22 | La bitácora es inmutable | Tabla 29, RK-03 | Control de RK-03 | 1 | Sí |
-| R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4 | No |
-| R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | No |
+| R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4 | Sí, sobre el expediente |
+| R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | Parcial: hasta que existan calificaciones y pagos |
 
-**Situación al 6 de noviembre de 2026, en la rama del Batch 2: 4 de 24 con prueba completa (R-18, R-19, R-20 y R-22), 1 parcial (R-01).** Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
+**Situación al 7 de noviembre de 2026, en la rama del Batch 4: 7 de 24 con prueba completa (R-01, R-02, R-18, R-19, R-20, R-22 y R-23) y 2 parciales (R-21 y R-24).** Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
 
 ---
 

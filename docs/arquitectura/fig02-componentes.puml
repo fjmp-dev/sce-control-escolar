@@ -62,6 +62,7 @@ DEXP ..> DPAG : validar adeudos (Fig. 4)
 DTRA ..> DPAG : saldo para no adeudo
 IAM --> SBIT
 GW ..> PERS : /salud (Tabla 57)
+DEXP ..> IAM : cuenta del alumno
 
 note right of PORTAL
   Interfaces diferenciadas por rol.

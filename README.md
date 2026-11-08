@@ -47,6 +47,7 @@ api/                NestJS + Prisma (sección 3.6)
   src/
     gateway/              Validación, errores con código de negocio, registros JSON y /salud
     identidad/            Sesiones, usuarios y guard por rol (RF-008); dominio puro en dominio/
+    expediente/           Expediente único, cambio de plantel y estatus (RF-001)
     academico/            Catálogos: facultades, planes, materias y periodos
     bitacora/             Servicio de bitácora (Tabla 28)
     persistencia/         Prisma y transacción compartida entre repositorios
@@ -98,6 +99,7 @@ docs/
     plan-de-trabajo.md        Calendario por fases y backlog priorizado
     roles-y-raci.md           Los seis roles con personas asignadas
     registro-de-cambios.md    Solicitudes de cambio CC (sección 16)
+    respuesta-a-incidentes.md Procedimiento de la Tabla 38
     registro-aprobacion-manual-v2.0.md  Revisión y aprobación del manual (sección 1.2)
     actas/                    Actas de aceptación de fase y de sprint
     notas-version/            Notas de cada etiqueta vX.Y.Z (14.4)
@@ -113,7 +115,7 @@ Con Docker instalado:
 docker compose up --build    # Portal en http://localhost:3000 y API en http://localhost:3001, migrada y con seed
 ```
 
-Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, todas con la contraseña `sce-dev-2026`. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
 
 ## Levantar el ambiente de desarrollo
 
@@ -146,6 +148,7 @@ npm run dev                   # portal en :3000, contra API_URL (ver .env.exampl
 | `scripts/humo.sh` | Salud e inicio de sesión de cada rol, contra Compose |
 | `scripts/cypress.sh` | Extremo a extremo y axe, contra Compose; video y capturas en `reportes/cypress/` |
 | `scripts/lighthouse.sh` | Lighthouse contra Compose; requiere Chrome. Informe en `reportes/lighthouse/` |
+| `scripts/calidad-datos.sh` | Great Expectations contra la base de Compose; Data Docs en `reportes/calidad-datos/` |
 | `scripts/newman.sh` | Contratos de API y CS-SEG-04, contra Compose; reporte HTML en `reportes/newman/` |
 | `scripts/zap.sh` | OWASP ZAP (CS-SEG-05) contra Compose; informe en `reportes/zap/`. Tarda unos minutos |
 | `scripts/gitleaks-historial.sh` | Gitleaks sobre todas las ramas y todo el historial |

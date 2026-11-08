@@ -26,6 +26,7 @@ class Alumno {
   + fecha_ingreso : date
   + estatus : EstatusAlumno
   + cambiarFacultad(destino) : void
+  + cambiarEstatus(nuevo) : void
   + avanceCarrera() : decimal
 }
 
