@@ -31,9 +31,12 @@ export class InscripcionRepository {
       .inscripcion.findUnique({ where: { matricula_periodoClave: { matricula, periodoClave } }, select: INSCRIPCION });
   }
 
-  /** Bloquea la fila hasta el COMMIT y la relee: dos envíos del mismo alumno se escriben uno después del otro. */
+  /**
+   * Candado por folio hasta el COMMIT, aunque la fila todavía no exista: dos envíos del mismo alumno se escriben
+   * uno después del otro, y el segundo relee lo que dejó el primero.
+   */
   async bloquear(folio: string) {
-    await this.prisma.cliente().$queryRaw`SELECT folio FROM inscripcion WHERE folio = ${folio} FOR UPDATE`;
+    await this.prisma.cliente().$queryRaw`SELECT 1 AS bloqueado FROM pg_advisory_xact_lock(hashtext(${folio}))`;
     return this.porFolio(folio);
   }
 

@@ -1,7 +1,7 @@
 import { applyDecorators, Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsInt, Matches, Min } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, ArrayUnique, IsInt, Matches, Max, Min } from 'class-validator';
 import { ApiErrores } from '../gateway/validacion';
 import { Roles } from '../identidad/autenticacion.guard';
 import { describirChoque } from './dominio/oferta';
@@ -21,6 +21,7 @@ export const IdsDeGrupo = () =>
     Transform(({ value }: { value: unknown }) => [value].flat().map(Number)),
     IsInt({ each: true }),
     Min(1, { each: true }),
+    Max(Number.MAX_SAFE_INTEGER, { each: true }), // `1e20` es entero para JavaScript y desborda el bigint de la base
     ArrayMinSize(1),
     ArrayMaxSize(MAXIMO_DE_GRUPOS),
     ArrayUnique(),

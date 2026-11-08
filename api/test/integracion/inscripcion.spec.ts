@@ -283,6 +283,9 @@ describe('CI-API-01: la inscripcion confirmada persiste la carga y deja traza; s
     const respuestas = await Promise.all([inscribir(a.token, [g.id]), inscribir(a.token, [g.id])]);
 
     expect(respuestas.map((r) => r.status).sort()).toEqual([201, 409]);
+    expect(['INSCRIPCION_CAMBIADA', 'TRANSICION_INVALIDA']).toContain(
+      respuestas.find((r) => r.status === 409)?.body.codigo,
+    );
     expect(await prisma.inscripcion.count({ where: { matricula: a.matricula } })).toBe(1);
     expect(await ocupacion(g.id)).toBe(1);
   });
@@ -448,6 +451,8 @@ describe('Oferta y aviso de choque antes de enviar (CF-HOR-01)', () => {
       (await http().get(`/grupos/choques?grupos=${a1.id}`).set('Authorization', a.token).expect(200)).body,
     ).toEqual([]);
     await http().get('/grupos/choques?grupos=uno').set('Authorization', a.token).expect(400);
+    await http().get('/grupos/choques?grupos=1e20').set('Authorization', a.token).expect(400);
+    await inscribir(a.token, [1e20]).expect(400);
     expect(await prisma.inscripcion.count({ where: { matricula: a.matricula } })).toBe(0);
   });
 });
