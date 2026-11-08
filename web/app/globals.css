@@ -223,8 +223,25 @@ main:focus {
   background: var(--tenue);
 }
 
-.formulario > .boton {
-  justify-self: start;
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.estado-inscripcion {
+  padding: 0.75rem 1rem;
+  border-left: 0.25rem solid var(--azul);
+  background: var(--tenue);
+}
+
+/* El comprobante se imprime sin menú ni formularios (Fig. 4). */
+@media print {
+  .cabecera,
+  form,
+  .no-imprimir {
+    display: none;
+  }
 }
 
 .campo {

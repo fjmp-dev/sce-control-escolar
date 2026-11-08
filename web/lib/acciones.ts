@@ -212,3 +212,44 @@ export async function vincularCuenta(_: EstadoDeFormulario, datos: FormData) {
     { correo },
   );
 }
+
+async function revisarChoques(grupos: number[], valores: EstadoDeFormulario['valores']): Promise<EstadoDeFormulario> {
+  if (grupos.length === 0) return { error: 'Revisa los campos marcados.', campos: ['grupos'], valores };
+  try {
+    const consulta = grupos.map((id) => `grupos=${encodeURIComponent(id)}`).join('&');
+    const choques = await llamar<Esquemas['ChoqueRespuesta'][]>('GET', `/grupos/choques?${consulta}`);
+    if (choques.length === 0) return { exito: 'Tu carga no tiene choques de horario. Ya puedes enviarla.', valores };
+    const lista = choques.map((choque) => choque.descripcion).join('; ');
+    return { aviso: `Tu carga tiene choques de horario: ${lista}. Si la envías así, se rechazará.`, valores };
+  } catch (error) {
+    return aEstado(error, valores);
+  }
+}
+
+/**
+ * RF-002 (Fig. 4 y 6). "Revisar choques" avisa antes de enviar (CF-HOR-01). Al enviar, un rechazo también queda
+ * guardado en la API (CC-013), así que la página se vuelve a leer aunque la respuesta sea un error.
+ */
+export async function enviarCarga(_: EstadoDeFormulario, datos: FormData): Promise<EstadoDeFormulario> {
+  const elegidos = datos.getAll('grupos').map(String);
+  const grupos = elegidos.map(Number);
+  const valores = { grupos: elegidos };
+  if (datos.get('intencion') === 'revisar') return revisarChoques(grupos, valores);
+  const folio = texto(datos, 'folio');
+  try {
+    if (folio) {
+      const cuerpo: Esquemas['CargaDto'] = { grupos };
+      await llamar('PUT', `/inscripciones/${encodeURIComponent(folio)}/grupos`, cuerpo);
+    } else {
+      const cuerpo: Esquemas['InscripcionDto'] = { periodoClave: texto(datos, 'periodoClave'), grupos };
+      await llamar('POST', '/inscripciones', cuerpo);
+    }
+  } catch (error) {
+    revalidatePath('/inscripcion');
+    return aEstado(error, valores);
+  }
+  revalidatePath('/inscripcion');
+  return {
+    exito: folio ? 'Carga ajustada y validada de nuevo.' : 'Inscripción confirmada. Tu comprobante está abajo.',
+  };
+}

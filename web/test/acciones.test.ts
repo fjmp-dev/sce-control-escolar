@@ -9,6 +9,7 @@ import {
   cambiarContrasena,
   cambiarUsuario,
   cerrarSesion,
+  enviarCarga,
   crearFacultad,
   crearMateria,
   crearPeriodo,
@@ -289,5 +290,79 @@ describe('expediente (RF-001, contrato de la API)', () => {
       campos: [],
       valores: undefined,
     });
+  });
+});
+
+describe('enviarCarga (RF-002, contrato de la API)', () => {
+  it('sin folio inscribe con el periodo y los grupos como numeros, y vuelve a leer la pagina', async () => {
+    const espia = responder(201, { folio: 'INS-2027A-2420001' });
+    const estado = await enviarCarga({}, formulario({ periodoClave: '2027A', grupos: ['2', '5'] }));
+    expect(enviado(espia)).toEqual({
+      ruta: '/inscripciones',
+      metodo: 'POST',
+      cuerpo: { periodoClave: '2027A', grupos: [2, 5] },
+    });
+    expect(estado.exito).toContain('Inscripción confirmada');
+    expect(m.revalidar).toHaveBeenCalledWith('/inscripcion');
+  });
+
+  it('con folio ajusta la carga con PUT y escapa el folio', async () => {
+    const espia = responder(200, {});
+    const estado = await enviarCarga({}, formulario({ folio: 'INS 1', grupos: ['5'] }));
+    expect(enviado(espia)).toEqual({ ruta: '/inscripciones/INS%201/grupos', metodo: 'PUT', cuerpo: { grupos: [5] } });
+    expect(estado.exito).toContain('ajustada');
+  });
+
+  it('un rechazo muestra la causa de la API, conserva lo elegido y vuelve a leer la pagina (CC-013)', async () => {
+    responder(409, {
+      codigo: 'INSCRIPCION_RECHAZADA',
+      mensaje: 'Tienes un adeudo vigente. Consulta tu estado de cuenta en caja.',
+      folio: 'F',
+      estado: 'rechazada',
+      motivo: 'adeudo',
+    });
+    const estado = await enviarCarga({}, formulario({ periodoClave: '2027A', grupos: ['2'] }));
+    expect(estado).toEqual({
+      error: 'Tienes un adeudo vigente. Consulta tu estado de cuenta en caja.',
+      campos: [],
+      valores: { grupos: ['2'] },
+    });
+    expect(m.revalidar).toHaveBeenCalledWith('/inscripcion');
+  });
+
+  it('revisar choques no inscribe: consulta la revision y avisa con el detalle', async () => {
+    const espia = responder(200, [
+      { grupos: [2, 4], dia: 1, desde: '08:00', hasta: '09:00', descripcion: 'A y B se traslapan el lunes' },
+    ]);
+    const estado = await enviarCarga(
+      {},
+      formulario({ intencion: 'revisar', periodoClave: '2027A', grupos: ['2', '4'] }),
+    );
+    expect(enviado(espia)).toMatchObject({ ruta: '/grupos/choques?grupos=2&grupos=4', metodo: 'GET' });
+    expect(estado.aviso).toBe(
+      'Tu carga tiene choques de horario: A y B se traslapan el lunes. Si la envías así, se rechazará.',
+    );
+    expect(estado.valores).toEqual({ grupos: ['2', '4'] });
+    expect(m.revalidar).not.toHaveBeenCalled();
+  });
+
+  it('revisar sin choques confirma que se puede enviar; sin grupos marca el campo y no llama a la API', async () => {
+    responder(200, []);
+    expect((await enviarCarga({}, formulario({ intencion: 'revisar', grupos: '7' }))).exito).toContain(
+      'no tiene choques',
+    );
+    const espia = responder(200, []);
+    expect(await enviarCarga({}, formulario({ intencion: 'revisar' }))).toMatchObject({ campos: ['grupos'] });
+    expect(espia).not.toHaveBeenCalled();
+  });
+
+  it('si la API no contesta al revisar, lo explica', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Promise.reject(new Error('sin red'))),
+    );
+    expect((await enviarCarga({}, formulario({ intencion: 'revisar', grupos: '7' }))).error).toContain(
+      'No pudimos conectar',
+    );
   });
 });

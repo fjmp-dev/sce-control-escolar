@@ -70,6 +70,24 @@ describe('Formulario (28.1)', () => {
     expect((await screen.findByRole('status')).textContent).toBe('Listo: Creada.');
   });
 
+  it('el boton alterno envia su intencion, y el aviso se anuncia como aviso y recibe el foco (CF-HOR-01)', async () => {
+    const accion = vi.fn(async (_: EstadoDeFormulario, datos: FormData) =>
+      datos.get('intencion') === 'revisar' ? { aviso: 'Hay un choque.' } : { exito: 'Enviada.' },
+    );
+    render(
+      <Formulario accion={accion} envio="Enviar" alterno={{ valor: 'revisar', etiqueta: 'Revisar' }}>
+        <span />
+      </Formulario>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Revisar' }));
+    const aviso = await screen.findByRole('status');
+    expect(aviso.textContent).toBe('Aviso: Hay un choque.');
+    await waitFor(() => expect(document.activeElement).toBe(aviso));
+    await userEvent.click(screen.getByRole('button', { name: 'Enviar' }));
+    expect((await screen.findByText(/Enviada/)).textContent).toBe('Listo: Enviada.');
+    expect(accion.mock.calls.map(([, datos]) => datos.get('intencion'))).toEqual(['revisar', null]);
+  });
+
   it('el boton se desactiva mientras se envia, para no duplicar', async () => {
     let terminar: (estado: EstadoDeFormulario) => void = () => undefined;
     render(

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DatosDelExpediente } from '@/componentes/expediente';
 import { Campo, Formulario, Selector } from '@/componentes/formulario';
+import { ListaDeInscripciones } from '@/componentes/inscripcion';
 import { cambiarEstatusDeExpediente, cambiarPlantel, vincularCuenta } from '@/lib/acciones';
 import { consultar, ErrorApi } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
@@ -20,9 +21,10 @@ async function expedienteO404(matricula: string) {
 
 export default async function PaginaExpediente({ params }: Readonly<{ params: Promise<{ matricula: string }> }>) {
   const { matricula } = await params;
-  const [expediente, facultades] = await Promise.all([
-    expedienteO404(matricula),
+  const expediente = await expedienteO404(matricula);
+  const [facultades, inscripciones] = await Promise.all([
     consultar<Esquemas['FacultadRespuesta'][]>('/facultades'),
+    consultar<Esquemas['InscripcionRespuesta'][]>(`/alumnos/${encodeURIComponent(expediente.matricula)}/inscripciones`),
   ]);
   const matriculaOculta = <input type="hidden" name="matricula" value={expediente.matricula} />;
   return (
@@ -34,6 +36,10 @@ export default async function PaginaExpediente({ params }: Readonly<{ params: Pr
       </p>
       <h1>Expediente de {expediente.nombre}</h1>
       <DatosDelExpediente expediente={expediente} />
+
+      <h2>Inscripciones</h2>
+      <p>Consulta de la carga por periodo, con su estado. La inscripción la hace el alumno (D-14).</p>
+      <ListaDeInscripciones inscripciones={inscripciones} />
 
       <h2>Cambiar de plantel</h2>
       <p>Cambia la facultad de este mismo expediente: la matrícula, el historial y la cuenta se conservan.</p>

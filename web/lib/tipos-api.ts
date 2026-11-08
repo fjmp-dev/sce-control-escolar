@@ -230,6 +230,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/grupos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Oferta de un periodo: grupos con cupo, ocupación y horarios */
+        get: operations["GruposController_delPeriodo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grupos/choques": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** CF-HOR-01: choques de horario de una carga, para avisar antes de enviarla */
+        get: operations["GruposController_choques"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/alumnos": {
         parameters: {
             query?: never;
@@ -326,6 +360,74 @@ export interface paths {
         get?: never;
         /** Vincular la cuenta de alumno con la que la persona consulta su expediente */
         put: operations["AlumnosController_vincular"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/inscripciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Fig. 4: enviar la carga; valida prerrequisitos, adeudos y choques, y reserva el cupo */
+        post: operations["InscripcionesController_inscribir"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/inscripciones/{folio}/grupos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Fig. 6: ajustar la carga confirmada mientras el periodo está abierto, y revalidarla */
+        put: operations["InscripcionesController_ajustar"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alumnos/actual/inscripciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mis inscripciones, con estado, motivo y carga */
+        get: operations["InscripcionesController_mias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alumnos/{matricula}/inscripciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inscripciones de un alumno (consulta, D-14) */
+        get: operations["InscripcionesController_deAlumno"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -457,6 +559,32 @@ export interface components {
             /** @enum {string} */
             estado: "abierto" | "en_curso" | "cerrado";
         };
+        HorarioRespuesta: {
+            /** @description 1 = lunes, 6 = sábado */
+            dia: number;
+            /** @example 07:00 */
+            horaInicio: string;
+            /** @example 09:00 */
+            horaFin: string;
+            aula: string;
+        };
+        GrupoRespuesta: {
+            id: number;
+            clave: string;
+            materiaClave: string;
+            materiaNombre: string;
+            creditos: number;
+            cupo: number;
+            ocupacion: number;
+            horarios: components["schemas"]["HorarioRespuesta"][];
+        };
+        ChoqueRespuesta: {
+            grupos: number[];
+            dia: number;
+            desde: string;
+            hasta: string;
+            descripcion: string;
+        };
         AlumnoResumen: {
             matricula: string;
             nombre: string;
@@ -510,6 +638,53 @@ export interface components {
         VinculoDeCuentaDto: {
             /** Format: email */
             correo: string;
+        };
+        InscripcionDto: {
+            /**
+             * @example [
+             *       1,
+             *       2
+             *     ]
+             */
+            grupos: number[];
+            /** @example 2027A */
+            periodoClave: string;
+        };
+        InscripcionRespuesta: {
+            /** @example INS-2027A-2420001 */
+            folio: string;
+            matricula: string;
+            periodoClave: string;
+            /** @enum {string} */
+            estado: "borrador" | "en_validacion" | "rechazada" | "confirmada" | "ajustada" | "cerrada";
+            /** @enum {string|null} */
+            motivoRechazo: "prerrequisito" | "adeudo" | "choque" | "cupo" | null;
+            /** Format: date-time */
+            fecha: string;
+            grupos: components["schemas"]["GrupoRespuesta"][];
+        };
+        RechazoRespuesta: {
+            /** @example ENTRADA_INVALIDA */
+            codigo: string;
+            mensaje: string;
+            campos?: string[];
+            folio: string;
+            /**
+             * @description rechazada; en un ajuste rechazado, confirmada con la carga anterior
+             * @enum {string}
+             */
+            estado: "borrador" | "en_validacion" | "rechazada" | "confirmada" | "ajustada" | "cerrada";
+            /** @enum {string} */
+            motivo: "prerrequisito" | "adeudo" | "choque" | "cupo";
+        };
+        CargaDto: {
+            /**
+             * @example [
+             *       1,
+             *       2
+             *     ]
+             */
+            grupos: number[];
         };
     };
     responses: never;
@@ -1358,6 +1533,96 @@ export interface operations {
             };
         };
     };
+    GruposController_delPeriodo: {
+        parameters: {
+            query: {
+                periodo: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrupoRespuesta"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    GruposController_choques: {
+        parameters: {
+            query: {
+                grupos: number[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChoqueRespuesta"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
     AlumnosController_buscar: {
         parameters: {
             query: {
@@ -1740,6 +2005,233 @@ export interface operations {
                 };
             };
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    InscripcionesController_inscribir: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InscripcionDto"];
+            };
+        };
+        responses: {
+            /** @description Confirmada: folio y comprobante */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InscripcionRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            /** @description Rechazada, o una regla de la carga no se cumple */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RechazoRespuesta"];
+                };
+            };
+        };
+    };
+    InscripcionesController_ajustar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                folio: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CargaDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InscripcionRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            /** @description Ajuste rechazado: la carga anterior se conserva */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RechazoRespuesta"];
+                };
+            };
+        };
+    };
+    InscripcionesController_mias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InscripcionRespuesta"][];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    InscripcionesController_deAlumno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                matricula: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InscripcionRespuesta"][];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -8,8 +8,21 @@ const Contexto = createContext<EstadoDeFormulario>(ESTADO_INICIAL);
 
 type Accion = (estado: EstadoDeFormulario, datos: FormData) => Promise<EstadoDeFormulario>;
 
-/** 28.1: los errores indican causa y corrección, y el foco va al aviso para que el teclado y el lector lo encuentren. */
-export function Formulario({ accion, envio, children }: { accion: Accion; envio: string; children: ReactNode }) {
+/**
+ * 28.1: los errores indican causa y corrección, y el foco va al aviso para que el teclado y el lector lo encuentren.
+ * `alterno` agrega un segundo botón que envía `intencion=<valor>`, como "Revisar choques" antes de enviar la carga.
+ */
+export function Formulario({
+  accion,
+  envio,
+  alterno,
+  children,
+}: {
+  accion: Accion;
+  envio: string;
+  alterno?: { valor: string; etiqueta: string };
+  children: ReactNode;
+}) {
   const [estado, despachar, pendiente] = useActionState(accion, ESTADO_INICIAL);
   const aviso = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -23,15 +36,33 @@ export function Formulario({ accion, envio, children }: { accion: Accion; envio:
           {estado.error}
         </Aviso>
       )}
+      {estado.aviso && (
+        <Aviso tipo="informacion" ref={aviso}>
+          {estado.aviso}
+        </Aviso>
+      )}
       {estado.exito && (
         <Aviso tipo="exito" ref={aviso}>
           {estado.exito}
         </Aviso>
       )}
       <Contexto.Provider value={estado}>{children}</Contexto.Provider>
-      <button type="submit" disabled={pendiente} className="boton">
-        {pendiente ? 'Enviando…' : envio}
-      </button>
+      <div className="botones">
+        {alterno && (
+          <button
+            type="submit"
+            name="intencion"
+            value={alterno.valor}
+            disabled={pendiente}
+            className="boton boton-secundario"
+          >
+            {alterno.etiqueta}
+          </button>
+        )}
+        <button type="submit" disabled={pendiente} className="boton">
+          {pendiente ? 'Enviando…' : envio}
+        </button>
+      </div>
     </form>
   );
 }

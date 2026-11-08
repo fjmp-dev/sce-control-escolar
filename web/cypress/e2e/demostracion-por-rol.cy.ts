@@ -2,7 +2,7 @@
 const COMUNES = ['Inicio', 'Facultades', 'Planes de estudio', 'Materias', 'Periodos', 'Mi contraseña'];
 
 const CUENTAS = [
-  { cuenta: 'alumno', rol: 'Alumno', altas: [], propios: ['Mi expediente'] },
+  { cuenta: 'alumno', rol: 'Alumno', altas: [], propios: ['Inscripción', 'Mi expediente'] },
   { cuenta: 'profesor', rol: 'Profesor', altas: [], propios: [] },
   { cuenta: 'control.escolar', rol: 'Control escolar', altas: [], propios: ['Expedientes'] },
   { cuenta: 'coordinacion', rol: 'Coordinación académica', altas: ['/materias', '/periodos'], propios: [] },
@@ -47,6 +47,9 @@ describe('Demostracion por rol', () => {
       cy.location('pathname').should('eq', cuenta === 'control.escolar' ? '/expedientes' : '/sin-permiso');
       cy.visit('/mi-expediente');
       cy.location('pathname').should('eq', cuenta === 'alumno' ? '/mi-expediente' : '/sin-permiso');
+      // RF-002: solo el alumno se inscribe.
+      cy.visit('/inscripcion');
+      cy.location('pathname').should('eq', cuenta === 'alumno' ? '/inscripcion' : '/sin-permiso');
 
       cy.contains('button', 'Cerrar sesión').click();
       cy.location('pathname').should('eq', '/ingresar');

@@ -49,6 +49,30 @@ describe('Accesibilidad', () => {
     cy.revisarAxe('alumno-mi-expediente');
   });
 
+  it('axe: inscripcion del alumno, con aviso de choque y con rechazo, y en las tres resoluciones sin desborde', () => {
+    cy.iniciar('alumno.dos@sce.test');
+    cy.visit('/inscripcion');
+    cy.get('h1');
+    cy.revisarAxe('alumno-inscripcion');
+    cy.contains('label', 'ISW-701-A').find('input').check();
+    cy.contains('label', 'ISW-702-B').find('input').check();
+    cy.contains('button', 'Revisar choques').click();
+    cy.get('[role=status]').should('contain', 'choques de horario');
+    cy.revisarAxe('alumno-inscripcion-aviso-de-choque');
+    cy.contains('label', 'ISW-702-B').find('input').uncheck();
+    cy.contains('button', 'Enviar carga').click();
+    cy.get('[role=alert]');
+    cy.revisarAxe('alumno-inscripcion-rechazada');
+    for (const [ancho, alto] of RESOLUCIONES) {
+      cy.viewport(ancho, alto);
+      cy.document().then((documento) => {
+        const raiz = documento.documentElement;
+        expect(raiz.scrollWidth, `desborde horizontal en ${ancho}x${alto}`).to.be.at.most(raiz.clientWidth);
+      });
+      cy.screenshot(`inscripcion-${ancho}x${alto}`, { capture: 'fullPage' });
+    }
+  });
+
   it('axe: paginas de coordinacion y de alumno, y sin permiso', () => {
     cy.iniciar('coordinacion@sce.test');
     for (const pagina of ['/materias', '/periodos']) {

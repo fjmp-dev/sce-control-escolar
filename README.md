@@ -47,8 +47,9 @@ api/                NestJS + Prisma (sección 3.6)
   src/
     gateway/              Validación, errores con código de negocio, registros JSON y /salud
     identidad/            Sesiones, usuarios y guard por rol (RF-008); dominio puro en dominio/
-    expediente/           Expediente único, cambio de plantel y estatus (RF-001)
-    academico/            Catálogos: facultades, planes, materias y periodos
+    expediente/           Expediente único, cambio de plantel y estatus (RF-001); inscripción de las Fig. 4 y 6 (RF-002)
+    academico/            Catálogos; oferta, prerrequisitos, choques y cupo para la inscripción
+    pagos/                Adeudo de la cuenta del alumno (Fig. 4); el resto llega en el Batch 9
     bitacora/             Servicio de bitácora (Tabla 28)
     persistencia/         Prisma y transacción compartida entre repositorios
   prisma/verificacion/    Consultas SQL de calidad de datos y muestreo de bitácora, junto a las migraciones (19.1)
@@ -115,7 +116,7 @@ Con Docker instalado:
 docker compose up --build    # Portal en http://localhost:3000 y API en http://localhost:3001, migrada y con seed
 ```
 
-Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. Para la inscripción, el periodo `2027A` está abierto con siete grupos: `2420001` acreditó Programación I en `2026B`, `2420002` tiene un adeudo sintético y el grupo `ISW-702-A` ya no tiene lugares. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
 
 ## Levantar el ambiente de desarrollo
 

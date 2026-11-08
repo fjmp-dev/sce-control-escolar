@@ -76,9 +76,14 @@ describe('Expedientes (control escolar)', () => {
   });
 
   it('la ficha muestra datos, historial y trayectoria, y no ofrece la facultad ni el estatus actuales', async () => {
-    api({ '/alumnos/2420001': [200, EXPEDIENTE], '/facultades': [200, FACULTADES] });
+    api({
+      '/alumnos/2420001': [200, EXPEDIENTE],
+      '/facultades': [200, FACULTADES],
+      '/alumnos/2420001/inscripciones': [200, []],
+    });
     render(await PaginaExpediente({ params: Promise.resolve({ matricula: '2420001' }) }));
     expect(screen.getByRole('heading', { name: 'Expediente de Alumno Sintético Uno' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Inscripciones' })).toBeTruthy();
     expect(screen.getByText('8.50')).toBeTruthy();
     expect(screen.getByText('30.00 %')).toBeTruthy();
     expect(screen.getByText(/De CUTG a FSD, el/)).toBeTruthy();

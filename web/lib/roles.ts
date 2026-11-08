@@ -50,6 +50,11 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
     ...(roles.includes('alumno')
       ? [
           {
+            ruta: '/inscripcion',
+            etiqueta: 'Inscripción',
+            descripcion: 'Armar tu carga, enviarla, ajustarla e imprimir tu comprobante',
+          },
+          {
             ruta: '/mi-expediente',
             etiqueta: 'Mi expediente',
             descripcion: 'Consultar tus datos, historial y trayectoria',
