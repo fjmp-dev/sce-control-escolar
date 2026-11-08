@@ -1169,6 +1169,155 @@
         ]
       }
     },
+    "/grupos": {
+      "get": {
+        "operationId": "GruposController_delPeriodo",
+        "parameters": [
+          {
+            "name": "periodo",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GrupoRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Oferta de un periodo: grupos con cupo, ocupación y horarios",
+        "tags": [
+          "Oferta"
+        ]
+      }
+    },
+    "/grupos/choques": {
+      "get": {
+        "operationId": "GruposController_choques",
+        "parameters": [
+          {
+            "name": "grupos",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "minItems": 1,
+              "maxItems": 15,
+              "example": [
+                1,
+                2
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChoqueRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "CF-HOR-01: choques de horario de una carga, para avisar antes de enviarla",
+        "tags": [
+          "Oferta"
+        ]
+      }
+    },
     "/alumnos": {
       "get": {
         "operationId": "AlumnosController_buscar",
@@ -1742,6 +1891,333 @@
           "Expedientes"
         ]
       }
+    },
+    "/inscripciones": {
+      "post": {
+        "operationId": "InscripcionesController_inscribir",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InscripcionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Confirmada: folio y comprobante",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InscripcionRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rechazada, o una regla de la carga no se cumple",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RechazoRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fig. 4: enviar la carga; valida prerrequisitos, adeudos y choques, y reserva el cupo",
+        "tags": [
+          "Inscripciones"
+        ]
+      }
+    },
+    "/inscripciones/{folio}/grupos": {
+      "put": {
+        "operationId": "InscripcionesController_ajustar",
+        "parameters": [
+          {
+            "name": "folio",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "maxLength": 20,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+              "example": "ISW-101",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CargaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InscripcionRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ajuste rechazado: la carga anterior se conserva",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RechazoRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fig. 6: ajustar la carga confirmada mientras el periodo está abierto, y revalidarla",
+        "tags": [
+          "Inscripciones"
+        ]
+      }
+    },
+    "/alumnos/actual/inscripciones": {
+      "get": {
+        "operationId": "InscripcionesController_mias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InscripcionRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mis inscripciones, con estado, motivo y carga",
+        "tags": [
+          "Inscripciones"
+        ]
+      }
+    },
+    "/alumnos/{matricula}/inscripciones": {
+      "get": {
+        "operationId": "InscripcionesController_deAlumno",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InscripcionRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Inscripciones de un alumno (consulta, D-14)",
+        "tags": [
+          "Inscripciones"
+        ]
+      }
     }
   },
   "info": {
@@ -2228,6 +2704,106 @@
           "estado"
         ]
       },
+      "HorarioRespuesta": {
+        "type": "object",
+        "properties": {
+          "dia": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 6,
+            "description": "1 = lunes, 6 = sábado"
+          },
+          "horaInicio": {
+            "type": "string",
+            "example": "07:00"
+          },
+          "horaFin": {
+            "type": "string",
+            "example": "09:00"
+          },
+          "aula": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dia",
+          "horaInicio",
+          "horaFin",
+          "aula"
+        ]
+      },
+      "GrupoRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "materiaClave": {
+            "type": "string"
+          },
+          "materiaNombre": {
+            "type": "string"
+          },
+          "creditos": {
+            "type": "number"
+          },
+          "cupo": {
+            "type": "number"
+          },
+          "ocupacion": {
+            "type": "number"
+          },
+          "horarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HorarioRespuesta"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "clave",
+          "materiaClave",
+          "materiaNombre",
+          "creditos",
+          "cupo",
+          "ocupacion",
+          "horarios"
+        ]
+      },
+      "ChoqueRespuesta": {
+        "type": "object",
+        "properties": {
+          "grupos": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "dia": {
+            "type": "number"
+          },
+          "desde": {
+            "type": "string"
+          },
+          "hasta": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "grupos",
+          "dia",
+          "desde",
+          "hasta",
+          "descripcion"
+        ]
+      },
       "AlumnoResumen": {
         "type": "object",
         "properties": {
@@ -2422,6 +2998,156 @@
         },
         "required": [
           "correo"
+        ]
+      },
+      "InscripcionDto": {
+        "type": "object",
+        "properties": {
+          "grupos": {
+            "minItems": 1,
+            "maxItems": 15,
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "periodoClave": {
+            "type": "string",
+            "example": "2027A",
+            "pattern": "^\\d{4}[AB]$"
+          }
+        },
+        "required": [
+          "grupos",
+          "periodoClave"
+        ]
+      },
+      "InscripcionRespuesta": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string",
+            "example": "INS-2027A-2420001"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "periodoClave": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "borrador",
+              "en_validacion",
+              "rechazada",
+              "confirmada",
+              "ajustada",
+              "cerrada"
+            ]
+          },
+          "motivoRechazo": {
+            "type": "string",
+            "enum": [
+              "prerrequisito",
+              "adeudo",
+              "choque",
+              "cupo"
+            ],
+            "nullable": true
+          },
+          "fecha": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "grupos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrupoRespuesta"
+            }
+          }
+        },
+        "required": [
+          "folio",
+          "matricula",
+          "periodoClave",
+          "estado",
+          "motivoRechazo",
+          "fecha",
+          "grupos"
+        ]
+      },
+      "RechazoRespuesta": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "example": "ENTRADA_INVALIDA"
+          },
+          "mensaje": {
+            "type": "string"
+          },
+          "campos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "folio": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "borrador",
+              "en_validacion",
+              "rechazada",
+              "confirmada",
+              "ajustada",
+              "cerrada"
+            ],
+            "description": "rechazada; en un ajuste rechazado, confirmada con la carga anterior"
+          },
+          "motivo": {
+            "type": "string",
+            "enum": [
+              "prerrequisito",
+              "adeudo",
+              "choque",
+              "cupo"
+            ]
+          }
+        },
+        "required": [
+          "codigo",
+          "mensaje",
+          "folio",
+          "estado",
+          "motivo"
+        ]
+      },
+      "CargaDto": {
+        "type": "object",
+        "properties": {
+          "grupos": {
+            "minItems": 1,
+            "maxItems": 15,
+            "example": [
+              1,
+              2
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "grupos"
         ]
       }
     }

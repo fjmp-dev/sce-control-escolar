@@ -319,6 +319,78 @@
             },
             "header": []
           }
+        },
+        {
+          "name": "GET /alumnos/actual/inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "inscripciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000/inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "inscripciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /grupos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /grupos/choques",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos/choques",
+              "host": ["{{base}}"],
+              "path": ["grupos", "choques"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /inscripciones",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /inscripciones/INS-FOLIO-AJENO/grupos",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/INS-FOLIO-AJENO/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "INS-FOLIO-AJENO", "grupos"]
+            },
+            "header": []
+          }
         }
       ]
     },
@@ -1631,6 +1703,602 @@
               "raw": "{{base}}/alumnos/2420001",
               "host": ["{{base}}"],
               "path": ["alumnos", "2420001"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de cuenta de alumno",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"a{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\",\n  \"roles\": [\n    \"alumno\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Expediente con su cuenta",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matricula\": \"8{{sufijo}}\",\n  \"nombre\": \"Alumno de inscripcion\",\n  \"facultadClave\": \"CUTG\",\n  \"fechaIngreso\": \"2025-08-04\",\n  \"correo\": \"a{{sufijo}}@sce.test\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion del alumno que se inscribe",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"a{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('inscrito', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oferta del periodo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos?periodo=2027A",
+              "host": ["{{base}}"],
+              "path": ["grupos?periodo=2027A"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}));",
+                  "const porClave = Object.fromEntries(pm.response.json().map((g) => [g.clave, g.id]));",
+                  "for (const clave of ['ISW-201-A', 'ISW-701-A', 'ISW-701-B', 'ISW-702-A', 'ISW-702-B']) pm.collectionVariables.set(clave.toLowerCase().replaceAll('-', ''), porClave[clave]);",
+                  "pm.test('trae los grupos del seed', () => pm.expect(Object.keys(porClave)).to.include.members(['ISW-201-A', 'ISW-701-B']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-HOR-01 aviso de choque antes de enviar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos/choques?grupos={{isw701a}}&grupos={{isw702b}}",
+              "host": ["{{base}}"],
+              "path": ["grupos", "choques?grupos={{isw701a}}&grupos={{isw702b}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"grupos\", \"dia\", \"desde\", \"hasta\", \"descripcion\"], \"additionalProperties\": false, \"properties\": {\"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"integer\"}, \"minItems\": 2, \"maxItems\": 2}, \"dia\": {\"type\": \"integer\"}, \"desde\": {\"type\": \"string\"}, \"hasta\": {\"type\": \"string\"}, \"descripcion\": {\"type\": \"string\"}}}}));",
+                  "pm.test('un choque, el lunes de 09:00 a 10:00', () => pm.expect(pm.response.json().map((c) => [c.dia, c.desde, c.hasta])).to.eql([[1, '09:00', '10:00']]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-01 rechazo por prerrequisito",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw201a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo prerrequisito, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'prerrequisito']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-02 rechazo por choque",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701a}}, {{isw702b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo choque, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'choque']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-02 rechazo por cupo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw702a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo cupo, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'cupo']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-API-01 inscripcion confirmada con folio y comprobante",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}));",
+                  "pm.test('confirmada, con su carga', () => { const r = pm.response.json(); pm.expect([r.estado, r.grupos.map((g) => g.clave)]).to.eql(['confirmada', ['ISW-701-B']]); });",
+                  "pm.collectionVariables.set('folio', pm.response.json().folio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Una segunda inscripcion en el periodo se rechaza",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo TRANSICION_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('TRANSICION_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajuste sin cupo conserva la carga",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/{{folio}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "{{folio}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupos\": [{{isw701b}}, {{isw702a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('AJUSTE_RECHAZADO: estado confirmada y motivo cupo, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['AJUSTE_RECHAZADO', 'confirmada', 'cupo']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajuste de la carga",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/{{folio}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "{{folio}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupos\": [{{isw701a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}));",
+                  "pm.test('confirmada con el grupo nuevo', () => { const r = pm.response.json(); pm.expect([r.estado, r.grupos.map((g) => g.clave)]).to.eql(['confirmada', ['ISW-701-A']]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mis inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}}));",
+                  "pm.test('una sola inscripcion en el periodo', () => pm.expect(pm.response.json().map((i) => i.folio)).to.eql([pm.collectionVariables.get('folio')]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-02 rechazo por adeudo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo adeudo, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'adeudo']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-03 el alumno no ajusta la carga de otro",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/{{folio}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "{{folio}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error en el formato de la API, codigo NO_ENCONTRADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_ENCONTRADO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Control escolar consulta las inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}}));",
+                  "pm.test('ve la inscripcion confirmada', () => pm.expect(pm.response.json().map((i) => i.estado)).to.eql(['confirmada']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El alumno no consulta inscripciones por matricula",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "inscripciones"]
             },
             "header": [
               {

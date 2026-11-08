@@ -64,7 +64,8 @@ it('CS-SEG-04: la coleccion de Newman prueba sin token cada operacion protegida'
         .replace(/[0-9a-f-]{36}/, '{id}')
         .replace('NO-EXISTE', '{clave}')
         .replace('NO-EXISTE', '{requiere}')
-        .replace('0000000', '{matricula}')}`,
+        .replace('0000000', '{matricula}')
+        .replace('INS-FOLIO-AJENO', '{folio}')}`,
   );
   expect(probadas.sort()).toEqual(
     operaciones()

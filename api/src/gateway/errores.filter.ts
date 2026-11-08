@@ -16,6 +16,13 @@ const ESTADO_DE: Record<CodigoDeNegocio, number> = {
   TRANSICION_INVALIDA: 409,
   SIN_EXPEDIENTE: 404,
   CUENTA_NO_ALUMNO: 409,
+  PERIODO_NO_ABIERTO: 409,
+  GRUPO_FUERA_DE_OFERTA: 400,
+  CARGA_VACIA: 400,
+  MATERIA_REPETIDA: 409,
+  INSCRIPCION_RECHAZADA: 409,
+  AJUSTE_RECHAZADO: 409,
+  INSCRIPCION_CAMBIADA: 409,
 };
 
 const POR_ESTADO: Record<number, [codigo: string, mensaje: string]> = {
@@ -46,7 +53,7 @@ function porEstado(estado: number, extra?: Partial<ErrorRespuesta>): [number, Er
 
 function traducir(error: unknown): [number, ErrorRespuesta] {
   if (error instanceof ErrorDeNegocio) {
-    return [ESTADO_DE[error.codigo], { codigo: error.codigo, mensaje: error.message }];
+    return [ESTADO_DE[error.codigo], { ...error.detalle, codigo: error.codigo, mensaje: error.message }];
   }
   if (error instanceof HttpException) {
     const { campos } = error.getResponse() as { campos?: string[] };

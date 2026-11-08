@@ -25,3 +25,16 @@ export function validarPrerequisito(materia: string, requiere: string, existente
     for (const arista of existentes) if (arista.materiaClave === actual) pendientes.push(arista.requiereClave);
   }
 }
+
+export interface Requisito extends Arista {
+  materiaNombre: string;
+  requiereNombre: string;
+  obligatorio: boolean;
+}
+
+/** RF-002 y R-03: los prerrequisitos obligatorios de la carga que el alumno no ha acreditado. */
+export const faltantes = (requisitos: readonly Requisito[], acreditadas: ReadonlySet<string>) =>
+  requisitos.filter((r) => r.obligatorio && !acreditadas.has(r.requiereClave));
+
+export const describirFaltante = (r: Requisito) =>
+  `Te falta acreditar ${r.requiereNombre} (${r.requiereClave}) para inscribir ${r.materiaNombre} (${r.materiaClave})`;

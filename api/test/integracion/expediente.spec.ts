@@ -53,7 +53,14 @@ describe('CF-EXP-01: un solo expediente, aun tras el cambio de plantel', () => {
       data: { promedio: 8.75, creditosAcumulados: 120, avance: 30 },
     });
     await prisma.inscripcion.create({
-      data: { folio: 'F-3100002-1', matricula: '3100002', periodoClave: '2027A', estado: 'confirmada' },
+      data: {
+        folio: 'F-3100002-1',
+        matricula: '3100002',
+        periodoClave: '2027A',
+        estado: 'rechazada',
+        motivoRechazo: 'adeudo',
+        grupos: { create: { grupoId: (await prisma.grupo.findFirstOrThrow({ where: { periodoClave: '2027A' } })).id } },
+      },
     });
 
     const cambio = await http()

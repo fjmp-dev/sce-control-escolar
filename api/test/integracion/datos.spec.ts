@@ -50,3 +50,24 @@ describe('CD-DAT-04 integridad referencial de calificaciones (RNF-DAT-001)', () 
     ).rejects.toThrow('revertir');
   });
 });
+
+describe('CD-DAT-05 completitud de la inscripcion y ocupacion de grupos (RF-002, RK-05)', () => {
+  it.each(['cd-dat-05', 'ocupacion-de-grupos'])('%s: cero filas', async (caso) => {
+    expect(await prisma.$queryRawUnsafe(consulta(caso))).toEqual([]);
+  });
+
+  it('las consultas detectan una inscripcion sin carga y un lugar ocupado sin inscrito', async () => {
+    await expect(
+      prisma.$transaction(async (tx) => {
+        const { matricula } = await tx.alumno.findFirstOrThrow();
+        await tx.inscripcion.create({
+          data: { folio: 'SIN-CARGA', matricula, periodoClave: '2027A', estado: 'borrador' },
+        });
+        await tx.$executeRawUnsafe(`UPDATE grupo SET ocupacion = ocupacion + 1 WHERE clave = 'ISW-701-B'`);
+        expect(await tx.$queryRawUnsafe(consulta('cd-dat-05'))).toHaveLength(1);
+        expect(await tx.$queryRawUnsafe(consulta('ocupacion-de-grupos'))).toHaveLength(1);
+        throw new Error('revertir');
+      }),
+    ).rejects.toThrow('revertir');
+  });
+});

@@ -109,6 +109,132 @@ async function main() {
     });
   }
 
+  // Batch 5 (RF-002): un periodo cerrado con calificaciones, la oferta de 2027A y un adeudo. Todo sintetico (RK-09).
+  await prisma.materia.upsert({
+    where: { clave: 'ISW-702' },
+    update: {},
+    create: { clave: 'ISW-702', nombre: 'Ética profesional', creditos: 4, planClave: 'ISW-2024' },
+  });
+  await prisma.periodo.upsert({
+    where: { clave: '2026B' },
+    update: {},
+    create: {
+      clave: '2026B',
+      fechaInicio: new Date('2026-08-03'),
+      fechaFin: new Date('2026-12-18'),
+      estado: 'cerrado',
+    },
+  });
+  const profesor = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'profesor@sce.test' } });
+  const hora = (hhmm: string) => new Date(`1970-01-01T${hhmm}:00Z`);
+  // [periodo, grupo, materia, cupo, ocupacion, horarios: dia (1 = lunes), inicio, fin, aula]
+  const OFERTA: [string, string, string, number, number, [number, string, string, string][]][] = [
+    [
+      '2026B',
+      'ISW-101-A',
+      'ISW-101',
+      30,
+      1,
+      [
+        [1, '07:00', '09:00', 'A1'],
+        [3, '07:00', '09:00', 'A1'],
+      ],
+    ],
+    [
+      '2027A',
+      'ISW-201-A',
+      'ISW-201',
+      30,
+      0,
+      [
+        [1, '07:00', '09:00', 'A1'],
+        [3, '07:00', '09:00', 'A1'],
+      ],
+    ],
+    [
+      '2027A',
+      'ISW-301-A',
+      'ISW-301',
+      30,
+      0,
+      [
+        [2, '07:00', '09:00', 'A2'],
+        [4, '07:00', '09:00', 'A2'],
+      ],
+    ],
+    ['2027A', 'ISW-701-A', 'ISW-701', 30, 0, [[1, '08:00', '10:00', 'A3']]], // choca con ISW-201-A y con ISW-702-B
+    ['2027A', 'ISW-701-B', 'ISW-701', 30, 0, [[5, '07:00', '10:00', 'A3']]],
+    ['2027A', 'ISW-702-A', 'ISW-702', 1, 1, [[2, '09:00', '11:00', 'A2']]], // su unico lugar ya esta tomado
+    ['2027A', 'ISW-702-B', 'ISW-702', 30, 0, [[1, '09:00', '11:00', 'A4']]],
+  ];
+  const grupos: Record<string, bigint> = {};
+  for (const [periodoClave, clave, materiaClave, cupo, ocupacion, horarios] of OFERTA) {
+    const grupo = await prisma.grupo.upsert({
+      where: { clave_periodoClave: { clave, periodoClave } },
+      update: {},
+      create: {
+        clave,
+        periodoClave,
+        materiaClave,
+        cupo,
+        ocupacion,
+        profesorId: profesor.id,
+        horarios: {
+          create: horarios.map(([dia, inicio, fin, aula]) => ({
+            dia,
+            horaInicio: hora(inicio),
+            horaFin: hora(fin),
+            aula,
+          })),
+        },
+      },
+    });
+    grupos[clave] = grupo.id;
+  }
+
+  // Quien ocupa cada lugar del seed: la ocupacion siempre coincide con los inscritos (consulta de ocupacion).
+  const CARGAS: [string, string, string, string][] = [
+    ['INS-2026B-2420001', '2420001', '2026B', 'ISW-101-A'], // acredito Programacion I: puede inscribir Programacion II
+    ['INS-2027A-2420003', '2420003', '2027A', 'ISW-702-A'],
+  ];
+  for (const [folio, matricula, periodoClave, grupo] of CARGAS) {
+    await prisma.inscripcion.upsert({
+      where: { folio },
+      update: {},
+      create: {
+        folio,
+        matricula,
+        periodoClave,
+        estado: periodoClave === '2026B' ? 'cerrada' : 'confirmada',
+        grupos: { create: { grupoId: grupos[grupo] } },
+      },
+    });
+  }
+  // D-5: final de 8.17 en Programacion I, de un periodo cerrado.
+  for (const [parcial, valor] of [
+    [1, 8.5],
+    [2, 7],
+    [3, 9],
+  ]) {
+    const datos = { folio: 'INS-2026B-2420001', grupoId: grupos['ISW-101-A'], parcial };
+    await prisma.calificacion.upsert({
+      where: { folio_grupoId_parcial: datos },
+      update: {},
+      create: { ...datos, valor, profesorId: profesor.id, periodoClave: '2026B' },
+    });
+  }
+
+  // D-10: adeudo vigente de 2420002, con su cargo, para que el saldo cuadre con los movimientos (CD-DAT-03).
+  if ((await prisma.movimiento.count({ where: { matricula: '2420002' } })) === 0) {
+    await prisma.cuentaAlumno.update({
+      where: { matricula: '2420002' },
+      data: {
+        saldo: 1850,
+        movimientos: { create: { concepto: 'Cargo sintético de prueba', importe: 1850, tipo: 'cargo' } },
+      },
+    });
+  }
+
   console.log('Seed listo. Las cuentas sinteticas estan en el README.'); // CS-SEG-08: sin contrasenas en registros
 }
 

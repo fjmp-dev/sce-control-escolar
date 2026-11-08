@@ -1,7 +1,7 @@
 # Matriz de rol por endpoint — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 y Tablas 5, 11, 12 y 38; CC-007. **Criterio de auditoría:** AU-15.
-**Versión:** 1.2, 7 de noviembre de 2026 (Batch 4). Crece con cada batch.
+**Versión:** 1.3, 8 de noviembre de 2026 (Batch 5). Crece con cada batch.
 
 Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7). El portal solo presenta lo que esta matriz permite, y `web/test/roles.test.ts` lo comprueba; quien autoriza siempre es la API.
 
@@ -31,6 +31,12 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
 | PUT | `/alumnos/{matricula}/facultad` | No | No | Sí | No | No | No | No |
 | PUT | `/alumnos/{matricula}/estatus` | No | No | Sí | No | No | No | No |
 | PUT | `/alumnos/{matricula}/cuenta` | No | No | Sí | No | No | No | No |
+| GET | `/alumnos/actual/inscripciones` | Sí | No | No | No | No | No | No |
+| GET | `/alumnos/{matricula}/inscripciones` | No | No | Sí | No | No | No | No |
+| GET | `/grupos` | Sí | No | No | Sí | No | No | No |
+| GET | `/grupos/choques` | Sí | No | No | No | No | No | No |
+| POST | `/inscripciones` | Sí | No | No | No | No | No | No |
+| PUT | `/inscripciones/{folio}/grupos` | Sí | No | No | No | No | No | No |
 | GET | `/periodos` | Sí | Sí | Sí | Sí | Sí | Sí | Sí |
 | POST | `/periodos` | No | No | No | Sí | No | No | No |
 
@@ -39,5 +45,8 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
 - **Los dos anónimos:** `POST /sesiones` porque es la autenticación misma; `GET /salud` porque lo sondea un monitor externo (Tabla 57) y no devuelve datos. Ninguno es una operación Must de negocio (Tabla 38).
 - **El administrador no da de alta materias ni periodos:** son de coordinación (Tabla 5, Fig. 7). Mínimo privilegio (6.2-5).
 - **El alumno consulta su expediente solo por `/alumnos/actual`:** la matrícula sale de su sesión, nunca de la petición. Ninguna ruta acepta una matrícula de un alumno (CS-SEG-03).
+- **El alumno se inscribe y ajusta solo con su sesión:** `POST /inscripciones` no acepta matrícula y rechaza cualquier campo de más; un folio ajeno en `PUT /inscripciones/{folio}/grupos` responde 404, igual que uno inexistente (CS-SEG-03).
+- **Control escolar consulta las inscripciones, no las cambia:** D-14, provisional hasta que el Product Owner decida si también las ajusta. La Tabla 5 dice que las "administra" y la Fig. 1 no le da caso de uso de inscripción.
+- **Oferta del Batch 5:** el alumno la consulta para armar su carga y coordinación para revisarla. Dar de alta grupos y publicar la oferta es del Batch 7 (RF-003, CC-012). Profesor, caja y dirección no la necesitan todavía.
 - **Dirección no consulta expedientes individuales:** ve reportes agregados (Tabla 16, Accesibilidad), que llegan en el Batch 11.
 - **Administrador y coordinación son roles separados:** una cuenta puede tener varios, pero las cuentas del seed tienen uno cada una.
