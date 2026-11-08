@@ -29,6 +29,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-014 | [#39](https://github.com/fjmp-dev/sce-control-escolar/issues/39) | Dependencias en las Figuras 2 y 9 | Documental | PO y QA | Batch 0 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
 | CC-015 | [#40](https://github.com/fjmp-dev/sce-control-escolar/issues/40) | Usuario técnico sin rol | Mayor o Must | PO, QA y Seguridad | Batch 2 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
 | CC-016 | Sin issue: `cambios/CC-016.md` | Operación `cambiarEstatus` del alumno en la Fig. 3 | Documental | PO y QA | Batch 4 | Solicitado; pendiente de aprobación. Figura ya actualizada |
+| CC-017 | Sin issue: `cambios/CC-017.md` | Operaciones de la Fig. 6 en la clase `Inscripcion` de la Fig. 3 | Documental | PO y QA | Batch 5 | Solicitado; pendiente de aprobación. Figura ya actualizada |
 
 Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15)). Ninguno modifica un requisito RF o RNF, la política de calidad ni el alcance de la primera versión.
 
@@ -66,3 +67,4 @@ Se llena al aprobar cada cambio. Quien aprueba no es quien solicitó el cambio (
 | CC-014 | | | | No aplica | |
 | CC-015 | | | | | |
 | CC-016 | | | | No aplica | |
+| CC-017 | | | | No aplica | |

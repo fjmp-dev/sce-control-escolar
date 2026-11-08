@@ -82,10 +82,14 @@ class Inscripcion {
   + fecha : timestamp
   + estado : EstadoInscripcion
   + motivo_rechazo : MotivoRechazo
+  + enviar(carga) : void
   + validarPrerrequisitos() : boolean
   + validarAdeudos() : boolean
   + validarChoques() : boolean
   + confirmar() : void
+  + rechazar(motivo) : void
+  + ajustar(carga) : void
+  + cerrar() : void
 }
 
 class Calificacion {
@@ -191,6 +195,9 @@ note bottom of Inscripcion
   RNF-USU-001: todo rechazo deja
   estado explicito con causa
   (adeudo, prerrequisito o choque).
+  CC-017: las transiciones de la Fig. 6;
+  validar* decide con lo que entregan
+  academico y pagos (Fig. 4).
 end note
 
 @enduml
