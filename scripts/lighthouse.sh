@@ -31,6 +31,8 @@ medir ingresar /ingresar
 ADMIN="$(token administrador@sce.test)"
 COORDINACION="$(token coordinacion@sce.test)"
 ALUMNO="$(token alumno@sce.test)"
+CONTROL="$(token control.escolar@sce.test)"
+medir control-escolar-expediente /expedientes/2420003 "$CONTROL"
 medir administrador-usuarios /usuarios "$ADMIN"
 medir coordinacion-materias /materias "$COORDINACION"
 medir alumno-inicio / "$ALUMNO"

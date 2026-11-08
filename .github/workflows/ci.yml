@@ -153,6 +153,9 @@ jobs:
       - name: Newman - contratos de API y CS-SEG-04 (Tablas 30, 42 y 49)
         working-directory: .
         run: scripts/newman.sh http://localhost:3001 reportes/newman
+      - name: Great Expectations - CD-DAT-01 y 04, expediente y CS-SEG-06 en plantel (Tablas 39 y 42; AU-22)
+        working-directory: .
+        run: scripts/calidad-datos.sh reportes/calidad-datos
       - if: failure()
         working-directory: .
         run: docker compose logs
@@ -167,6 +170,13 @@ jobs:
         with:
           name: newman
           path: reportes/newman/
+          if-no-files-found: ignore
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calidad-datos
+          path: reportes/calidad-datos/
           if-no-files-found: ignore
           retention-days: 90
 
