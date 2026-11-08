@@ -21,6 +21,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-006 | Mayor | No existe el acta de levantamiento que la Tabla 23 exige para la fase 0 | AU-07, AU-43 | Ambos | 27 de noviembre de 2026, a confirmar por el equipo | Abierta con plan |
 | NC-007 | Menor | El catálogo de casos CS-SEG del repositorio divergió de la Tabla 49 del manual | AU-02, AU-05, AU-29 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación |
 | NC-008 | Menor | Cambios CC-001 a CC-006 implementados sin aprobación registrada | AU-06 | SJOM | 7 de noviembre de 2026 | Abierta con plan |
+| NC-009 | Mayor | Batch 4 (fase 2) iniciado sin el acta de la fase 1 firmada, por decisión de FJMP | AU-07 | FJMP · SJOM | Al firmar ACT-F1-001 | Abierta con plan |
 
 ---
 
@@ -119,3 +120,15 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** SJOM aprueba o rechaza cada cambio con fecha y responsable. Lo rechazado se revierte. Responsable: SJOM. Fecha: 7 de noviembre de 2026.
 - **Acción preventiva:** ningún código de un cambio Mayor se fusiona sin su CC aprobado (`plan-de-sistema.md`, regla 5).
 - **Verificación de eficacia:** el equipo auditor revisa el registro de aprobaciones.
+
+## NC-009 — Fase 2 iniciada sin el acta de la fase 1
+
+- **Fuente:** autodeclaración, 7 de noviembre de 2026.
+- **Descripción:** el Batch 4 abre la fase 2 (expediente). La regla 4 de `plan-de-sistema.md` y la acción preventiva de NC-002 dicen que una fase no se abre sin el acta de la anterior firmada. ACT-F1-001 está en borrador y su apartado 9 lista lo que falta. FJMP decidió continuar el desarrollo para no detenerlo mientras el segundo integrante no tiene acceso al repositorio.
+- **Severidad:** Mayor. Repite la desviación de NC-002, ahora con la regla ya escrita.
+- **Evidencia:** PR del Batch 4, apilado sobre #58, y la decisión registrada en esta entrada.
+- **Causa:** la aceptación depende de una sola persona sin acceso (NC-001), y el calendario de la fase 1 cierra el 11 de diciembre de 2026.
+- **Contención:** el código de la fase 2 **no se fusiona** a `develop` antes de firmarse ACT-F1-001. Se mantiene la regla "ninguna fase cierra sin fusión".
+- **Acción correctiva:** firmar ACT-F1-001 y fusionar la fase 1 antes de revisar el Batch 4. Responsables: SJOM firma; FJMP prepara. Fecha: al firmarse ACT-F1-001.
+- **Acción preventiva:** si vuelve a ocurrir, la decisión se registra como esta, antes de empezar el batch.
+- **Verificación de eficacia:** QA comprueba que la fusión de la fase 2 ocurre después de la firma de ACT-F1-001.
