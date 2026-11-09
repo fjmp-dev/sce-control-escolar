@@ -23,18 +23,22 @@ curl -sfI "$URL/" | grep -qi '^strict-transport-security: max-age=' || falla "fa
 echo "HTTP a HTTPS y HSTS: ok" | tee -a "$REPORTES/humo.txt"
 
 # TLS 1.2 o superior (Tabla 38): ningun protocolo anterior se ofrece.
-docker run --rm --network host -v "$PWD/$REPORTES:/reportes" ghcr.io/testssl/testssl.sh:3.2 \
-  --quiet --protocols --overwrite --jsonfile /reportes/tls.json "${URL#https://}" > "$REPORTES/tls.txt" || true
+# testssl corre con un usuario sin privilegios: su directorio debe admitir escritura.
+mkdir -p "$REPORTES/tls" && chmod a+rwx "$REPORTES/tls"
+docker run --rm --network host -v "$PWD/$REPORTES/tls:/reportes" ghcr.io/testssl/testssl.sh:3.2 \
+  --quiet --protocols --overwrite --jsonfile /reportes/tls.json "${URL#https://}" > "$REPORTES/tls/tls.txt" || true
+[ -s "$REPORTES/tls/tls.json" ] || falla "testssl no llego a medir"
 jq -e '[.[] | select(.id | test("^(SSLv2|SSLv3|TLS1|TLS1_1)$")) | .finding | test("^not offered")] | length == 4 and all' \
-  "$REPORTES/tls.json" >/dev/null || falla "el servidor ofrece un protocolo anterior a TLS 1.2"
-jq -e '[.[] | select(.id | test("^TLS1_[23]$")) | .finding | test("^offered")] | any' "$REPORTES/tls.json" >/dev/null \
+  "$REPORTES/tls/tls.json" >/dev/null || falla "el servidor ofrece un protocolo anterior a TLS 1.2"
+jq -e '[.[] | select(.id | test("^TLS1_[23]$")) | .finding | test("^offered")] | any' "$REPORTES/tls/tls.json" >/dev/null \
   || falla "el servidor no ofrece TLS 1.2 ni 1.3"
-jq -r '.[] | select(.id | test("^(SSLv|TLS)")) | "\(.id): \(.finding)"' "$REPORTES/tls.json" | tee -a "$REPORTES/humo.txt"
+jq -r '.[] | select(.id | test("^(SSLv|TLS)")) | "\(.id): \(.finding)"' "$REPORTES/tls/tls.json" | tee -a "$REPORTES/humo.txt"
 
 # ZAP pasivo sobre el portal en HTTPS: cookies Secure, HSTS y demas cabeceras. Criterio: cero altas (Tabla 51).
 mkdir -p "$REPORTES/zap" && chmod a+rwx "$REPORTES/zap"
 docker run --rm --network host -v "$PWD/$REPORTES/zap:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:2.17.0 \
   zap-baseline.py -t "$URL" -I -r zap.html -J zap.json > "$REPORTES/zap/zap.txt" || true
+[ -s "$REPORTES/zap/zap.json" ] || falla "ZAP no llego a medir"
 altas="$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' "$REPORTES/zap/zap.json")"
 echo "ZAP pasivo: $altas alertas altas" | tee -a "$REPORTES/humo.txt"
 [ "$altas" -eq 0 ] || falla "ZAP encontro alertas altas"
