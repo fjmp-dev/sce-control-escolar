@@ -1,5 +1,5 @@
 #!/bin/sh
-# Antes de PostgreSQL: certificado del servidor y reglas de acceso (Fig. 9, Tabla 38, CC-005).
+# Antes de PostgreSQL, ya como usuario postgres: certificado del servidor y reglas de acceso (Fig. 9, Tabla 38, CC-005).
 # - El certificado se genera una vez, en el volumen; el servidor de aplicacion lo usa como CA para verificarlo.
 # - pg_hba.conf se reescribe en cada arranque desde RED_APP: solo el servidor de aplicacion entra, solo por TLS y solo
 #   con SCRAM. El superusuario no entra por red. Lo que no coincide con una linea se rechaza.
@@ -16,7 +16,6 @@ if [ ! -s "$TLS/servidor.crt" ]; then
   openssl req -x509 -newkey rsa:3072 -nodes -days 825 -subj "/CN=$NOMBRE_DB" -addext "subjectAltName=$SAN" \
     -keyout "$TLS/servidor.key" -out "$TLS/servidor.crt" 2>/dev/null
 fi
-chown postgres:postgres "$TLS/servidor.key" "$TLS/servidor.crt"
 chmod 600 "$TLS/servidor.key"
 
 cat > /etc/sce/pg_hba.conf <<EOF
@@ -24,6 +23,5 @@ cat > /etc/sce/pg_hba.conf <<EOF
 local    all   postgres              peer
 hostssl  sce   sce_app   $RED_APP    scram-sha-256
 EOF
-chown postgres:postgres /etc/sce/pg_hba.conf
 
 exec docker-entrypoint.sh "$@"

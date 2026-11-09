@@ -19,7 +19,7 @@ services:
     logging: # pgAudit escribe en el registro del servidor
       options: { max-size: 50m, max-file: '10' }
     healthcheck:
-      test: ['CMD', 'su', 'postgres', '-c', 'pg_isready -q -d postgres'] # como postgres: pasa la regla peer
+      test: ['CMD', 'pg_isready', '-q', '-d', 'postgres'] # el contenedor corre como postgres: pasa la regla peer
       interval: 3s
       retries: 20
 volumes:
