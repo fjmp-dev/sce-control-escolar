@@ -13,7 +13,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 
 | ID | Severidad | Descripción breve | Criterio de auditoría | Responsable | Fecha comprometida | Estado |
 |---|---|---|---|---|---|---|
-| NC-001 | Mayor | Pull request #29 fusionado sin aprobación de otro integrante | AU-04, AU-11 | SJOM (revisión) · FJMP (acceso) | 7 de noviembre de 2026 | Abierta con plan |
+| NC-001 | Mayor | Pull request #29 fusionado sin aprobación de otro integrante | AU-04, AU-11 | SJOM (revisión) · FJMP (acceso) | 7 de noviembre de 2026 | Abierta; acción 1 vencida: la invitación caducó |
 | NC-002 | Mayor | Fase 1 iniciada sin acta de aceptación de la fase 0 firmada | AU-07 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
 | NC-003 | Menor | Sin registro de aprobación de la versión 2.0 del manual | AU-01 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
 | NC-004 | Menor | Elementos P1 del plan de trabajo (#7 a #15) vencidos sin reprogramación escrita | AU-02, AU-43 | FJMP | 27 de noviembre de 2026 | Abierta con plan |
@@ -43,6 +43,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
   3. El PR #30 se integra solo con la aprobación de SJOM. Responsable: SJOM. Fecha: 7 de noviembre de 2026.
 - **Acción preventiva:** las ramas `main` y `Desarrollo` exigen una aprobación y los checks de CI, y la regla aplica también a administradores. Se verificó en la configuración el 5 de noviembre de 2026. Con esto, la plataforma ya no permite fusionar sin revisión.
 - **Verificación de eficacia:** QA del sprint S4 (FJMP) o el equipo auditor comprueban que el PR #29 tenga revisión registrada y que todos los PR posteriores al 7 de noviembre tengan aprobación de alguien distinto al autor.
+- **Seguimiento, 8 de noviembre de 2026:** la acción 1 venció sin cumplirse, y no podía cumplirse. La invitación del 23 de octubre caducó el 30 de octubre, porque GitHub vence las invitaciones a los 7 días; la API la reporta como `expired`. Nadie lo detectó en dos semanas porque el repositorio la seguía mostrando como pendiente. **Nueva acción:** FJMP reenvía la invitación y SJOM la acepta antes de que venza. Fecha: a confirmar por FJMP.
 
 ## NC-002 — Acta de la fase 0 sin firmar
 
