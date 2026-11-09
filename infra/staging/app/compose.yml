@@ -68,9 +68,3 @@ services:
       - ./certificados:/etc/letsencrypt:ro
       - ./acme:/var/www/acme:ro
     <<: *registro
-  certbot: # certificado de Let's Encrypt; uso en docs/gobierno/inventario-de-ambientes.md
-    image: certbot/certbot:v4.2.0
-    profiles: [certificados]
-    volumes:
-      - ./certificados:/etc/letsencrypt
-      - ./acme:/var/www/acme
