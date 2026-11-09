@@ -1,13 +1,13 @@
 # Pipeline de integracion: etapas 1 a 7 de la Tabla 53 (sec. 31.1). Cada etapa es criterio de avance de la siguiente.
 # La etapa 6 publica solo al integrar; en un pull request, la 7 ensaya con imagenes construidas ahi mismo.
-# La 8 llega en el Batch 6. Dentro de que etapa corre cada herramienta que la Tabla 53 no nombra:
+# La 8, manual, esta en staging.yml. Dentro de que etapa corre cada herramienta que la Tabla 53 no nombra:
 # docs/calidad/plan-de-pruebas.md, seccion 4.1.
 name: CI
 
 on:
   pull_request:
   push:
-    branches: [main, develop]
+    branches: [main, develop, 'release/**'] # una etiqueta candidata en release tambien tiene imagenes firmadas
 
 permissions:
   contents: read
@@ -354,6 +354,8 @@ jobs:
       - name: Lighthouse (Tabla 42, 28.2)
         if: always()
         run: scripts/lighthouse.sh reportes/lighthouse
+      - name: Ensayo de staging con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit y humo del Anexo D (Batch 6)
+        run: scripts/ensayo-staging.sh "${IMAGEN_API:-sce-api:local}" "${IMAGEN_PORTAL:-sce-portal:local}"
       - name: Registro del despliegue (31.2)
         if: always()
         run: |

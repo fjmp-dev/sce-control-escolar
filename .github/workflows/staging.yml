@@ -1,0 +1,122 @@
+# Etapa 8 de la Tabla 53: despliegue manual a staging, solo con etiqueta SemVer y acta, con autorizacion de PO y QA
+# (sec. 31.2). La autorizacion es la regla de revisores del ambiente "staging" de GitHub: el job no empieza hasta que lo
+# aprueban, y quien lo lanza no puede aprobarlo. Despliega las imagenes que firmo la etapa 6 para el commit de la
+# etiqueta, sin reconstruirlas: el mismo digest ira a piloto (Tabla 30). Secretos y procedimiento:
+# docs/gobierno/inventario-de-ambientes.md.
+name: 8 Despliegue a staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      etiqueta:
+        description: Etiqueta SemVer candidata (vX.Y.Z-rc.N o vX.Y.Z)
+        required: true
+      acta:
+        description: Acta de promocion que nombra la etiqueta, en docs/gobierno/actas/ de la rama desde la que se lanza
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  desplegar:
+    name: 8 Despliegue a staging
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://${{ vars.DOMINIO }}
+    permissions:
+      contents: read
+      packages: write # agrega la etiqueta SemVer a las imagenes ya firmadas
+    env:
+      ETIQUETA: ${{ inputs.etiqueta }}
+      ACTA: ${{ inputs.acta }}
+      DOMINIO: ${{ vars.DOMINIO }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Etiqueta SemVer integrada en develop, main o release, y acta que la nombra (sec. 31.2)
+        run: |
+          [[ "$ETIQUETA" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-rc\.[1-9][0-9]*)?$ ]] \
+            || { echo "::error::$ETIQUETA no es una etiqueta SemVer"; exit 1; }
+          [[ "$ACTA" =~ ^docs/gobierno/actas/[a-z0-9.-]+\.md$ ]] && grep -qF "$ETIQUETA" "$ACTA" \
+            || { echo "::error::$ACTA no existe o no nombra $ETIQUETA"; exit 1; }
+          COMMIT="$(git rev-parse --verify --quiet "refs/tags/$ETIQUETA^{commit}")" \
+            || { echo "::error::no existe la etiqueta $ETIQUETA"; exit 1; }
+          git branch -r --contains "$COMMIT" | grep -qE '^ *origin/(develop|main|release/.+)$' \
+            || { echo "::error::$ETIQUETA no esta integrada en develop, main ni release"; exit 1; }
+          echo "COMMIT=$COMMIT" >> "$GITHUB_ENV"
+          git checkout --quiet "$COMMIT" # infraestructura y scripts de la misma etiqueta que las imagenes
+      - uses: sigstore/cosign-installer@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Imagenes del commit, firmadas por la etapa 6, con la etiqueta SemVer (Tabla 53, AU-12)
+        run: |
+          for nombre in api portal; do
+            ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}/sce-$nombre"
+            digest="$(docker buildx imagetools inspect "$ref:sha-${COMMIT:0:12}" --format '{{json .Manifest}}' | jq -er .digest)"
+            cosign verify "$ref@$digest" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/ci.yml@refs/heads/(develop|main|release/.+)$" >/dev/null
+            docker buildx imagetools create --tag "$ref:$ETIQUETA" "$ref@$digest"
+            echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
+          done
+      - name: Acceso SSH a los dos servidores, con huellas fijas
+        env:
+          LLAVE: ${{ secrets.STAGING_SSH_KEY }}
+          HUELLAS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
+          APP_IP: ${{ vars.STAGING_APP_IP }}
+          DB_IP: ${{ vars.STAGING_DB_IP }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$LLAVE" > ~/.ssh/staging
+          chmod 600 ~/.ssh/staging
+          printf '%s\n' "$HUELLAS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host sce-app
+            HostName $APP_IP
+          Host sce-db
+            HostName $DB_IP
+            ProxyJump sce-app
+          Host *
+            User sce
+            IdentityFile ~/.ssh/staging
+            StrictHostKeyChecking yes
+          EOF
+      - name: El servidor descarga del registro con el token de esta corrida, que caduca al terminar
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$TOKEN" | ssh sce-app docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Despliegue con respaldo previo, migraciones, pgAudit y datos sinteticos
+        env:
+          EN_APP: ssh sce-app
+          EN_DB: ssh sce-db
+          DIR: /opt/sce
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA }}
+        run: scripts/desplegar-staging.sh
+      - name: Humo en staging (Anexo D; puerta 2 de la sec. 20.1)
+        env:
+          EN_DB: ssh sce-db
+          CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA }}
+        run: scripts/verificar-staging.sh "https://$DOMINIO"
+      - name: Cerrar la sesion del registro en el servidor
+        if: always()
+        run: ssh sce-app docker logout ghcr.io || true
+      - name: Registro del despliegue (31.2)
+        if: always()
+        run: cat reportes/staging/despliegue.md reportes/staging/humo.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: despliegue-staging-${{ inputs.etiqueta }}
+          path: reportes/staging/
+          retention-days: 90
