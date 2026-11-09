@@ -1,10 +1,11 @@
-// Datos sinteticos para desarrollo (manual sec. 3.5 y 20.2, riesgo RK-09).
-// Idempotente: se puede correr varias veces sin duplicar.
+// Datos sinteticos para desarrollo, pruebas y staging (manual sec. 3.5 y 20.2, riesgo RK-09).
+// Idempotente: se puede correr varias veces sin duplicar. Staging pasa su propia contrasena (20.2); la de desarrollo
+// esta en el README.
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
-const CONTRASENA_DEV = 'sce-dev-2026';
+const CONTRASENA_DEV = process.env.CONTRASENA_SEMILLA || 'sce-dev-2026';
 
 const ROLES = [
   [1, 'alumno', 'Alumno'],

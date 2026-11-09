@@ -5,6 +5,7 @@ set -euo pipefail
 
 API="${1:-http://localhost:3001}"
 PORTAL="${2:-http://localhost:3000}"
+CONTRASENA="${CONTRASENA_SEMILLA:-sce-dev-2026}" # staging tiene la suya (20.2)
 
 curl -sf "$API/salud" | jq -e '.estado == "ok"' >/dev/null
 curl -sf "$PORTAL/salud" | jq -e '.estado == "ok"' >/dev/null
@@ -15,7 +16,7 @@ echo "salud de la API y de la web: ok"
 
 for cuenta in alumno profesor control.escolar coordinacion caja direccion administrador; do
   token="$(curl -sf -X POST "$API/sesiones" -H 'Content-Type: application/json' \
-    -d "{\"correo\":\"$cuenta@sce.test\",\"contrasena\":\"sce-dev-2026\"}" | jq -er .token)"
+    -d "{\"correo\":\"$cuenta@sce.test\",\"contrasena\":\"$CONTRASENA\"}" | jq -er .token)"
   curl -sf "$API/sesiones/actual" -H "Authorization: Bearer $token" \
     | jq -e --arg rol "${cuenta/./_}" '.roles == [$rol]' >/dev/null
   curl -sf "$PORTAL/" -H "Cookie: sce_sesion=$token" | grep -q 'Entraste como'

@@ -1,0 +1,28 @@
+# Servidor de base de datos de staging (Fig. 9, Tabla 30). Se levanta una vez por servidor, y de nuevo solo si cambia
+# este directorio: docker compose up -d --build. Procedimiento: docs/gobierno/inventario-de-ambientes.md.
+# Variables en .env, que nunca se versiona (14.1-5, 20.2).
+services:
+  db:
+    build: .
+    container_name: sce-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?} # el superusuario solo entra por el socket local (pg_hba.conf)
+      SCE_APP_PASSWORD: ${SCE_APP_PASSWORD:?}
+      RED_APP: ${RED_APP:?}
+      NOMBRE_DB: ${NOMBRE_DB:?}
+    ports: ['${ESCUCHA:?}:5432:5432'] # solo en la interfaz privada: la base no se expone a internet
+    volumes:
+      - datos:/var/lib/postgresql/data
+      - tls:/var/lib/postgresql/tls
+      - respaldos:/respaldos
+    logging: # pgAudit escribe en el registro del servidor
+      options: { max-size: 50m, max-file: '10' }
+    healthcheck:
+      test: ['CMD', 'su', 'postgres', '-c', 'pg_isready -q -d postgres'] # como postgres: pasa la regla peer
+      interval: 3s
+      retries: 20
+volumes:
+  datos:
+  tls:
+  respaldos:
