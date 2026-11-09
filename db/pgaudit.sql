@@ -8,7 +8,7 @@
 -- Se corre como superusuario, dos veces la primera vez:
 --   psql -d sce -f db/pgaudit.sql   -> activa la libreria; reiniciar PostgreSQL
 --   psql -d sce -f db/pgaudit.sql   -> crea la extension y las reglas
--- Es idempotente: se reejecuta despues de cada migracion que agregue tablas.
+-- Es idempotente: se reejecuta antes y despues de cada migracion (scripts/desplegar-staging.sh lo hace).
 
 \set ON_ERROR_STOP on
 
@@ -41,17 +41,29 @@ SELECT NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'sce_auditor') AS crear_
 \endif
 ALTER SYSTEM SET pgaudit.role = 'sce_auditor';
 
-GRANT INSERT, UPDATE, DELETE ON
-  calificacion, historial,                -- RF-004, RF-005
-  pago, movimiento, cuenta_alumno,        -- RF-006
-  tramite, documento,                     -- RF-007
-  usuario, usuario_rol, rol,              -- RF-008
-  alumno, bitacora                        -- RF-001, RNF-SEG-001
-TO sce_auditor;
+-- Solo las tablas que ya existen: el despliegue corre este script antes de migrar, para que pgAudit registre el DDL de
+-- las migraciones, y despues, para auditar las tablas nuevas.
+DO $$
+DECLARE
+  tabla text;
+BEGIN
+  FOREACH tabla IN ARRAY ARRAY[
+    'calificacion', 'historial',             -- RF-004, RF-005
+    'pago', 'movimiento', 'cuenta_alumno',   -- RF-006
+    'tramite', 'documento',                  -- RF-007
+    'usuario', 'usuario_rol', 'rol',         -- RF-008
+    'alumno', 'bitacora'                     -- RF-001, RNF-SEG-001
+  ] LOOP
+    IF to_regclass(tabla) IS NOT NULL THEN
+      EXECUTE format('GRANT INSERT, UPDATE, DELETE ON %I TO sce_auditor', tabla);
+    END IF;
+  END LOOP;
+END $$;
 
 -- Contexto en cada linea del log: hora, proceso, usuario@base y aplicacion.
 ALTER SYSTEM SET log_line_prefix = '%m [%p] %q%u@%d %a ';
-ALTER SYSTEM SET log_connections = 'authentication';
+-- PostgreSQL 16 (Tabla 7) solo acepta on u off; la lista de PostgreSQL 18 ('authentication') falla aqui.
+ALTER SYSTEM SET log_connections = on;
 ALTER SYSTEM SET log_disconnections = on;
 
 SELECT pg_reload_conf();
