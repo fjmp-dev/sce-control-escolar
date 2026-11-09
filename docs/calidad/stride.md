@@ -1,14 +1,14 @@
 # Modelo de amenazas STRIDE — SCE
 
 **Fuente:** SCE-MC-001 v2.0, Tabla 37 ("riesgos de seguridad por componente"), sección 18 y Tabla 28.
-**Versión:** 1.3, 8 de noviembre de 2026 (Batch 5). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
+**Versión:** 1.4, 8 de noviembre de 2026 (Batch 6). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
 
 Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscripción, oferta, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
 
 | Componente | Tipo | Amenaza | Control | Evidencia | Riesgo que queda |
 |---|---|---|---|---|---|
 | Portal | I | Robo del token desde el navegador (XSS) | Cookie `httpOnly`; el navegador nunca recibe el token, porque Next.js llama a la API desde el servidor (CC-014). React escapa lo que muestra | `autenticacion.cy.ts` comprueba cookie, almacenamiento y HTML | La política de contenido admite `'unsafe-inline'` por los scripts de arranque de Next.js. Se endurece con nonces en el Batch 12 |
-| Portal | I | Interceptar la cookie | `Secure` por omisión; solo se apaga en Compose, que no tiene HTTPS | `cookie-sesion.test.ts` | HTTPS obligatorio desde staging (Batch 6) |
+| Portal | I | Interceptar la cookie | `Secure` por omisión; solo se apaga en Compose, que no tiene HTTPS. Staging tiene HTTPS con TLS 1.2+ y HSTS | `cookie-sesion.test.ts`; `verificar-staging.sh` | — |
 | Portal | T | Peticiones falsificadas desde otro sitio (CSRF) | `SameSite=Lax`, y Next.js compara el origen de cada acción de servidor | `autenticacion.cy.ts` comprueba el atributo. **La comparación de origen es de Next.js y no tiene prueba propia** | Se revisa con ZAP sobre el portal en el Batch 12 |
 | Portal | E | Entrar a una página de otro rol | La API autoriza cada lectura; el portal lleva a "sin permiso". Ocultar el menú es solo presentación | `demostracion-por-rol.cy.ts` | — |
 | Portal | S | Incrustar el portal en otro sitio (clickjacking) | `frame-ancestors 'none'` | Revisión de cabeceras | — |
@@ -42,7 +42,11 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscrip
 | Bitácora | T | Alterar o borrar asientos | Disparadores que rechazan UPDATE, DELETE y TRUNCATE | Control de RK-03 | Un superusuario de la base puede desactivarlos. pgAudit en staging (Batch 6) |
 | Bitácora | R | Negar una operación | Autor, acción, valor anterior y fecha, en la misma transacción que la operación: si la bitácora falla, la operación se revierte | `seguridad.spec.ts`, `usuarios.spec.ts` | — |
 | Bitácora | I | Secretos en el valor anterior | Solo id, correo, estado y roles; nunca el hash | `usuarios.spec.ts` | Correos en bitácora: retención a definir (Batch 13) |
-| Persistencia | I | Conexión o credenciales expuestas | Secretos fuera del código; Gitleaks y Trivy | CS-SEG-08 | Acceso a la base por ambiente (Batch 6) |
+| Persistencia | I | Conexión o credenciales expuestas | Secretos fuera del código; Gitleaks y Trivy. En staging, la base solo admite al servidor de aplicación, solo por TLS verificado y con SCRAM; el superusuario no entra por red | CS-SEG-08; `ensayo-staging.sh` prueba los cuatro rechazos | El rol `sce_app` también migra: no hay rol separado de solo datos |
+| Proxy de staging | I | Degradar el cifrado o espiar el tráfico | Solo TLS 1.2 y 1.3 con secreto perfecto hacia adelante; HTTP solo redirige; HSTS | testssl.sh y ZAP pasivo en cada despliegue; mutante con TLS 1.1 detectado | Certificado de Let's Encrypt: si la renovación falla, el portal deja de servir (RK-04). Se vigila en el Batch 13 |
+| Base de staging | R | Cambiar datos o esquema sin rastro, por cualquier vía | pgAudit registra DDL, cambios de rol y escrituras sobre las tablas de registro oficial, con usuario, base y aplicación | Ensayo: DDL de las migraciones registrado | Retención de esos registros: Batch 13 |
+| Despliegue a staging | E | Desplegar sin autorización o una imagen ajena | Solo etiqueta SemVer integrada y acta; aprobación de PO y QA en el ambiente, sin autoaprobación; firma cosign del workflow de CI verificada antes de desplegar; huellas SSH fijas | `staging.yml` | Mientras SJOM no acepte la invitación, nadie puede aprobar: no se despliega |
+| Despliegue a staging | I | Fuga de la llave SSH o del acceso al registro | La llave vive solo en el ambiente `staging` de GitHub; el servidor descarga con el token de la corrida, que caduca al terminar, y cierra sesión | `staging.yml` | Rotar la llave si sale una persona del equipo (Tabla 38) |
 | Persistencia | D | Saturar conexiones | Pool de Prisma por omisión | — | Se mide en carga (Batch 13) |
 
 ## Decisiones abiertas

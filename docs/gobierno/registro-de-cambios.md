@@ -1,7 +1,7 @@
 # Registro de cambios — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 16 (gestión de cambios) y 12.4 (control de cambios a requisitos).
-**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 8 de noviembre de 2026.
+**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 8 de noviembre de 2026 (Batch 6).
 
 Cada cambio tiene un issue en GitHub con la etiqueta `cambio`, con la solicitud, el análisis de impacto y la aprobación con fecha y responsable. Desde CC-007, la solicitud también está versionada en `docs/gobierno/cambios/`. Este archivo es el índice que se versiona junto con el código, para que el auditor lo encuentre sin entrar al tablero.
 
@@ -17,7 +17,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-002 | [#24](https://github.com/fjmp-dev/sce-control-escolar/issues/24) | Reconciliación de los casos CS-SEG y casos del manual que faltaban en el catálogo | Documental | PO y QA | `ab5c786`, PR de fase 1 | Implementado en repositorio; pendiente de aprobación y de pasar al manual (#7) |
 | CC-003 | [#25](https://github.com/fjmp-dev/sce-control-escolar/issues/25) | Entidad `periodo` en el modelo de datos | Normal | PO y QA | `ab5c786`, PR de fase 1 | Implementado; pendiente de aprobación y de pasar al manual (#10) |
 | CC-004 | [#26](https://github.com/fjmp-dev/sce-control-escolar/issues/26) | Ajuste de restricciones de integridad al pasar a migraciones | Mayor o Must | PO, QA y Seguridad | PR de fase 1 | En revisión |
-| CC-005 | [#27](https://github.com/fjmp-dev/sce-control-escolar/issues/27) | Auditoría de base de datos con pgAudit y autenticación SCRAM | Mayor o Must | PO, QA y Seguridad | PR de fase 1 | En revisión; requiere fila nueva en la Tabla 38 |
+| CC-005 | [#27](https://github.com/fjmp-dev/sce-control-escolar/issues/27) | Auditoría de base de datos con pgAudit y autenticación SCRAM | Mayor o Must | PO, QA y Seguridad | PR de fase 1; staging en el Batch 6 | En revisión; requiere fila nueva en la Tabla 38. Activo en la configuración de staging desde el Batch 6 |
 | CC-006 | [#28](https://github.com/fjmp-dev/sce-control-escolar/issues/28) | Versiones del stack y ambiente de pruebas | Normal | PO y QA | PR de fase 1 | En revisión; requiere actualizar tablas 7 y 42 |
 | CC-007 | [#32](https://github.com/fjmp-dev/sce-control-escolar/issues/32) | Rol técnico `administrador` | Mayor o Must | PO, QA y Seguridad | Batches 2 y 3 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
 | CC-008 | [#33](https://github.com/fjmp-dev/sce-control-escolar/issues/33) | `documento.contenido`, contenido inmutable del documento | Mayor o Must | PO y QA | Batch 10 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
@@ -42,6 +42,8 @@ Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://gith
 **Implementación del 7 de noviembre de 2026 (Batch 4, [#44](https://github.com/fjmp-dev/sce-control-escolar/issues/44)):** expediente único (RF-001) sin cambios al modelo de datos. CC-014 se amplía con la dependencia del expediente hacia identidad, y CC-016 añade `cambiarEstatus` a la Fig. 3. **El batch abre la fase 2 sin el acta de la fase 1 firmada:** NC-009.
 
 **Implementación del 8 de noviembre de 2026 (Batch 5, [#45](https://github.com/fjmp-dev/sce-control-escolar/issues/45)):** inscripción (RF-002, RNF-USU-001) sin cambios al modelo de datos. CC-013 se implementa: el rechazo se guarda con su motivo y su carga en una transacción aparte. CC-017 añade a la Fig. 3 las transiciones de la Fig. 6. De CC-012 solo se usa la oferta mínima en consulta: `oferta_publicada_en` y la publicación llegan en el Batch 7, así que por ahora el alumno ve todos los grupos del periodo abierto. **El código de CC-013, Mayor, no se fusiona sin su aprobación,** y el batch sigue en la fase 2 sin el acta de la fase 1 (NC-009).
+
+**Implementación del 8 de noviembre de 2026 (Batch 6, [#46](https://github.com/fjmp-dev/sce-control-escolar/issues/46)):** staging con la topología de la Fig. 9, sin cambios al modelo de datos ni a las figuras. CC-005 se activa en staging: pgAudit, SCRAM y conexiones solo por TLS. `db/pgaudit.sql` fallaba en PostgreSQL 16 y se corrigió. El proveedor se elige con la ficha de la sección 33, y cambiarlo después es un cambio mayor.
 
 **Desviación registrada:** CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 

@@ -17,11 +17,12 @@ Sistema de Control Escolar Universitario (SCE). Centro Universitario UAEM Tiangu
 La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arrancó con:
 
 - Base de datos PostgreSQL con las veintiuna entidades de la sección 13.6, migradas con Prisma, y sus restricciones de integridad.
-- Auditoría de base de datos con pgAudit (`db/pgaudit.sql`).
+- Auditoría de base de datos con pgAudit (`db/pgaudit.sql`), activa en staging junto con SCRAM y TLS (CC-005).
 - API NestJS por capas (Fig. 2, Tabla 28): gateway con códigos de error de negocio y `/salud`, identidad con sesiones revocables y bloqueo por intentos, autorización por los seis roles y el administrador, bitácora y catálogos institucionales.
 - Pruebas automatizadas: dominio sin base de datos; Supertest sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG-07, CD-DAT-01 y 04); Newman (contratos y CS-SEG-04) y OWASP ZAP (CS-SEG-05) contra Compose.
 - Portal Next.js (Fig. 9): inicio y cierre de sesión, navegación por rol y pantallas de usuarios y catálogos, con pruebas de Vitest, Cypress, axe y Lighthouse.
-- Pipeline de GitHub Actions con las etapas 1 a 7 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas.
+- Pipeline de GitHub Actions con las etapas 1 a 8 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas. La 8 despliega a staging solo con etiqueta SemVer, acta y aprobación de PO y QA.
+- Staging con la topología de la Fig. 9 (`infra/staging/`, `docs/gobierno/inventario-de-ambientes.md`), ensayado en cada corrida; los servidores esperan la decisión del proveedor.
 
 Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
 
@@ -43,7 +44,7 @@ api/                NestJS + Prisma (sección 3.6)
   prisma/
     schema.prisma         Veintiuna entidades (sección 13.6, Tabla 29)
     migrations/           init + restricciones que Prisma no expresa de forma nativa
-    seed.mts              Datos sintéticos de desarrollo
+    seed.mts              Datos sintéticos de desarrollo, pruebas y staging (en staging, con contraseña propia)
   src/
     gateway/              Validación, errores con código de negocio, registros JSON y /salud
     identidad/            Sesiones, usuarios y guard por rol (RF-008); dominio puro en dominio/
@@ -57,7 +58,9 @@ api/                NestJS + Prisma (sección 3.6)
   test/integracion/       CI-MIG, CI-AUTH, CF-ROL, CS-SEG y CD-DAT, sobre PostgreSQL efímero
   test/contratos/         Colección de Postman: contratos y CS-SEG-04
 .github/workflows/ci.yml  Etapas 1 a 7 de la Tabla 53 (sección 31)
-scripts/                  Puerta de calidad, Gitleaks, Newman, OWASP ZAP, humo, Cypress, Lighthouse y publicación de imágenes
+.github/workflows/staging.yml  Etapa 8: despliegue manual a staging con etiqueta SemVer y acta
+infra/staging/            Servidores de staging (Fig. 9): nginx con TLS 1.2+, y PostgreSQL 16 con pgAudit, SCRAM y TLS
+scripts/                  Puerta de calidad, Gitleaks, Newman, OWASP ZAP, humo, Cypress, Lighthouse, publicación de imágenes, y despliegue, humo y ensayo de staging
 docker-compose.yml        Ambiente de pruebas: PostgreSQL 16, API y portal, con datos sintéticos
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
@@ -117,6 +120,14 @@ docker compose up --build    # Portal en http://localhost:3000 y API en http://l
 ```
 
 Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. Para la inscripción, el periodo `2027A` está abierto con siete grupos: `2420001` acreditó Programación I en `2026B`, `2420002` tiene un adeudo sintético y el grupo `ISW-702-A` ya no tiene lugares. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
+
+## Staging
+
+Dos servidores, como la Fig. 9: nginx con TLS 1.2+ delante del portal y la API, y PostgreSQL 16 aparte, al que solo entra el servidor de aplicación, por TLS y con SCRAM. Se despliega desde Actions ("8 Despliegue a staging"), nunca desde una máquina local. Alta, secretos, despliegue y rollback: `docs/gobierno/inventario-de-ambientes.md`. Para ensayarlo sin servidores, después de `docker compose build`:
+
+```bash
+scripts/ensayo-staging.sh     # dos "servidores" en Docker, certificado autofirmado, mismo despliegue y mismo humo
+```
 
 ## Levantar el ambiente de desarrollo
 

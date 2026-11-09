@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Código | PP-SCE-001 |
-| Versión | 1.6 — borrador para aceptación |
-| Fecha | 8 de noviembre de 2026, Batch 5 (v1.5: Batch 4; v1.4: Batch 3; v1.3: Batch 2; v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
+| Versión | 1.7 — borrador para aceptación |
+| Fecha | 8 de noviembre de 2026, Batch 6 (v1.6: Batch 5; v1.5: Batch 4; v1.4: Batch 3; v1.3: Batch 2; v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
 | Manual de referencia | SCE-MC-001 v2.0, secciones 10, 19, 21 a 28 y Anexo H |
 | Norma | ISO/IEC/IEEE 29119-3:2021 (estructura del plan) y 29119-4:2021 (técnicas) |
 | Autor | FJMP |
@@ -76,7 +76,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Migraciones | Prisma Migrate | — | Prisma 6 | **En uso** (CI-MIG-01 completo) |
 | Secretos | Gitleaks | 8 | 8.30 | **En uso** en CI, sobre todas las ramas y todo el historial |
 | Secretos en el envío | Escaneo de secretos de GitHub con protección de envío | — | — | **Activo** |
-| Auditoría de base de datos | pgAudit | — | 18.0 | Solo en el ambiente local donde se corrió `db/pgaudit.sql`. Compose y CI no lo activan. **Batch 6:** se activa en staging, o se retira CC-005 |
+| Auditoría de base de datos | pgAudit | — | 16.1 (paquete `postgresql-16-pgaudit`) | **Activo en staging** (`infra/staging/db/`), con SCRAM y conexiones solo por TLS (CC-005). La etapa 7 lo ensaya en cada corrida y comprueba que registra el DDL de las migraciones. Compose de desarrollo no lo activa. `db/pgaudit.sql` solo había corrido en PostgreSQL 18: en la versión 16 del manual fallaba, y se corrigió |
 | Calidad de datos | Consultas SQL de verificación y Great Expectations | 0.18 | Great Expectations 1.24 | **En uso** en la etapa 4, con Data Docs en HTML (`scripts/calidad-datos.sh`): CD-DAT-01 y 04, completitud y formato del expediente, y CS-SEG-06 en plantel |
 | Contratos de API | Postman y Newman | Newman 6 | Newman 6.1.3 | **En uso** en la etapa 4, contra Compose, con reporte HTML (`scripts/newman.sh`) |
 | Extremo a extremo | Cypress | 13 | Cypress 16 | **En uso** en la etapa 7, con video y capturas (`scripts/cypress.sh`) |
@@ -86,7 +86,8 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
 | Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
-| Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). Batch 6: también en staging |
+| Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). En staging, escaneo pasivo del portal sobre HTTPS en cada despliegue (`scripts/verificar-staging.sh`); el activo se queda en la etapa 5, sobre el mismo digest |
+| Cifrado en tránsito | testssl.sh | — | 3.2 | **En uso** en cada despliegue a staging y en el ensayo de la etapa 7: ningún protocolo anterior a TLS 1.2 (Tabla 38) |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
 | Accesibilidad | axe y Lighthouse | 4 / 11 | axe-core 4.14, Lighthouse 13.6 | **En uso** en la etapa 7 (`docs/calidad/accesibilidad.md`). NVDA: Batch 12 |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
@@ -103,8 +104,8 @@ Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de av
 | 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30); **Great Expectations** sobre la base de Compose después de Newman (Tabla 42) | Casos CI Must en verde y cero expectativas incumplidas | `cobertura-integracion`, `newman`, `calidad-datos` | Batch 1; Newman en el Batch 2; Great Expectations en el Batch 4 |
 | 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx y base intacta | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2 |
 | 6 Empaquetado | Imágenes `sce-api` y `sce-portal`, registradas en GHCR y firmadas con cosign, sin llaves (`scripts/publicar-imagenes.sh`). **Solo al integrar;** en un pull request se omite | Firma verificada | `imagenes` | Batch 3 |
-| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe y Lighthouse. En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde | `despliegue-pruebas`: registro, video, capturas e informes | Batch 3 |
-| 8 Staging y piloto | Manual, con etiqueta SemVer y acta | Autorización de PO y QA | | Batch 6 |
+| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe y Lighthouse. Desde el Batch 6, también el **ensayo de staging** con las mismas imágenes (`scripts/ensayo-staging.sh`). En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde | `despliegue-pruebas`: registro, video, capturas e informes | Batch 3 |
+| 8 Staging y piloto | Manual (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra. Despliega por digest las imágenes firmadas por la etapa 6 y corre el humo del Anexo D | Autorización de PO y QA: regla de revisores del ambiente `staging`, sin autoaprobación | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
 
 Los artefactos caducan a los 90 días; al cerrar cada fase se copian al repositorio de evidencias (Tabla 62).
 
@@ -132,7 +133,7 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 **Ambiente de pruebas (Tabla 30).** Es GitHub Actions con base efímera: existe mientras dura la etapa 7. La demostración por rol que pide 11.3 queda en video y capturas (`demostracion-por-rol.cy.ts`).
 
-**Imágenes.** Solo llevan dependencias de producción y no ejecutan el seed: son las mismas que irán a staging y piloto. El seed sintético lo pide `docker-compose.yml` (RK-09).
+**Imágenes.** Solo llevan dependencias de producción y no ejecutan el seed al arrancar: son las mismas que irán a staging y piloto. El seed sintético lo pide `docker-compose.yml` y, en staging, el servicio `tareas` con la contraseña propia del ambiente (RK-09, 20.2).
 
 **Comprobado que fallan.** Cypress detectó un defecto real durante la puesta a punto. axe y el control de desborde fallaron con una página alterada a propósito.
 
@@ -142,6 +143,18 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 **ZAP.** El escaneo usa una cuenta con los roles administrador y coordinación: con uno solo, los endpoints del otro responden 403 antes de validar la entrada, y esa validación quedaría sin probar. Se le quitan del OpenAPI el cierre de sesión y el cambio de contraseña, porque revocarían su propio token. Además de las alertas, `scripts/zap.sh` comprueba con los registros de la API que ZAP llegó autenticado, que no hubo ningún 5xx, que el token sigue vigente y que CD-DAT-01 y 04 siguen en cero filas.
 
+### 4.5 Staging
+
+Configuración y procedimiento: `docs/gobierno/inventario-de-ambientes.md`. El humo de cada despliegue (`scripts/verificar-staging.sh`) cubre lo automatizable del Anexo D:
+- salud e inicio de sesión por rol;
+- Newman;
+- TLS 1.2+, redirección a HTTPS, HSTS y ZAP pasivo;
+- ausencia de datos reales;
+- SCRAM, TLS y pgAudit en la base;
+- revisión de accesos.
+
+**Comprobado que fallan.** Con el ambiente del ensayo arriba, cada verificación nueva cayó con su propio mensaje ante un mutante: una cuenta `@gmail.com`, un rol con contraseña MD5, nginx sin HSTS y nginx con TLS 1.1. El de TLS 1.1 necesitó además un cifrado CBC, porque sin él OpenSSL no ofrece ese protocolo aunque se pida. Los rechazos de la base (otra dirección, sin TLS, TLS 1.1 y superusuario por red) son pruebas negativas del propio ensayo.
+
 ---
 
 ## 5. Ambientes y datos de prueba
@@ -150,10 +163,10 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 |---|---|---|---|
 | Local | Docker Compose con NestJS y PostgreSQL 16 (Tabla 30), sobre Colima en macOS; Next.js desde el Batch 3. Las pruebas de integración levantan su propio PostgreSQL 16 con Testcontainers | Seed sintético (`api/prisma/seed.mts`) | Desarrollo y ejecución previa al pull request |
 | Pruebas / integración | GitHub Actions con PostgreSQL 16 efímero por ejecución | Seed sintético | Ejecución obligatoria en cada pull request; despliegue automático al fusionar en `develop`, desde el Batch 3 |
-| Staging | Se monta en el Batch 6, antes de cerrar la fase 2. Proveedor por definir | Sintéticos o anonimizados | Humo, rendimiento, ZAP, usabilidad, webhook de Mercado Pago sandbox |
+| Staging | Dos servidores de la Fig. 9 (`docs/gobierno/inventario-de-ambientes.md`). Configurado y ensayado en el Batch 6; los servidores esperan la decisión del proveedor | Seed sintético, con contraseña propia | Humo del Anexo D, rendimiento, ZAP, usabilidad, webhook de Mercado Pago sandbox |
 | Piloto | Batch 13 y 14 | Reales | Solo validación tras la puerta de promoción |
 
-Regla de datos (sección 20.2 y RK-09): ningún ambiente distinto del piloto contiene datos personales reales. El seed usa nombres y matrículas ficticios y correos `@sce.test`.
+Regla de datos (sección 20.2 y RK-09): ningún ambiente distinto del piloto contiene datos personales reales. El seed usa nombres y matrículas ficticios y correos `@sce.test`. **Convención verificable desde el Batch 6:** toda cuenta usa el dominio reservado `.test` (RFC 2606), salvo el usuario técnico sin acceso, y todo nombre de alumno empieza con "Alumno" o "Alumna". `api/prisma/verificacion/sin-datos-reales.sql` lo comprueba en cada despliegue a staging (18.2).
 
 ---
 
