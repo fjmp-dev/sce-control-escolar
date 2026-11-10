@@ -525,6 +525,18 @@
           }
         },
         {
+          "name": "GET /periodos/NO-EXISTE/reporte",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/reporte",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "reporte"]
+            },
+            "header": []
+          }
+        },
+        {
           "name": "GET /alumnos/actual/cuenta",
           "request": {
             "method": "GET",

@@ -4339,6 +4339,84 @@
           "Trámites"
         ]
       }
+    },
+    "/periodos/{clave}/reporte": {
+      "get": {
+        "operationId": "ReportesController_reporte",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReporteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "RF-009: inscripción, avance y cobranza por facultad y de toda la universidad",
+        "tags": [
+          "Reportes"
+        ]
+      }
     }
   },
   "info": {
@@ -6090,6 +6168,96 @@
           "fechaEmision",
           "matricula",
           "valido"
+        ]
+      },
+      "IndicadoresRespuesta": {
+        "type": "object",
+        "properties": {
+          "facultadClave": {
+            "type": "string",
+            "nullable": true,
+            "description": "Nula en la fila de toda la universidad"
+          },
+          "facultadNombre": {
+            "type": "string"
+          },
+          "alumnosActivos": {
+            "type": "number"
+          },
+          "inscritos": {
+            "type": "number",
+            "description": "Con carga confirmada, ajustada o cerrada en el periodo"
+          },
+          "inscripcionPorcentaje": {
+            "type": "number",
+            "description": "Inscritos entre activos, en porcentaje"
+          },
+          "promedioGeneral": {
+            "type": "number",
+            "description": "Media del promedio de quienes ya tienen historial"
+          },
+          "avancePromedio": {
+            "type": "number",
+            "description": "Media del avance de carrera de los activos, en porcentaje"
+          },
+          "cargos": {
+            "type": "number"
+          },
+          "pagado": {
+            "type": "number"
+          },
+          "becas": {
+            "type": "number"
+          },
+          "saldoPendiente": {
+            "type": "number"
+          },
+          "alumnosConAdeudo": {
+            "type": "number"
+          },
+          "cobranzaPorcentaje": {
+            "type": "number",
+            "description": "Pagado y becas entre cargos, en porcentaje"
+          }
+        },
+        "required": [
+          "facultadClave",
+          "facultadNombre",
+          "alumnosActivos",
+          "inscritos",
+          "inscripcionPorcentaje",
+          "promedioGeneral",
+          "avancePromedio",
+          "cargos",
+          "pagado",
+          "becas",
+          "saldoPendiente",
+          "alumnosConAdeudo",
+          "cobranzaPorcentaje"
+        ]
+      },
+      "ReporteRespuesta": {
+        "type": "object",
+        "properties": {
+          "periodoClave": {
+            "type": "string"
+          },
+          "generadoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "filas": {
+            "description": "Una por facultad y, al final, la universidad",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IndicadoresRespuesta"
+            }
+          }
+        },
+        "required": [
+          "periodoClave",
+          "generadoEn",
+          "filas"
         ]
       }
     }

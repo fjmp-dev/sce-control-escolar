@@ -9,7 +9,8 @@ coverage/
 .puerta/
 sonar-reporte/
 .scannerwork/
-reportes/
+/reportes/
+web/cypress/reportes/
 .staging/
 gitleaks.json
 .next/

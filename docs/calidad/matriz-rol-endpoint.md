@@ -1,7 +1,7 @@
 # Matriz de rol por endpoint — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 y Tablas 5, 11, 12 y 38; CC-007. **Criterio de auditoría:** AU-15.
-**Versión:** 1.6, 10 de noviembre de 2026 (Batch 9). Crece con cada batch.
+**Versión:** 1.7, 10 de noviembre de 2026 (Batch 10). Crece con cada batch.
 
 Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7). El portal solo presenta lo que esta matriz permite, y `web/test/roles.test.ts` lo comprueba; quien autoriza siempre es la API.
 
@@ -50,6 +50,7 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
 | POST | `/periodos/{clave}/publicacion` | No | No | No | Sí | No | No | No |
 | POST | `/periodos/{clave}/inicio` | No | No | No | Sí | No | No | No |
 | POST | `/periodos/{clave}/cierre` | No | No | No | Sí | No | No | No |
+| GET | `/periodos/{clave}/reporte` | No | No | No | No | No | Sí | No |
 | GET | `/alumnos/actual/cuenta` | Sí | No | No | No | No | No | No |
 | GET | `/alumnos/{matricula}/cuenta` | No | No | No | No | Sí | No | No |
 | POST | `/alumnos/{matricula}/becas` | No | No | No | No | Sí | No | No |
@@ -82,5 +83,5 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
   - **Ciclo del periodo:** iniciar el curso (CC-019), cerrar el periodo (UC06) y corregir después del cierre (D-17) son de coordinación.
   - **Caja y dirección:** no tocan el historial (CS-SEG-02).
 - **Pagos y trámites (Batch 9):** la pasarela es simulada. El alumno ve su cuenta, paga y descarga sus documentos con su sesión; un pago o un trámite ajeno responde 404. Caja genera cargos, registra becas y hace el corte, y ve cualquier recibo. Control escolar procesa los trámites y verifica documentos. Caja no toca el historial ni los trámites (CS-SEG-02).
-- **Dirección no consulta expedientes individuales:** ve reportes agregados (Tabla 16, Accesibilidad), que llegan en el Batch 11.
+- **Dirección no consulta expedientes individuales:** ve reportes agregados por facultad y de la universidad, sin matrículas ni nombres (Tabla 16, Accesibilidad; Batch 10). No hay ruta de bitácora para ningún rol de uso (6.2-5, mínimo privilegio).
 - **Administrador y coordinación son roles separados:** una cuenta puede tener varios, pero las cuentas del seed tienen uno cada una.
