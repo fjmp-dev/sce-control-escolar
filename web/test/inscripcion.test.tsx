@@ -45,9 +45,22 @@ const GRUPO_LLENO = {
   ocupacion: 1,
   horarios: [{ dia: 2, horaInicio: '09:00', horaFin: '11:00', aula: 'A2' }],
 };
+const PUBLICADA = '2026-12-01T15:00:00.000Z';
 const PERIODOS = [
-  { clave: '2027A', fechaInicio: '2027-01-12T00:00:00.000Z', fechaFin: '2027-06-30T00:00:00.000Z', estado: 'abierto' },
-  { clave: '2026B', fechaInicio: '2026-08-03T00:00:00.000Z', fechaFin: '2026-12-18T00:00:00.000Z', estado: 'cerrado' },
+  {
+    clave: '2027A',
+    fechaInicio: '2027-01-12T00:00:00.000Z',
+    fechaFin: '2027-06-30T00:00:00.000Z',
+    estado: 'abierto',
+    ofertaPublicadaEn: PUBLICADA,
+  },
+  {
+    clave: '2026B',
+    fechaInicio: '2026-08-03T00:00:00.000Z',
+    fechaFin: '2026-12-18T00:00:00.000Z',
+    estado: 'cerrado',
+    ofertaPublicadaEn: PUBLICADA,
+  },
 ];
 const inscripcion = (periodoClave: string, estado: string, motivoRechazo: string | null, grupos = [GRUPO_201]) => ({
   folio: `INS-${periodoClave}-2420001`,
@@ -72,7 +85,7 @@ function api(respuestas: Record<string, [number, unknown]>) {
     }),
   );
 }
-const alumno = (mias: unknown[], periodos = PERIODOS) =>
+const alumno = (mias: unknown[], periodos: unknown[] = PERIODOS) =>
   api({
     '/alumnos/actual/inscripciones': [200, mias],
     '/periodos': [200, periodos],
@@ -82,6 +95,14 @@ const alumno = (mias: unknown[], periodos = PERIODOS) =>
 afterEach(cleanup);
 
 describe('Inscripcion del alumno', () => {
+  it('CC-012: con el periodo abierto pero la oferta sin publicar, lo explica y no ofrece armar la carga', async () => {
+    alumno([], [{ ...PERIODOS[0], ofertaPublicadaEn: null }]);
+    render(await PaginaInscripcion());
+    screen.getByText(/La oferta de 2027A todavía no se publica/);
+    expect(screen.queryByRole('heading', { name: 'Arma tu carga' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Enviar carga' })).toBeNull();
+  });
+
   it('sin inscripcion en el periodo: oferta con horario y lugares, revisar choques y enviar', async () => {
     alumno([ANTERIOR]);
     render(await PaginaInscripcion());

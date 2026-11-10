@@ -78,17 +78,15 @@ describe('Catalogos', () => {
     cy.campo('Clave').type(PERIODO);
     cy.campo('Fecha de inicio').type('2030-06-30');
     cy.campo('Fecha de fin').type('2030-01-10');
-    cy.campo('Estado').select('Abierto');
-    enviar('Dar de alta');
-    cy.get('[role=alert]').should('contain', 'Revisa los datos');
+    enviar('Abrir periodo');
+    cy.get('[role=alert]').should('contain', 'debe ser posterior a la de inicio');
     cy.campo('Clave').should('have.value', PERIODO);
-    cy.campo('Estado').should('have.value', 'abierto');
 
     cy.campo('Fecha de inicio').clear().type('2030-01-10');
     cy.campo('Fecha de fin').clear().type('2030-06-30');
-    enviar('Dar de alta');
-    cy.get('[role=status]').should('contain', `Periodo ${PERIODO} creado`);
-    cy.contains('tr', PERIODO).should('contain', 'Abierto');
+    enviar('Abrir periodo');
+    cy.get('[role=status]').should('contain', `Periodo ${PERIODO} abierto`);
+    cy.contains('tr', PERIODO).should('contain', 'Abierto').and('contain', 'Sin publicar');
     cy.screenshot('periodo-creado');
   });
 });

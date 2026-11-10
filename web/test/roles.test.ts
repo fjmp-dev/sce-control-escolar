@@ -28,6 +28,9 @@ describe('El portal ofrece lo que la matriz rol por endpoint permite (AU-15)', (
     ['/expedientes', 'GET', '/alumnos'],
     ['/mi-expediente', 'GET', '/alumnos/actual'],
     ['/inscripcion', 'POST', '/inscripciones'],
+    ['/mi-horario', 'GET', '/alumnos/actual/inscripciones'],
+    ['/mis-grupos', 'GET', '/profesores/actual/grupos'],
+    ['/oferta', 'POST', '/grupos'],
   ])('%s: solo quien puede consultar %s %s lo ve en el menu', (pagina, metodo, ruta) => {
     const conPagina = ROLES.filter((rol) => menuDe([rol]).some((enlace) => enlace.ruta === pagina));
     expect(conPagina).toEqual(rolesPermitidos(metodo, ruta));

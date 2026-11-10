@@ -75,16 +75,26 @@ describe('Accesibilidad', () => {
 
   it('axe: paginas de coordinacion y de alumno, y sin permiso', () => {
     cy.iniciar('coordinacion@sce.test');
-    for (const pagina of ['/materias', '/periodos']) {
+    for (const pagina of ['/materias', '/periodos', '/oferta']) {
       cy.visit(pagina);
       cy.get('h1');
       cy.revisarAxe(`coordinacion${pagina.replace('/', '-')}`);
     }
+    cy.contains('button', 'Definir grupo').click();
+    cy.get('[role=alert]');
+    cy.revisarAxe('coordinacion-oferta-con-errores');
+    cy.contains('button', 'Cerrar sesión').click();
+    cy.iniciar('profesor@sce.test');
+    cy.visit('/mis-grupos');
+    cy.get('h1');
+    cy.revisarAxe('profesor-mis-grupos');
     cy.contains('button', 'Cerrar sesión').click();
     cy.iniciar('alumno@sce.test');
-    cy.visit('/materias');
-    cy.get('h1');
-    cy.revisarAxe('alumno-materias');
+    for (const pagina of ['/materias', '/mi-horario']) {
+      cy.visit(pagina);
+      cy.get('h1');
+      cy.revisarAxe(`alumno${pagina.replace('/', '-')}`);
+    }
     cy.visit('/usuarios');
     cy.location('pathname').should('eq', '/sin-permiso');
     cy.revisarAxe('alumno-sin-permiso');
@@ -149,6 +159,21 @@ describe('Accesibilidad', () => {
         });
       }
       cy.screenshot(`expediente-${ancho}x${alto}`, { capture: 'fullPage' });
+      cy.contains('button', 'Cerrar sesión').click();
+      cy.iniciar('coordinacion@sce.test');
+      cy.visit('/oferta');
+      cy.get('h1');
+      cy.document().then((documento) => {
+        const raiz = documento.documentElement;
+        expect(raiz.scrollWidth, 'desborde horizontal en /oferta').to.be.at.most(raiz.clientWidth);
+        for (const control of documento.querySelectorAll<HTMLElement>(
+          'main button, main select, main input:not([type=hidden])',
+        )) {
+          const { width, height } = control.getBoundingClientRect();
+          expect(Math.min(width, height), `objetivo en /oferta: ${control.outerHTML.slice(0, 60)}`).to.be.at.least(24);
+        }
+      });
+      cy.screenshot(`oferta-${ancho}x${alto}`, { capture: 'fullPage' });
     });
   }
 });

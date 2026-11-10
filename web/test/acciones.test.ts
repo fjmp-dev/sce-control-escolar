@@ -12,7 +12,9 @@ import {
   enviarCarga,
   crearFacultad,
   crearMateria,
-  crearPeriodo,
+  abrirPeriodo,
+  definirGrupo,
+  publicarOferta,
   crearPlan,
   iniciarSesion,
   quitarPrerrequisito,
@@ -143,14 +145,21 @@ describe('altas de catalogos (contrato de la API)', () => {
     ],
     [
       'periodo',
-      crearPeriodo,
-      { clave: '2030A', fechaInicio: '2030-01-01', fechaFin: '2030-06-01', estado: 'abierto' },
+      abrirPeriodo,
+      { clave: '2030A', fechaInicio: '2030-01-01', fechaFin: '2030-06-01' },
       {
         ruta: '/periodos',
         metodo: 'POST',
-        cuerpo: { clave: '2030A', fechaInicio: '2030-01-01', fechaFin: '2030-06-01', estado: 'abierto' },
+        cuerpo: { clave: '2030A', fechaInicio: '2030-01-01', fechaFin: '2030-06-01' },
       },
-      'Periodo 2030A creado.',
+      'Periodo 2030A abierto. Define sus grupos y publica la oferta en la página Oferta.',
+    ],
+    [
+      'publicacion de la oferta',
+      publicarOferta,
+      { periodoClave: '2030A' },
+      { ruta: '/periodos/2030A/publicacion', metodo: 'POST', cuerpo: undefined },
+      'Oferta de 2030A publicada. Los alumnos ya la ven y pueden inscribirse.',
     ],
     [
       'usuario',
@@ -364,5 +373,69 @@ describe('enviarCarga (RF-002, contrato de la API)', () => {
     expect((await enviarCarga({}, formulario({ intencion: 'revisar', grupos: '7' }))).error).toContain(
       'No pudimos conectar',
     );
+  });
+});
+
+describe('definirGrupo (RF-003, contrato de la API)', () => {
+  const grupo = {
+    periodoClave: '2030A',
+    materiaClave: 'ISW-101',
+    clave: ' G-1 ',
+    profesor: 'profesor@sce.test',
+    cupo: '25',
+    dia1: '1',
+    inicio1: '07:00',
+    fin1: '09:00',
+    aula1: 'A1',
+    dia2: '3',
+    inicio2: '07:00',
+    fin2: '09:00',
+    aula2: 'A1',
+  };
+
+  it('envia las sesiones llenas, en numeros donde la API los pide, e ignora las vacias', async () => {
+    const espia = responder(201, {});
+    const estado = await definirGrupo({}, formulario({ ...grupo, dia3: '', inicio3: '', fin3: '', aula3: '' }));
+    expect(enviado(espia)).toEqual({
+      ruta: '/grupos',
+      metodo: 'POST',
+      cuerpo: {
+        periodoClave: '2030A',
+        materiaClave: 'ISW-101',
+        clave: 'G-1',
+        profesor: 'profesor@sce.test',
+        cupo: 25,
+        horarios: [
+          { dia: 1, horaInicio: '07:00', horaFin: '09:00', aula: 'A1' },
+          { dia: 3, horaInicio: '07:00', horaFin: '09:00', aula: 'A1' },
+        ],
+      },
+    });
+    expect(estado).toEqual({ exito: 'Grupo G-1 definido en 2030A.' });
+    expect(m.revalidar).toHaveBeenCalledWith('/oferta');
+  });
+
+  it('una sesion a medias se marca sin llamar a la API; la primera siempre es obligatoria', async () => {
+    const espia = responder(201, {});
+    const estado = await definirGrupo({}, formulario({ ...grupo, dia1: '', aula2: '' }));
+    expect(estado).toMatchObject({ error: 'Revisa los campos marcados.', campos: ['dia1', 'aula2'] });
+    expect(estado.valores).toMatchObject({ clave: 'G-1', inicio1: '07:00' });
+    expect(espia).not.toHaveBeenCalled();
+  });
+
+  it('si la API rechaza los horarios, marca los campos de las sesiones enviadas', async () => {
+    responder(400, { codigo: 'ENTRADA_INVALIDA', mensaje: 'x', campos: ['horarios', 'cupo'] });
+    const estado = await definirGrupo({}, formulario(grupo));
+    expect(estado.campos).toEqual(['dia1', 'inicio1', 'fin1', 'aula1', 'dia2', 'inicio2', 'fin2', 'aula2', 'cupo']);
+  });
+
+  it('D-13: el traslape llega con su causa y su correccion, y se conserva lo escrito', async () => {
+    const mensaje =
+      'El aula A1 ya está ocupada el lunes de 07:00 a 09:00 por el grupo G-0. Elige otra aula u otro horario.';
+    responder(409, { codigo: 'TRASLAPE_DE_AULA', mensaje });
+    const estado = await definirGrupo({}, formulario(grupo));
+    expect(estado).toMatchObject({ error: mensaje, campos: [] });
+    expect(estado.valores).toMatchObject({ aula1: 'A1', profesor: 'profesor@sce.test' });
+    expect(m.revalidar).not.toHaveBeenCalled();
   });
 });

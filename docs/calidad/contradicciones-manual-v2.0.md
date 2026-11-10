@@ -33,6 +33,7 @@ Una contradicción no se resuelve en silencio: mientras el manual no se corrija,
 | X-22 | Fig. 6 frente a 13.1 | Ajustada solo sale a Confirmada ("revalidar"); 13.1 exige verificar requisitos, adeudos y choques antes de confirmar. La figura no dice qué pasa si la revalidación falla | El ajuste revalida todo y, si no pasa, se descarta y la inscripción conserva la carga confirmada (D-15) | Fig. 6 |
 | X-23 | Fig. 3 frente a Fig. 4 | La Fig. 3 pone `validar*` en Inscripcion; la Fig. 4 hace que académico y pagos consulten la base | Académico y pagos entregan el resultado y `Inscripcion.validar*` decide (CC-017) | Fig. 3 |
 | X-24 | CD-DAT-05 frente a CC-013 | "Inscripciones sin carga" es un defecto; con CC-013 también se guarda la inscripción rechazada | La rechazada guarda la carga que se intentó, sin ocupar lugar | Tabla 39 |
+| X-25 | Fig. 3 y Fig. 7 frente a la Tabla 15 | `Periodo` tiene `abrir()`, `publicarOferta()` y `cerrar()`, y la Fig. 7 pasa de la inscripción a la captura sin cerrar la inscripción. Ninguna figura dice quién ni cuándo un periodo deja de estar abierto y empieza su curso, y la ventana de captura de la Tabla 15 lo necesita | Hallado en el Batch 7. El Batch 8 propone la transición con su CC antes de la captura (D-6) | Fig. 3 y 7 |
 
 ---
 

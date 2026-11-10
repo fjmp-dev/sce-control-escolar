@@ -20,8 +20,9 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Auditoría de base de datos con pgAudit (`db/pgaudit.sql`), activa en staging junto con SCRAM y TLS (CC-005).
 - API NestJS por capas (Fig. 2, Tabla 28): gateway con códigos de error de negocio y `/salud`, identidad con sesiones revocables y bloqueo por intentos, autorización por los seis roles y el administrador, bitácora y catálogos institucionales.
 - Pruebas automatizadas: dominio sin base de datos; Supertest sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG-07, CD-DAT-01 y 04); Newman (contratos y CS-SEG-04) y OWASP ZAP (CS-SEG-05) contra Compose.
-- Portal Next.js (Fig. 9): inicio y cierre de sesión, navegación por rol y pantallas de usuarios y catálogos, con pruebas de Vitest, Cypress, axe y Lighthouse.
+- Portal Next.js (Fig. 9): inicio y cierre de sesión, navegación por rol y pantallas de usuarios, catálogos, expedientes, inscripción, oferta y horario de cada rol, con pruebas de Vitest, Cypress, axe y Lighthouse.
 - Pipeline de GitHub Actions con las etapas 1 a 8 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas. La 8 despliega a staging solo con etiqueta SemVer, acta y aprobación de PO y QA.
+- Oferta y horarios (RF-003, Batch 7): coordinación abre el periodo, define grupos sin traslape de aula ni de profesor y publica la oferta; el alumno solo ve la oferta publicada y su horario, y el profesor sus grupos.
 - Staging con la topología de la Fig. 9 (`infra/staging/`, `docs/gobierno/inventario-de-ambientes.md`), ensayado en cada corrida; los servidores esperan la decisión del proveedor.
 
 Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
@@ -49,7 +50,8 @@ api/                NestJS + Prisma (sección 3.6)
     gateway/              Validación, errores con código de negocio, registros JSON y /salud
     identidad/            Sesiones, usuarios y guard por rol (RF-008); dominio puro en dominio/
     expediente/           Expediente único, cambio de plantel y estatus (RF-001); inscripción de las Fig. 4 y 6 (RF-002)
-    academico/            Catálogos; oferta, prerrequisitos, choques y cupo para la inscripción
+    academico/            Catálogos; periodo y oferta (RF-003): grupos sin traslape, publicación y consulta por rol;
+                          prerrequisitos, choques y cupo para la inscripción
     pagos/                Adeudo de la cuenta del alumno (Fig. 4); el resto llega en el Batch 9
     bitacora/             Servicio de bitácora (Tabla 28)
     persistencia/         Prisma y transacción compartida entre repositorios

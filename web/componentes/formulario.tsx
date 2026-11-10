@@ -143,11 +143,13 @@ export function Selector({
   etiqueta,
   correccion,
   opciones,
+  opcional = false,
 }: {
   nombre: string;
   etiqueta: string;
   correccion: string;
   opciones: { valor: string; etiqueta: string }[];
+  opcional?: boolean;
 }) {
   const { id, invalido, describe, valor } = useCampo(nombre);
   return (
@@ -159,13 +161,13 @@ export function Selector({
         key={typeof valor === 'string' ? valor : ''}
         id={id}
         name={nombre}
-        required
+        required={!opcional}
         aria-invalid={invalido || undefined}
         aria-describedby={describe}
         defaultValue={typeof valor === 'string' ? valor : ''}
       >
-        <option value="" disabled>
-          Elige una opción
+        <option value="" disabled={!opcional}>
+          {opcional ? 'Ninguno' : 'Elige una opción'}
         </option>
         {opciones.map((opcion) => (
           <option key={opcion.valor} value={opcion.valor}>

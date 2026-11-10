@@ -47,10 +47,11 @@ export const RECHAZO: Record<string, { estado: string; correccion: string }> = {
 export const estadoDeInscripcion = (estado: string, motivo: string | null) =>
   (motivo && RECHAZO[motivo]?.estado) ?? ETIQUETA_ESTADO_INSCRIPCION[estado] ?? estado;
 
-const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+/** `horario.dia` va de 1, lunes, a 6, sábado (Fig. 8). */
+export const DIAS_DE_LA_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 export const horarioLegible = (h: { dia: number; horaInicio: string; horaFin: string; aula: string }) =>
-  `${DIAS[h.dia - 1]} de ${h.horaInicio} a ${h.horaFin}, aula ${h.aula}`;
+  `${DIAS_DE_LA_SEMANA[h.dia - 1]} de ${h.horaInicio} a ${h.horaFin}, aula ${h.aula}`;
 
 const FECHA_Y_HORA = new Intl.DateTimeFormat('es-MX', {
   dateStyle: 'medium',

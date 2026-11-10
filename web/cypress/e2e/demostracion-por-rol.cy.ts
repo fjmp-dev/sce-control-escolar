@@ -2,10 +2,10 @@
 const COMUNES = ['Inicio', 'Facultades', 'Planes de estudio', 'Materias', 'Periodos', 'Mi contraseña'];
 
 const CUENTAS = [
-  { cuenta: 'alumno', rol: 'Alumno', altas: [], propios: ['Inscripción', 'Mi expediente'] },
-  { cuenta: 'profesor', rol: 'Profesor', altas: [], propios: [] },
+  { cuenta: 'alumno', rol: 'Alumno', altas: [], propios: ['Inscripción', 'Mi horario', 'Mi expediente'] },
+  { cuenta: 'profesor', rol: 'Profesor', altas: [], propios: ['Mis grupos'] },
   { cuenta: 'control.escolar', rol: 'Control escolar', altas: [], propios: ['Expedientes'] },
-  { cuenta: 'coordinacion', rol: 'Coordinación académica', altas: ['/materias', '/periodos'], propios: [] },
+  { cuenta: 'coordinacion', rol: 'Coordinación académica', altas: ['/materias', '/periodos'], propios: ['Oferta'] },
   { cuenta: 'caja', rol: 'Caja', altas: [], propios: [] },
   { cuenta: 'direccion', rol: 'Dirección', altas: [], propios: [] },
   {
@@ -30,7 +30,8 @@ describe('Demostracion por rol', () => {
       for (const pagina of ['/facultades', '/planes', '/materias', '/periodos']) {
         cy.visit(pagina);
         cy.get('h1');
-        cy.contains('button', 'Dar de alta').should(altas.includes(pagina) ? 'exist' : 'not.exist');
+        const boton = pagina === '/periodos' ? 'Abrir periodo' : 'Dar de alta';
+        cy.contains('button', boton).should(altas.includes(pagina) ? 'exist' : 'not.exist');
       }
 
       cy.visit('/usuarios');
@@ -50,6 +51,15 @@ describe('Demostracion por rol', () => {
       // RF-002: solo el alumno se inscribe.
       cy.visit('/inscripcion');
       cy.location('pathname').should('eq', cuenta === 'alumno' ? '/inscripcion' : '/sin-permiso');
+      // RF-003, consulta diferenciada por rol (Tabla 4).
+      for (const [pagina, duena] of [
+        ['/oferta', 'coordinacion'],
+        ['/mis-grupos', 'profesor'],
+        ['/mi-horario', 'alumno'],
+      ]) {
+        cy.visit(pagina);
+        cy.location('pathname').should('eq', cuenta === duena ? pagina : '/sin-permiso');
+      }
 
       cy.contains('button', 'Cerrar sesión').click();
       cy.location('pathname').should('eq', '/ingresar');

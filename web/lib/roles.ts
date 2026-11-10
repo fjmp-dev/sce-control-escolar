@@ -55,9 +55,26 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
             descripcion: 'Armar tu carga, enviarla, ajustarla e imprimir tu comprobante',
           },
           {
+            ruta: '/mi-horario',
+            etiqueta: 'Mi horario',
+            descripcion: 'Consultar las sesiones de tu carga confirmada',
+          },
+          {
             ruta: '/mi-expediente',
             etiqueta: 'Mi expediente',
             descripcion: 'Consultar tus datos, historial y trayectoria',
+          },
+        ]
+      : []),
+    ...(roles.includes('profesor')
+      ? [{ ruta: '/mis-grupos', etiqueta: 'Mis grupos', descripcion: 'Consultar tus grupos, inscritos y horario' }]
+      : []),
+    ...(roles.includes('coordinacion')
+      ? [
+          {
+            ruta: '/oferta',
+            etiqueta: 'Oferta',
+            descripcion: 'Definir grupos, profesores, aulas y horarios, y publicar la oferta',
           },
         ]
       : []),

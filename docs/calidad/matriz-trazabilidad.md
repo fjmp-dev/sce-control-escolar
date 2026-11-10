@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.3, 7 de noviembre de 2026.
+**Versión:** 2.4, 10 de noviembre de 2026 (Batch 7).
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 

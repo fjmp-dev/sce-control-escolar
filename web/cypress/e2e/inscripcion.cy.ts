@@ -72,6 +72,23 @@ describe('Inscripcion', () => {
     cy.contains('section', 'Comprobante de inscripción')
       .should('contain', 'ISW-702 · Ética profesional')
       .and('not.contain', 'ISW-701');
+
+    // 3.4, impartición: su horario trae las sesiones de la carga ajustada, en orden de día y hora.
+    cy.visit('/mi-horario');
+    cy.contains('h2', 'Periodo 2027A');
+    cy.get('main table tbody tr').should('have.length', 3);
+    cy.get('main table tbody tr')
+      .eq(0)
+      .should('contain', 'Lunes')
+      .and('contain', '07:00 a 09:00')
+      .and('contain', 'ISW-201-A');
+    cy.get('main table tbody tr')
+      .eq(1)
+      .should('contain', 'Lunes')
+      .and('contain', '09:00 a 11:00')
+      .and('contain', 'ISW-702-B');
+    cy.get('main table tbody tr').eq(2).should('contain', 'Miércoles').and('contain', 'ISW-201-A');
+    cy.screenshot('alumno-mi-horario', { capture: 'fullPage' });
   });
 
   it('CF-INS-01: con adeudo vigente la carga queda rechazada con su estado y no se confirma', () => {

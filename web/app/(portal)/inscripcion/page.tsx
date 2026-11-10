@@ -37,7 +37,9 @@ export default async function PaginaInscripcion() {
     .sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio))[0];
   const actual = abierto && inscripciones.find((i) => i.periodoClave === abierto.clave);
   const anteriores = inscripciones.filter((i) => i !== actual);
-  const oferta = abierto
+  // CC-012: sin la oferta publicada no hay qué elegir.
+  const publicada = Boolean(abierto?.ofertaPublicadaEn);
+  const oferta = publicada
     ? await consultar<Esquemas['GrupoRespuesta'][]>(`/grupos?periodo=${encodeURIComponent(abierto.clave)}`)
     : [];
   const confirmada = actual?.estado === 'confirmada';
@@ -46,6 +48,12 @@ export default async function PaginaInscripcion() {
     <>
       <h1>Inscripción{abierto && ` ${abierto.clave}`}</h1>
       {!abierto && <Aviso tipo="informacion">No hay un periodo de inscripción abierto.</Aviso>}
+      {abierto && !publicada && (
+        <Aviso tipo="informacion">
+          La oferta de {abierto.clave} todavía no se publica. Cuando coordinación la publique, aquí podrás armar tu
+          carga.
+        </Aviso>
+      )}
       {actual && <EstadoDeInscripcion inscripcion={actual} />}
       {actual && confirmada && (
         <>
@@ -53,7 +61,7 @@ export default async function PaginaInscripcion() {
           <BotonImprimir />
         </>
       )}
-      {abierto && (
+      {abierto && publicada && (
         <>
           <h2>{confirmada ? 'Ajustar tu carga' : 'Arma tu carga'}</h2>
           <p>

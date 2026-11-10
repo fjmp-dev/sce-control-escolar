@@ -35,6 +35,7 @@ CONTROL="$(token control.escolar@sce.test)"
 medir control-escolar-expediente /expedientes/2420003 "$CONTROL"
 medir administrador-usuarios /usuarios "$ADMIN"
 medir coordinacion-materias /materias "$COORDINACION"
+medir coordinacion-oferta /oferta "$COORDINACION"
 medir alumno-inicio / "$ALUMNO"
 medir alumno-inscripcion /inscripcion "$ALUMNO"
 

@@ -58,6 +58,7 @@ const PERIODO = {
   fechaInicio: '2027-01-12T00:00:00.000Z',
   fechaFin: '2027-06-30T00:00:00.000Z',
   estado: 'en_curso',
+  ofertaPublicadaEn: '2026-12-01T15:00:00.000Z',
 };
 const YO = 'u-yo';
 const USUARIOS = [
@@ -118,20 +119,20 @@ describe('Layout y navegacion por rol', () => {
 
 describe('Paginas de catalogos: solo el rol autorizado ve el alta (CF-ROL-01)', () => {
   it.each([
-    ['facultades', PaginaFacultades, 'administrador', 'Centro Universitario'],
-    ['planes', PaginaPlanes, 'administrador', '400'],
-    ['materias', PaginaMaterias, 'coordinacion', 'Programación II'],
-    ['periodos', PaginaPeriodos, 'coordinacion', 'En curso'],
-  ] as const)('%s', async (_, Pagina, rolConAlta, dato) => {
+    ['facultades', PaginaFacultades, 'administrador', 'Centro Universitario', 'Dar de alta'],
+    ['planes', PaginaPlanes, 'administrador', '400', 'Dar de alta'],
+    ['materias', PaginaMaterias, 'coordinacion', 'Programación II', 'Dar de alta'],
+    ['periodos', PaginaPeriodos, 'coordinacion', 'En curso', 'Abrir periodo'],
+  ] as const)('%s', async (_, Pagina, rolConAlta, dato, boton) => {
     api([rolConAlta]);
     mostrar(await Pagina());
-    expect(screen.getByRole('button', { name: 'Dar de alta' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: boton })).toBeTruthy();
     expect(screen.getByRole('cell', { name: dato })).toBeTruthy();
     cleanup();
 
     api(['alumno']);
     mostrar(await Pagina());
-    expect(screen.queryByRole('button', { name: 'Dar de alta' })).toBeNull();
+    expect(screen.queryByRole('button', { name: boton })).toBeNull();
     screen.getByRole('cell', { name: dato });
     cleanup();
 
@@ -166,6 +167,7 @@ describe('Paginas de catalogos: solo el rol autorizado ve el alta (CF-ROL-01)', 
     mostrar(await PaginaPeriodos());
     expect(screen.getByRole('cell', { name: 'otro' })).toBeTruthy();
     expect(screen.getByRole('cell', { name: /12 ene/ })).toBeTruthy();
+    expect(screen.getByRole('cell', { name: /Publicada el 1 dic 2026/ })).toBeTruthy();
   });
 });
 

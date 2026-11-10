@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { ErrorApi, llamar } from './api';
 import type { Esquemas, Rol } from './contrato';
 import { COOKIE_SESION, cookieDeSesion } from './cookie-sesion';
-import type { EstadoDeFormulario } from './estado';
+import { type EstadoDeFormulario, SESIONES_DEL_FORMULARIO } from './estado';
 
 // Un archivo enviado donde se espera texto cuenta como vacío.
 function contrasena(datos: FormData, campo: string) {
@@ -131,14 +131,75 @@ export async function quitarPrerrequisito(_: EstadoDeFormulario, datos: FormData
   );
 }
 
-export async function crearPeriodo(_: EstadoDeFormulario, datos: FormData) {
+/** Fig. 7: el periodo se abre sin oferta; los grupos se definen y la oferta se publica en la página Oferta. */
+export async function abrirPeriodo(_: EstadoDeFormulario, datos: FormData) {
   const cuerpo: Esquemas['PeriodoDto'] = {
     clave: texto(datos, 'clave'),
     fechaInicio: texto(datos, 'fechaInicio'),
     fechaFin: texto(datos, 'fechaFin'),
-    estado: texto(datos, 'estado') as Esquemas['PeriodoDto']['estado'],
   };
-  return enviar('POST', '/periodos', cuerpo, '/periodos', `Periodo ${cuerpo.clave} creado.`, { ...cuerpo });
+  return enviar(
+    'POST',
+    '/periodos',
+    cuerpo,
+    '/periodos',
+    `Periodo ${cuerpo.clave} abierto. Define sus grupos y publica la oferta en la página Oferta.`,
+    { ...cuerpo },
+  );
+}
+
+const CAMPOS_DE_SESION = ['dia', 'inicio', 'fin', 'aula'] as const;
+
+export async function definirGrupo(_: EstadoDeFormulario, datos: FormData): Promise<EstadoDeFormulario> {
+  const valores: Record<string, string> = Object.fromEntries(
+    ['periodoClave', 'materiaClave', 'clave', 'profesor', 'cupo'].map((campo) => [campo, texto(datos, campo)]),
+  );
+  const llenas: number[] = [];
+  const faltantes: string[] = [];
+  for (let s = 1; s <= SESIONES_DEL_FORMULARIO; s += 1) {
+    const campos = CAMPOS_DE_SESION.map((c) => `${c}${s}`);
+    for (const campo of campos) valores[campo] = texto(datos, campo);
+    if (s > 1 && campos.every((campo) => !valores[campo])) continue;
+    llenas.push(s);
+    faltantes.push(...campos.filter((campo) => !valores[campo]));
+  }
+  if (faltantes.length > 0) return { error: 'Revisa los campos marcados.', campos: faltantes, valores };
+  const cuerpo: Esquemas['GrupoDto'] = {
+    periodoClave: valores.periodoClave,
+    materiaClave: valores.materiaClave,
+    clave: valores.clave,
+    profesor: valores.profesor,
+    cupo: Number(valores.cupo),
+    horarios: llenas.map((s) => ({
+      dia: Number(valores[`dia${s}`]),
+      horaInicio: valores[`inicio${s}`],
+      horaFin: valores[`fin${s}`],
+      aula: valores[`aula${s}`],
+    })),
+  };
+  try {
+    await llamar('POST', '/grupos', cuerpo);
+  } catch (error) {
+    const estado = aEstado(error, valores);
+    // La API señala `horarios` completo: se marcan los campos de las sesiones enviadas.
+    const campos = (estado.campos ?? []).flatMap((c) =>
+      c === 'horarios' ? llenas.flatMap((s) => CAMPOS_DE_SESION.map((x) => `${x}${s}`)) : [c],
+    );
+    return { ...estado, campos };
+  }
+  revalidatePath('/oferta');
+  return { exito: `Grupo ${cuerpo.clave} definido en ${cuerpo.periodoClave}.` };
+}
+
+export async function publicarOferta(_: EstadoDeFormulario, datos: FormData) {
+  const clave = texto(datos, 'periodoClave');
+  return enviar(
+    'POST',
+    `/periodos/${encodeURIComponent(clave)}/publicacion`,
+    undefined,
+    '/oferta',
+    `Oferta de ${clave} publicada. Los alumnos ya la ven y pueden inscribirse.`,
+  );
 }
 
 export async function altaUsuario(_: EstadoDeFormulario, datos: FormData) {

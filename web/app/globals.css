@@ -338,6 +338,7 @@ main:focus {
   align-items: end;
   gap: 0.5rem 0.75rem;
   max-width: 40rem;
+  margin-bottom: 1rem;
 }
 
 .busqueda label {
@@ -345,12 +346,15 @@ main:focus {
   font-weight: 600;
 }
 
-.busqueda input {
+.busqueda input,
+.busqueda select {
   flex: 1 1 14rem;
   min-height: var(--objetivo);
   padding: 0.5rem;
   border: 1px solid var(--linea);
   border-radius: 0.25rem;
+  background: var(--fondo);
+  color: var(--tinta);
   font: inherit;
 }
 

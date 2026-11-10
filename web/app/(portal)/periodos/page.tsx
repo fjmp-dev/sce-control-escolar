@@ -1,9 +1,9 @@
-import { Campo, Formulario, Selector } from '@/componentes/formulario';
+import { Campo, Formulario } from '@/componentes/formulario';
 import { Tabla } from '@/componentes/tabla';
-import { crearPeriodo } from '@/lib/acciones';
+import { abrirPeriodo } from '@/lib/acciones';
 import { consultar, sesionActual } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
-import { ETIQUETA_ESTADO_PERIODO, fechaLegible } from '@/lib/formato';
+import { ETIQUETA_ESTADO_PERIODO, fechaLegible, momentoLegible } from '@/lib/formato';
 import { puedeDarDeAlta } from '@/lib/roles';
 import { CORRECCION_FECHA } from '@/lib/textos';
 
@@ -19,8 +19,12 @@ export default async function PaginaPeriodos() {
       <h1>Periodos</h1>
       {puedeDarDeAlta('periodos', roles) && (
         <>
-          <h2>Dar de alta un periodo</h2>
-          <Formulario accion={crearPeriodo} envio="Dar de alta">
+          <h2>Abrir un periodo</h2>
+          <p>
+            El periodo se abre sin oferta. Después define sus grupos y publica la oferta en la página Oferta; hasta
+            entonces los alumnos no la ven.
+          </p>
+          <Formulario accion={abrirPeriodo} envio="Abrir periodo">
             <Campo
               nombre="clave"
               etiqueta="Clave"
@@ -35,12 +39,6 @@ export default async function PaginaPeriodos() {
               ayuda="Debe ser posterior a la fecha de inicio."
               correccion={CORRECCION_FECHA}
             />
-            <Selector
-              nombre="estado"
-              etiqueta="Estado"
-              correccion="Elige el estado del periodo."
-              opciones={Object.entries(ETIQUETA_ESTADO_PERIODO).map(([valor, etiqueta]) => ({ valor, etiqueta }))}
-            />
           </Formulario>
         </>
       )}
@@ -54,6 +52,11 @@ export default async function PaginaPeriodos() {
           { titulo: 'Inicio', celda: (p) => fechaLegible(p.fechaInicio) },
           { titulo: 'Fin', celda: (p) => fechaLegible(p.fechaFin) },
           { titulo: 'Estado', celda: (p) => ETIQUETA_ESTADO_PERIODO[p.estado] ?? p.estado },
+          {
+            titulo: 'Oferta',
+            celda: (p) =>
+              p.ofertaPublicadaEn ? `Publicada el ${momentoLegible(p.ofertaPublicadaEn)}` : 'Sin publicar',
+          },
         ]}
       />
     </>

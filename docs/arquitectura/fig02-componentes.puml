@@ -63,6 +63,7 @@ DTRA ..> DPAG : saldo para no adeudo
 IAM --> SBIT
 GW ..> PERS : /salud (Tabla 57)
 DEXP ..> IAM : cuenta del alumno
+DACA ..> IAM : cuenta del profesor\ndel grupo (RF-003)
 
 note right of PORTAL
   Interfaces diferenciadas por rol.
