@@ -1094,7 +1094,7 @@
         ]
       },
       "post": {
-        "operationId": "CatalogosController_crearPeriodo",
+        "operationId": "CatalogosController_abrirPeriodo",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1163,7 +1163,7 @@
             "bearer": []
           }
         ],
-        "summary": "Dar de alta un periodo",
+        "summary": "Fig. 7: abrir un periodo; la oferta se define y se publica después",
         "tags": [
           "Catálogos"
         ]
@@ -1171,7 +1171,7 @@
     },
     "/grupos": {
       "get": {
-        "operationId": "GruposController_delPeriodo",
+        "operationId": "GruposController_publicada",
         "parameters": [
           {
             "name": "periodo",
@@ -1186,7 +1186,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Vacía mientras la oferta no se publique",
             "content": {
               "application/json": {
                 "schema": {
@@ -1234,7 +1234,281 @@
             "bearer": []
           }
         ],
-        "summary": "Oferta de un periodo: grupos con cupo, ocupación y horarios",
+        "summary": "Oferta publicada de un periodo: grupos con cupo, ocupación y horarios",
+        "tags": [
+          "Oferta"
+        ]
+      },
+      "post": {
+        "operationId": "GruposController_definir",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrupoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrupoDeOfertaRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "RF-003: definir un grupo con su profesor y sus sesiones, sin traslape de aula ni de profesor",
+        "tags": [
+          "Oferta"
+        ]
+      }
+    },
+    "/periodos/{clave}/grupos": {
+      "get": {
+        "operationId": "GruposController_completa",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GrupoDeOfertaRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Oferta completa del periodo, publicada o no, con el profesor de cada grupo",
+        "tags": [
+          "Oferta"
+        ]
+      }
+    },
+    "/periodos/{clave}/publicacion": {
+      "post": {
+        "operationId": "GruposController_publicar",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fig. 7: publicar la oferta del periodo; desde ese momento el alumno la ve y se inscribe",
+        "tags": [
+          "Oferta"
+        ]
+      }
+    },
+    "/profesores/actual/grupos": {
+      "get": {
+        "operationId": "GruposController_asignados",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GrupoAsignadoRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Grupos del profesor de la sesión en los periodos que no han cerrado, con su horario",
         "tags": [
           "Oferta"
         ]
@@ -2662,14 +2936,26 @@
             "type": "string"
           },
           "estado": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "abierto",
+              "en_curso",
+              "cerrado"
+            ]
+          },
+          "ofertaPublicadaEn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Nula mientras la oferta no se publique"
           }
         },
         "required": [
           "clave",
           "fechaInicio",
           "fechaFin",
-          "estado"
+          "estado",
+          "ofertaPublicadaEn"
         ]
       },
       "PeriodoDto": {
@@ -2687,21 +2973,12 @@
           "fechaFin": {
             "format": "date",
             "type": "string"
-          },
-          "estado": {
-            "type": "string",
-            "enum": [
-              "abierto",
-              "en_curso",
-              "cerrado"
-            ]
           }
         },
         "required": [
           "clave",
           "fechaInicio",
-          "fechaFin",
-          "estado"
+          "fechaFin"
         ]
       },
       "HorarioRespuesta": {
@@ -2772,6 +3049,177 @@
           "cupo",
           "ocupacion",
           "horarios"
+        ]
+      },
+      "HorarioDto": {
+        "type": "object",
+        "properties": {
+          "dia": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 6,
+            "description": "1 = lunes, 6 = sábado"
+          },
+          "horaInicio": {
+            "type": "string",
+            "example": "07:00",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+          },
+          "horaFin": {
+            "type": "string",
+            "example": "07:00",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+          },
+          "aula": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "dia",
+          "horaInicio",
+          "horaFin",
+          "aula"
+        ]
+      },
+      "GrupoDto": {
+        "type": "object",
+        "properties": {
+          "periodoClave": {
+            "type": "string",
+            "example": "2027A",
+            "pattern": "^\\d{4}[AB]$"
+          },
+          "clave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "materiaClave": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9-]*$",
+            "example": "ISW-101"
+          },
+          "profesor": {
+            "type": "string",
+            "format": "email"
+          },
+          "cupo": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "horarios": {
+            "minItems": 1,
+            "maxItems": 12,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HorarioDto"
+            }
+          }
+        },
+        "required": [
+          "periodoClave",
+          "clave",
+          "materiaClave",
+          "profesor",
+          "cupo",
+          "horarios"
+        ]
+      },
+      "GrupoDeOfertaRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "materiaClave": {
+            "type": "string"
+          },
+          "materiaNombre": {
+            "type": "string"
+          },
+          "creditos": {
+            "type": "number"
+          },
+          "cupo": {
+            "type": "number"
+          },
+          "ocupacion": {
+            "type": "number"
+          },
+          "horarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HorarioRespuesta"
+            }
+          },
+          "profesor": {
+            "type": "string",
+            "description": "Correo de la cuenta del profesor asignado"
+          }
+        },
+        "required": [
+          "id",
+          "clave",
+          "materiaClave",
+          "materiaNombre",
+          "creditos",
+          "cupo",
+          "ocupacion",
+          "horarios",
+          "profesor"
+        ]
+      },
+      "GrupoAsignadoRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "materiaClave": {
+            "type": "string"
+          },
+          "materiaNombre": {
+            "type": "string"
+          },
+          "creditos": {
+            "type": "number"
+          },
+          "cupo": {
+            "type": "number"
+          },
+          "ocupacion": {
+            "type": "number"
+          },
+          "horarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HorarioRespuesta"
+            }
+          },
+          "periodoClave": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "clave",
+          "materiaClave",
+          "materiaNombre",
+          "creditos",
+          "cupo",
+          "ocupacion",
+          "horarios",
+          "periodoClave"
         ]
       },
       "ChoqueRespuesta": {

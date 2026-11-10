@@ -103,7 +103,13 @@ beforeAll(async () => {
   profesorId = (await prisma.usuario.findUniqueOrThrow({ where: { correo: 'profesor@sce.test' } })).id;
   await prisma.periodo.createMany({
     data: [
-      { clave: ABIERTO, fechaInicio: new Date('2031-01-13'), fechaFin: new Date('2031-06-30'), estado: 'abierto' },
+      {
+        clave: ABIERTO,
+        fechaInicio: new Date('2031-01-13'),
+        fechaFin: new Date('2031-06-30'),
+        estado: 'abierto',
+        ofertaPublicadaEn: new Date(),
+      },
       { clave: CERRADO, fechaInicio: new Date('2030-08-05'), fechaFin: new Date('2030-12-20'), estado: 'cerrado' },
       { clave: '2031B', fechaInicio: new Date('2031-08-04'), fechaFin: new Date('2031-12-19'), estado: 'en_curso' },
     ],

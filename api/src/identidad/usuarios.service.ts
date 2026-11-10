@@ -36,6 +36,23 @@ export class UsuariosService {
     return usuario.id;
   }
 
+  /** Para asignar un grupo (RF-003, Fig. 2 con CC-014): la cuenta existe, está activa y tiene el rol de profesor. */
+  async cuentaDeProfesor(correo: string): Promise<string> {
+    const usuario = await this.usuarios.porCorreo(correo);
+    if (!usuario?.activo || !usuario.roles.includes('profesor')) {
+      throw new ErrorDeNegocio(
+        'CUENTA_NO_PROFESOR',
+        'No hay una cuenta activa de profesor con ese correo. Revisa el correo o pide al administrador que la dé de alta.',
+      );
+    }
+    return usuario.id;
+  }
+
+  /** Correo de cada cuenta, para mostrar el profesor de cada grupo sin que académico lea la tabla usuario (13.2). */
+  async correos(ids: readonly string[]): Promise<Map<string, string>> {
+    return new Map((await this.usuarios.correos(ids)).map((u) => [u.id, u.correo]));
+  }
+
   async alta(autor: Usuario, confirmacion: string, correo: string, contrasena: string, roles: ClaveRol[]) {
     await this.autenticacion.confirmarContrasena(autor, confirmacion);
     validarContrasena(contrasena, correo);

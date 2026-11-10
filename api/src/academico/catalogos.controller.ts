@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsDate, IsIn, IsInt, IsOptional, Matches, Max, Min } from 'class-validator';
+import { IsBoolean, IsDate, IsInt, IsOptional, Matches, Max, Min } from 'class-validator';
 import { ApiErrores, Clave, Texto } from '../gateway/validacion';
 import { Actual, Roles } from '../identidad/autenticacion.guard';
 import { Autenticado } from '../identidad/autenticacion.service';
@@ -50,11 +50,11 @@ class PrerrequisitoDto {
   @ApiProperty({ required: false, default: true }) @IsOptional() @IsBoolean() obligatorio?: boolean;
 }
 
+/** Fig. 7, "Abrir periodo": nace abierto y sin oferta publicada; el estado no se elige. */
 class PeriodoDto {
   @ApiProperty({ example: '2027A', pattern: String.raw`^\d{4}[AB]$` }) @Matches(/^\d{4}[AB]$/) clave!: string;
   @ApiProperty({ format: 'date' }) @Type(() => Date) @IsDate() fechaInicio!: Date;
   @ApiProperty({ format: 'date' }) @Type(() => Date) @IsDate() fechaFin!: Date;
-  @ApiProperty({ enum: ['abierto', 'en_curso', 'cerrado'] }) @IsIn(['abierto', 'en_curso', 'cerrado']) estado!: string;
 }
 
 class FacultadRespuesta {
@@ -83,11 +83,18 @@ class MateriaRespuesta {
   @ApiProperty({ type: [PrerequisitoRespuesta], required: false }) requiereDe?: PrerequisitoRespuesta[];
 }
 
-class PeriodoRespuesta {
+export class PeriodoRespuesta {
   @ApiProperty() clave!: string;
   @ApiProperty({ format: 'date-time' }) fechaInicio!: Date;
   @ApiProperty({ format: 'date-time' }) fechaFin!: Date;
-  @ApiProperty() estado!: string;
+  @ApiProperty({ enum: ['abierto', 'en_curso', 'cerrado'] }) estado!: string;
+  @ApiProperty({
+    format: 'date-time',
+    nullable: true,
+    type: String,
+    description: 'Nula mientras la oferta no se publique',
+  })
+  ofertaPublicadaEn!: Date | null;
 }
 
 @ApiTags('Catálogos')
@@ -176,10 +183,10 @@ export class CatalogosController {
 
   @Roles('coordinacion')
   @Post('periodos')
-  @ApiOperation({ summary: 'Dar de alta un periodo' })
+  @ApiOperation({ summary: 'Fig. 7: abrir un periodo; la oferta se define y se publica después' })
   @ApiResponse({ status: 201, type: PeriodoRespuesta })
   @ApiErrores(400, 409)
-  crearPeriodo(@Body() datos: PeriodoDto) {
-    return this.catalogos.crearPeriodo({ ...datos });
+  abrirPeriodo(@Body() { clave, fechaInicio, fechaFin }: PeriodoDto, @Actual() { usuario }: Autenticado) {
+    return this.catalogos.abrirPeriodo(usuario.id, clave, fechaInicio, fechaFin);
   }
 }

@@ -1,11 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { BitacoraService } from '../bitacora/bitacora.service';
 import { ErrorDeNegocio } from '../dominio/error-de-negocio';
+import { UsuariosService } from '../identidad/usuarios.service';
+import { PrismaService } from '../persistencia/prisma.service';
 import { aCentesimas, materiasAcreditadas } from './dominio/calificacion';
-import { choquesEntre, Grupo, Horario } from './dominio/oferta';
+import { choquesEntre, Grupo, Horario, validarGrupoNuevo } from './dominio/oferta';
+import { EstadoPeriodo, Periodo } from './dominio/periodo';
 import { faltantes } from './dominio/prerequisito';
 import { FilaDeGrupo, OfertaRepository } from './oferta.repository';
 
+export interface DefinicionDeGrupo {
+  periodoClave: string;
+  clave: string;
+  materiaClave: string;
+  /** Correo de la cuenta del profesor, como al vincular un expediente (RF-001). */
+  profesor: string;
+  cupo: number;
+  horarios: { dia: number; horaInicio: string; horaFin: string; aula: string }[];
+}
+
 const hora = (valor: Date) => valor.toISOString().slice(11, 16);
+const aHora = (hhmm: string) => new Date(`1970-01-01T${hhmm}:00Z`);
 
 const aGrupo = (fila: FilaDeGrupo) =>
   new Grupo({
@@ -20,26 +35,105 @@ const aGrupo = (fila: FilaDeGrupo) =>
   });
 
 /**
- * Dominio académico en la Fig. 4: valida prerrequisitos y choques, y reserva el cupo dentro de la transacción
- * de la inscripción. La oferta mínima del Batch 5 solo se consulta; su alta es del Batch 7 (RF-003).
+ * RF-003 (Fig. 7): coordinación define los grupos del periodo y publica la oferta; cada rol la consulta a su
+ * manera (Tabla 4). En la Fig. 4 valida prerrequisitos y choques, y reserva el cupo en la transacción de la inscripción.
  */
 @Injectable()
 export class OfertaService {
-  constructor(private readonly oferta: OfertaRepository) {}
+  constructor(
+    private readonly oferta: OfertaRepository,
+    private readonly usuarios: UsuariosService,
+    private readonly bitacora: BitacoraService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async delPeriodo(periodoClave: string) {
+  /** Alumno: solo la oferta publicada (CC-012). */
+  async publicada(periodoClave: string) {
+    if (!(await this.oferta.periodo(periodoClave))?.ofertaPublicadaEn) return [];
     return (await this.oferta.grupos({ periodoClave })).map(aGrupo);
+  }
+
+  /** Coordinación: toda la oferta del periodo, publicada o no, con el profesor de cada grupo. */
+  async completa(periodoClave: string) {
+    return this.conProfesor(await this.oferta.grupos({ periodoClave }));
+  }
+
+  /** Profesor: sus grupos de los periodos que no han cerrado (3.4, impartición). */
+  async asignados(profesorId: string) {
+    return (await this.oferta.grupos({ profesorId, periodo: { estado: { not: 'cerrado' } } })).map((f) => ({
+      ...aGrupo(f),
+      periodoClave: f.periodoClave,
+    }));
   }
 
   async grupos(ids: readonly number[]) {
     return (await this.oferta.grupos({ id: { in: ids.map(BigInt) } })).map(aGrupo);
   }
 
-  /** D-6, provisional: se inscribe y se ajusta mientras el periodo está abierto. */
+  /** RF-003 y D-13: el grupo nace con su profesor y sus sesiones, sin traslapes de aula ni de profesor. */
+  async definirGrupo(autor: string, datos: DefinicionDeGrupo) {
+    const profesorId = await this.usuarios.cuentaDeProfesor(datos.profesor);
+    const horarios = datos.horarios.map((h) => new Horario(h.dia, h.horaInicio, h.horaFin, h.aula));
+    return this.prisma.transaccion(async () => {
+      await this.oferta.bloquearPeriodo(datos.periodoClave);
+      (await this.periodo(datos.periodoClave)).exigirAbierto();
+      const delPeriodo = (await this.oferta.grupos({ periodoClave: datos.periodoClave })).map((f) => ({
+        clave: f.clave,
+        profesorId: f.profesorId,
+        horarios: aGrupo(f).horarios,
+      }));
+      validarGrupoNuevo(datos.clave, profesorId, horarios, delPeriodo);
+      const creado = await this.oferta.crearGrupo({
+        clave: datos.clave,
+        materiaClave: datos.materiaClave,
+        periodoClave: datos.periodoClave,
+        profesorId,
+        cupo: datos.cupo,
+        horarios: {
+          create: horarios.map((h) => ({
+            dia: h.dia,
+            horaInicio: aHora(h.horaInicio),
+            horaFin: aHora(h.horaFin),
+            aula: h.aula,
+          })),
+        },
+      });
+      await this.bitacora.registrar({ autor, accion: 'alta_grupo', entidad: `grupo:${creado.id}` });
+      return { ...aGrupo(creado), profesor: datos.profesor };
+    });
+  }
+
+  /** Fig. 7, "Publicar oferta académica": desde ahí el alumno la consulta y se inscribe. */
+  async publicarOferta(autor: string, clave: string) {
+    return this.prisma.transaccion(async () => {
+      await this.oferta.bloquearPeriodo(clave);
+      const { ofertaPublicadaEn } = (await this.periodo(clave)).publicarOferta(new Date());
+      const publicado = await this.oferta.publicar(clave, ofertaPublicadaEn as Date);
+      await this.bitacora.registrar({ autor, accion: 'publicar_oferta', entidad: `periodo:${clave}` });
+      return publicado;
+    });
+  }
+
+  /** D-6, provisional, y CC-012: se inscribe y se ajusta con el periodo abierto y la oferta publicada. */
   async periodoAbierto(clave: string): Promise<void> {
-    if ((await this.oferta.periodo(clave))?.estado !== 'abierto') {
-      throw new ErrorDeNegocio('PERIODO_NO_ABIERTO', `La inscripción del periodo ${clave} no está abierta.`);
-    }
+    (await this.periodo(clave)).exigirInscripcionAbierta();
+  }
+
+  private async periodo(clave: string): Promise<Periodo> {
+    const fila = await this.oferta.periodo(clave);
+    if (!fila) throw new ErrorDeNegocio('PERIODO_NO_ABIERTO', `No existe el periodo ${clave}. Elige uno de la lista.`);
+    return new Periodo(
+      fila.clave,
+      fila.fechaInicio,
+      fila.fechaFin,
+      fila.estado as EstadoPeriodo,
+      fila.ofertaPublicadaEn,
+    );
+  }
+
+  private async conProfesor(filas: FilaDeGrupo[]) {
+    const correos = await this.usuarios.correos([...new Set(filas.map((f) => f.profesorId))]);
+    return filas.map((f) => ({ ...aGrupo(f), profesor: correos.get(f.profesorId) ?? '' }));
   }
 
   /** Los grupos elegidos, que deben ser de la oferta del periodo. */

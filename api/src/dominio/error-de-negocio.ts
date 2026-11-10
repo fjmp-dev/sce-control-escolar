@@ -16,7 +16,14 @@ export type CodigoDeNegocio =
   | 'MATERIA_REPETIDA'
   | 'INSCRIPCION_RECHAZADA'
   | 'AJUSTE_RECHAZADO'
-  | 'INSCRIPCION_CAMBIADA';
+  | 'INSCRIPCION_CAMBIADA'
+  | 'RANGO_INVERTIDO'
+  | 'OFERTA_NO_PUBLICADA'
+  | 'OFERTA_YA_PUBLICADA'
+  | 'CUENTA_NO_PROFESOR'
+  | 'SESIONES_TRASLAPADAS'
+  | 'TRASLAPE_DE_AULA'
+  | 'TRASLAPE_DE_PROFESOR';
 
 /**
  * Error de una regla de negocio. El dominio no conoce HTTP: el gateway lo traduce (Tabla 28).

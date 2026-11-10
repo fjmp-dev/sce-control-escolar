@@ -3,11 +3,13 @@ import { Prisma } from '@prisma/client';
 import { BitacoraService } from '../bitacora/bitacora.service';
 import { PrismaService } from '../persistencia/prisma.service';
 import { CatalogosRepository } from './catalogos.repository';
+import { Periodo } from './dominio/periodo';
 import { validarPrerequisito } from './dominio/prerequisito';
 
 /**
  * Catálogos institucionales (RNF-FLE-001). Con CC-007, el administrador da de alta facultades y planes,
- * y cada alta queda en bitácora (Parte B: acciones del administrador). Coordinación conserva materias y periodos.
+ * y cada alta queda en bitácora (Parte B: acciones del administrador). Coordinación conserva materias y periodos;
+ * abrir un periodo también queda en bitácora (Batch 7).
  */
 @Injectable()
 export class CatalogosService {
@@ -62,7 +64,13 @@ export class CatalogosService {
     return this.catalogos.periodos();
   }
 
-  crearPeriodo(datos: Prisma.PeriodoUncheckedCreateInput) {
-    return this.catalogos.crearPeriodo(datos);
+  /** Fig. 3, `Periodo.abrir()`; queda en bitácora quién lo abrió. */
+  abrirPeriodo(autor: string, clave: string, fechaInicio: Date, fechaFin: Date) {
+    const { estado } = Periodo.abrir(clave, fechaInicio, fechaFin);
+    return this.prisma.transaccion(async () => {
+      const creado = await this.catalogos.crearPeriodo({ clave, fechaInicio, fechaFin, estado });
+      await this.bitacora.registrar({ autor, accion: 'abrir_periodo', entidad: `periodo:${clave}` });
+      return creado;
+    });
   }
 }

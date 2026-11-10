@@ -6,6 +6,8 @@ const GRUPO = {
   id: true,
   clave: true,
   materiaClave: true,
+  periodoClave: true,
+  profesorId: true,
   cupo: true,
   ocupacion: true,
   materia: { select: { nombre: true, creditos: true } },
@@ -29,7 +31,20 @@ export class OfertaRepository {
   }
 
   periodo(clave: string) {
-    return this.prisma.cliente().periodo.findUnique({ where: { clave }, select: { estado: true } });
+    return this.prisma.cliente().periodo.findUnique({ where: { clave } });
+  }
+
+  /** Serializa, dentro de la transacción, la definición y la publicación de la oferta de un periodo (D-13). */
+  async bloquearPeriodo(clave: string) {
+    await this.prisma.cliente().$queryRaw`SELECT clave FROM periodo WHERE clave = ${clave} FOR UPDATE`;
+  }
+
+  publicar(clave: string, ofertaPublicadaEn: Date) {
+    return this.prisma.cliente().periodo.update({ where: { clave }, data: { ofertaPublicadaEn } });
+  }
+
+  crearGrupo(data: Prisma.GrupoUncheckedCreateInput) {
+    return this.prisma.cliente().grupo.create({ data, select: GRUPO });
   }
 
   requisitos(materias: string[]) {

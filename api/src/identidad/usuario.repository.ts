@@ -33,6 +33,12 @@ export class UsuarioRepository {
     return fila && aDominio(fila);
   }
 
+  correos(ids: readonly string[]) {
+    return this.prisma
+      .cliente()
+      .usuario.findMany({ where: { id: { in: [...ids] } }, select: { id: true, correo: true } });
+  }
+
   async porId(id: string): Promise<Usuario | null> {
     const fila = await this.prisma.cliente().usuario.findUnique({ where: { id }, include: CON_ROLES });
     return fila && aDominio(fila);

@@ -38,16 +38,16 @@ describe('Catalogos institucionales: quien da de alta que (Tablas 5, 11 y 12; CC
     expect(invalida.body).toMatchObject({ codigo: 'ENTRADA_INVALIDA', campos: ['creditos'] });
   });
 
-  it('coordinacion da de alta periodos con fecha simple; la base rechaza un rango invertido con 400', async () => {
+  it('coordinacion abre periodos con fecha simple; un rango invertido da 400 con su causa', async () => {
     const auth = await entrar(app, 'coordinacion@sce.test');
-    const periodo = { clave: '2030A', fechaInicio: '2030-01-10', fechaFin: '2030-06-30', estado: 'abierto' };
+    const periodo = { clave: '2030A', fechaInicio: '2030-01-10', fechaFin: '2030-06-30' };
     await http().post('/periodos').set('Authorization', auth).send(periodo).expect(201);
     const invertido = await http()
       .post('/periodos')
       .set('Authorization', auth)
       .send({ ...periodo, clave: '2030B', fechaFin: '2029-01-01' })
       .expect(400);
-    expect(invertido.body.codigo).toBe('ENTRADA_INVALIDA');
+    expect(invertido.body.codigo).toBe('RANGO_INVERTIDO');
   });
 
   it('el administrador da de alta facultades y planes, con bitacora; un plan sin facultad da 400', async () => {

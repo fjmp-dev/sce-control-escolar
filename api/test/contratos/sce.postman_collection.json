@@ -391,6 +391,54 @@
             },
             "header": []
           }
+        },
+        {
+          "name": "POST /grupos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /periodos/NO-EXISTE/grupos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/grupos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/publicacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/publicacion",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "publicacion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /profesores/actual/grupos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/profesores/actual/grupos",
+              "host": ["{{base}}"],
+              "path": ["profesores", "actual", "grupos"]
+            },
+            "header": []
+          }
         }
       ]
     },
@@ -1147,7 +1195,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('responde 200', () => pm.response.to.have.status(200));",
-                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\"}}, \"additionalProperties\": false}}));"
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}}));",
+                  "const usadas = new Set(pm.response.json().map((p) => p.clave)); let anio = 9999; while (usadas.has(`${anio}A`)) anio -= 1;",
+                  "pm.collectionVariables.set('anioOferta', String(anio)); pm.collectionVariables.set('periodoOferta', `${anio}A`);"
                 ]
               }
             }
@@ -1174,7 +1224,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"clave\": \"2099A\",\n  \"fechaInicio\": \"2099-06-30\",\n  \"fechaFin\": \"2099-01-10\",\n  \"estado\": \"abierto\"\n}"
+              "raw": "{\n  \"clave\": \"2099A\",\n  \"fechaInicio\": \"2099-06-30\",\n  \"fechaFin\": \"2099-01-10\"\n}"
             }
           },
           "event": [
@@ -1185,7 +1235,250 @@
                 "exec": [
                   "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
                   "pm.test('responde 400', () => pm.response.to.have.status(400));",
-                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });"
+                  "pm.test('error en el formato de la API, codigo RANGO_INVERTIDO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('RANGO_INVERTIDO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Abrir periodo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"{{periodoOferta}}\",\n  \"fechaInicio\": \"{{anioOferta}}-01-10\",\n  \"fechaFin\": \"{{anioOferta}}-06-30\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}));",
+                  "pm.test('nace abierto y sin oferta publicada', () => pm.expect(pm.response.json()).to.include({ estado: 'abierto', ofertaPublicadaEn: null }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-003 definir grupo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"clave\": \"G-1\",\n  \"materiaClave\": \"ISW-101\",\n  \"profesor\": \"profesor@sce.test\",\n  \"cupo\": 30,\n  \"horarios\": [\n    {\n      \"dia\": 1,\n      \"horaInicio\": \"07:00\",\n      \"horaFin\": \"09:00\",\n      \"aula\": \"B1\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"profesor\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"profesor\": {\"type\": \"string\"}}}));",
+                  "pm.test('nace sin ocupacion', () => pm.expect(pm.response.json().ocupacion).to.eql(0));",
+                  "pm.collectionVariables.set('grupoOferta', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-13 aula ocupada a la misma hora",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"clave\": \"G-2\",\n  \"materiaClave\": \"ISW-101\",\n  \"profesor\": \"profesor2@sce.test\",\n  \"cupo\": 30,\n  \"horarios\": [\n    {\n      \"dia\": 1,\n      \"horaInicio\": \"07:00\",\n      \"horaFin\": \"09:00\",\n      \"aula\": \"b1\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo TRASLAPE_DE_AULA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('TRASLAPE_DE_AULA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-13 profesor ocupado a la misma hora",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"clave\": \"G-2\",\n  \"materiaClave\": \"ISW-101\",\n  \"profesor\": \"profesor@sce.test\",\n  \"cupo\": 30,\n  \"horarios\": [\n    {\n      \"dia\": 1,\n      \"horaInicio\": \"07:00\",\n      \"horaFin\": \"09:00\",\n      \"aula\": \"B2\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo TRASLAPE_DE_PROFESOR', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('TRASLAPE_DE_PROFESOR'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oferta completa para coordinacion",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"profesor\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"profesor\": {\"type\": \"string\"}}}}));",
+                  "pm.test('trae el grupo con su profesor', () => pm.expect(pm.response.json().map((g) => [g.id, g.profesor])).to.deep.include([pm.collectionVariables.get('grupoOferta'), 'profesor@sce.test']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar oferta",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/publicacion",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "publicacion"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}));",
+                  "pm.test('queda publicada', () => pm.expect(pm.response.json().ofertaPublicadaEn).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar la oferta otra vez",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/publicacion",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "publicacion"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo OFERTA_YA_PUBLICADA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('OFERTA_YA_PUBLICADA'); });"
                 ]
               }
             }
@@ -2316,6 +2609,70 @@
                   "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
                   "pm.test('responde 403', () => pm.response.to.have.status(403));",
                   "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de profesor",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"profesor@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('profesor', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grupos del profesor",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/profesores/actual/grupos",
+              "host": ["{{base}}"],
+              "path": ["profesores", "actual", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"periodoClave\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"periodoClave\": {\"type\": \"string\"}}}}));",
+                  "pm.test('trae el grupo que coordinacion le asigno', () => pm.expect(pm.response.json().map((g) => g.id)).to.include(pm.collectionVariables.get('grupoOferta')));",
+                  "pm.test('no trae periodos cerrados', () => pm.expect(pm.response.json().map((g) => g.periodoClave)).to.not.include('2026B'));"
                 ]
               }
             }

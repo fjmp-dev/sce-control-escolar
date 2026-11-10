@@ -27,6 +27,12 @@ async function main() {
       create: { correo, hashContrasena: hash, roles: { create: { rolId } } },
     });
   }
+  // Batch 7 (D-13): un segundo profesor, para que ninguno imparta dos grupos a la misma hora.
+  await prisma.usuario.upsert({
+    where: { correo: 'profesor2@sce.test' },
+    update: {},
+    create: { correo: 'profesor2@sce.test', hashContrasena: hash, roles: { create: { rolId: 2 } } },
+  });
 
   await prisma.facultad.upsert({
     where: { clave: 'CUTG' },
@@ -63,14 +69,17 @@ async function main() {
     });
   }
 
+  // CC-012: la oferta de 2027A ya esta publicada, para que el alumno pueda inscribirse.
+  const ofertaPublicadaEn = new Date('2026-12-01T15:00:00Z');
   await prisma.periodo.upsert({
     where: { clave: '2027A' },
-    update: {},
+    update: { ofertaPublicadaEn },
     create: {
       clave: '2027A',
       fechaInicio: new Date('2027-01-12'),
       fechaFin: new Date('2027-06-30'),
       estado: 'abierto',
+      ofertaPublicadaEn,
     },
   });
 
@@ -127,6 +136,7 @@ async function main() {
     },
   });
   const profesor = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'profesor@sce.test' } });
+  const profesor2 = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'profesor2@sce.test' } });
   const hora = (hhmm: string) => new Date(`1970-01-01T${hhmm}:00Z`);
   // [periodo, grupo, materia, cupo, ocupacion, horarios: dia (1 = lunes), inicio, fin, aula]
   const OFERTA: [string, string, string, number, number, [number, string, string, string][]][] = [
@@ -163,23 +173,24 @@ async function main() {
         [4, '07:00', '09:00', 'A2'],
       ],
     ],
-    ['2027A', 'ISW-701-A', 'ISW-701', 30, 0, [[1, '08:00', '10:00', 'A3']]], // choca con ISW-201-A y con ISW-702-B
+    ['2027A', 'ISW-701-A', 'ISW-701', 30, 0, [[1, '08:00', '10:00', 'A3']]], // choca con ISW-201-A y ISW-702-B; otro profesor
     ['2027A', 'ISW-701-B', 'ISW-701', 30, 0, [[5, '07:00', '10:00', 'A3']]],
     ['2027A', 'ISW-702-A', 'ISW-702', 1, 1, [[2, '09:00', '11:00', 'A2']]], // su unico lugar ya esta tomado
     ['2027A', 'ISW-702-B', 'ISW-702', 30, 0, [[1, '09:00', '11:00', 'A4']]],
   ];
   const grupos: Record<string, bigint> = {};
   for (const [periodoClave, clave, materiaClave, cupo, ocupacion, horarios] of OFERTA) {
+    const profesorId = clave === 'ISW-701-A' ? profesor2.id : profesor.id;
     const grupo = await prisma.grupo.upsert({
       where: { clave_periodoClave: { clave, periodoClave } },
-      update: {},
+      update: { profesorId },
       create: {
         clave,
         periodoClave,
         materiaClave,
         cupo,
         ocupacion,
-        profesorId: profesor.id,
+        profesorId,
         horarios: {
           create: horarios.map(([dia, inicio, fin, aula]) => ({
             dia,
