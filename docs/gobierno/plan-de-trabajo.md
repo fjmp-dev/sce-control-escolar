@@ -13,18 +13,18 @@ El semestre debe terminar con el proyecto completo. Este plan fija el calendario
 
 El manual no incluía calendario con fechas, y esa ausencia es uno de los puntos que la auditoría señaló. Este es el calendario propuesto, anclado a los hitos de la sección 39.1 del manual.
 
-| Fase | Entregable principal | Inicio | Estabilización | Cierre previsto |
-|---|---|---|---|---|
-| 0 | Alcance validado | 1 de agosto de 2026 | 15 al 19 de octubre de 2026 | **19 de octubre de 2026** |
-| 1 | Núcleo institucional | 20 de octubre de 2026 | 30 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
-| 2 | Expediente e inscripción | 12 de enero de 2027 | 15 al 26 de febrero de 2027 | 26 de febrero de 2027 |
-| 3 | Académico: horarios, calificaciones e historial | 1 de marzo de 2027 | 5 al 16 de abril de 2027 | 16 de abril de 2027 |
-| 4 | Pagos y trámites | 19 de abril de 2027 | 17 al 28 de mayo de 2027 | 28 de mayo de 2027 |
-| 5 | Piloto de una facultad | 31 de mayo de 2027 | 31 de mayo al 11 de junio de 2027 (arranque del piloto) | Cierre del semestre piloto |
+| Fase | Entregable principal | Batches | Construcción (fechas reales) | Estabilización | Cierre límite |
+|---|---|---|---|---|---|
+| 0 | Alcance validado | 0 | 1 de agosto al 19 de octubre de 2026 | 15 al 19 de octubre de 2026 | **19 de octubre de 2026** |
+| 1 | Núcleo institucional | 1, 2 y 3 | 5 al 7 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 2 | Expediente e inscripción | 4, 5 y 6 | 7 al 8 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 3 | Académico: horarios, calificaciones e historial | 7 y 8 | 10 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 4 | Pagos simulados, trámites y reportes | 9 y 10 | 10 al 13 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 5 | Piloto de una facultad | — | Fuera del alcance del proyecto escolar (cambio del 10 de noviembre, apartado 6) | — | — |
 
-**Estabilización** es el tramo final de cada fase, normalmente su último sprint. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación de la fase y se redacta el acta. En la fase 5 son las dos primeras semanas del piloto en operación. Las fechas de estabilización se añadieron el 5 de noviembre de 2026, en respuesta al elemento 8 de la solicitud F-01-SCE-002.
+**Estabilización** es el tramo final, después de construir. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación y se firman las actas. Como la construcción terminó antes de lo previsto, las fases 1 a 4 comparten la estabilización de los sprints S4 y S5.
 
-Las fechas de cierre son **límite**: si los batches de una fase terminan antes, la fase se cierra antes, con acta de fecha real. Ningún batch que abra fase empieza sin el acta firmada de la fase anterior. Las fechas de las fases 2 a 5 son estimación a validar al cierre de la fase 1. Las de la fase 0 y 1 son firmes.
+Las fechas de cierre son **límite**: cada fase se cierra con acta de fecha real. Las fases 2, 3 y 4 empezaron sin el acta firmada de la anterior (NC-009 y NC-010); las actas se firman en la estabilización.
 
 ---
 
@@ -34,9 +34,9 @@ Las fechas de cierre son **límite**: si los batches de una fase terminan antes,
 |---|---|---|---|---|
 | S1 | 15 al 19 de octubre (corto) | SJOM | FJMP | Cerrar la fase 0 y los faltantes de gobierno antes de que termine la etapa documental de la auditoría |
 | S2 | 20 de octubre al 30 de octubre | FJMP | SJOM | Correcciones al manual y plan de pruebas, antes de la verificación en campo |
-| S3 | 2 al 13 de noviembre | SJOM | FJMP | Atender la auditoría en campo y arrancar la fase 1 |
-| S4 | 16 al 27 de noviembre | FJMP | SJOM | Fase 1: núcleo institucional, primera mitad |
-| S5 | 30 de noviembre al 11 de diciembre | SJOM | FJMP | Fase 1: núcleo institucional, cierre |
+| S3 | 2 al 13 de noviembre | SJOM | FJMP | Atender la auditoría en campo y construir las fases 1 a 4 (batches 0 a 10) |
+| S4 | 16 al 27 de noviembre | FJMP | SJOM | Revisar y aprobar los PR, pruebas de aceptación y manual v2.1 (27 de noviembre) |
+| S5 | 30 de noviembre al 11 de diciembre | SJOM | FJMP | Firmar las actas de las fases 1 a 4, fusionar, etiquetar y entregar |
 
 S1 es corto a propósito: son los cinco días que quedan antes de que cierre la etapa 1 de la auditoría.
 
@@ -124,4 +124,6 @@ Motivo escrito, conforme al apartado 5.
 | 5 nov 2026 | OWASP ZAP se adelanta de la fase 3 al ambiente de pruebas, desde el Batch 2 | La Tabla 30 lo ubica en pruebas e integración |
 | 5 nov 2026 | Elementos P1 #7 a #15 pasan al sprint S4, con el manual v2.1 a más tardar el 27 de noviembre de 2026 | Vencieron el 30 de octubre sin reprogramación (NC-004). El sprint S2 priorizó el arranque técnico |
 | 5 nov 2026 | La columna «Acepta» del apartado 2 cede ante la regla por entregable | Si FJMP produce el entregable de un sprint par, lo acepta SJOM. Ver `roles-y-raci.md`, apartado 2 |
+| 10 nov 2026 | Calendario del apartado 1 con las fechas reales de construcción; las fases 1 a 4 cierran a más tardar el 11 de diciembre de 2026 | Los batches 0 a 8 se construyeron del 5 al 10 de noviembre, antes de las fechas estimadas de 2027 |
+| 10 nov 2026 | Los batches 9 a 14 se compactan en dos: 9, pagos simulados y trámites; 10, reportes y revisión final. Sin Mercado Pago real, piloto, monitoreo, pruebas de carga ni usabilidad con participantes | Es un proyecto escolar: basta con que el sistema funcione bien de punta a punta. Ver `plan-de-sistema.md`, apartado 6.1 |
 

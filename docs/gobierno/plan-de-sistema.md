@@ -138,6 +138,21 @@ web/             Next.js: interfaces por rol; nunca toca la base de datos
 
 ## 6. Batches
 
+### 6.1 Compactación del 10 de noviembre de 2026 (vigente)
+
+FJMP decidió que el pago sea **simulado**, sin Mercado Pago, y que el resto se compacte: es un proyecto escolar y basta con que funcione bien de punta a punta. Los batches 0 a 8 se construyeron del 5 al 10 de noviembre de 2026. Lo que sigue sustituye a los batches 9 a 14 de abajo, que quedan como referencia:
+
+| Batch | Contenido | Construcción |
+|---|---|---|
+| 9 | Pagos simulados (estado de cuenta, cargos del periodo, becas, intento y pasarela simulada con aplicación única, recibo y corte del día) y trámites (Fig. 6, constancia, no adeudo e historial con folio y hash SHA-256) | 10 al 12 de noviembre de 2026 |
+| 10 | Reportes de dirección (inscripción, avance y cobranza por facultad, sin bitácora) y revisión final | 12 al 13 de noviembre de 2026 |
+
+- **Fuera de alcance:** Mercado Pago real y su webhook, Playwright, NVDA, monitoreo, pruebas de carga, usabilidad con participantes, ambiente piloto y fase 5.
+- **Se conserva:** un PR por batch, CI en verde, pruebas de las reglas clave, matriz rol × endpoint y Newman.
+- **Sin papeleo nuevo:** sin actas, CC ni NC adicionales.
+- **Otros documentos:** donde citan los batches 11 a 14, el 11 se lee como el 10, y los batches 12 a 14 quedan fuera de alcance.
+- **Fechas:** el calendario real está en `plan-de-trabajo.md`, apartado 1. Las fases 1 a 4 cierran a más tardar el 11 de diciembre de 2026.
+
 ### Batch 0 — Base documental y reconciliación (sin código de producto)
 **Fuente:** sec. 1, 5, 11, 12, 16, 17, 33, 40–43; Tabla 49; PA-SCE-001 sec. 3.3, 7 y 11.
 **Entrega:** se apila sobre el PR #30, porque `registro-no-conformidades.md` solo existe ahí. Lo marcado con ⏰ debe estar listo para la **réplica del 7 de noviembre**; lo demás puede seguir después.

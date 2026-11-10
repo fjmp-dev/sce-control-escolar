@@ -267,14 +267,14 @@ Un caso Must que falla abre un issue `defecto` con su severidad, el caso y el en
 
 El orden lo fija `docs/gobierno/plan-de-sistema.md`. Cada caso sale de su batch en `docs/calidad/matriz-trazabilidad.md`, sección 3.
 
-| Fase | Batches | Pruebas que se agregan | Cierre límite |
-|---|---|---|---|
-| 1 | 1, 2 y 3 | CI-MIG-01 completo, Newman, ZAP, CS-SEG-04, 05, 07 y 08, CI-AUTH-01, Vitest, Cypress, axe, Lighthouse | 11 de diciembre de 2026 |
-| 2 | 4, 5 y 6 | CF-EXP-01, CF-INS-01 y 02, CI-API-01, CF-HOR-01 con Jest, CD-DAT-05, CS-SEG-02, 03 y 06, Great Expectations, ZAP en staging | 26 de febrero de 2027 |
-| 3 | 7 y 8 | CF-HOR-01 con Cypress, CF-CAL-01, CI-CAL-01, CD-DAT-02, CS-SEG-01 | 16 de abril de 2027 |
-| 4 | 9, 10 y 11 | CF-PAG-01, CI-PAG-01, CF-TRA-01 y 02, CF-REP-01, CD-DAT-03 y 06 | 28 de mayo de 2027 |
-| Previo a 5 | 12 y 13 | Playwright, accesibilidad completa, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad | Antes del piloto |
-| 5 | 14 | Rendimiento en el servidor del piloto, operación recurrente y aceptación | Cierre del semestre piloto |
+| Fase | Batches | Pruebas que se agregan | Construcción | Cierre límite |
+|---|---|---|---|---|
+| 1 | 1, 2 y 3 | CI-MIG-01 completo, Newman, ZAP, CS-SEG-04, 05, 07 y 08, CI-AUTH-01, Vitest, Cypress, axe, Lighthouse | 5 al 7 de noviembre de 2026 | 11 de diciembre de 2026 |
+| 2 | 4, 5 y 6 | CF-EXP-01, CF-INS-01 y 02, CI-API-01, CF-HOR-01 con Jest, CD-DAT-05, CS-SEG-02, 03 y 06, Great Expectations, ZAP en staging | 7 al 8 de noviembre de 2026 | 11 de diciembre de 2026 |
+| 3 | 7 y 8 | CF-HOR-01 con Cypress, CF-CAL-01, CI-CAL-01, CD-DAT-02, CS-SEG-01 | 10 de noviembre de 2026 | 11 de diciembre de 2026 |
+| 4 | 9 y 10 | CF-PAG-01 y CF-TRA-01 y 02 con pago simulado, CF-REP-01, CS-SEG-02, 03 y 06 en pagos y trámites | 10 al 13 de noviembre de 2026 | 11 de diciembre de 2026 |
+
+Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): CI-PAG-01 contra el sandbox de Mercado Pago, Playwright, NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5.
 
 ---
 
