@@ -40,8 +40,8 @@ export default async function PaginaMisTramites() {
             titulo: 'Descarga',
             celda: (t) =>
               t.documentoFolio ? (
-                <Link href={`/mis-tramites/${encodeURIComponent(t.folio)}`}>
-                  Descargar<span className="solo-lector"> {t.folio}</span>
+                <Link href={`/mis-tramites/${encodeURIComponent(t.folio)}`} aria-label={`Descargar ${t.folio}`}>
+                  Descargar
                 </Link>
               ) : (
                 '—'

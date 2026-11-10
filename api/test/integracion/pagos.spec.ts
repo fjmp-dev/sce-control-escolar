@@ -76,6 +76,20 @@ describe('Caja: cargos del periodo y becas', () => {
     expect((await beca(400).expect(201)).body.saldo).toBe(600);
     expect(await saldo(matricula)).toBe(600);
   });
+
+  it('estado de cuenta: el alumno ve el suyo y caja el de cualquier matricula que exista', async () => {
+    const { matricula, token } = await alumnoConAdeudo(250);
+    const propia = await http().get('/alumnos/actual/cuenta').set('Authorization', token).expect(200);
+    expect(propia.body).toMatchObject({
+      matricula,
+      saldo: 250,
+      movimientos: [expect.objectContaining({ tipo: 'cargo', importe: 250 })],
+      pagos: [],
+    });
+    const deCaja = await http().get(`/alumnos/${matricula}/cuenta`).set('Authorization', caja).expect(200);
+    expect(deCaja.body).toEqual(propia.body);
+    await http().get('/alumnos/9999999/cuenta').set('Authorization', caja).expect(404);
+  });
 });
 
 describe('Pago simulado: se aplica una sola vez (R-14)', () => {

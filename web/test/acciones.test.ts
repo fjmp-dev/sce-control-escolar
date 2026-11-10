@@ -24,8 +24,12 @@ import {
   quitarPrerrequisito,
   generarCargos,
   iniciarPago,
+  emitirTramite,
   rechazarTramite,
+  registrarBeca,
   simularPago,
+  solicitarTramite,
+  tomarTramite,
 } from '@/lib/acciones';
 
 const m = vi.hoisted(() => ({ fijar: vi.fn(), borrar: vi.fn(), revalidar: vi.fn() }));
@@ -549,6 +553,45 @@ describe('Pagos simulados y tramites (RF-006, RF-007)', () => {
       formulario({ periodoClave: '2027A', concepto: 'Inscripción 2027A', importe: '1850' }),
     );
     expect(estado.exito).toBe('Inscripción 2027A: cargos nuevos, 3; ya lo tenían, 1.');
+  });
+
+  it('si la API rechaza el pago o la pasarela, el error se queda en el formulario con lo escrito', async () => {
+    responder(409, { codigo: 'SIN_ADEUDO', mensaje: 'No tienes adeudo.', campos: [] });
+    expect(await iniciarPago({}, formulario({ importe: '10' }))).toMatchObject({
+      error: 'No tienes adeudo.',
+      valores: { importe: '10' },
+    });
+    responder(409, { codigo: 'PAGO_NO_APLICABLE', mensaje: 'Ya no se aplica.', campos: [] });
+    expect((await simularPago({}, formulario({ id: '7' }))).error).toBe('Ya no se aplica.');
+    responder(400, { codigo: 'DATOS_INVALIDOS', mensaje: 'x', campos: ['importe'] });
+    expect(await generarCargos({}, formulario({ periodoClave: '2027A', concepto: 'C', importe: '-1' }))).toMatchObject({
+      campos: ['importe'],
+      valores: { importe: '-1' },
+    });
+  });
+
+  it('beca y solicitud llegan a su ruta con el cuerpo del contrato', async () => {
+    let espia = responder(201, {});
+    expect(
+      (await registrarBeca({}, formulario({ matricula: '2420002', concepto: 'Beca', importe: '500' }))).exito,
+    ).toBe('Beca registrada a 2420002.');
+    expect(enviado(espia)).toEqual({
+      ruta: '/alumnos/2420002/becas',
+      metodo: 'POST',
+      cuerpo: { concepto: 'Beca', importe: 500 },
+    });
+    espia = responder(201, {});
+    await solicitarTramite({}, formulario({ tipo: 'no_adeudo' }));
+    expect(enviado(espia)).toEqual({ ruta: '/tramites', metodo: 'POST', cuerpo: { tipo: 'no_adeudo' } });
+  });
+
+  it('tomar y emitir llevan a la cola con el resultado para confirmarlo contra la API', async () => {
+    const espia = responder(200, {});
+    await expect(tomarTramite({}, formulario({ folio: 'TRA-1' }))).rejects.toThrow(
+      'REDIRECCION:/tramites?hecho=proceso&folio=TRA-1',
+    );
+    await expect(emitirTramite({}, formulario({ folio: 'TRA-1' }))).rejects.toThrow('hecho=emision');
+    expect(enviado(espia)).toMatchObject({ ruta: '/tramites/TRA-1/proceso', metodo: 'POST' });
   });
 
   it('el rechazo de un tramite fuera de lugar se queda en el formulario con su causa y el motivo escrito', async () => {

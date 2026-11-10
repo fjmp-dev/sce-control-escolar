@@ -5,6 +5,8 @@ import { ETIQUETA_ESTADO_PAGO, ETIQUETA_MOVIMIENTO, momentoLegible, pesos } from
 
 type Cuenta = Esquemas['EstadoDeCuentaRespuesta'];
 
+const accion = (estado: string) => (estado === 'pendiente' ? 'Continuar el pago' : 'Ver recibo');
+
 /** RF-006: saldo, movimientos y pagos. `enlace` lleva del pago a su pasarela o su recibo (solo el alumno). */
 export function EstadoDeCuenta({ cuenta, enlace }: Readonly<{ cuenta: Cuenta; enlace?: (id: number) => string }>) {
   return (
@@ -41,9 +43,8 @@ export function EstadoDeCuenta({ cuenta, enlace }: Readonly<{ cuenta: Cuenta; en
                   titulo: 'Detalle',
                   celda: (p: Cuenta['pagos'][number]) =>
                     p.estado === 'pendiente' || p.estado === 'aplicado' ? (
-                      <Link href={enlace(p.id)}>
-                        {p.estado === 'pendiente' ? 'Continuar el pago' : 'Ver recibo'}
-                        <span className="solo-lector"> {p.referencia}</span>
+                      <Link href={enlace(p.id)} aria-label={`${accion(p.estado)} ${p.referencia}`}>
+                        {accion(p.estado)}
                       </Link>
                     ) : (
                       '—'
