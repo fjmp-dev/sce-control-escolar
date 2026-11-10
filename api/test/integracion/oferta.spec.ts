@@ -116,6 +116,8 @@ describe('Definir grupos (RF-003, D-13)', () => {
     await definir(clave, 'G-3', [[6, '07:00', '09:00', 'B1']]).expect(201);
     await definir(clave, 'G-4', [[5, '07:00', '09:00', 'B2']], { profesor: 'profesor2@sce.test' }).expect(201);
     await definir(otro, 'G-1', [[5, '07:00', '09:00', 'B1']]).expect(201);
+    expect(await prisma.grupo.count({ where: { periodoClave: clave } })).toBe(4);
+    expect(await prisma.grupo.count({ where: { periodoClave: otro } })).toBe(1);
   });
 
   it('sesiones del mismo grupo traslapadas o al reves: 400 con su causa', async () => {

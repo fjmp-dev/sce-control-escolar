@@ -10,7 +10,7 @@ type Grupo = Esquemas['GrupoAsignadoRespuesta'];
 /** Tabla 5 y 3.4: el profesor consulta sus grupos y su horario de los periodos que no han cerrado. */
 export default async function PaginaMisGrupos() {
   const grupos = await consultar<Grupo[]>('/profesores/actual/grupos');
-  const periodos = [...new Set(grupos.map((g) => g.periodoClave))].sort();
+  const periodos = [...new Set(grupos.map((g) => g.periodoClave))].sort((a, b) => a.localeCompare(b));
   return (
     <>
       <h1>Mis grupos</h1>

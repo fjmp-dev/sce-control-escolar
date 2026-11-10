@@ -144,7 +144,7 @@ describe('Consulta diferenciada por rol (Tabla 4)', () => {
   it('el profesor sin grupos lo lee en texto', async () => {
     api({ '/profesores/actual/grupos': [] });
     render(await PaginaMisGrupos());
-    screen.getByText(/No tienes grupos asignados/);
+    expect(screen.getByText(/No tienes grupos asignados/)).toBeTruthy();
   });
 
   it('el alumno ve el horario de su carga confirmada, no el de una rechazada ni el de un periodo cerrado', async () => {
@@ -174,7 +174,7 @@ describe('Consulta diferenciada por rol (Tabla 4)', () => {
   it('el alumno sin carga confirmada, o sin expediente, lo lee en texto', async () => {
     api({ '/alumnos/actual/inscripciones': [] });
     render(await PaginaMiHorario());
-    screen.getByText(/No tienes una carga confirmada/);
+    expect(screen.getByText(/No tienes una carga confirmada/)).toBeTruthy();
     cleanup();
     vi.stubGlobal(
       'fetch',
@@ -183,7 +183,7 @@ describe('Consulta diferenciada por rol (Tabla 4)', () => {
       ),
     );
     render(await PaginaMiHorario());
-    screen.getByText('Tu cuenta no tiene expediente.');
+    expect(screen.getByText('Tu cuenta no tiene expediente.')).toBeTruthy();
   });
 
   it('cada rol ve en el menu solo su consulta de horario', () => {
