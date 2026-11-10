@@ -23,8 +23,8 @@ Los criterios de 28.1 nombran los formularios de inscripción y pago. El de insc
 
 | Herramienta | Alcance | Resultado | Evidencia |
 |---|---|---|---|
-| axe-core 4.14, reglas WCAG 2.0, 2.1 y 2.2 A y AA | 28 páginas y estados: inicio de sesión con y sin errores; todas las del administrador; expedientes de control escolar, con y sin errores; coordinación, incluida la oferta con errores, con traslape y publicada; mis grupos del profesor; mi expediente y mi horario; inscripción, con aviso de choque y con rechazo; sin permiso | Ver la corrida del PR | Artefacto `despliegue-pruebas`, `cypress/reportes/axe/` |
-| Lighthouse 13 | 7 páginas, cinco de ellas con formularios, entre ellas la inscripción y la oferta | Ver la corrida del PR; umbral de accesibilidad de 90 | Artefacto `despliegue-pruebas`, `lighthouse/` |
+| axe-core 4.14, reglas WCAG 2.0, 2.1 y 2.2 A y AA | 32 páginas y estados: inicio de sesión con y sin errores; todas las del administrador; expedientes de control escolar, con y sin errores; coordinación, incluida la oferta con errores, con traslape y publicada, el cierre rechazado por D-16 y la corrección; mis grupos y la captura del profesor; mi expediente, mi horario y mis calificaciones; inscripción, con aviso de choque y con rechazo; sin permiso | Ver la corrida del PR | Artefacto `despliegue-pruebas`, `cypress/reportes/axe/` |
+| Lighthouse 13 | 8 páginas, cinco de ellas con formularios, entre ellas la inscripción y la oferta, y las calificaciones del alumno | Ver la corrida del PR; umbral de accesibilidad de 90 | Artefacto `despliegue-pruebas`, `lighthouse/` |
 | Teclado, revisión manual | — | **Pendiente: la hace QA** | Sección 4 |
 | NVDA | — | **Pendiente, Batch 12:** requiere un equipo con Windows | — |
 

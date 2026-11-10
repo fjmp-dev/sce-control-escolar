@@ -2,7 +2,8 @@ import { Aviso } from '@/componentes/aviso';
 import { Kardex } from '@/componentes/calificaciones';
 import { Campo, Formulario, Selector } from '@/componentes/formulario';
 import { corregirCalificacion } from '@/lib/acciones';
-import { consultar, ErrorApi } from '@/lib/api';
+import { redirect } from 'next/navigation';
+import { consultar, ErrorApi, sesionActual } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
 
 export const metadata = { title: 'Correcciones' };
@@ -27,6 +28,8 @@ async function delAlumno(matricula: string): Promise<Calificaciones | string> {
 export default async function PaginaCorrecciones({
   searchParams,
 }: Readonly<{ searchParams: Promise<{ matricula?: string }> }>) {
+  // Sin matrícula no se consulta la API: la página confirma el rol para no mostrar el formulario a quien no lo usa.
+  if (!(await sesionActual()).roles.includes('coordinacion')) redirect('/sin-permiso');
   const matricula = ((await searchParams).matricula ?? '').trim();
   const datos = matricula ? await delAlumno(matricula) : undefined;
   const cerradas = typeof datos === 'object' ? datos.materias.filter((m) => m.estadoPeriodo === 'cerrado') : [];

@@ -315,28 +315,29 @@ export async function enviarCarga(_: EstadoDeFormulario, datos: FormData): Promi
   };
 }
 
+/**
+ * CC-019 y RF-005: el formulario desaparece cuando el periodo cambia de estado, así que el resultado lo muestra la
+ * página: se vuelve a /periodos con lo que se hizo, y la página lo confirma solo si el periodo quedó en ese estado.
+ */
+async function cambiarCicloDelPeriodo(datos: FormData, hecho: 'inicio' | 'cierre'): Promise<EstadoDeFormulario> {
+  const clave = texto(datos, 'periodoClave');
+  try {
+    await llamar('POST', `/periodos/${encodeURIComponent(clave)}/${hecho}`);
+  } catch (error) {
+    return aEstado(error);
+  }
+  revalidatePath('/periodos');
+  redirect(`/periodos?hecho=${hecho}&periodo=${encodeURIComponent(clave)}`);
+}
+
 /** CC-019: termina la inscripción del periodo y empieza la captura de calificaciones. */
 export async function iniciarCurso(_: EstadoDeFormulario, datos: FormData) {
-  const clave = texto(datos, 'periodoClave');
-  return enviar(
-    'POST',
-    `/periodos/${encodeURIComponent(clave)}/inicio`,
-    undefined,
-    '/periodos',
-    `Curso de ${clave} iniciado. La inscripción terminó y los profesores ya pueden capturar.`,
-  );
+  return cambiarCicloDelPeriodo(datos, 'inicio');
 }
 
 /** RF-005: cierre del periodo con recálculo del historial; si faltan parciales, la API dice cuáles (D-16). */
 export async function cerrarPeriodo(_: EstadoDeFormulario, datos: FormData) {
-  const clave = texto(datos, 'periodoClave');
-  return enviar(
-    'POST',
-    `/periodos/${encodeURIComponent(clave)}/cierre`,
-    undefined,
-    '/periodos',
-    `Periodo ${clave} cerrado. Promedio, créditos y avance de sus alumnos quedaron recalculados.`,
-  );
+  return cambiarCicloDelPeriodo(datos, 'cierre');
 }
 
 /** RF-004: un parcial de los alumnos del grupo. Las casillas vacías no se envían. */

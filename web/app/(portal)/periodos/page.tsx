@@ -1,3 +1,4 @@
+import { Aviso } from '@/componentes/aviso';
 import { Campo, Formulario } from '@/componentes/formulario';
 import { Tabla } from '@/componentes/tabla';
 import { abrirPeriodo, cerrarPeriodo, iniciarCurso } from '@/lib/acciones';
@@ -9,7 +10,22 @@ import { CORRECCION_FECHA } from '@/lib/textos';
 
 export const metadata = { title: 'Periodos' };
 
-export default async function PaginaPeriodos() {
+/** El resultado de iniciar o cerrar, confirmado contra el estado real del periodo: nunca texto de la dirección. */
+const HECHO = {
+  inicio: {
+    estado: 'en_curso',
+    mensaje: (c: string) => `Curso de ${c} iniciado. La inscripción terminó y los profesores ya pueden capturar.`,
+  },
+  cierre: {
+    estado: 'cerrado',
+    mensaje: (c: string) => `Periodo ${c} cerrado. Promedio, créditos y avance de sus alumnos quedaron recalculados.`,
+  },
+} as const;
+
+export default async function PaginaPeriodos({
+  searchParams,
+}: Readonly<{ searchParams?: Promise<{ hecho?: string; periodo?: string }> }> = {}) {
+  const { hecho, periodo: clave } = (await searchParams) ?? {};
   const [{ roles }, periodos] = await Promise.all([
     sesionActual(),
     consultar<Esquemas['PeriodoRespuesta'][]>('/periodos'),
@@ -42,7 +58,9 @@ export default async function PaginaPeriodos() {
           </Formulario>
         </>
       )}
-      {puedeDarDeAlta('periodos', roles) && <CicloDelPeriodo periodos={periodos} />}
+      {puedeDarDeAlta('periodos', roles) && (
+        <CicloDelPeriodo periodos={periodos} resultado={resultadoDe(periodos, hecho, clave)} />
+      )}
       <h2>Periodos registrados</h2>
       <Tabla
         titulo="Periodos registrados"
@@ -68,13 +86,23 @@ export default async function PaginaPeriodos() {
  * Fig. 7: coordinación inicia el curso de un periodo abierto con la oferta publicada (CC-019) y cierra el que está en
  * curso (RF-005). El cierre solo procede con todos los parciales capturados (D-16).
  */
-function CicloDelPeriodo({ periodos }: Readonly<{ periodos: Esquemas['PeriodoRespuesta'][] }>) {
+function resultadoDe(periodos: Esquemas['PeriodoRespuesta'][], hecho?: string, clave?: string) {
+  if (hecho !== 'inicio' && hecho !== 'cierre') return undefined;
+  const periodo = periodos.find((p) => p.clave === clave);
+  return periodo?.estado === HECHO[hecho].estado ? HECHO[hecho].mensaje(periodo.clave) : undefined;
+}
+
+function CicloDelPeriodo({
+  periodos,
+  resultado,
+}: Readonly<{ periodos: Esquemas['PeriodoRespuesta'][]; resultado?: string }>) {
   const porIniciar = periodos.filter((p) => p.estado === 'abierto' && p.ofertaPublicadaEn);
   const enCurso = periodos.filter((p) => p.estado === 'en_curso');
-  if (porIniciar.length === 0 && enCurso.length === 0) return null;
+  if (porIniciar.length === 0 && enCurso.length === 0 && !resultado) return null;
   return (
     <>
       <h2>Iniciar el curso o cerrar el periodo</h2>
+      {resultado && <Aviso tipo="exito">{resultado}</Aviso>}
       {porIniciar.map((p) => (
         <Formulario key={p.clave} accion={iniciarCurso} envio={`Iniciar el curso de ${p.clave}`}>
           <input type="hidden" name="periodoClave" value={p.clave} />

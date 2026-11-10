@@ -43,6 +43,7 @@ const materia = (datos: Partial<Record<string, unknown>>) => ({
   vigente: null,
   ...datos,
 });
+const COORDINACION = { id: 'u', correo: 'c@sce.test', roles: ['coordinacion'] };
 const CALIFICACIONES = {
   matricula: '2420001',
   historial: { promedio: 8.17, creditosAcumulados: 8, avance: 2 },
@@ -199,10 +200,40 @@ describe('Ciclo del periodo y correcciones de coordinacion', () => {
     screen.getByRole('button', { name: 'Iniciar el curso de 2027A' });
     expect(screen.queryByRole('button', { name: 'Iniciar el curso de 2027B' })).toBeNull();
     screen.getByRole('button', { name: 'Cerrar el periodo 2026B' });
+    expect(screen.queryByRole('status')).toBeNull();
+  });
+
+  it('el resultado de iniciar o cerrar se confirma contra el estado real del periodo', async () => {
+    const periodos = [
+      { clave: '2026B', estado: 'cerrado', ofertaPublicadaEn: null, fechaInicio: '2026-08-03', fechaFin: '2026-12-18' },
+      {
+        clave: '2027A',
+        estado: 'en_curso',
+        ofertaPublicadaEn: null,
+        fechaInicio: '2027-01-12',
+        fechaFin: '2027-06-30',
+      },
+    ];
+    const pagina = (hecho: string, periodo: string) =>
+      PaginaPeriodos({ searchParams: Promise.resolve({ hecho, periodo }) });
+    api({ '/sesiones/actual': { id: 'u', correo: 'c@sce.test', roles: ['coordinacion'] }, '/periodos': periodos });
+    render(await pagina('cierre', '2026B'));
+    expect(screen.getByRole('status').textContent).toContain('Periodo 2026B cerrado');
+    cleanup();
+    for (const [hecho, periodo] of [
+      ['cierre', '2027A'],
+      ['inicio', '2026B'],
+      ['<script>', '2026B'],
+      ['cierre', 'NO-EXISTE'],
+    ]) {
+      render(await pagina(hecho, periodo));
+      expect(screen.queryByText(/iniciado|cerrado\./)).toBeNull();
+      cleanup();
+    }
   });
 
   it('Correcciones busca por matricula y ofrece solo calificaciones de periodos cerrados', async () => {
-    api({ '/alumnos/2420001/calificaciones': CALIFICACIONES });
+    api({ '/sesiones/actual': COORDINACION, '/alumnos/2420001/calificaciones': CALIFICACIONES });
     render(await PaginaCorrecciones({ searchParams: Promise.resolve({ matricula: '2420001' }) }));
     const selector = screen.getByLabelText<HTMLSelectElement>('Calificación a corregir');
     const opciones = within(selector).getAllByRole('option').slice(1);
@@ -217,14 +248,19 @@ describe('Ciclo del periodo y correcciones de coordinacion', () => {
     screen.getByRole('button', { name: 'Autorizar la corrección' });
   });
 
-  it('una matricula sin expediente lo dice; sin buscar no consulta nada', async () => {
-    api({});
+  it('una matricula sin expediente lo dice; sin buscar no consulta expedientes', async () => {
+    api({ '/sesiones/actual': COORDINACION });
     render(await PaginaCorrecciones({ searchParams: Promise.resolve({ matricula: '9999999' }) }));
     screen.getByText(/No hay un expediente con la matrícula 9999999/);
     cleanup();
-    const espia = api({});
+    const espia = api({ '/sesiones/actual': COORDINACION });
     render(await PaginaCorrecciones({ searchParams: Promise.resolve({}) }));
-    expect(espia).not.toHaveBeenCalled();
+    expect(espia.mock.calls.map(([url]) => url)).not.toContainEqual(expect.stringContaining('/alumnos/'));
     expect(screen.queryByRole('button', { name: 'Autorizar la corrección' })).toBeNull();
+  });
+
+  it('a quien no es de coordinacion lo lleva a sin permiso, aunque no busque nada', async () => {
+    api({ '/sesiones/actual': { id: 'u', correo: 'p@sce.test', roles: ['profesor'] } });
+    await expect(PaginaCorrecciones({ searchParams: Promise.resolve({}) })).rejects.toThrow('REDIRECCION:/sin-permiso');
   });
 });

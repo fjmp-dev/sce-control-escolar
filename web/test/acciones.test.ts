@@ -159,20 +159,6 @@ describe('altas de catalogos (contrato de la API)', () => {
       'Periodo 2030A abierto. Define sus grupos y publica la oferta en la página Oferta.',
     ],
     [
-      'inicio del curso',
-      iniciarCurso,
-      { periodoClave: '2026B' },
-      { ruta: '/periodos/2026B/inicio', metodo: 'POST', cuerpo: undefined },
-      'Curso de 2026B iniciado. La inscripción terminó y los profesores ya pueden capturar.',
-    ],
-    [
-      'cierre del periodo',
-      cerrarPeriodo,
-      { periodoClave: '2026B' },
-      { ruta: '/periodos/2026B/cierre', metodo: 'POST', cuerpo: undefined },
-      'Periodo 2026B cerrado. Promedio, créditos y avance de sus alumnos quedaron recalculados.',
-    ],
-    [
       'correccion posterior al cierre',
       corregirCalificacion,
       { matricula: '2420001', calificacion: '7', valor: '9,5', motivo: 'Error de captura', evidencia: 'Oficio 1' },
@@ -511,5 +497,28 @@ describe('capturarParcial (RF-004, contrato de la API)', () => {
       error: 'El periodo 2026A ya cerró.',
       valores: { 'valor:A': '9' },
     });
+  });
+});
+
+describe('iniciarCurso y cerrarPeriodo (CC-019, RF-005)', () => {
+  it.each([
+    ['inicio', iniciarCurso],
+    ['cierre', cerrarPeriodo],
+  ] as const)('%s: llama a la API y vuelve a Periodos con lo que se hizo', async (hecho, accion) => {
+    const espia = responder(200, {});
+    await expect(accion({}, formulario({ periodoClave: '2026B' }))).rejects.toThrow(
+      `REDIRECCION:/periodos?hecho=${hecho}&periodo=2026B`,
+    );
+    expect(enviado(espia)).toEqual({ ruta: `/periodos/2026B/${hecho}`, metodo: 'POST', cuerpo: undefined });
+    expect(m.revalidar).toHaveBeenCalledWith('/periodos');
+  });
+
+  it('D-16: el rechazo del cierre se queda en el formulario con su causa', async () => {
+    responder(409, { codigo: 'CIERRE_INCOMPLETO', mensaje: 'No se puede cerrar 2026B: faltan calificaciones.' });
+    expect(await cerrarPeriodo({}, formulario({ periodoClave: '2026B' }))).toEqual({
+      error: 'No se puede cerrar 2026B: faltan calificaciones.',
+      campos: [],
+    });
+    expect(m.revalidar).not.toHaveBeenCalled();
   });
 });
