@@ -30,7 +30,14 @@ export type CodigoDeNegocio =
   | 'ALUMNO_NO_INSCRITO'
   | 'CAPTURA_DUPLICADA'
   | 'CIERRE_INCOMPLETO'
-  | 'PERIODO_NO_CERRADO';
+  | 'PERIODO_NO_CERRADO'
+  | 'SIN_ADEUDO'
+  | 'IMPORTE_MAYOR_AL_SALDO'
+  | 'PAGO_NO_APLICABLE'
+  | 'PAGO_NO_APLICADO'
+  | 'TRAMITE_TRANSICION_INVALIDA'
+  | 'SIN_HISTORIAL'
+  | 'CON_ADEUDO';
 
 /**
  * Error de una regla de negocio. El dominio no conoce HTTP: el gateway lo traduce (Tabla 28).

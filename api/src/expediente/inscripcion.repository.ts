@@ -56,6 +56,16 @@ export class InscripcionRepository {
     return filas.map(({ inscripcion: i }) => ({ folio: i.folio, matricula: i.matricula, nombre: i.alumno.nombre }));
   }
 
+  /** Fig. 7: a quién se le genera el cargo del periodo: cargas confirmadas o ya cerradas. */
+  async matriculasDelPeriodo(periodoClave: string) {
+    const filas = await this.prisma.cliente().inscripcion.findMany({
+      where: { periodoClave, estado: { in: ['confirmada', 'cerrada'] } },
+      select: { matricula: true },
+      orderBy: { matricula: 'asc' },
+    });
+    return filas.map((f) => f.matricula);
+  }
+
   /** RF-005: las cargas confirmadas del periodo, que el cierre cierra. */
   confirmadasDelPeriodo(periodoClave: string) {
     return this.prisma

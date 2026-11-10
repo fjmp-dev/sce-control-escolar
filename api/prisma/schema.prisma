@@ -305,6 +305,7 @@ model Tramite {
   matricula          String
   tipo               String // constancia, no_adeudo, historial
   estado             String // recibida, en_proceso, lista, entregada, rechazada
+  motivoRechazo      String?    @map("motivo_rechazo")
   fechaSolicitud     DateTime   @default(now()) @map("fecha_solicitud") @db.Timestamptz
   fechaActualizacion DateTime   @updatedAt @map("fecha_actualizacion") @db.Timestamptz
   alumno             Alumno     @relation(fields: [matricula], references: [matricula])
@@ -319,6 +320,7 @@ model Documento {
   tramiteFolio String   @unique @map("tramite_folio")
   tipo         String
   hash         String // verificacion de autenticidad del documento emitido
+  contenido    String   @default("") // texto emitido; no cambia
   fechaEmision DateTime @default(now()) @map("fecha_emision") @db.Timestamptz
   tramite      Tramite  @relation(fields: [tramiteFolio], references: [folio])
 

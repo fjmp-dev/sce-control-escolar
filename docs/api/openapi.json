@@ -2242,6 +2242,82 @@
         "tags": [
           "Expedientes"
         ]
+      },
+      "get": {
+        "operationId": "CuentasController_deAlumno",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoDeCuentaRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estado de cuenta de un alumno",
+        "tags": [
+          "Pagos"
+        ]
       }
     },
     "/inscripciones": {
@@ -3047,6 +3123,1220 @@
         "summary": "D-17: corregir una calificación de un periodo cerrado, con motivo y evidencia",
         "tags": [
           "Calificaciones"
+        ]
+      }
+    },
+    "/alumnos/actual/cuenta": {
+      "get": {
+        "operationId": "CuentasController_propia",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoDeCuentaRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estado de cuenta del alumno de la sesión",
+        "tags": [
+          "Pagos"
+        ]
+      }
+    },
+    "/alumnos/{matricula}/becas": {
+      "post": {
+        "operationId": "CuentasController_beca",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovimientoDeCajaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoDeCuentaRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar una beca: abono que no deja el saldo a favor",
+        "tags": [
+          "Pagos"
+        ]
+      }
+    },
+    "/periodos/{clave}/cargos": {
+      "post": {
+        "operationId": "CuentasController_cargos",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovimientoDeCajaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CargosRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fig. 7: generar el cargo del periodo a cada inscrito, una sola vez por concepto",
+        "tags": [
+          "Pagos"
+        ]
+      }
+    },
+    "/pagos": {
+      "post": {
+        "operationId": "CuentasController_iniciar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Importe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Iniciar un pago de su adeudo; queda pendiente hasta que responde la pasarela",
+        "tags": [
+          "Pagos"
+        ]
+      },
+      "get": {
+        "operationId": "CuentasController_corte",
+        "parameters": [
+          {
+            "name": "fecha",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date",
+              "example": "2026-11-10",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Corte de caja: pagos aplicados en un día y su total",
+        "tags": [
+          "Pagos"
+        ]
+      }
+    },
+    "/pagos/{id}/simulacion": {
+      "post": {
+        "operationId": "CuentasController_simular",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulacionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pasarela simulada: aprobar o rechazar; el pago se aplica una sola vez",
+        "tags": [
+          "Pagos"
+        ]
+      }
+    },
+    "/pagos/{id}": {
+      "get": {
+        "operationId": "CuentasController_recibo",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Recibo de un pago aplicado; el alumno solo ve los suyos",
+        "tags": [
+          "Pagos"
+        ]
+      }
+    },
+    "/tramites": {
+      "post": {
+        "operationId": "TramitesController_solicitar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TramiteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Solicitar una constancia, un no adeudo o el historial",
+        "tags": [
+          "Trámites"
+        ]
+      },
+      "get": {
+        "operationId": "TramitesController_cola",
+        "parameters": [
+          {
+            "name": "estado",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "recibida",
+                "en_proceso",
+                "lista",
+                "entregada",
+                "rechazada"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TramiteRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cola de trámites, por estado",
+        "tags": [
+          "Trámites"
+        ]
+      }
+    },
+    "/alumnos/actual/tramites": {
+      "get": {
+        "operationId": "TramitesController_propios",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TramiteRespuesta"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trámites del alumno de la sesión, con estado, fechas y motivo de rechazo",
+        "tags": [
+          "Trámites"
+        ]
+      }
+    },
+    "/tramites/{folio}/proceso": {
+      "post": {
+        "operationId": "TramitesController_tomar",
+        "parameters": [
+          {
+            "name": "folio",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "TRA-2420001-1A2B3C4D",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TramiteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Tomar el trámite: Recibida → En proceso",
+        "tags": [
+          "Trámites"
+        ]
+      }
+    },
+    "/tramites/{folio}/emision": {
+      "post": {
+        "operationId": "TramitesController_emitir",
+        "parameters": [
+          {
+            "name": "folio",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "TRA-2420001-1A2B3C4D",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TramiteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Emitir el documento: En proceso → Lista, con folio y hash",
+        "tags": [
+          "Trámites"
+        ]
+      }
+    },
+    "/tramites/{folio}/rechazo": {
+      "post": {
+        "operationId": "TramitesController_rechazar",
+        "parameters": [
+          {
+            "name": "folio",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "TRA-2420001-1A2B3C4D",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RechazoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TramiteRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Rechazar con motivo visible: En proceso → Rechazada",
+        "tags": [
+          "Trámites"
+        ]
+      }
+    },
+    "/tramites/{folio}/documento": {
+      "get": {
+        "operationId": "TramitesController_descargar",
+        "parameters": [
+          {
+            "name": "folio",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "TRA-2420001-1A2B3C4D",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Descargar el documento; la primera descarga lo deja Entregado",
+        "tags": [
+          "Trámites"
+        ]
+      }
+    },
+    "/documentos/{folio}": {
+      "get": {
+        "operationId": "TramitesController_verificar",
+        "parameters": [
+          {
+            "name": "folio",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "TRA-2420001-1A2B3C4D",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificacionRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verificar un documento por su folio",
+        "tags": [
+          "Trámites"
         ]
       }
     }
@@ -4429,6 +5719,377 @@
           "valor",
           "motivo",
           "evidencia"
+        ]
+      },
+      "MovimientoRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "concepto": {
+            "type": "string"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "cargo",
+              "abono",
+              "ajuste",
+              "beca"
+            ]
+          },
+          "fecha": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "concepto",
+          "importe",
+          "tipo",
+          "fecha"
+        ]
+      },
+      "PagoRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "referencia": {
+            "type": "string"
+          },
+          "importe": {
+            "type": "number"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "aplicado",
+              "rechazado",
+              "cancelado"
+            ]
+          },
+          "fecha": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "aplicadoEn": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "matricula",
+          "referencia",
+          "importe",
+          "estado",
+          "fecha",
+          "aplicadoEn"
+        ]
+      },
+      "EstadoDeCuentaRespuesta": {
+        "type": "object",
+        "properties": {
+          "matricula": {
+            "type": "string"
+          },
+          "saldo": {
+            "type": "number",
+            "description": "Mayor que cero es adeudo"
+          },
+          "movimientos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovimientoRespuesta"
+            }
+          },
+          "pagos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PagoRespuesta"
+            }
+          }
+        },
+        "required": [
+          "matricula",
+          "saldo",
+          "movimientos",
+          "pagos"
+        ]
+      },
+      "MovimientoDeCajaDto": {
+        "type": "object",
+        "properties": {
+          "importe": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 1000000,
+            "example": 1850
+          },
+          "concepto": {
+            "type": "string",
+            "maxLength": 120,
+            "example": "Inscripción 2027A"
+          }
+        },
+        "required": [
+          "importe",
+          "concepto"
+        ]
+      },
+      "CargosRespuesta": {
+        "type": "object",
+        "properties": {
+          "periodoClave": {
+            "type": "string"
+          },
+          "concepto": {
+            "type": "string"
+          },
+          "generados": {
+            "type": "number"
+          },
+          "yaExistian": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "periodoClave",
+          "concepto",
+          "generados",
+          "yaExistian"
+        ]
+      },
+      "Importe": {
+        "type": "object",
+        "properties": {
+          "importe": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 1000000,
+            "example": 1850
+          }
+        },
+        "required": [
+          "importe"
+        ]
+      },
+      "SimulacionDto": {
+        "type": "object",
+        "properties": {
+          "resultado": {
+            "type": "string",
+            "enum": [
+              "aprobado",
+              "rechazado"
+            ]
+          }
+        },
+        "required": [
+          "resultado"
+        ]
+      },
+      "CorteRespuesta": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string"
+          },
+          "pagos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PagoRespuesta"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "fecha",
+          "pagos",
+          "total"
+        ]
+      },
+      "SolicitudDto": {
+        "type": "object",
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "constancia",
+              "no_adeudo",
+              "historial"
+            ]
+          }
+        },
+        "required": [
+          "tipo"
+        ]
+      },
+      "TramiteRespuesta": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "constancia",
+              "no_adeudo",
+              "historial"
+            ]
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "recibida",
+              "en_proceso",
+              "lista",
+              "entregada",
+              "rechazada"
+            ]
+          },
+          "motivoRechazo": {
+            "type": "string",
+            "nullable": true
+          },
+          "fechaSolicitud": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fechaActualizacion": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "documentoFolio": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "folio",
+          "matricula",
+          "tipo",
+          "estado",
+          "motivoRechazo",
+          "fechaSolicitud",
+          "fechaActualizacion",
+          "documentoFolio"
+        ]
+      },
+      "RechazoDto": {
+        "type": "object",
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Visible para el alumno (Fig. 6)"
+          }
+        },
+        "required": [
+          "motivo"
+        ]
+      },
+      "DocumentoRespuesta": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string"
+          },
+          "tramiteFolio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "constancia",
+              "no_adeudo",
+              "historial"
+            ]
+          },
+          "contenido": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string",
+            "description": "SHA-256 del contenido"
+          },
+          "fechaEmision": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "folio",
+          "tramiteFolio",
+          "tipo",
+          "contenido",
+          "hash",
+          "fechaEmision"
+        ]
+      },
+      "VerificacionRespuesta": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string"
+          },
+          "tramiteFolio": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "constancia",
+              "no_adeudo",
+              "historial"
+            ]
+          },
+          "contenido": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string",
+            "description": "SHA-256 del contenido"
+          },
+          "fechaEmision": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "valido": {
+            "type": "boolean",
+            "description": "El contenido guardado coincide con el hash emitido"
+          }
+        },
+        "required": [
+          "folio",
+          "tramiteFolio",
+          "tipo",
+          "contenido",
+          "hash",
+          "fechaEmision",
+          "matricula",
+          "valido"
         ]
       }
     }

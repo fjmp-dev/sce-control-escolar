@@ -523,6 +523,198 @@
             },
             "header": []
           }
+        },
+        {
+          "name": "GET /alumnos/actual/cuenta",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/cuenta",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "cuenta"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000/cuenta",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/cuenta",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "cuenta"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /alumnos/0000000/becas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/becas",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "becas"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/cargos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/cargos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "cargos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /pagos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /pagos/5ce00000-0000-4000-8000-00000000ffff/simulacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos/5ce00000-0000-4000-8000-00000000ffff/simulacion",
+              "host": ["{{base}}"],
+              "path": ["pagos", "5ce00000-0000-4000-8000-00000000ffff", "simulacion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /pagos/5ce00000-0000-4000-8000-00000000ffff",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos/5ce00000-0000-4000-8000-00000000ffff",
+              "host": ["{{base}}"],
+              "path": ["pagos", "5ce00000-0000-4000-8000-00000000ffff"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /pagos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites",
+              "host": ["{{base}}"],
+              "path": ["tramites"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/actual/tramites",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/tramites",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "tramites"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /tramites",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/tramites",
+              "host": ["{{base}}"],
+              "path": ["tramites"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites/INS-FOLIO-AJENO/proceso",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/proceso",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "proceso"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites/INS-FOLIO-AJENO/emision",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/emision",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "emision"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites/INS-FOLIO-AJENO/rechazo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/rechazo",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "rechazo"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /tramites/INS-FOLIO-AJENO/documento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/documento",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "documento"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /documentos/INS-FOLIO-AJENO",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/documentos/INS-FOLIO-AJENO",
+              "host": ["{{base}}"],
+              "path": ["documentos", "INS-FOLIO-AJENO"]
+            },
+            "header": []
+          }
         }
       ]
     },

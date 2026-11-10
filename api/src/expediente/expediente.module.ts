@@ -6,6 +6,8 @@ import { PagosModule } from '../pagos/pagos.module';
 import { AlumnoRepository } from './alumno.repository';
 import { AlumnosController } from './alumnos.controller';
 import { CalificacionesController } from './calificaciones.controller';
+import { CuentasController } from './cuentas.controller';
+import { CuentasService } from './cuentas.service';
 import { ExpedienteService } from './expediente.service';
 import { HistorialService } from './historial.service';
 import { InscripcionRepository } from './inscripcion.repository';
@@ -18,7 +20,15 @@ import { InscripcionesController } from './inscripciones.controller';
  */
 @Module({
   imports: [BitacoraModule, IdentidadModule, AcademicoModule, PagosModule],
-  controllers: [AlumnosController, InscripcionesController, CalificacionesController],
-  providers: [ExpedienteService, AlumnoRepository, InscripcionService, InscripcionRepository, HistorialService],
+  controllers: [AlumnosController, InscripcionesController, CalificacionesController, CuentasController],
+  providers: [
+    ExpedienteService,
+    AlumnoRepository,
+    InscripcionService,
+    InscripcionRepository,
+    HistorialService,
+    CuentasService,
+  ],
+  exports: [ExpedienteService, HistorialService],
 })
 export class ExpedienteModule {}

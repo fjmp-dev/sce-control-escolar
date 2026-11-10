@@ -42,3 +42,26 @@ export const filasDeLaMatriz = () =>
         .map((celda) => celda.trim());
       return { metodo, ruta: ruta.replaceAll('`', ''), permisos };
     });
+
+/** Alumno propio de una prueba, con su cuenta de acceso, su historial y su cuenta de pagos, con `saldo` de adeudo. */
+export async function crearAlumno(prisma: PrismaService, matricula: string, saldo = 0) {
+  const correo = `a${matricula}@sce.test`;
+  const cuenta = await crearCuenta(prisma, correo);
+  await prisma.alumno.create({
+    data: {
+      matricula,
+      nombre: `Alumno Sintético ${matricula}`,
+      facultadClave: 'CUTG',
+      fechaIngreso: new Date('2025-08-04'),
+      estatus: 'activo',
+      usuarioId: cuenta.id,
+      historial: { create: {} },
+      cuenta: {
+        create: saldo
+          ? { saldo, movimientos: { create: { concepto: 'Cargo de prueba', importe: saldo, tipo: 'cargo' } } }
+          : {},
+      },
+    },
+  });
+  return { matricula, correo };
+}

@@ -1,7 +1,7 @@
 # Matriz de rol por endpoint — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 y Tablas 5, 11, 12 y 38; CC-007. **Criterio de auditoría:** AU-15.
-**Versión:** 1.5, 10 de noviembre de 2026 (Batch 8). Crece con cada batch.
+**Versión:** 1.6, 10 de noviembre de 2026 (Batch 9). Crece con cada batch.
 
 Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7). El portal solo presenta lo que esta matriz permite, y `web/test/roles.test.ts` lo comprueba; quien autoriza siempre es la API.
 
@@ -50,6 +50,22 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
 | POST | `/periodos/{clave}/publicacion` | No | No | No | Sí | No | No | No |
 | POST | `/periodos/{clave}/inicio` | No | No | No | Sí | No | No | No |
 | POST | `/periodos/{clave}/cierre` | No | No | No | Sí | No | No | No |
+| GET | `/alumnos/actual/cuenta` | Sí | No | No | No | No | No | No |
+| GET | `/alumnos/{matricula}/cuenta` | No | No | No | No | Sí | No | No |
+| POST | `/alumnos/{matricula}/becas` | No | No | No | No | Sí | No | No |
+| POST | `/periodos/{clave}/cargos` | No | No | No | No | Sí | No | No |
+| POST | `/pagos` | Sí | No | No | No | No | No | No |
+| POST | `/pagos/{id}/simulacion` | Sí | No | No | No | No | No | No |
+| GET | `/pagos/{id}` | Sí | No | No | No | Sí | No | No |
+| GET | `/pagos` | No | No | No | No | Sí | No | No |
+| POST | `/tramites` | Sí | No | No | No | No | No | No |
+| GET | `/alumnos/actual/tramites` | Sí | No | No | No | No | No | No |
+| GET | `/tramites` | No | No | Sí | No | No | No | No |
+| POST | `/tramites/{folio}/proceso` | No | No | Sí | No | No | No | No |
+| POST | `/tramites/{folio}/emision` | No | No | Sí | No | No | No | No |
+| POST | `/tramites/{folio}/rechazo` | No | No | Sí | No | No | No | No |
+| GET | `/tramites/{folio}/documento` | Sí | No | No | No | No | No | No |
+| GET | `/documentos/{folio}` | No | No | Sí | No | No | No | No |
 
 ## Decisiones
 
@@ -65,5 +81,6 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
   - **Consulta:** el alumno consulta las suyas con su sesión. Control escolar y coordinación consultan las de una matrícula: control escolar administra el expediente, y coordinación las necesita para autorizar correcciones.
   - **Ciclo del periodo:** iniciar el curso (CC-019), cerrar el periodo (UC06) y corregir después del cierre (D-17) son de coordinación.
   - **Caja y dirección:** no tocan el historial (CS-SEG-02).
+- **Pagos y trámites (Batch 9):** la pasarela es simulada. El alumno ve su cuenta, paga y descarga sus documentos con su sesión; un pago o un trámite ajeno responde 404. Caja genera cargos, registra becas y hace el corte, y ve cualquier recibo. Control escolar procesa los trámites y verifica documentos. Caja no toca el historial ni los trámites (CS-SEG-02).
 - **Dirección no consulta expedientes individuales:** ve reportes agregados (Tabla 16, Accesibilidad), que llegan en el Batch 11.
 - **Administrador y coordinación son roles separados:** una cuenta puede tener varios, pero las cuentas del seed tienen uno cada una.
