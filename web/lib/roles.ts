@@ -127,6 +127,15 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
           },
         ]
       : []),
+    ...(roles.includes('direccion')
+      ? [
+          {
+            ruta: '/reportes',
+            etiqueta: 'Reportes',
+            descripcion: 'Inscripción, avance y cobranza por facultad y de la universidad',
+          },
+        ]
+      : []),
     ...(roles.includes('administrador')
       ? [{ ruta: '/usuarios', etiqueta: 'Usuarios', descripcion: 'Dar de alta, cambiar roles y dar de baja' }]
       : []),

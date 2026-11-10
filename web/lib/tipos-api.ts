@@ -814,6 +814,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/periodos/{clave}/reporte": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** RF-009: inscripción, avance y cobranza por facultad y de toda la universidad */
+        get: operations["ReportesController_reporte"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1289,6 +1306,34 @@ export interface components {
             matricula: string;
             /** @description El contenido guardado coincide con el hash emitido */
             valido: boolean;
+        };
+        IndicadoresRespuesta: {
+            /** @description Nula en la fila de toda la universidad */
+            facultadClave: string | null;
+            facultadNombre: string;
+            alumnosActivos: number;
+            /** @description Con carga confirmada, ajustada o cerrada en el periodo */
+            inscritos: number;
+            /** @description Inscritos entre activos, en porcentaje */
+            inscripcionPorcentaje: number;
+            /** @description Media del promedio de quienes ya tienen historial */
+            promedioGeneral: number;
+            /** @description Media del avance de carrera de los activos, en porcentaje */
+            avancePromedio: number;
+            cargos: number;
+            pagado: number;
+            becas: number;
+            saldoPendiente: number;
+            alumnosConAdeudo: number;
+            /** @description Pagado y becas entre cargos, en porcentaje */
+            cobranzaPorcentaje: number;
+        };
+        ReporteRespuesta: {
+            periodoClave: string;
+            /** Format: date-time */
+            generadoEn: string;
+            /** @description Una por facultad y, al final, la universidad */
+            filas: components["schemas"]["IndicadoresRespuesta"][];
         };
     };
     responses: never;
@@ -4271,6 +4316,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VerificacionRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    ReportesController_reporte: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clave: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteRespuesta"];
                 };
             };
             400: {

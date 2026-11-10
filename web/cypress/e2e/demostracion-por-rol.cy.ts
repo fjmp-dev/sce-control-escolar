@@ -17,7 +17,7 @@ const CUENTAS = [
     propios: ['Oferta', 'Correcciones'],
   },
   { cuenta: 'caja', rol: 'Caja', altas: [], propios: ['Caja'] },
-  { cuenta: 'direccion', rol: 'Dirección', altas: [], propios: [] },
+  { cuenta: 'direccion', rol: 'Dirección', altas: [], propios: ['Reportes'] },
   {
     cuenta: 'administrador',
     rol: 'Administrador del sistema',

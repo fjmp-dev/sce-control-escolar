@@ -14,7 +14,7 @@ Sistema de Control Escolar Universitario (SCE). Centro Universitario UAEM Tiangu
 
 ## Estado del repositorio
 
-La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arrancó con:
+El sistema está completo en las fases 1 a 4 (alcance compactado el 10 de noviembre de 2026, `docs/gobierno/plan-de-sistema.md` 6.1; el piloto de la fase 5 queda fuera). Incluye:
 
 - Base de datos PostgreSQL con las veintiuna entidades de la sección 13.6, migradas con Prisma, y sus restricciones de integridad.
 - Auditoría de base de datos con pgAudit (`db/pgaudit.sql`), activa en staging junto con SCRAM y TLS (CC-005).
@@ -25,9 +25,10 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Oferta y horarios (RF-003, Batch 7): coordinación abre el periodo, define grupos sin traslape de aula ni de profesor y publica la oferta; el alumno solo ve la oferta publicada y su horario, y el profesor sus grupos.
 - Calificaciones e historial (RF-004 y RF-005, Batch 8): el profesor captura por parcial en sus grupos mientras el periodo está en curso, el alumno las consulta al momento, coordinación cierra el periodo con recálculo de promedio, créditos y avance, y autoriza correcciones posteriores con motivo y evidencia. Kárdex y exportación del historial en CSV.
 - Pagos simulados y trámites (RF-006, RF-007 y RF-010, Batch 9): caja genera los cargos del periodo, registra becas y hace el corte del día; el alumno paga en una pasarela simulada (sin Mercado Pago ni dinero real) y el pago se aplica una sola vez, con recibo. El alumno pide constancia, no adeudo o historial; control escolar lo toma, lo emite o lo rechaza con motivo; el documento lleva folio y hash SHA-256, queda entregado al descargarlo y control escolar verifica su autenticidad.
+- Reportes de dirección (RF-009, Batch 10): inscripción, avance académico y cobranza de un periodo por facultad y de toda la universidad, solo agregados, sin matrículas ni nombres, y sin acceso a la bitácora.
 - Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
 
-Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
+Pendiente, sin código: que SJOM revise y apruebe los pull requests apilados, fusionarlos en orden a `develop`, emitir el manual v2.1, firmar las actas de fase y etiquetar. Ver `docs/gobierno/plan-de-trabajo.md`, apartado 1.
 
 **Tablero y backlog:** [issues del repositorio](https://github.com/fjmp-dev/sce-control-escolar/issues), agrupados por sprint en [hitos](https://github.com/fjmp-dev/sce-control-escolar/milestones). Los issues #1 a #22 corresponden uno a uno con el backlog de `docs/gobierno/plan-de-trabajo.md`; los cambios al manual se registran con la etiqueta `cambio` (#23 a #28).
 
@@ -55,7 +56,9 @@ api/                NestJS + Prisma (sección 3.6)
                           captura, cierre, kárdex e historial (RF-004 y RF-005)
     academico/            Catálogos; periodo y oferta (RF-003): grupos sin traslape, publicación y consulta por rol;
                           prerrequisitos, choques y cupo para la inscripción
-    pagos/                Adeudo de la cuenta del alumno (Fig. 4); el resto llega en el Batch 9
+    pagos/                Cuenta del alumno, cargos, becas, pasarela simulada con aplicación única y corte (RF-006)
+    tramites/             Trámites y documentos con folio y hash (RF-007 y RF-010)
+    reportes/             Agregados de dirección por facultad y universidad, solo lectura (RF-009)
     bitacora/             Servicio de bitácora (Tabla 28)
     persistencia/         Prisma y transacción compartida entre repositorios
   prisma/verificacion/    Consultas SQL de calidad de datos y muestreo de bitácora, junto a las migraciones (19.1)
