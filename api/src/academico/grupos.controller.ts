@@ -1,4 +1,4 @@
-import { applyDecorators, Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { applyDecorators, Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -44,7 +44,7 @@ export class OfertaDto {
   @ClaveDePeriodo() periodo!: string;
 }
 
-class PeriodoParam {
+export class PeriodoParam {
   @ClaveDePeriodo() clave!: string;
 }
 
@@ -169,6 +169,16 @@ export class GruposController {
   @ApiErrores(400, 409)
   publicar(@Param() { clave }: PeriodoParam, @Actual() { usuario }: Autenticado) {
     return this.oferta.publicarOferta(usuario.id, clave);
+  }
+
+  @Roles('coordinacion')
+  @Post('periodos/:clave/inicio')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'CC-019: iniciar el curso; termina la inscripción y empieza la captura de calificaciones' })
+  @ApiResponse({ status: 200, type: PeriodoRespuesta })
+  @ApiErrores(400, 409)
+  iniciarCurso(@Param() { clave }: PeriodoParam, @Actual() { usuario }: Autenticado) {
+    return this.oferta.iniciarCurso(usuario.id, clave);
   }
 
   @Roles('profesor')

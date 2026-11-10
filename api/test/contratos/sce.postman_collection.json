@@ -439,6 +439,90 @@
             },
             "header": []
           }
+        },
+        {
+          "name": "GET /alumnos/actual/calificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000/calificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "5ce00000-0000-4000-8000-00000000ffff", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "5ce00000-0000-4000-8000-00000000ffff", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /calificaciones/5ce00000-0000-4000-8000-00000000ffff/correccion",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/calificaciones/5ce00000-0000-4000-8000-00000000ffff/correccion",
+              "host": ["{{base}}"],
+              "path": ["calificaciones", "5ce00000-0000-4000-8000-00000000ffff", "correccion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/inicio",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/inicio",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "inicio"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/cierre",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/cierre",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "cierre"]
+            },
+            "header": []
+          }
         }
       ]
     },
@@ -2672,7 +2756,430 @@
                   "pm.test('responde 200', () => pm.response.to.have.status(200));",
                   "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"periodoClave\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"periodoClave\": {\"type\": \"string\"}}}}));",
                   "pm.test('trae el grupo que coordinacion le asigno', () => pm.expect(pm.response.json().map((g) => g.id)).to.include(pm.collectionVariables.get('grupoOferta')));",
-                  "pm.test('no trae periodos cerrados', () => pm.expect(pm.response.json().map((g) => g.periodoClave)).to.not.include('2026B'));"
+                  "pm.test('no trae periodos cerrados', () => pm.expect(pm.response.json().map((g) => g.periodoClave)).to.not.include('2026A'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion del segundo profesor",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"profesor2@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('profesor2', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inscripcion en el periodo de la oferta",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"grupos\": [\n    {{grupoOferta}}\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('folioOferta', pm.response.json().folio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CC-019 iniciar el curso",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/inicio",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "inicio"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}));",
+                  "pm.test('queda en curso', () => pm.expect(pm.response.json().estado).to.eql('en_curso'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-01 el alumno no captura",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 1,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 10\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-004 captura del parcial 1",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 1,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 9.5\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"periodoClave\", \"estadoPeriodo\", \"parciales\", \"alumnos\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"integer\"}}, \"alumnos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"nombre\", \"calificaciones\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"calificaciones\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}}}}}}));",
+                  "const alumno = pm.response.json().alumnos.find((a) => a.folio === pm.collectionVariables.get('folioOferta'));",
+                  "pm.test('queda capturada', () => pm.expect(alumno.calificaciones.map((c) => c.valor)).to.eql([9.5]));",
+                  "pm.collectionVariables.set('calificacionOferta', alumno.calificaciones[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-CAL-01 el alumno consulta al momento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"historial\", \"materias\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"materias\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"periodoClave\", \"estadoPeriodo\", \"grupoClave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"parciales\", \"final\", \"acreditada\", \"vigente\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\"}, \"grupoClave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}, \"final\": {\"type\": [\"number\", \"null\"]}, \"acreditada\": {\"type\": [\"boolean\", \"null\"]}, \"vigente\": {\"type\": [\"boolean\", \"null\"]}}}}}}));",
+                  "const materia = pm.response.json().materias.find((x) => x.periodoClave === pm.collectionVariables.get('periodoOferta'));",
+                  "pm.test('ve el parcial recien capturado, sin final', () => { pm.expect(materia.parciales.map((p) => p.valor)).to.eql([9.5]); pm.expect(materia.final).to.eql(null); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-CAL-01 otro profesor no captura",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor2}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 1,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 5\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo GRUPO_NO_ASIGNADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('GRUPO_NO_ASIGNADO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-005 cierre del periodo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/cierre",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "cierre"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"estado\", \"alumnos\"], \"additionalProperties\": false, \"properties\": {\"clave\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"cerrado\"]}, \"alumnos\": {\"type\": \"integer\"}}}));",
+                  "pm.test('cierra y recalcula a su alumno', () => pm.expect(pm.response.json()).to.include({ estado: 'cerrado', alumnos: 1 }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-6 captura fuera de ventana",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 2,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 8\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo FUERA_DE_VENTANA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('FUERA_DE_VENTANA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Kardex por matricula",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"historial\", \"materias\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"materias\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"periodoClave\", \"estadoPeriodo\", \"grupoClave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"parciales\", \"final\", \"acreditada\", \"vigente\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\"}, \"grupoClave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}, \"final\": {\"type\": [\"number\", \"null\"]}, \"acreditada\": {\"type\": [\"boolean\", \"null\"]}, \"vigente\": {\"type\": [\"boolean\", \"null\"]}}}}}}));",
+                  "const materia = pm.response.json().materias.find((x) => x.periodoClave === pm.collectionVariables.get('periodoOferta'));",
+                  "pm.test('final y acreditada tras el cierre', () => pm.expect(materia).to.include({ final: 9.5, acreditada: true, vigente: true }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-17 correccion sin evidencia",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/calificaciones/{{calificacionOferta}}/correccion",
+              "host": ["{{base}}"],
+              "path": ["calificaciones", "{{calificacionOferta}}", "correccion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valor\": 9,\n  \"motivo\": \"Error de captura\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-17 correccion autorizada por coordinacion",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/calificaciones/{{calificacionOferta}}/correccion",
+              "host": ["{{base}}"],
+              "path": ["calificaciones", "{{calificacionOferta}}", "correccion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valor\": 9,\n  \"motivo\": \"Error de captura del profesor\",\n  \"evidencia\": \"Oficio sintetico de prueba\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"historial\", \"materias\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"materias\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"periodoClave\", \"estadoPeriodo\", \"grupoClave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"parciales\", \"final\", \"acreditada\", \"vigente\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\"}, \"grupoClave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}, \"final\": {\"type\": [\"number\", \"null\"]}, \"acreditada\": {\"type\": [\"boolean\", \"null\"]}, \"vigente\": {\"type\": [\"boolean\", \"null\"]}}}}}}));",
+                  "const materia = pm.response.json().materias.find((x) => x.periodoClave === pm.collectionVariables.get('periodoOferta'));",
+                  "pm.test('la final cambia', () => pm.expect(materia.final).to.eql(9));"
                 ]
               }
             }

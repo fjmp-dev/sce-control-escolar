@@ -1464,6 +1464,84 @@
         ]
       }
     },
+    "/periodos/{clave}/inicio": {
+      "post": {
+        "operationId": "GruposController_iniciarCurso",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "CC-019: iniciar el curso; termina la inscripción y empieza la captura de calificaciones",
+        "tags": [
+          "Oferta"
+        ]
+      }
+    },
     "/profesores/actual/grupos": {
       "get": {
         "operationId": "GruposController_asignados",
@@ -2490,6 +2568,485 @@
         "summary": "Inscripciones de un alumno (consulta, D-14)",
         "tags": [
           "Inscripciones"
+        ]
+      }
+    },
+    "/grupos/{id}/calificaciones": {
+      "get": {
+        "operationId": "CalificacionesController_delGrupo",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalificacionesDelGrupoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Inscritos del grupo con sus parciales; solo para el profesor del grupo",
+        "tags": [
+          "Calificaciones"
+        ]
+      },
+      "put": {
+        "operationId": "CalificacionesController_capturar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CapturaDeParcialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalificacionesDelGrupoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "RF-004: capturar un parcial; cada cambio queda en bitácora con su valor anterior",
+        "tags": [
+          "Calificaciones"
+        ]
+      }
+    },
+    "/alumnos/actual/calificaciones": {
+      "get": {
+        "operationId": "CalificacionesController_propias",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalificacionesDelAlumnoRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Calificaciones, kárdex e historial del alumno de la sesión, al momento de la captura",
+        "tags": [
+          "Calificaciones"
+        ]
+      }
+    },
+    "/alumnos/{matricula}/calificaciones": {
+      "get": {
+        "operationId": "CalificacionesController_deAlumno",
+        "parameters": [
+          {
+            "name": "matricula",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{7,10}$",
+              "example": "2420001",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalificacionesDelAlumnoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Calificaciones, kárdex e historial de un alumno",
+        "tags": [
+          "Calificaciones"
+        ]
+      }
+    },
+    "/periodos/{clave}/cierre": {
+      "post": {
+        "operationId": "CalificacionesController_cerrar",
+        "parameters": [
+          {
+            "name": "clave",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "pattern": "^\\d{4}[AB]$",
+              "example": "2027A",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CierreRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "RF-005: cerrar el periodo y recalcular promedio, créditos y avance (D-16)",
+        "tags": [
+          "Calificaciones"
+        ]
+      }
+    },
+    "/calificaciones/{id}/correccion": {
+      "put": {
+        "operationId": "CalificacionesController_corregir",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorreccionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalificacionesDelAlumnoRespuesta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorRespuesta"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "D-17: corregir una calificación de un periodo cerrado, con motivo y evidencia",
+        "tags": [
+          "Calificaciones"
         ]
       }
     }
@@ -3596,6 +4153,282 @@
         },
         "required": [
           "grupos"
+        ]
+      },
+      "ParcialRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Identificador de la calificación, para corregirla (D-17)"
+          },
+          "parcial": {
+            "type": "number"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "fechaCaptura": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "parcial",
+          "valor",
+          "fechaCaptura"
+        ]
+      },
+      "AlumnoDelGrupoRespuesta": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string"
+          },
+          "matricula": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "calificaciones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParcialRespuesta"
+            }
+          }
+        },
+        "required": [
+          "folio",
+          "matricula",
+          "nombre",
+          "calificaciones"
+        ]
+      },
+      "CalificacionesDelGrupoRespuesta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "clave": {
+            "type": "string"
+          },
+          "materiaClave": {
+            "type": "string"
+          },
+          "materiaNombre": {
+            "type": "string"
+          },
+          "periodoClave": {
+            "type": "string"
+          },
+          "estadoPeriodo": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "en_curso",
+              "cerrado"
+            ]
+          },
+          "parciales": {
+            "description": "Parciales con al menos una calificación",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "alumnos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlumnoDelGrupoRespuesta"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "clave",
+          "materiaClave",
+          "materiaNombre",
+          "periodoClave",
+          "estadoPeriodo",
+          "parciales",
+          "alumnos"
+        ]
+      },
+      "CapturaDto": {
+        "type": "object",
+        "properties": {
+          "folio": {
+            "type": "string",
+            "example": "INS-2026B-2420001"
+          },
+          "valor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "example": 8.5,
+            "description": "Hasta dos decimales"
+          }
+        },
+        "required": [
+          "folio",
+          "valor"
+        ]
+      },
+      "CapturaDeParcialDto": {
+        "type": "object",
+        "properties": {
+          "parcial": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "calificaciones": {
+            "minItems": 1,
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CapturaDto"
+            }
+          }
+        },
+        "required": [
+          "parcial",
+          "calificaciones"
+        ]
+      },
+      "MateriaCursadaRespuesta": {
+        "type": "object",
+        "properties": {
+          "periodoClave": {
+            "type": "string"
+          },
+          "estadoPeriodo": {
+            "type": "string",
+            "enum": [
+              "abierto",
+              "en_curso",
+              "cerrado"
+            ]
+          },
+          "grupoClave": {
+            "type": "string"
+          },
+          "materiaClave": {
+            "type": "string"
+          },
+          "materiaNombre": {
+            "type": "string"
+          },
+          "creditos": {
+            "type": "number"
+          },
+          "parciales": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParcialRespuesta"
+            }
+          },
+          "final": {
+            "type": "number",
+            "nullable": true,
+            "description": "Solo con el periodo cerrado (D-5)"
+          },
+          "acreditada": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "vigente": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Si es el intento que cuenta (D-5)"
+          }
+        },
+        "required": [
+          "periodoClave",
+          "estadoPeriodo",
+          "grupoClave",
+          "materiaClave",
+          "materiaNombre",
+          "creditos",
+          "parciales",
+          "final",
+          "acreditada",
+          "vigente"
+        ]
+      },
+      "CalificacionesDelAlumnoRespuesta": {
+        "type": "object",
+        "properties": {
+          "matricula": {
+            "type": "string"
+          },
+          "historial": {
+            "$ref": "#/components/schemas/HistorialRespuesta"
+          },
+          "materias": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MateriaCursadaRespuesta"
+            }
+          }
+        },
+        "required": [
+          "matricula",
+          "historial",
+          "materias"
+        ]
+      },
+      "CierreRespuesta": {
+        "type": "object",
+        "properties": {
+          "clave": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "cerrado"
+            ]
+          },
+          "alumnos": {
+            "type": "number",
+            "description": "Alumnos con el historial recalculado"
+          }
+        },
+        "required": [
+          "clave",
+          "estado",
+          "alumnos"
+        ]
+      },
+      "CorreccionDto": {
+        "type": "object",
+        "properties": {
+          "valor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "example": 8.5,
+            "description": "Hasta dos decimales"
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Por qué se corrige"
+          },
+          "evidencia": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Documento que lo respalda, por ejemplo el oficio del profesor"
+          }
+        },
+        "required": [
+          "valor",
+          "motivo",
+          "evidencia"
         ]
       }
     }

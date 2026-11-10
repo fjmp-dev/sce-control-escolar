@@ -114,12 +114,35 @@ export class OfertaService {
     });
   }
 
+  /** CC-019: termina la inscripción y empieza la ventana de captura (D-6). */
+  async iniciarCurso(autor: string, clave: string) {
+    return this.prisma.transaccion(async () => {
+      await this.oferta.bloquearPeriodo(clave);
+      const { estado } = (await this.periodo(clave)).iniciarCurso();
+      const iniciado = await this.oferta.cambiarEstado(clave, estado);
+      await this.bitacora.registrar({ autor, accion: 'iniciar_curso', entidad: `periodo:${clave}` });
+      return iniciado;
+    });
+  }
+
+  /**
+   * RF-005: en curso → cerrado, con el periodo bloqueado en exclusiva: las capturas en curso terminan antes.
+   * Debe llamarse en la transacción del cierre, que además valida D-16 y recalcula el historial.
+   */
+  async cerrarPeriodo(autor: string, clave: string) {
+    await this.oferta.bloquearPeriodo(clave);
+    const { estado } = (await this.periodo(clave)).cerrar();
+    const cerrado = await this.oferta.cambiarEstado(clave, estado);
+    await this.bitacora.registrar({ autor, accion: 'cerrar_periodo', entidad: `periodo:${clave}` });
+    return cerrado;
+  }
+
   /** D-6, provisional, y CC-012: se inscribe y se ajusta con el periodo abierto y la oferta publicada. */
   async periodoAbierto(clave: string): Promise<void> {
     (await this.periodo(clave)).exigirInscripcionAbierta();
   }
 
-  private async periodo(clave: string): Promise<Periodo> {
+  async periodo(clave: string): Promise<Periodo> {
     const fila = await this.oferta.periodo(clave);
     if (!fila) throw new ErrorDeNegocio('PERIODO_NO_ABIERTO', `No existe el periodo ${clave}. Elige uno de la lista.`);
     return new Periodo(

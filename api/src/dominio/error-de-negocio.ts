@@ -23,7 +23,14 @@ export type CodigoDeNegocio =
   | 'CUENTA_NO_PROFESOR'
   | 'SESIONES_TRASLAPADAS'
   | 'TRASLAPE_DE_AULA'
-  | 'TRASLAPE_DE_PROFESOR';
+  | 'TRASLAPE_DE_PROFESOR'
+  | 'PERIODO_NO_EN_CURSO'
+  | 'FUERA_DE_VENTANA'
+  | 'GRUPO_NO_ASIGNADO'
+  | 'ALUMNO_NO_INSCRITO'
+  | 'CAPTURA_DUPLICADA'
+  | 'CIERRE_INCOMPLETO'
+  | 'PERIODO_NO_CERRADO';
 
 /**
  * Error de una regla de negocio. El dominio no conoce HTTP: el gateway lo traduce (Tabla 28).

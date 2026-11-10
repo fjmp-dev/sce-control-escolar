@@ -34,6 +34,14 @@ export class AlumnoRepository {
     return this.prisma.cliente().alumno.findUnique({ where: { usuarioId }, select: EXPEDIENTE });
   }
 
+  historial(matricula: string) {
+    return this.prisma.cliente().historial.findUniqueOrThrow({ where: { matricula } });
+  }
+
+  async guardarHistorial(matricula: string, datos: { promedio: number; creditosAcumulados: number; avance: number }) {
+    await this.prisma.cliente().historial.update({ where: { matricula }, data: datos });
+  }
+
   /** El expediente nace con su historial y su cuenta, en cero (Fig. 8: uno a uno). */
   crear(datos: { matricula: string; nombre: string; facultadClave: string; fechaIngreso: Date; usuarioId?: string }) {
     return this.prisma.cliente().alumno.create({

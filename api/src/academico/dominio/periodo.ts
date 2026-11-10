@@ -5,7 +5,8 @@ export type EstadoPeriodo = 'abierto' | 'en_curso' | 'cerrado';
 
 /**
  * Fig. 3 y Fig. 7: coordinación abre el periodo, define la oferta y la publica. Solo con la oferta publicada
- * el alumno la consulta y se inscribe (CC-012). `cerrar()` llega con el cierre del periodo (RF-005, Batch 8).
+ * el alumno la consulta y se inscribe (CC-012). Al iniciar el curso termina la inscripción y empieza la captura
+ * (CC-019, D-6); al cerrarse, se recalcula el historial (RF-005).
  */
 export class Periodo {
   constructor(
@@ -39,6 +40,38 @@ export class Periodo {
       throw new ErrorDeNegocio('OFERTA_YA_PUBLICADA', `La oferta de ${this.clave} ya está publicada.`);
     }
     return new Periodo(this.clave, this.fechaInicio, this.fechaFin, this.estado, ahora);
+  }
+
+  /** CC-019: abierto → en curso, solo con la oferta publicada. */
+  iniciarCurso(): Periodo {
+    this.exigirAbierto();
+    if (!this.ofertaPublicadaEn) {
+      throw new ErrorDeNegocio(
+        'OFERTA_NO_PUBLICADA',
+        `La oferta de ${this.clave} no está publicada: nadie pudo inscribirse. Publícala antes de iniciar el curso.`,
+      );
+    }
+    return new Periodo(this.clave, this.fechaInicio, this.fechaFin, 'en_curso', this.ofertaPublicadaEn);
+  }
+
+  /** RF-005: en curso → cerrado. Que las calificaciones estén completas lo decide quien cierra (D-16). */
+  cerrar(): Periodo {
+    if (this.estado !== 'en_curso') {
+      throw new ErrorDeNegocio('PERIODO_NO_EN_CURSO', `El periodo ${this.clave} no está en curso: no se puede cerrar.`);
+    }
+    return new Periodo(this.clave, this.fechaInicio, this.fechaFin, 'cerrado', this.ofertaPublicadaEn);
+  }
+
+  /** D-6 y Tabla 15: la captura de calificaciones solo con el periodo en curso. */
+  exigirVentanaDeCaptura(): void {
+    if (this.estado !== 'en_curso') {
+      throw new ErrorDeNegocio(
+        'FUERA_DE_VENTANA',
+        this.estado === 'cerrado'
+          ? `El periodo ${this.clave} ya cerró. Una corrección la autoriza coordinación (D-17).`
+          : `El periodo ${this.clave} todavía no está en curso: la captura empieza cuando coordinación inicia el curso.`,
+      );
+    }
   }
 
   /** D-6 y CC-012: el alumno se inscribe y ajusta con el periodo abierto y la oferta publicada. */

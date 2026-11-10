@@ -46,6 +46,30 @@ export class InscripcionRepository {
       .inscripcion.findMany({ where: { matricula }, select: INSCRIPCION, orderBy: { periodoClave: 'desc' } });
   }
 
+  /** RF-004: los inscritos del grupo con su nombre, para la captura. Rechazos y borradores no cuentan. */
+  async inscritosDelGrupo(grupoId: number, estados: readonly string[] = ['confirmada', 'cerrada']) {
+    const filas = await this.prisma.cliente().inscripcionGrupo.findMany({
+      where: { grupoId: BigInt(grupoId), inscripcion: { estado: { in: [...estados] } } },
+      select: { inscripcion: { select: { folio: true, matricula: true, alumno: { select: { nombre: true } } } } },
+      orderBy: { inscripcion: { matricula: 'asc' } },
+    });
+    return filas.map(({ inscripcion: i }) => ({ folio: i.folio, matricula: i.matricula, nombre: i.alumno.nombre }));
+  }
+
+  /** RF-005: las cargas confirmadas del periodo, que el cierre cierra. */
+  confirmadasDelPeriodo(periodoClave: string) {
+    return this.prisma
+      .cliente()
+      .inscripcion.findMany({ where: { periodoClave, estado: 'confirmada' }, select: INSCRIPCION });
+  }
+
+  /** Fig. 6, `Inscripcion.cerrar()`: solo una confirmada pasa a cerrada. */
+  async cerrarConfirmadas(periodoClave: string) {
+    await this.prisma
+      .cliente()
+      .inscripcion.updateMany({ where: { periodoClave, estado: 'confirmada' }, data: { estado: 'cerrada' } });
+  }
+
   /** Guarda el estado y cambia la carga: borra los grupos que salen y agrega los que entran, sin tocar los demás. */
   async guardar(
     datos: { folio: string; matricula: string; periodoClave: string; estado: string; motivoRechazo: string | null },

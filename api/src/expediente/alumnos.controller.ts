@@ -12,7 +12,7 @@ class BusquedaDeAlumnoDto {
   @IsOptional() @Texto(100) buscar?: string;
 }
 
-class MatriculaParam {
+export class MatriculaParam {
   @Matricula() matricula!: string;
 }
 
@@ -43,7 +43,7 @@ class AlumnoResumen {
   @ApiProperty({ enum: ESTATUS }) estatus!: string;
 }
 
-class HistorialRespuesta {
+export class HistorialRespuesta {
   @ApiProperty() promedio!: number;
   @ApiProperty() creditosAcumulados!: number;
   @ApiProperty() avance!: number;

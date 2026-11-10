@@ -59,6 +59,7 @@ class Periodo {
   + oferta_publicada_en : timestamp
   + abrir() : void
   + publicarOferta() : void
+  + iniciarCurso() : void
   + cerrar() : void
 }
 

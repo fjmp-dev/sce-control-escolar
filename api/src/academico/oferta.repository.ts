@@ -39,6 +39,10 @@ export class OfertaRepository {
     await this.prisma.cliente().$queryRaw`SELECT clave FROM periodo WHERE clave = ${clave} FOR UPDATE`;
   }
 
+  cambiarEstado(clave: string, estado: string) {
+    return this.prisma.cliente().periodo.update({ where: { clave }, data: { estado } });
+  }
+
   publicar(clave: string, ofertaPublicadaEn: Date) {
     return this.prisma.cliente().periodo.update({ where: { clave }, data: { ofertaPublicadaEn } });
   }

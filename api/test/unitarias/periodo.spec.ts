@@ -61,3 +61,40 @@ describe('Inscripcion abierta: tabla de decision de estado y publicacion (D-6, C
     expect(codigo(() => periodo('en_curso').exigirAbierto())).toBe('PERIODO_NO_ABIERTO');
   });
 });
+
+describe('Ciclo del periodo: iniciar curso (CC-019), ventana de captura (D-6) y cierre (RF-005)', () => {
+  const publicada = new Date('2026-12-01T15:00:00Z');
+
+  it('abierto y publicado pasa a en curso; en curso pasa a cerrado', () => {
+    const enCurso = periodo('abierto', publicada).iniciarCurso();
+    expect(enCurso.estado).toBe('en_curso');
+    expect(enCurso.cerrar().estado).toBe('cerrado');
+  });
+
+  it.each([
+    ['abierto sin publicar', periodo('abierto'), 'OFERTA_NO_PUBLICADA'],
+    ['en curso', periodo('en_curso', publicada), 'PERIODO_NO_ABIERTO'],
+    ['cerrado', periodo('cerrado', publicada), 'PERIODO_NO_ABIERTO'],
+  ])('no inicia el curso de un periodo %s', (_, p, esperado) => {
+    expect(codigo(() => p.iniciarCurso())).toBe(esperado);
+  });
+
+  it.each([
+    ['abierto', periodo('abierto', publicada)],
+    ['cerrado', periodo('cerrado', publicada)],
+  ])('no cierra un periodo %s', (_, p) => {
+    expect(codigo(() => p.cerrar())).toBe('PERIODO_NO_EN_CURSO');
+  });
+
+  it.each([
+    ['abierto', 'FUERA_DE_VENTANA'],
+    ['en_curso', undefined],
+    ['cerrado', 'FUERA_DE_VENTANA'],
+  ] as const)('captura con el periodo %s: %s', (estado, esperado) => {
+    expect(codigo(() => periodo(estado, publicada).exigirVentanaDeCaptura())).toBe(esperado);
+  });
+
+  it('cerrado, la causa remite a la correccion de coordinacion (D-17)', () => {
+    expect(() => periodo('cerrado', publicada).exigirVentanaDeCaptura()).toThrow(/corrección la autoriza coordinación/);
+  });
+});

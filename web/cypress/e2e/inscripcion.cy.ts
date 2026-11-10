@@ -1,5 +1,5 @@
 // CF-INS-01 y CF-INS-02 (Tabla 43, Cypress), CF-HOR-01 en el portal (aviso antes de confirmar) y D-14. Con video y capturas.
-// Usa el seed: 2420001 acredito Programacion I en 2026B; 2420002 tiene adeudo; ISW-702-A no tiene lugares.
+// Usa el seed: 2420001 acredito Programacion I en 2026A y cursa 2026B; 2420002 tiene adeudo; ISW-702-A no tiene lugares.
 const oferta = (grupo: string) => cy.contains('label', grupo).find('input');
 const estado = (texto: string) => cy.contains('.estado-inscripcion', texto);
 
@@ -73,21 +73,28 @@ describe('Inscripcion', () => {
       .should('contain', 'ISW-702 · Ética profesional')
       .and('not.contain', 'ISW-701');
 
-    // 3.4, impartición: su horario trae las sesiones de la carga ajustada, en orden de día y hora.
+    // 3.4, impartición: su horario trae las sesiones de la carga ajustada, en orden de día y hora. También cursa 2026B.
+    cy.contains('h2', 'Periodo 2026B');
     cy.visit('/mi-horario');
     cy.contains('h2', 'Periodo 2027A');
-    cy.get('main table tbody tr').should('have.length', 3);
-    cy.get('main table tbody tr')
+    cy.contains('section', 'Periodo 2027A').find('table tbody tr').should('have.length', 3);
+    cy.contains('section', 'Periodo 2027A')
+      .find('table tbody tr')
       .eq(0)
       .should('contain', 'Lunes')
       .and('contain', '07:00 a 09:00')
       .and('contain', 'ISW-201-A');
-    cy.get('main table tbody tr')
+    cy.contains('section', 'Periodo 2027A')
+      .find('table tbody tr')
       .eq(1)
       .should('contain', 'Lunes')
       .and('contain', '09:00 a 11:00')
       .and('contain', 'ISW-702-B');
-    cy.get('main table tbody tr').eq(2).should('contain', 'Miércoles').and('contain', 'ISW-201-A');
+    cy.contains('section', 'Periodo 2027A')
+      .find('table tbody tr')
+      .eq(2)
+      .should('contain', 'Miércoles')
+      .and('contain', 'ISW-201-A');
     cy.screenshot('alumno-mi-horario', { capture: 'fullPage' });
   });
 
@@ -107,7 +114,7 @@ describe('Inscripcion', () => {
     cy.iniciar('control.escolar@sce.test');
     cy.visit('/expedientes/2420001');
     cy.contains('h2', 'Inscripciones');
-    cy.contains('tr', 'INS-2026B-2420001').should('contain', 'Cerrada').and('contain', 'ISW-101 grupo ISW-101-A');
+    cy.contains('tr', 'INS-2026A-2420001').should('contain', 'Cerrada').and('contain', 'ISW-101 grupo ISW-101-A');
     cy.visit('/inscripcion');
     cy.location('pathname').should('eq', '/sin-permiso');
   });

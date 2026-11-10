@@ -143,7 +143,7 @@ describe('Definir grupos (RF-003, D-13)', () => {
   });
 
   it('periodo cerrado o inexistente, materia inexistente y clave repetida se rechazan', async () => {
-    const cerrado = await definir('2026B', 'G-9', [[1, '07:00', '09:00', 'B1']]).expect(409);
+    const cerrado = await definir('2026A', 'G-9', [[1, '07:00', '09:00', 'B1']]).expect(409);
     expect(cerrado.body.codigo).toBe('PERIODO_NO_ABIERTO');
     expect((await definir('2099B', 'G-9', [[1, '07:00', '09:00', 'B1']]).expect(409)).body.codigo).toBe(
       'PERIODO_NO_ABIERTO',
@@ -253,7 +253,7 @@ describe('Publicar la oferta (CC-012) y consultarla segun el rol (Tabla 4)', () 
   });
 
   it('no se publica la oferta de un periodo cerrado ni de uno inexistente', async () => {
-    const cerrado = await http().post('/periodos/2026B/publicacion').set('Authorization', coordinacion).expect(409);
+    const cerrado = await http().post('/periodos/2026A/publicacion').set('Authorization', coordinacion).expect(409);
     expect(cerrado.body.codigo).toBe('PERIODO_NO_ABIERTO');
     await http().post('/periodos/2099B/publicacion').set('Authorization', coordinacion).expect(409);
     await http().post('/periodos/NO-EXISTE/publicacion').set('Authorization', coordinacion).expect(400);
@@ -271,11 +271,11 @@ describe('Publicar la oferta (CC-012) y consultarla segun el rol (Tabla 4)', () 
     expect(profesor).toBe('profesor2@sce.test');
     expect(res.body).toContainEqual({ ...sinProfesor, periodoClave: clave });
     expect(res.body.every((g: { clave: string }) => g.clave !== 'P-2')).toBe(true);
-    expect(res.body.every((g: { periodoClave: string }) => g.periodoClave !== '2026B')).toBe(true);
+    expect(res.body.every((g: { periodoClave: string }) => g.periodoClave !== '2026A')).toBe(true);
 
     const titular = await entrar(app, 'profesor@sce.test');
     const delTitular = await http().get('/profesores/actual/grupos').set('Authorization', titular).expect(200);
-    expect(delTitular.body.map((g: { periodoClave: string }) => g.periodoClave)).not.toContain('2026B');
+    expect(delTitular.body.map((g: { periodoClave: string }) => g.periodoClave)).not.toContain('2026A');
     expect(delTitular.body.map((g: { clave: string }) => g.clave)).toContain('P-2');
   });
 });

@@ -1,6 +1,6 @@
 """Calidad de datos del expediente y la inscripcion con Great Expectations (Tabla 39, Tabla 42 y AU-22).
 
-Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01, 04 y 05,
+Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01, 02, 04 y 05,
 ocupacion de grupos y CS-SEG-06 en plantel) y con expectativas de unicidad, completitud y formato. Escribe Data Docs en HTML y un resumen en JSON.
 Falla si alguna expectativa no se cumple, si no evaluo nada o si la tabla alumno esta vacia (una tabla vacia lo aprueba todo).
 Uso: python calidad-datos.py <url-postgres> <dir-de-consultas> <dir-de-salida>
@@ -65,7 +65,21 @@ validaciones = [
             gxe.UnexpectedRowsExpectation(
                 unexpected_rows_query=consulta("cd-dat-04.sql"),
                 description="CD-DAT-04: calificaciones sin grupo, periodo o profesor",
-            )
+            ),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cs-seg-06-calificacion.sql"),
+                description="CS-SEG-06: cada calificacion con su asiento, del profesor del grupo o de una correccion",
+            ),
+        ],
+    ),
+    suite(
+        "historial",
+        "historial",
+        [
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cd-dat-02.sql"),
+                description="CD-DAT-02: el historial coincide con el recalculo independiente de las calificaciones",
+            ),
         ],
     ),
     suite(
