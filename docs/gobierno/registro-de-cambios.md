@@ -1,7 +1,7 @@
 # Registro de cambios — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 16 (gestión de cambios) y 12.4 (control de cambios a requisitos).
-**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 10 de noviembre de 2026 (Batch 7).
+**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 10 de noviembre de 2026 (Batch 7 y CC-018).
 
 Cada cambio tiene un issue en GitHub con la etiqueta `cambio`, con la solicitud, el análisis de impacto y la aprobación con fecha y responsable. Desde CC-007, la solicitud también está versionada en `docs/gobierno/cambios/`. Este archivo es el índice que se versiona junto con el código, para que el auditor lo encuentre sin entrar al tablero.
 
@@ -30,6 +30,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-015 | [#40](https://github.com/fjmp-dev/sce-control-escolar/issues/40) | Usuario técnico sin rol | Mayor o Must | PO, QA y Seguridad | Batch 2 | Solicitado; pendiente de aprobación. Figuras ya actualizadas |
 | CC-016 | Sin issue: `cambios/CC-016.md` | Operación `cambiarEstatus` del alumno en la Fig. 3 | Documental | PO y QA | Batch 4 | Solicitado; pendiente de aprobación. Figura ya actualizada |
 | CC-017 | Sin issue: `cambios/CC-017.md` | Operaciones de la Fig. 6 en la clase `Inscripcion` de la Fig. 3 | Documental | PO y QA | Batch 5 | Solicitado; pendiente de aprobación. Figura ya actualizada |
+| CC-018 | Sin issue: `cambios/CC-018.md` | Staging efímero en GitHub Actions, sin servidores rentados; túnel gratuito solo cuando haga falta URL pública | Normal | PO y QA | Batch 6 | Implementado en el Batch 6; pendiente de aprobación |
 
 Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15)). Ninguno modifica un requisito RF o RNF, la política de calidad ni el alcance de la primera versión.
 
@@ -43,7 +44,7 @@ Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://gith
 
 **Implementación del 8 de noviembre de 2026 (Batch 5, [#45](https://github.com/fjmp-dev/sce-control-escolar/issues/45)):** inscripción (RF-002, RNF-USU-001) sin cambios al modelo de datos. CC-013 se implementa: el rechazo se guarda con su motivo y su carga en una transacción aparte. CC-017 añade a la Fig. 3 las transiciones de la Fig. 6. De CC-012 solo se usa la oferta mínima en consulta: `oferta_publicada_en` y la publicación llegan en el Batch 7, así que por ahora el alumno ve todos los grupos del periodo abierto. **El código de CC-013, Mayor, no se fusiona sin su aprobación,** y el batch sigue en la fase 2 sin el acta de la fase 1 (NC-009).
 
-**Implementación del 8 de noviembre de 2026 (Batch 6, [#46](https://github.com/fjmp-dev/sce-control-escolar/issues/46)):** staging con la topología de la Fig. 9, sin cambios al modelo de datos ni a las figuras. CC-005 se activa en staging: pgAudit, SCRAM y conexiones solo por TLS. `db/pgaudit.sql` fallaba en PostgreSQL 16 y se corrigió. El proveedor se elige con la ficha de la sección 33, y cambiarlo después es un cambio mayor.
+**Implementación del 8 de noviembre de 2026 (Batch 6, [#46](https://github.com/fjmp-dev/sce-control-escolar/issues/46)):** staging con la topología de la Fig. 9, sin cambios al modelo de datos ni a las figuras. CC-005 se activa en staging: pgAudit, SCRAM y conexiones solo por TLS. `db/pgaudit.sql` fallaba en PostgreSQL 16 y se corrigió. El 10 de noviembre de 2026, FJMP decidió no rentar servidores (CC-018): la Tabla 30 no los exige para staging, que pasa a armarse en GitHub Actions en cada despliegue, con la misma topología y la misma verificación.
 
 **Implementación del 10 de noviembre de 2026 (Batch 7, [#47](https://github.com/fjmp-dev/sce-control-escolar/issues/47)):** oferta y horarios (RF-003). CC-012 se implementa con la migración `20261110120000_oferta_publicada`, una columna opcional: el periodo se abre sin oferta, coordinación define los grupos y la publica, y solo entonces el alumno la ve y se inscribe. CC-014 se amplía con la dependencia de académico hacia identidad para el profesor del grupo (Fig. 2). D-13 se aplica como provisional. `Periodo.cerrar()` de la Fig. 3 llega con el cierre del Batch 8, que es su único uso. **El batch abre la fase 3 sin las actas de las fases 1 y 2 firmadas:** NC-010.
 
@@ -74,3 +75,4 @@ Se llena al aprobar cada cambio. Quien aprueba no es quien solicitó el cambio (
 | CC-015 | | | | | |
 | CC-016 | | | | No aplica | |
 | CC-017 | | | | No aplica | |
+| CC-018 | | | | No aplica | |

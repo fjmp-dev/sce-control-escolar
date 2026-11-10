@@ -10,7 +10,7 @@ coverage/
 sonar-reporte/
 .scannerwork/
 reportes/
-.ensayo-staging/
+.staging/
 gitleaks.json
 .next/
 next-env.d.ts
@@ -19,4 +19,4 @@ web/coverage/
 web/cypress/videos/
 web/cypress/screenshots/
 web/cypress/reportes/
-.ensayo-staging/
+.staging/

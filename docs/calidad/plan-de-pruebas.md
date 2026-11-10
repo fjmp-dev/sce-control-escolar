@@ -87,7 +87,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
 | Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
 | Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). En staging, escaneo pasivo del portal sobre HTTPS en cada despliegue (`scripts/verificar-staging.sh`); el activo se queda en la etapa 5, sobre el mismo digest |
-| Cifrado en tránsito | testssl.sh | — | 3.2 | **En uso** en cada despliegue a staging y en el ensayo de la etapa 7: ningún protocolo anterior a TLS 1.2 (Tabla 38) |
+| Cifrado en tránsito | testssl.sh | — | 3.2 | **En uso** en cada staging, de la etapa 7 y de la 8: ningún protocolo anterior a TLS 1.2 (Tabla 38) |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
 | Accesibilidad | axe y Lighthouse | 4 / 11 | axe-core 4.14, Lighthouse 13.6 | **En uso** en la etapa 7 (`docs/calidad/accesibilidad.md`). NVDA: Batch 12 |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
@@ -104,8 +104,8 @@ Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de av
 | 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30); **Great Expectations** sobre la base de Compose después de Newman (Tabla 42) | Casos CI Must en verde y cero expectativas incumplidas | `cobertura-integracion`, `newman`, `calidad-datos` | Batch 1; Newman en el Batch 2; Great Expectations en el Batch 4 |
 | 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx y base intacta | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2 |
 | 6 Empaquetado | Imágenes `sce-api` y `sce-portal`, registradas en GHCR y firmadas con cosign, sin llaves (`scripts/publicar-imagenes.sh`). **Solo al integrar;** en un pull request se omite | Firma verificada | `imagenes` | Batch 3 |
-| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe y Lighthouse. Desde el Batch 6, también el **ensayo de staging** con las mismas imágenes (`scripts/ensayo-staging.sh`). En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde | `despliegue-pruebas`: registro, video, capturas e informes | Batch 3 |
-| 8 Staging y piloto | Manual (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra. Despliega por digest las imágenes firmadas por la etapa 6 y corre el humo del Anexo D | Autorización de PO y QA: regla de revisores del ambiente `staging`, sin autoaprobación | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
+| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe y Lighthouse. Desde el Batch 6, también **staging efímero** con las mismas imágenes (`scripts/staging.sh`, CC-018). En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde | `despliegue-pruebas`: registro, video, capturas e informes | Batch 3 |
+| 8 Staging y piloto | Manual (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra. Arma staging efímero en el runner (CC-018), despliega por digest las imágenes firmadas por la etapa 6, corre el humo del Anexo D y lo destruye | Autorización de PO y QA: regla de revisores del ambiente `staging`, sin autoaprobación | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
 
 Los artefactos caducan a los 90 días; al cerrar cada fase se copian al repositorio de evidencias (Tabla 62).
 
@@ -145,7 +145,7 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 ### 4.5 Staging
 
-Configuración y procedimiento: `docs/gobierno/inventario-de-ambientes.md`. El humo de cada despliegue (`scripts/verificar-staging.sh`) cubre lo automatizable del Anexo D:
+Staging es efímero (CC-018): `scripts/staging.sh` lo arma en el runner con la topología de la Fig. 9, lo verifica y lo destruye. Configuración y procedimiento: `docs/gobierno/inventario-de-ambientes.md`. El humo de cada despliegue (`scripts/verificar-staging.sh`) cubre lo automatizable del Anexo D:
 - salud e inicio de sesión por rol;
 - Newman;
 - TLS 1.2+, redirección a HTTPS, HSTS y ZAP pasivo;
@@ -153,7 +153,7 @@ Configuración y procedimiento: `docs/gobierno/inventario-de-ambientes.md`. El h
 - SCRAM, TLS y pgAudit en la base;
 - revisión de accesos.
 
-**Comprobado que fallan.** Con el ambiente del ensayo arriba, cada verificación nueva cayó con su propio mensaje ante un mutante: una cuenta `@gmail.com`, un rol con contraseña MD5, nginx sin HSTS y nginx con TLS 1.1. El de TLS 1.1 necesitó además un cifrado CBC, porque sin él OpenSSL no ofrece ese protocolo aunque se pida. Los rechazos de la base (otra dirección, sin TLS, TLS 1.1 y superusuario por red) son pruebas negativas del propio ensayo.
+**Comprobado que fallan.** Con staging arriba, cada verificación nueva cayó con su propio mensaje ante un mutante: una cuenta `@gmail.com`, un rol con contraseña MD5, nginx sin HSTS y nginx con TLS 1.1. El de TLS 1.1 necesitó además un cifrado CBC, porque sin él OpenSSL no ofrece ese protocolo aunque se pida. Los rechazos de la base (otra dirección, sin TLS, TLS 1.1 y superusuario por red) son pruebas negativas del propio `staging.sh`.
 
 ---
 

@@ -1,7 +1,8 @@
 # Etapa 8 de la Tabla 53: despliegue manual a staging, solo con etiqueta SemVer y acta, con autorizacion de PO y QA
 # (sec. 31.2). La autorizacion es la regla de revisores del ambiente "staging" de GitHub: el job no empieza hasta que lo
 # aprueban, y quien lo lanza no puede aprobarlo. Despliega las imagenes que firmo la etapa 6 para el commit de la
-# etiqueta, sin reconstruirlas: el mismo digest ira a piloto (Tabla 30). Secretos y procedimiento:
+# etiqueta, sin reconstruirlas: el mismo digest ira a piloto (Tabla 30). Staging es efimero (CC-018): se arma en este
+# runner con la topologia de la Fig. 9, se verifica y se destruye; la evidencia queda como artefacto. Procedimiento:
 # docs/gobierno/inventario-de-ambientes.md.
 name: 8 Despliegue a staging
 
@@ -26,16 +27,13 @@ jobs:
   desplegar:
     name: 8 Despliegue a staging
     runs-on: ubuntu-latest
-    environment:
-      name: staging
-      url: https://${{ vars.DOMINIO }}
+    environment: staging
     permissions:
       contents: read
       packages: write # agrega la etiqueta SemVer a las imagenes ya firmadas
     env:
       ETIQUETA: ${{ inputs.etiqueta }}
       ACTA: ${{ inputs.acta }}
-      DOMINIO: ${{ vars.DOMINIO }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -68,52 +66,11 @@ jobs:
             docker buildx imagetools create --tag "$ref:$ETIQUETA" "$ref@$digest"
             echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
           done
-      - name: Acceso SSH a los dos servidores, con huellas fijas
-        env:
-          LLAVE: ${{ secrets.STAGING_SSH_KEY }}
-          HUELLAS: ${{ secrets.STAGING_SSH_KNOWN_HOSTS }}
-          APP_IP: ${{ vars.STAGING_APP_IP }}
-          DB_IP: ${{ vars.STAGING_DB_IP }}
-        run: |
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "$LLAVE" > ~/.ssh/staging
-          chmod 600 ~/.ssh/staging
-          printf '%s\n' "$HUELLAS" > ~/.ssh/known_hosts
-          cat > ~/.ssh/config <<EOF
-          Host sce-app
-            HostName $APP_IP
-          Host sce-db
-            HostName $DB_IP
-            ProxyJump sce-app
-          Host *
-            User sce
-            IdentityFile ~/.ssh/staging
-            StrictHostKeyChecking yes
-          EOF
-      - name: El servidor descarga del registro con el token de esta corrida, que caduca al terminar
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: printf '%s' "$TOKEN" | ssh sce-app docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
-      - name: Despliegue con respaldo previo, migraciones, pgAudit y datos sinteticos
-        env:
-          EN_APP: ssh sce-app
-          EN_DB: ssh sce-db
-          DIR: /opt/sce
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA }}
-        run: scripts/desplegar-staging.sh
-      - name: Humo en staging (Anexo D; puerta 2 de la sec. 20.1)
-        env:
-          EN_DB: ssh sce-db
-          CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA }}
-        run: scripts/verificar-staging.sh "https://$DOMINIO"
-      - name: Cerrar la sesion del registro en el servidor
-        if: always()
-        run: ssh sce-app docker logout ghcr.io || true
+      - name: Staging con la topologia de la Fig. 9, despliegue y humo del Anexo D (puerta 2 de la sec. 20.1)
+        run: scripts/staging.sh "$IMAGEN_API" "$IMAGEN_PORTAL"
       - name: Registro del despliegue (31.2)
         if: always()
-        run: cat reportes/staging/despliegue.md reportes/staging/humo.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+        run: cat reportes/staging/despliegue.md reportes/staging/rechazos.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

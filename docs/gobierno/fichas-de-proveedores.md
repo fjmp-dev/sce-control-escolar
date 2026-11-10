@@ -1,6 +1,6 @@
 # Fichas de proveedores — SCE
 
-**Fuente:** SCE-MC-001 v2.0, sección 33 (Tabla 55). **Actualizado:** 8 de noviembre de 2026.
+**Fuente:** SCE-MC-001 v2.0, sección 33 (Tabla 55). **Actualizado:** 10 de noviembre de 2026 (CC-018).
 
 Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un proveedor crítico es un cambio mayor y exige análisis de impacto.
 
@@ -8,12 +8,12 @@ Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un pro
 
 | Campo | Valor |
 |---|---|
-| Uso | Repositorio, pull requests, issues, tablero y automatización con GitHub Actions |
+| Uso | Repositorio, pull requests, issues, tablero y automatización con GitHub Actions. Desde CC-018, también **staging**: la etapa 8 lo arma en un runner, lo verifica y lo destruye |
 | Riesgo asociado | RK-07 |
 | Controles aplicados | Protección de `main` y de la rama de integración (pull request, checks de CI y una aprobación, también para administradores); secret scanning con push protection; Gitleaks en CI; gestor de secretos de Actions |
-| Acceso | `fjmp-dev` como propietario. La invitación a `samuel0rtiz` del 23 de octubre **caducó** sin aceptarse (GitHub las vence a los 7 días): hay que reenviarla |
+| Acceso | `fjmp-dev` como propietario. La invitación a `samuel0rtiz` del 23 de octubre caducó sin aceptarse (GitHub las vence a los 7 días); se reenvió el 10 de noviembre y vence el 17 |
 | Visibilidad | Repositorio público, con acceso de lectura para el equipo auditor |
-| Evaluación | Adecuado para desarrollo y pruebas. Los artefactos de Actions se conservan 90 días, menos que la Tabla 62: se atiende con `docs/evidencias/` |
+| Evaluación | Adecuado para desarrollo, pruebas y staging. Los runners de repositorios públicos tienen 4 CPU y 16 GB, sin costo. Los artefactos de Actions se conservan 90 días, menos que la Tabla 62: se atiende con `docs/evidencias/` |
 | Decisión | Aprobar, pendiente de firma del Product Owner |
 
 ## Bibliotecas de npm
@@ -31,29 +31,38 @@ Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un pro
 
 **Pendiente.** Se llena antes del Batch 9. Controles exigidos por la Tabla 55: sandbox en ambientes no productivos, convenio y credenciales solo en piloto, idempotencia y conciliación diaria. Riesgos: RK-02 y RK-08.
 
-## Proveedor de infraestructura
+## Proveedor de infraestructura para staging
 
-**Evaluado el 8 de noviembre de 2026 (Batch 6). Decisión pendiente de FJMP y firma del Product Owner.**
+**Decisión del 10 de noviembre de 2026 (CC-018): no se renta infraestructura.** FJMP decidió no pagar servidores para un proyecto académico. La Tabla 30 pide para staging la etiqueta candidata, datos anonimizados, HTTPS, humo y carga, y nada de eso exige un servidor persistente. Staging corre en GitHub Actions (ficha de GitHub), con la topología de la Fig. 9, y se destruye al terminar.
 
 | Campo | Valor |
 |---|---|
-| Uso | Staging (Tabla 30), y piloto si la institución no aporta servidores |
+| Uso | Staging (Tabla 30). El piloto lo aloja la institución (Batch 14) |
 | Riesgo asociado | RK-04 |
-| Requisitos del manual | Dos servidores con red privada (Fig. 9). nginx con TLS 1.2+. PostgreSQL 16 con pgAudit y SCRAM (CC-005). Dimensionamiento equivalente al piloto para la carga (sec. 26 y 24). URL pública para el webhook de Mercado Pago (Fig. 5) |
-| Propuesto | **Hetzner Cloud**, dos servidores CX23 (2 vCPU, 4 GB) en Alemania o Finlandia, que suben a CX33 (4 vCPU, 8 GB) para el Batch 13. Red privada, y cortafuegos sin costo |
-| Costo | Entre 5.99 € y 8.99 € por servidor al mes, sin IVA. Respaldos automáticos desde 1.20 € por servidor. Dominio, entre 10 y 15 USD al año. Precios del sitio de Hetzner al 8 de noviembre de 2026. La página marca los planes CX como no disponibles por ahora; la alternativa es CPX22, a 19.99 € |
-| Controles de la Tabla 55 | **Inventario:** `inventario-de-ambientes.md`. **Respaldos:** previo a cada despliegue; el diario cifrado es del Batch 13. **HTTPS:** Let's Encrypt, TLS 1.2+ comprobado en cada despliegue. **Responsables:** FJMP como DevOps; SJOM aprueba cada despliegue |
-| Datos | Solo sintéticos (RK-09). La ubicación en la Unión Europea no afecta a staging. Para el piloto, con datos reales, la institución decide dónde se alojan (Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados, sección 18) |
-| Salida | Todo corre en Docker Compose sobre Linux: cambiar de proveedor es repetir la sección 4 del inventario. Aun así, la sección 33 lo trata como cambio mayor |
+| Controles de la Tabla 55 | **Inventario:** `inventario-de-ambientes.md`. **Respaldos:** previo a cada despliegue; cifrado y restauración se ensayan en el Batch 13. **HTTPS:** TLS 1.2+ comprobado en cada despliegue, con certificado autofirmado. **Responsables:** FJMP como DevOps; SJOM aprueba cada despliegue |
+| Datos | Solo sintéticos (RK-09) |
+| Costo | Ninguno |
 
 **Alternativas descartadas:**
 
 | Opción | Por qué no |
 |---|---|
-| PaaS (Render, Railway y similares) | Sin control de nginx ni de PostgreSQL: ni TLS configurable, ni pgAudit, ni servidores separados. Staging dejaría de ser un ensayo del piloto |
-| Oracle Cloud Always Free (Querétaro) | En 2026 se redujo a 2 OCPU y 12 GB ARM, con poca capacidad disponible. Recupera las instancias que pasan una semana sin uso, y staging pasa mucho tiempo así (RK-04) |
+| Hetzner Cloud, dos servidores | Unos 12 € al mes más el dominio. Cumplía la Fig. 9, pero el manual no exige servidores persistentes para staging |
+| Oracle Cloud Always Free | Gratis, pero en 2026 se redujo a 2 OCPU y 12 GB ARM, con poca capacidad disponible. Recupera las instancias que pasan una semana sin uso, y staging pasa mucho tiempo así (RK-04). Exigía imágenes ARM |
+| PaaS (Render, Railway y similares) | Sin control de nginx ni de PostgreSQL: ni TLS configurable, ni pgAudit, ni servidores separados |
+| Cloudflare Workers o Containers | No corre PostgreSQL con pgAudit como servidor aparte. Los contenedores exigen el plan de pago |
 | Azure for Students | 100 USD al año sin tarjeta; dos máquinas virtuales lo agotan en unos tres meses |
 | DigitalOcean con el GitHub Student Pack | El crédito terminó en julio de 2026 |
+
+## Cloudflare (túnel)
+
+| Campo | Valor |
+|---|---|
+| Uso | URL pública temporal hacia el ambiente, solo mientras dura una prueba que la necesita: webhook de Mercado Pago en sandbox (Batch 9) y sesiones de usabilidad (Batch 13). CC-018 |
+| Riesgo asociado | Exponer un ambiente con datos sintéticos mientras el túnel está abierto |
+| Controles | Solo datos sintéticos; el túnel se cierra al terminar la prueba; toda ruta, salvo `/salud`, el inicio de sesión y el webhook firmado, pide sesión |
+| Costo | Ninguno (`cloudflared` con túnel rápido o cuenta gratuita) |
+| Decisión | Se evalúa a fondo en el Batch 9, antes de usarlo |
 
 ## Aprobación
 

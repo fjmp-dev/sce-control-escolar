@@ -354,8 +354,8 @@ jobs:
       - name: Lighthouse (Tabla 42, 28.2)
         if: always()
         run: scripts/lighthouse.sh reportes/lighthouse
-      - name: Ensayo de staging con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit y humo del Anexo D (Batch 6)
-        run: scripts/ensayo-staging.sh "${IMAGEN_API:-sce-api:local}" "${IMAGEN_PORTAL:-sce-portal:local}"
+      - name: Staging efimero con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit y humo del Anexo D (CC-018)
+        run: scripts/staging.sh "${IMAGEN_API:-sce-api:local}" "${IMAGEN_PORTAL:-sce-portal:local}"
       - name: Registro del despliegue (31.2)
         if: always()
         run: |

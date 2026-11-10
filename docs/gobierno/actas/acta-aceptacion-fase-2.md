@@ -46,8 +46,8 @@ Se llena con la corrida de la etiqueta. Ambientes: pruebas (GitHub Actions con b
 | CS-SEG-03 | RNF-SEG-001 | Supertest y ZAP | Satisfactorio con Supertest. **ZAP no prueba acceso cruzado** (Batch 12) | |
 | CS-SEG-06 en plantel | RNF-SEG-001 | SQL | Satisfactorio | |
 | CF-ROL-01 y CS-SEG-04 | RF-008 | Supertest y Newman | Satisfactorio sobre 32 operaciones | |
-| Humo en staging (Anexo D) | Tabla 30 | `verificar-staging.sh` | **Solo en el ensayo**, sin servidores | |
-| ZAP en staging | RNF-SEG-002 | OWASP ZAP | **Solo en el ensayo** | |
+| Humo en staging (Anexo D) | Tabla 30 | `verificar-staging.sh` | **Sobre staging efímero de cada pull request** (CC-018); falta la corrida de la etapa 8 con `v0.2.0-rc.1` | |
+| ZAP en staging | RNF-SEG-002 | OWASP ZAP | **Pasivo, sobre staging efímero de cada pull request;** falta la corrida con `v0.2.0-rc.1` | |
 
 ## 4. Subcaracterísticas de prioridad Alta cubiertas (sección 8.4)
 
@@ -93,12 +93,12 @@ QA verifica que lo desplegado en staging corresponde a la etiqueta.
 
 | # | Qué | Responsable |
 |---|---|---|
-| 1 | Aceptar la invitación al repositorio. **La del 23 de octubre caducó; hay que reenviarla** | FJMP reenvía, SJOM acepta |
+| 1 | Aceptar la invitación al repositorio, reenviada el 10 de noviembre; vence el 17 | SJOM |
 | 2 | Firmar ACT-F1-001 y cerrar la fase 1 (NC-009) | SJOM |
-| 3 | Aprobar CC-013, CC-016 y CC-017, y CC-005 para staging | SJOM |
+| 3 | Aprobar CC-013, CC-016 y CC-017, CC-005 para staging y CC-018 (staging efímero) | SJOM |
 | 4 | Ratificar D-5, D-6, D-10, D-14 y D-15 | PO |
 | 5 | Fusionar a `develop`, en orden, #59, #60 y el del Batch 6 | SJOM |
-| 6 | Elegir proveedor, montar staging (inventario, sección 4), desplegar `v0.2.0-rc.1` y correr el humo del Anexo D | FJMP; aprueban PO y QA |
+| 6 | Configurar la regla de revisores del ambiente `staging` (inventario, sección 3), etiquetar `v0.2.0-rc.1` y lanzar la etapa 8, que corre el humo del Anexo D. Sin servidores que montar (CC-018) | FJMP; aprueban PO y QA |
 | 7 | **Auditoría interna de cierre de fase 2** (Tabla 60), con auditor externo al equipo: alcance, expediente e inscripción; criterios, SCE-MC-001 vigente, RF-001, RF-002 y RNF-DAT-001. Índice de evidencia en `docs/calidad/auditoria-fase-2-evidencia.md` | Auditor por designar |
 | 8 | **Revisión programada del manual** (Tabla 1: "al cierre de la Fase 2"), con la lista de contradicciones y los CC aprobados | Ambos |
 | 9 | Crear `release/0.2.0`, fusionar a `main`, etiquetar `v0.2.0` y publicar las notas de versión | FJMP, autoriza SJOM |

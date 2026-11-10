@@ -220,7 +220,7 @@ web/             Next.js: interfaces por rol; nunca toca la base de datos
 **Casos:** CF-INS-01 y 02 (Cypress), incluido cupo; CF-HOR-01 (Jest); CI-API-01 (Supertest y Testcontainers); CD-DAT-05; CS-SEG-03; CF-ROL-01; tablas de decisión y valores límite (Tabla 40). **AU:** 08, 16, 25. **Riesgo:** RK-05.
 
 ### Batch 6 — Staging y cierre de fase 2
-**Prerrequisito de FJMP:** proveedor de infraestructura (sección 8).
+**Prerrequisito de FJMP:** proveedor de infraestructura (sección 8). Resuelto el 10 de noviembre de 2026 con CC-018: staging efímero en GitHub Actions, sin costo.
 **Fuente:** 3.5, 13.7, 20, 31, Tablas 23, 30, 38 y 60. **Por qué aquí:** AU-08, AU-17 y AU-19 son exigibles desde la fase 2 y piden staging; además, Mercado Pago necesita una URL pública para el webhook en el Batch 9.
 
 - **Staging:** mismo tag candidato, datos sintéticos o anonimizados, HTTPS con TLS 1.2+, secretos propios por ambiente, acceso a la base restringido, migraciones con registro, registro de despliegues.
@@ -443,7 +443,7 @@ Los casos `CO-*` son propuestos por el repo y se aprueban en la nueva versión d
 | Ratificar D-5 a D-14 con reglas reales de la UAEM | PO | Batches 3, 5, 7, 8 y 9 |
 | **Acta de levantamiento** con control escolar, coordinación y caja. No se puede redactar sin que esas entrevistas ocurran | Ambos | Conformidad de fase 0 (NC-006) |
 | **Auditor interno independiente** para los cuatro momentos de la Tabla 60 (no desarrolla ni opera) | Profesora o equipo auditor | Batches 6, 11, 13 y 14 |
-| Proveedor de staging y su costo | FJMP | Batch 6 |
+| ~~Proveedor de staging y su costo~~: resuelto con CC-018, staging efímero en GitHub Actions sin costo | FJMP | Batch 6 |
 | Cuenta y credenciales sandbox de Mercado Pago | FJMP | Batch 9 |
 | Revisión con NVDA en un equipo Windows | Ambos | Batch 12 |
 | Cinco participantes por rol para SUS | Ambos | Batch 13 |

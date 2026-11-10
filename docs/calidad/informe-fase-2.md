@@ -34,7 +34,7 @@ Desde la primera aceptación, un fallo se registra como issue `defecto` (30.2).
 
 - **Calendario:** la fase abrió sin el acta de la fase 1 firmada (NC-009). CC-013, que es Mayor, se implementó sin aprobar, y su código no se fusiona hasta que se apruebe.
 - **Separación de funciones:** la invitación de SJOM al repositorio caducó sin aceptarse. Nadie distinto del autor ha revisado los batches de la fase.
-- **Staging sin servidores:** la configuración está ensayada, pero el humo del Anexo D sobre el ambiente real espera la decisión del proveedor.
+- **Staging efímero (CC-018):** no se rentan servidores; staging se arma en GitHub Actions con la topología de la Fig. 9 y corre el humo del Anexo D en cada pull request. Falta la corrida de la etapa 8 con `v0.2.0-rc.1`, que necesita las fusiones.
 - **Auditoría interna y revisión del manual:** pendientes. Ver el acta, apartado 9.
 
 ## 4. Lista de verificación de QA
