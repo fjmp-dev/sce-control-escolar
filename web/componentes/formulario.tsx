@@ -67,6 +67,9 @@ export function Formulario({
   );
 }
 
+/** Para campos propios de una página, como la captura de calificaciones: lo que la API rechazó y lo escrito. */
+export const useEstadoDelFormulario = () => useContext(Contexto);
+
 function useCampo(nombre: string, ayuda?: string) {
   const id = useId();
   const { campos, valores } = useContext(Contexto);

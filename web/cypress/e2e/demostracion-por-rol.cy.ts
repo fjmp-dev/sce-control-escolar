@@ -2,10 +2,20 @@
 const COMUNES = ['Inicio', 'Facultades', 'Planes de estudio', 'Materias', 'Periodos', 'Mi contraseña'];
 
 const CUENTAS = [
-  { cuenta: 'alumno', rol: 'Alumno', altas: [], propios: ['Inscripción', 'Mi horario', 'Mi expediente'] },
+  {
+    cuenta: 'alumno',
+    rol: 'Alumno',
+    altas: [],
+    propios: ['Inscripción', 'Mi horario', 'Mis calificaciones', 'Mi expediente'],
+  },
   { cuenta: 'profesor', rol: 'Profesor', altas: [], propios: ['Mis grupos'] },
   { cuenta: 'control.escolar', rol: 'Control escolar', altas: [], propios: ['Expedientes'] },
-  { cuenta: 'coordinacion', rol: 'Coordinación académica', altas: ['/materias', '/periodos'], propios: ['Oferta'] },
+  {
+    cuenta: 'coordinacion',
+    rol: 'Coordinación académica',
+    altas: ['/materias', '/periodos'],
+    propios: ['Oferta', 'Correcciones'],
+  },
   { cuenta: 'caja', rol: 'Caja', altas: [], propios: [] },
   { cuenta: 'direccion', rol: 'Dirección', altas: [], propios: [] },
   {
@@ -51,11 +61,13 @@ describe('Demostracion por rol', () => {
       // RF-002: solo el alumno se inscribe.
       cy.visit('/inscripcion');
       cy.location('pathname').should('eq', cuenta === 'alumno' ? '/inscripcion' : '/sin-permiso');
-      // RF-003, consulta diferenciada por rol (Tabla 4).
+      // RF-003 y RF-004: consulta diferenciada por rol (Tabla 4).
       for (const [pagina, duena] of [
         ['/oferta', 'coordinacion'],
         ['/mis-grupos', 'profesor'],
         ['/mi-horario', 'alumno'],
+        ['/mis-calificaciones', 'alumno'],
+        ['/correcciones', 'coordinacion'],
       ]) {
         cy.visit(pagina);
         cy.location('pathname').should('eq', cuenta === duena ? pagina : '/sin-permiso');

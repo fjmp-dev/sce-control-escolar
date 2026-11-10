@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CalificacionesEnCurso, Kardex } from '@/componentes/calificaciones';
 import { DatosDelExpediente } from '@/componentes/expediente';
 import { Campo, Formulario, Selector } from '@/componentes/formulario';
 import { ListaDeInscripciones } from '@/componentes/inscripcion';
@@ -22,9 +23,12 @@ async function expedienteO404(matricula: string) {
 export default async function PaginaExpediente({ params }: Readonly<{ params: Promise<{ matricula: string }> }>) {
   const { matricula } = await params;
   const expediente = await expedienteO404(matricula);
-  const [facultades, inscripciones] = await Promise.all([
+  const [facultades, inscripciones, calificaciones] = await Promise.all([
     consultar<Esquemas['FacultadRespuesta'][]>('/facultades'),
     consultar<Esquemas['InscripcionRespuesta'][]>(`/alumnos/${encodeURIComponent(expediente.matricula)}/inscripciones`),
+    consultar<Esquemas['CalificacionesDelAlumnoRespuesta']>(
+      `/alumnos/${encodeURIComponent(expediente.matricula)}/calificaciones`,
+    ),
   ]);
   const matriculaOculta = <input type="hidden" name="matricula" value={expediente.matricula} />;
   return (
@@ -40,6 +44,16 @@ export default async function PaginaExpediente({ params }: Readonly<{ params: Pr
       <h2>Inscripciones</h2>
       <p>Consulta de la carga por periodo, con su estado. La inscripción la hace el alumno (D-14).</p>
       <ListaDeInscripciones inscripciones={inscripciones} />
+
+      <h2>Calificaciones</h2>
+      <CalificacionesEnCurso materias={calificaciones.materias} />
+      <h3>Kárdex</h3>
+      <Kardex materias={calificaciones.materias} />
+      <p>
+        <a href={`/expedientes/${encodeURIComponent(expediente.matricula)}/historial.csv`} download>
+          Exportar el historial (CSV)
+        </a>
+      </p>
 
       <h2>Cambiar de plantel</h2>
       <p>Cambia la facultad de este mismo expediente: la matrícula, el historial y la cuenta se conservan.</p>

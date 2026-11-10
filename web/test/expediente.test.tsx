@@ -80,6 +80,10 @@ describe('Expedientes (control escolar)', () => {
       '/alumnos/2420001': [200, EXPEDIENTE],
       '/facultades': [200, FACULTADES],
       '/alumnos/2420001/inscripciones': [200, []],
+      '/alumnos/2420001/calificaciones': [
+        200,
+        { matricula: '2420001', historial: { promedio: 0, creditosAcumulados: 0, avance: 0 }, materias: [] },
+      ],
     });
     render(await PaginaExpediente({ params: Promise.resolve({ matricula: '2420001' }) }));
     expect(screen.getByRole('heading', { name: 'Expediente de Alumno Sintético Uno' })).toBeTruthy();

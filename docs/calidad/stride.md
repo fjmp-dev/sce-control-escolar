@@ -1,7 +1,7 @@
 # Modelo de amenazas STRIDE — SCE
 
 **Fuente:** SCE-MC-001 v2.0, Tabla 37 ("riesgos de seguridad por componente"), sección 18 y Tabla 28.
-**Versión:** 1.5, 10 de noviembre de 2026 (Batch 7). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
+**Versión:** 1.6, 10 de noviembre de 2026 (Batch 8). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
 
 Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscripción, oferta, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
 
@@ -43,6 +43,12 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscrip
 | Oferta | T | Fijar la ocupación o el identificador del grupo desde la petición | La entrada rechaza cualquier campo de más; el grupo nace con ocupación cero | `oferta.spec.ts` (CS-SEG-03) | — |
 | Oferta | T | Dos definiciones simultáneas que dejan el mismo traslape (D-13) | Bloqueo de la fila del periodo en la transacción: la segunda definición espera y ve el grupo de la primera | `oferta.spec.ts`, con mutante | — |
 | Oferta | R | Negar quién abrió el periodo, definió un grupo o publicó la oferta | Bitácora en la misma transacción: `abrir_periodo`, `alta_grupo`, `publicar_oferta` | `oferta.spec.ts` | La bitácora guarda la acción, no el contenido del grupo |
+| Calificaciones | E | Un profesor captura en un grupo ajeno, o un alumno captura (RF-004) | La captura exige rol de profesor y que el grupo sea suyo; si no, 403 antes de cualquier otra validación | `calificaciones.spec.ts` (CF-CAL-01, CS-SEG-01); Cypress | — |
+| Calificaciones | I | Averiguar quién está inscrito en un grupo ajeno | La propiedad del grupo se comprueba antes que los folios: el mismo 403 aunque el folio no exista | `calificaciones.spec.ts` | — |
+| Calificaciones | T | Alterar una calificación después del cierre | Fuera de la ventana de captura, 409. Después del cierre solo corrige coordinación, con motivo y evidencia (D-17), y el historial se recalcula | `calificaciones.spec.ts` | El motivo y la evidencia viven en la bitácora, no en una entidad propia |
+| Calificaciones | T | Cerrar con una captura a medias | La captura comparte el periodo y el cierre lo toma en exclusiva antes de leer: espera y ve lo que se confirmó | Prueba con mutante, detectado 3 de 3 veces | — |
+| Calificaciones | R | Negar una captura, un cierre o una corrección | Bitácora en la misma transacción, con valor anterior y el profesor de origen; CS-SEG-06 verifica que cada calificación tenga su asiento | `cs-seg-06-calificacion.sql` en Great Expectations | Un cambio directo en la base lo registra pgAudit en staging (CC-005) |
+| Historial | T | Un historial que no corresponde a las calificaciones | Se recalcula completo en cada cierre o corrección, con una sola función de redondeo; CD-DAT-02 lo recalcula en SQL, de forma independiente | `cd-dat-02.sql` en Great Expectations; 30 expedientes | — |
 | Catálogos | T | Altas fuera de rol | Solo administrador (facultades y planes) o coordinación (materias y periodos) | CF-ROL-01 | — |
 | Bitácora | T | Alterar o borrar asientos | Disparadores que rechazan UPDATE, DELETE y TRUNCATE | Control de RK-03 | Un superusuario de la base puede desactivarlos. pgAudit en staging (Batch 6) |
 | Bitácora | R | Negar una operación | Autor, acción, valor anterior y fecha, en la misma transacción que la operación: si la bitácora falla, la operación se revierte | `seguridad.spec.ts`, `usuarios.spec.ts` | — |

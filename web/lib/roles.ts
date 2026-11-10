@@ -60,6 +60,11 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
             descripcion: 'Consultar las sesiones de tu carga confirmada',
           },
           {
+            ruta: '/mis-calificaciones',
+            etiqueta: 'Mis calificaciones',
+            descripcion: 'Consultar tus parciales al momento, tu kárdex y tu avance',
+          },
+          {
             ruta: '/mi-expediente',
             etiqueta: 'Mi expediente',
             descripcion: 'Consultar tus datos, historial y trayectoria',
@@ -67,7 +72,13 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
         ]
       : []),
     ...(roles.includes('profesor')
-      ? [{ ruta: '/mis-grupos', etiqueta: 'Mis grupos', descripcion: 'Consultar tus grupos, inscritos y horario' }]
+      ? [
+          {
+            ruta: '/mis-grupos',
+            etiqueta: 'Mis grupos',
+            descripcion: 'Consultar tus grupos, inscritos y horario, y capturar calificaciones',
+          },
+        ]
       : []),
     ...(roles.includes('coordinacion')
       ? [
@@ -75,6 +86,11 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
             ruta: '/oferta',
             etiqueta: 'Oferta',
             descripcion: 'Definir grupos, profesores, aulas y horarios, y publicar la oferta',
+          },
+          {
+            ruta: '/correcciones',
+            etiqueta: 'Correcciones',
+            descripcion: 'Autorizar la corrección de una calificación después del cierre',
           },
         ]
       : []),

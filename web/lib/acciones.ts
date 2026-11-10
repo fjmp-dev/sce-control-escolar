@@ -314,3 +314,78 @@ export async function enviarCarga(_: EstadoDeFormulario, datos: FormData): Promi
     exito: folio ? 'Carga ajustada y validada de nuevo.' : 'Inscripción confirmada. Ya puedes imprimir tu comprobante.',
   };
 }
+
+/** CC-019: termina la inscripción del periodo y empieza la captura de calificaciones. */
+export async function iniciarCurso(_: EstadoDeFormulario, datos: FormData) {
+  const clave = texto(datos, 'periodoClave');
+  return enviar(
+    'POST',
+    `/periodos/${encodeURIComponent(clave)}/inicio`,
+    undefined,
+    '/periodos',
+    `Curso de ${clave} iniciado. La inscripción terminó y los profesores ya pueden capturar.`,
+  );
+}
+
+/** RF-005: cierre del periodo con recálculo del historial; si faltan parciales, la API dice cuáles (D-16). */
+export async function cerrarPeriodo(_: EstadoDeFormulario, datos: FormData) {
+  const clave = texto(datos, 'periodoClave');
+  return enviar(
+    'POST',
+    `/periodos/${encodeURIComponent(clave)}/cierre`,
+    undefined,
+    '/periodos',
+    `Periodo ${clave} cerrado. Promedio, créditos y avance de sus alumnos quedaron recalculados.`,
+  );
+}
+
+/** RF-004: un parcial de los alumnos del grupo. Las casillas vacías no se envían. */
+export async function capturarParcial(_: EstadoDeFormulario, datos: FormData): Promise<EstadoDeFormulario> {
+  const grupo = texto(datos, 'grupo');
+  const parcial = Number(texto(datos, 'parcial'));
+  const valores: Record<string, string> = {};
+  const calificaciones: Esquemas['CapturaDto'][] = [];
+  for (const [campo, valor] of datos.entries()) {
+    if (!campo.startsWith('valor:') || typeof valor !== 'string' || valor.trim() === '') continue;
+    valores[campo] = valor.trim();
+    calificaciones.push({ folio: campo.slice('valor:'.length), valor: Number(valor.trim().replace(',', '.')) });
+  }
+  if (calificaciones.length === 0) {
+    return { error: 'Escribe al menos una calificación antes de guardar.', valores };
+  }
+  const invalidas = calificaciones.filter((c) => !(c.valor >= 0 && c.valor <= 10)).map((c) => `valor:${c.folio}`);
+  if (invalidas.length > 0) return { error: 'Revisa los campos marcados.', campos: invalidas, valores };
+  const cuerpo: Esquemas['CapturaDeParcialDto'] = { parcial, calificaciones };
+  return enviar(
+    'PUT',
+    `/grupos/${encodeURIComponent(grupo)}/calificaciones`,
+    cuerpo,
+    `/mis-grupos/${grupo}`,
+    `Parcial ${parcial} guardado: ${calificaciones.length} ${calificaciones.length === 1 ? 'calificación' : 'calificaciones'}. Los alumnos ya pueden consultarlas.`,
+    valores,
+  );
+}
+
+/** D-17: corrección posterior al cierre, autorizada por coordinación, con motivo y evidencia. */
+export async function corregirCalificacion(_: EstadoDeFormulario, datos: FormData) {
+  const valores = {
+    matricula: texto(datos, 'matricula'),
+    calificacion: texto(datos, 'calificacion'),
+    valor: texto(datos, 'valor'),
+    motivo: texto(datos, 'motivo'),
+    evidencia: texto(datos, 'evidencia'),
+  };
+  const cuerpo: Esquemas['CorreccionDto'] = {
+    valor: Number(valores.valor.replace(',', '.')),
+    motivo: valores.motivo,
+    evidencia: valores.evidencia,
+  };
+  return enviar(
+    'PUT',
+    `/calificaciones/${encodeURIComponent(valores.calificacion)}/correccion`,
+    cuerpo,
+    '/correcciones',
+    `Calificación corregida y el historial de ${valores.matricula} recalculado.`,
+    valores,
+  );
+}

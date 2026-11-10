@@ -38,6 +38,7 @@ medir coordinacion-materias /materias "$COORDINACION"
 medir coordinacion-oferta /oferta "$COORDINACION"
 medir alumno-inicio / "$ALUMNO"
 medir alumno-inscripcion /inscripcion "$ALUMNO"
+medir alumno-calificaciones /mis-calificaciones "$ALUMNO"
 
 echo '| Pagina | Accesibilidad | Rendimiento | Buenas practicas | Peso total (KB) |' | tee "$REPORTES/resumen.md"
 echo '|---|---|---|---|---|' | tee -a "$REPORTES/resumen.md"

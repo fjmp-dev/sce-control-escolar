@@ -46,11 +46,11 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 | R-06 | Sin cupo la transacción revierte y la inscripción termina rechazada | Fig. 4, Tabla 29 | CF-INS-02, CI-API-01 | 5 | Sí |
 | R-07 | Las validaciones van en orden fijo: prerrequisitos, adeudos y choques | Fig. 4 | CF-INS-01 | 5 | Sí |
 | R-08 | Toda inscripción inválida termina en estado explícito con su causa | RNF-USU-001, Fig. 6 | CF-INS-02 | 5 | Sí |
-| R-09 | El profesor captura solo en sus grupos asignados | RF-004 | CF-CAL-01 | 8 | No |
-| R-10 | El alumno consulta la calificación al momento de la captura | RF-004 | CF-CAL-01, CI-CAL-01 | 8 | No |
-| R-11 | Promedio con dos decimales y redondeo en una sola función | Tabla 16, RF-005 | CD-DAT-02 | 8 | No |
-| R-12 | Los créditos acumulados coinciden con la regla publicada tras el cierre | RF-005, RNF-DAT-001 | CD-DAT-02 | 8 | No |
-| R-13 | El avance de carrera se recalcula al cierre | RF-005 | CD-DAT-02 | 8 | No |
+| R-09 | El profesor captura solo en sus grupos asignados | RF-004 | CF-CAL-01 | 8 | Sí |
+| R-10 | El alumno consulta la calificación al momento de la captura | RF-004 | CF-CAL-01, CI-CAL-01 | 8 | Sí |
+| R-11 | Promedio con dos decimales y redondeo en una sola función | Tabla 16, RF-005 | CD-DAT-02 | 8 | Sí |
+| R-12 | Los créditos acumulados coinciden con la regla publicada tras el cierre | RF-005, RNF-DAT-001 | CD-DAT-02 | 8 | Sí |
+| R-13 | El avance de carrera se recalcula al cierre | RF-005 | CD-DAT-02 | 8 | Sí |
 | R-14 | Un pago se refleja una sola vez, aunque la pasarela notifique varias | RF-006, Fig. 5 | CF-PAG-01, CI-PAG-01 | 9 | No |
 | R-15 | Ante fallo de pasarela o de base, el estado queda pendiente y nunca confirmado | Tabla 15, RK-08 | CI-PAG-01 | 9 | No |
 | R-16 | El trámite solo sigue las transiciones de la Fig. 6, con fecha visible | RF-007, RF-010 | CF-TRA-01, CF-TRA-02 | 10 | No |
@@ -58,12 +58,12 @@ Se cuenta solo lo integrado en la rama de integración. El código de la rama lo
 | R-18 | La autorización se comprueba por rol y se deniega por omisión | RF-008, 14.1-7 | CI-AUTH-01, CF-ROL-01 | 2 | Sí, matriz completa sobre lo que existe |
 | R-19 | Toda operación requiere autenticación; ningún endpoint Must es anónimo | RNF-SEG-001, Tabla 38 | CS-SEG-04 | 2 | Sí, con Newman |
 | R-20 | La sesión expira y un token revocado no se reutiliza | Tabla 38 | CS-SEG-07 | 2 | Sí |
-| R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9 y 10 | Parcial: cambio de plantel |
+| R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9 y 10 | Parcial: cambio de plantel y calificación |
 | R-22 | La bitácora es inmutable | Tabla 29, RK-03 | Control de RK-03 | 1 | Sí |
 | R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4 | Sí, sobre el expediente |
-| R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | Parcial: hasta que existan calificaciones y pagos |
+| R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | Parcial: en calificaciones, sí; falta pagos (Batch 9) |
 
-**Situación al 8 de noviembre de 2026, en la rama del Batch 5: 13 de 24 con prueba completa (R-01 a R-08, R-18, R-19, R-20, R-22 y R-23) y 2 parciales (R-21 y R-24).** R-05 se repitió con la interfaz de oferta en el Batch 7, que además aplica D-13 al definir grupos. Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
+**Situación al 10 de noviembre de 2026, en la rama del Batch 8: 18 de 24 con prueba completa (R-01 a R-13, R-18, R-19, R-20, R-22 y R-23) y 2 parciales (R-21 y R-24).** R-05 se repitió con la interfaz de oferta en el Batch 7, que además aplica D-13 al definir grupos. Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
 
 ---
 

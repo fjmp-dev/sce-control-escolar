@@ -13,6 +13,10 @@ import {
   crearFacultad,
   crearMateria,
   abrirPeriodo,
+  capturarParcial,
+  cerrarPeriodo,
+  corregirCalificacion,
+  iniciarCurso,
   definirGrupo,
   publicarOferta,
   crearPlan,
@@ -153,6 +157,31 @@ describe('altas de catalogos (contrato de la API)', () => {
         cuerpo: { clave: '2030A', fechaInicio: '2030-01-01', fechaFin: '2030-06-01' },
       },
       'Periodo 2030A abierto. Define sus grupos y publica la oferta en la página Oferta.',
+    ],
+    [
+      'inicio del curso',
+      iniciarCurso,
+      { periodoClave: '2026B' },
+      { ruta: '/periodos/2026B/inicio', metodo: 'POST', cuerpo: undefined },
+      'Curso de 2026B iniciado. La inscripción terminó y los profesores ya pueden capturar.',
+    ],
+    [
+      'cierre del periodo',
+      cerrarPeriodo,
+      { periodoClave: '2026B' },
+      { ruta: '/periodos/2026B/cierre', metodo: 'POST', cuerpo: undefined },
+      'Periodo 2026B cerrado. Promedio, créditos y avance de sus alumnos quedaron recalculados.',
+    ],
+    [
+      'correccion posterior al cierre',
+      corregirCalificacion,
+      { matricula: '2420001', calificacion: '7', valor: '9,5', motivo: 'Error de captura', evidencia: 'Oficio 1' },
+      {
+        ruta: '/calificaciones/7/correccion',
+        metodo: 'PUT',
+        cuerpo: { valor: 9.5, motivo: 'Error de captura', evidencia: 'Oficio 1' },
+      },
+      'Calificación corregida y el historial de 2420001 recalculado.',
     ],
     [
       'publicacion de la oferta',
@@ -437,5 +466,50 @@ describe('definirGrupo (RF-003, contrato de la API)', () => {
     expect(estado).toMatchObject({ error: mensaje, campos: [] });
     expect(estado.valores).toMatchObject({ aula1: 'A1', profesor: 'profesor@sce.test' });
     expect(m.revalidar).not.toHaveBeenCalled();
+  });
+});
+
+describe('capturarParcial (RF-004, contrato de la API)', () => {
+  it('envia solo las casillas escritas, con el folio de cada alumno y el valor como numero', async () => {
+    const espia = responder(200, {});
+    const estado = await capturarParcial(
+      {},
+      formulario({ grupo: '12', parcial: '2', 'valor:INS-1': '8.5', 'valor:INS-2': '', 'valor:INS-3': ' 10 ' }),
+    );
+    expect(enviado(espia)).toEqual({
+      ruta: '/grupos/12/calificaciones',
+      metodo: 'PUT',
+      cuerpo: {
+        parcial: 2,
+        calificaciones: [
+          { folio: 'INS-1', valor: 8.5 },
+          { folio: 'INS-3', valor: 10 },
+        ],
+      },
+    });
+    expect(estado).toEqual({ exito: 'Parcial 2 guardado: 2 calificaciones. Los alumnos ya pueden consultarlas.' });
+    expect(m.revalidar).toHaveBeenCalledWith('/mis-grupos/12');
+  });
+
+  it('sin calificaciones no llama a la API; fuera de rango marca la casilla y conserva lo escrito', async () => {
+    const espia = responder(200, {});
+    expect((await capturarParcial({}, formulario({ grupo: '1', parcial: '1', 'valor:A': '' }))).error).toMatch(
+      /al menos una calificación/,
+    );
+    const estado = await capturarParcial({}, formulario({ grupo: '1', parcial: '1', 'valor:A': '11', 'valor:B': '9' }));
+    expect(estado).toEqual({
+      error: 'Revisa los campos marcados.',
+      campos: ['valor:A'],
+      valores: { 'valor:A': '11', 'valor:B': '9' },
+    });
+    expect(espia).not.toHaveBeenCalled();
+  });
+
+  it('el rechazo de la API llega con su causa, como un grupo ajeno o la ventana cerrada', async () => {
+    responder(409, { codigo: 'FUERA_DE_VENTANA', mensaje: 'El periodo 2026A ya cerró.' });
+    expect(await capturarParcial({}, formulario({ grupo: '1', parcial: '1', 'valor:A': '9' }))).toMatchObject({
+      error: 'El periodo 2026A ya cerró.',
+      valores: { 'valor:A': '9' },
+    });
   });
 });

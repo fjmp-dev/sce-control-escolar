@@ -73,8 +73,7 @@ describe('Inscripcion', () => {
       .should('contain', 'ISW-702 · Ética profesional')
       .and('not.contain', 'ISW-701');
 
-    // 3.4, impartición: su horario trae las sesiones de la carga ajustada, en orden de día y hora. También cursa 2026B.
-    cy.contains('h2', 'Periodo 2026B');
+    // 3.4, impartición: su horario trae las sesiones de la carga ajustada, en orden de día y hora.
     cy.visit('/mi-horario');
     cy.contains('h2', 'Periodo 2027A');
     cy.contains('section', 'Periodo 2027A').find('table tbody tr').should('have.length', 3);

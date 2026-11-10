@@ -1,6 +1,6 @@
 import { Campo, Formulario } from '@/componentes/formulario';
 import { Tabla } from '@/componentes/tabla';
-import { abrirPeriodo } from '@/lib/acciones';
+import { abrirPeriodo, cerrarPeriodo, iniciarCurso } from '@/lib/acciones';
 import { consultar, sesionActual } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
 import { ETIQUETA_ESTADO_PERIODO, fechaLegible, momentoLegible } from '@/lib/formato';
@@ -42,6 +42,7 @@ export default async function PaginaPeriodos() {
           </Formulario>
         </>
       )}
+      {puedeDarDeAlta('periodos', roles) && <CicloDelPeriodo periodos={periodos} />}
       <h2>Periodos registrados</h2>
       <Tabla
         titulo="Periodos registrados"
@@ -59,6 +60,36 @@ export default async function PaginaPeriodos() {
           },
         ]}
       />
+    </>
+  );
+}
+
+/**
+ * Fig. 7: coordinación inicia el curso de un periodo abierto con la oferta publicada (CC-019) y cierra el que está en
+ * curso (RF-005). El cierre solo procede con todos los parciales capturados (D-16).
+ */
+function CicloDelPeriodo({ periodos }: Readonly<{ periodos: Esquemas['PeriodoRespuesta'][] }>) {
+  const porIniciar = periodos.filter((p) => p.estado === 'abierto' && p.ofertaPublicadaEn);
+  const enCurso = periodos.filter((p) => p.estado === 'en_curso');
+  if (porIniciar.length === 0 && enCurso.length === 0) return null;
+  return (
+    <>
+      <h2>Iniciar el curso o cerrar el periodo</h2>
+      {porIniciar.map((p) => (
+        <Formulario key={p.clave} accion={iniciarCurso} envio={`Iniciar el curso de ${p.clave}`}>
+          <input type="hidden" name="periodoClave" value={p.clave} />
+          <p>Termina la inscripción y el ajuste de cargas de {p.clave}, y empieza la captura de calificaciones.</p>
+        </Formulario>
+      ))}
+      {enCurso.map((p) => (
+        <Formulario key={p.clave} accion={cerrarPeriodo} envio={`Cerrar el periodo ${p.clave}`}>
+          <input type="hidden" name="periodoClave" value={p.clave} />
+          <p>
+            Termina la captura de {p.clave} y recalcula promedio, créditos y avance de sus alumnos. Solo procede si cada
+            alumno tiene todos sus parciales. Después, una corrección la autoriza coordinación con motivo y evidencia.
+          </p>
+        </Formulario>
+      ))}
     </>
   );
 }

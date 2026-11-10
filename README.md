@@ -23,6 +23,7 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Portal Next.js (Fig. 9): inicio y cierre de sesión, navegación por rol y pantallas de usuarios, catálogos, expedientes, inscripción, oferta y horario de cada rol, con pruebas de Vitest, Cypress, axe y Lighthouse.
 - Pipeline de GitHub Actions con las etapas 1 a 8 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas. La 8 despliega a staging solo con etiqueta SemVer, acta y aprobación de PO y QA.
 - Oferta y horarios (RF-003, Batch 7): coordinación abre el periodo, define grupos sin traslape de aula ni de profesor y publica la oferta; el alumno solo ve la oferta publicada y su horario, y el profesor sus grupos.
+- Calificaciones e historial (RF-004 y RF-005, Batch 8): el profesor captura por parcial en sus grupos mientras el periodo está en curso, el alumno las consulta al momento, coordinación cierra el periodo con recálculo de promedio, créditos y avance, y autoriza correcciones posteriores con motivo y evidencia. Kárdex y exportación del historial en CSV.
 - Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
 
 Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
@@ -49,7 +50,8 @@ api/                NestJS + Prisma (sección 3.6)
   src/
     gateway/              Validación, errores con código de negocio, registros JSON y /salud
     identidad/            Sesiones, usuarios y guard por rol (RF-008); dominio puro en dominio/
-    expediente/           Expediente único, cambio de plantel y estatus (RF-001); inscripción de las Fig. 4 y 6 (RF-002)
+    expediente/           Expediente único, cambio de plantel y estatus (RF-001); inscripción de las Fig. 4 y 6 (RF-002);
+                          captura, cierre, kárdex e historial (RF-004 y RF-005)
     academico/            Catálogos; periodo y oferta (RF-003): grupos sin traslape, publicación y consulta por rol;
                           prerrequisitos, choques y cupo para la inscripción
     pagos/                Adeudo de la cuenta del alumno (Fig. 4); el resto llega en el Batch 9
@@ -121,7 +123,13 @@ Con Docker instalado:
 docker compose up --build    # Portal en http://localhost:3000 y API en http://localhost:3001, migrada y con seed
 ```
 
-Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. Para la inscripción, el periodo `2027A` está abierto con siete grupos: `2420001` acreditó Programación I en `2026B`, `2420002` tiene un adeudo sintético y el grupo `ISW-702-A` ya no tiene lugares. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test` y `profesor2@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. El calendario es el del 10 de noviembre de 2026:
+
+- **2026A, cerrado:** `2420001` acreditó Programación I.
+- **2026B, en curso:** Bases de datos (`ISW-301-B`, de `profesor@`) tiene el parcial 1 de tres alumnos, y Auditoría de sistemas (`ISW-701-C`, de `profesor2@`) está sin calificar.
+- **2027A, abierto:** siete grupos para la inscripción; `2420002` tiene un adeudo sintético y el grupo `ISW-702-A` ya no tiene lugares.
+
+Para tomar este seed, una base local anterior necesita `npm run db:reset`, que borra sus datos. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
 
 ## Staging
 

@@ -201,6 +201,10 @@ describe('Control escolar consulta las inscripciones (D-14)', () => {
       ],
       '/facultades': [200, [{ clave: 'CUTG', nombre: 'Centro' }]],
       '/alumnos/2420001/inscripciones': [200, [inscripcion('2027A', 'rechazada', 'adeudo'), ANTERIOR]],
+      '/alumnos/2420001/calificaciones': [
+        200,
+        { matricula: '2420001', historial: { promedio: 0, creditosAcumulados: 0, avance: 0 }, materias: [] },
+      ],
     });
     render(await PaginaExpediente({ params: Promise.resolve({ matricula: '2420001' }) }));
     screen.getByRole('cell', { name: 'Rechazada por adeudo' });

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Sesiones } from '@/componentes/horario';
 import { Tabla } from '@/componentes/tabla';
 import { consultar } from '@/lib/api';
@@ -26,7 +27,14 @@ export default async function PaginaMisGrupos() {
               clave={(g) => String(g.id)}
               columnas={[
                 { titulo: 'Materia', celda: (g) => `${g.materiaClave} ${g.materiaNombre}` },
-                { titulo: 'Grupo', celda: (g) => g.clave },
+                {
+                  titulo: 'Grupo',
+                  celda: (g) => (
+                    <Link href={`/mis-grupos/${g.id}`} prefetch={false}>
+                      {g.clave}, calificaciones
+                    </Link>
+                  ),
+                },
                 { titulo: 'Inscritos', celda: (g) => `${g.ocupacion} de ${g.cupo}` },
               ]}
             />

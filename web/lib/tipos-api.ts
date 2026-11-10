@@ -282,6 +282,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/periodos/{clave}/inicio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** CC-019: iniciar el curso; termina la inscripción y empieza la captura de calificaciones */
+        post: operations["GruposController_iniciarCurso"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/profesores/actual/grupos": {
         parameters: {
             query?: never;
@@ -480,6 +497,92 @@ export interface paths {
         /** Inscripciones de un alumno (consulta, D-14) */
         get: operations["InscripcionesController_deAlumno"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/grupos/{id}/calificaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inscritos del grupo con sus parciales; solo para el profesor del grupo */
+        get: operations["CalificacionesController_delGrupo"];
+        /** RF-004: capturar un parcial; cada cambio queda en bitácora con su valor anterior */
+        put: operations["CalificacionesController_capturar"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alumnos/actual/calificaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Calificaciones, kárdex e historial del alumno de la sesión, al momento de la captura */
+        get: operations["CalificacionesController_propias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alumnos/{matricula}/calificaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Calificaciones, kárdex e historial de un alumno */
+        get: operations["CalificacionesController_deAlumno"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/periodos/{clave}/cierre": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** RF-005: cerrar el periodo y recalcular promedio, créditos y avance (D-16) */
+        post: operations["CalificacionesController_cerrar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/calificaciones/{id}/correccion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** D-17: corregir una calificación de un periodo cerrado, con motivo y evidencia */
+        put: operations["CalificacionesController_corregir"];
         post?: never;
         delete?: never;
         options?: never;
@@ -785,6 +888,83 @@ export interface components {
              *     ]
              */
             grupos: number[];
+        };
+        ParcialRespuesta: {
+            /** @description Identificador de la calificación, para corregirla (D-17) */
+            id: number;
+            parcial: number;
+            valor: number;
+            /** Format: date-time */
+            fechaCaptura: string;
+        };
+        AlumnoDelGrupoRespuesta: {
+            folio: string;
+            matricula: string;
+            nombre: string;
+            calificaciones: components["schemas"]["ParcialRespuesta"][];
+        };
+        CalificacionesDelGrupoRespuesta: {
+            id: number;
+            clave: string;
+            materiaClave: string;
+            materiaNombre: string;
+            periodoClave: string;
+            /** @enum {string} */
+            estadoPeriodo: "abierto" | "en_curso" | "cerrado";
+            /** @description Parciales con al menos una calificación */
+            parciales: number[];
+            alumnos: components["schemas"]["AlumnoDelGrupoRespuesta"][];
+        };
+        CapturaDto: {
+            /** @example INS-2026B-2420001 */
+            folio: string;
+            /**
+             * @description Hasta dos decimales
+             * @example 8.5
+             */
+            valor: number;
+        };
+        CapturaDeParcialDto: {
+            parcial: number;
+            calificaciones: components["schemas"]["CapturaDto"][];
+        };
+        MateriaCursadaRespuesta: {
+            periodoClave: string;
+            /** @enum {string} */
+            estadoPeriodo: "abierto" | "en_curso" | "cerrado";
+            grupoClave: string;
+            materiaClave: string;
+            materiaNombre: string;
+            creditos: number;
+            parciales: components["schemas"]["ParcialRespuesta"][];
+            /** @description Solo con el periodo cerrado (D-5) */
+            final: number | null;
+            acreditada: boolean | null;
+            /** @description Si es el intento que cuenta (D-5) */
+            vigente: boolean | null;
+        };
+        CalificacionesDelAlumnoRespuesta: {
+            matricula: string;
+            historial: components["schemas"]["HistorialRespuesta"];
+            materias: components["schemas"]["MateriaCursadaRespuesta"][];
+        };
+        CierreRespuesta: {
+            clave: string;
+            /** @enum {string} */
+            estado: "cerrado";
+            /** @description Alumnos con el historial recalculado */
+            alumnos: number;
+        };
+        CorreccionDto: {
+            /**
+             * @description Hasta dos decimales
+             * @example 8.5
+             */
+            valor: number;
+            /** @description Por qué se corrige */
+            motivo: string;
+            /** @description Documento que lo respalda, por ejemplo el oficio del profesor */
+            evidencia: string;
         };
     };
     responses: never;
@@ -1832,6 +2012,59 @@ export interface operations {
             };
         };
     };
+    GruposController_iniciarCurso: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clave: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodoRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
     GruposController_asignados: {
         parameters: {
             query?: never;
@@ -2521,6 +2754,338 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    CalificacionesController_delGrupo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalificacionesDelGrupoRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    CalificacionesController_capturar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CapturaDeParcialDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalificacionesDelGrupoRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    CalificacionesController_propias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalificacionesDelAlumnoRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    CalificacionesController_deAlumno: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                matricula: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalificacionesDelAlumnoRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    CalificacionesController_cerrar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clave: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CierreRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+        };
+    };
+    CalificacionesController_corregir: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorreccionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalificacionesDelAlumnoRespuesta"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespuesta"];
+                };
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
