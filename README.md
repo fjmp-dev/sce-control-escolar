@@ -22,7 +22,7 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Pruebas automatizadas: dominio sin base de datos; Supertest sobre PostgreSQL 16 efímero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG-07, CD-DAT-01 y 04); Newman (contratos y CS-SEG-04) y OWASP ZAP (CS-SEG-05) contra Compose.
 - Portal Next.js (Fig. 9): inicio y cierre de sesión, navegación por rol y pantallas de usuarios y catálogos, con pruebas de Vitest, Cypress, axe y Lighthouse.
 - Pipeline de GitHub Actions con las etapas 1 a 8 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas. La 8 despliega a staging solo con etiqueta SemVer, acta y aprobación de PO y QA.
-- Staging con la topología de la Fig. 9 (`infra/staging/`, `docs/gobierno/inventario-de-ambientes.md`), ensayado en cada corrida; los servidores esperan la decisión del proveedor.
+- Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
 
 Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
 
@@ -60,7 +60,7 @@ api/                NestJS + Prisma (sección 3.6)
 .github/workflows/ci.yml  Etapas 1 a 7 de la Tabla 53 (sección 31)
 .github/workflows/staging.yml  Etapa 8: despliegue manual a staging con etiqueta SemVer y acta
 infra/staging/            Servidores de staging (Fig. 9): nginx con TLS 1.2+, y PostgreSQL 16 con pgAudit, SCRAM y TLS
-scripts/                  Puerta de calidad, Gitleaks, Newman, OWASP ZAP, humo, Cypress, Lighthouse, publicación de imágenes, y despliegue, humo y ensayo de staging
+scripts/                  Puerta de calidad, Gitleaks, Newman, OWASP ZAP, humo, Cypress, Lighthouse, publicación de imágenes, y staging efímero con su despliegue y su humo
 docker-compose.yml        Ambiente de pruebas: PostgreSQL 16, API y portal, con datos sintéticos
 db/
   pgaudit.sql         Configuración de auditoría de PostgreSQL (sección 18)
@@ -123,10 +123,10 @@ Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `
 
 ## Staging
 
-Dos servidores, como la Fig. 9: nginx con TLS 1.2+ delante del portal y la API, y PostgreSQL 16 aparte, al que solo entra el servidor de aplicación, por TLS y con SCRAM. Se despliega desde Actions ("8 Despliegue a staging"), nunca desde una máquina local. Alta, secretos, despliegue y rollback: `docs/gobierno/inventario-de-ambientes.md`. Para ensayarlo sin servidores, después de `docker compose build`:
+Efímero y sin costo (CC-018): se arma en GitHub Actions con la topología de la Fig. 9, se verifica y se destruye. nginx sirve el portal y la API solo con TLS 1.2+, y PostgreSQL 16 va aparte: solo entra el servidor de aplicación, por TLS y con SCRAM. La etapa 7 lo arma en cada pull request; la 8 ("8 Despliegue a staging") lo arma con una etiqueta SemVer, un acta y la aprobación de PO y QA. Nunca se despliega desde una máquina local. Procedimiento: `docs/gobierno/inventario-de-ambientes.md`. En local, después de `docker compose build`:
 
 ```bash
-scripts/ensayo-staging.sh     # dos "servidores" en Docker, certificado autofirmado, mismo despliegue y mismo humo
+scripts/staging.sh     # dos "servidores" en Docker, certificado autofirmado, despliegue, humo del Anexo D y rechazos de la base
 ```
 
 ## Levantar el ambiente de desarrollo

@@ -9,7 +9,7 @@ api/prisma/migrations/
 .puerta/
 sonar-reporte/
 reportes/
-.ensayo-staging/
+.staging/
 .next/
 web/coverage/
 web/lib/tipos-api.ts
@@ -17,4 +17,4 @@ web/next-env.d.ts
 web/cypress/videos/
 web/cypress/screenshots/
 web/cypress/reportes/
-.ensayo-staging/
+.staging/

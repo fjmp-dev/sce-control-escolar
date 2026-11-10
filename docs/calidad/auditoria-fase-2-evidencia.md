@@ -17,7 +17,7 @@ El plan previo, la lista de verificación, los hallazgos y el dictamen son del a
 | Bitácora (14.1-3) | Autor, fecha y valor anterior en plantel e inscripción | `muestreo-bitacora.sql`, `cs-seg-06-plantel.sql` |
 | Seguridad (18) | Visibilidad por rol y folio ajeno | CS-SEG-03 y CF-ROL-01; `docs/calidad/matriz-rol-endpoint.md` v1.3 |
 | Riesgos (17) | RK-05 y RK-09 tratados | `docs/calidad/matriz-riesgos.md` y `docs/calidad/amfe-inscripcion.md` |
-| Ambientes (20 y 31) | Staging y etapa 8 | `docs/gobierno/inventario-de-ambientes.md`, `.github/workflows/staging.yml` y el ensayo de la etapa 7 |
+| Ambientes (20 y 31) | Staging y etapa 8 | `docs/gobierno/inventario-de-ambientes.md`, `.github/workflows/staging.yml`, `scripts/staging.sh` (CC-018) y su corrida en la etapa 7 |
 | Cambios (16) | Cambios aprobados antes de fusionar | `docs/gobierno/registro-de-cambios.md`. CC-013, que es Mayor, sigue sin aprobar |
 | No conformidades (40) | Tratamiento de NC-009 y anteriores | `docs/calidad/registro-no-conformidades.md` |
 

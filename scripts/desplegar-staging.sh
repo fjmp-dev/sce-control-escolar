@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Etapa 8 de la Tabla 53: despliega en staging las imagenes ya firmadas, por digest, con respaldo previo, migraciones
-# con registro, pgAudit y datos sinteticos. La llama .github/workflows/staging.yml; scripts/ensayo-staging.sh la ensaya
-# en local. Deja el registro del despliegue (31.2) en reportes/staging/despliegue.md.
+# Despliega las imagenes por digest, con respaldo previo, migraciones con registro, pgAudit y datos sinteticos. La llama
+# scripts/staging.sh en las etapas 7 y 8 (CC-018); con EN_APP y EN_DB por SSH sirve tambien para servidores reales, como
+# los del piloto. Deja el registro del despliegue (31.2) en reportes/staging/despliegue.md.
 #
 # Variables:
 #   EN_APP, EN_DB  orden que ejecuta un comando en el servidor de aplicacion o en el de base: "ssh sce-app" o "sh -c"
 #   DIR            directorio del ambiente en el servidor de aplicacion
 #   ETIQUETA, IMAGEN_API, IMAGEN_PORTAL, DOMINIO
 #   DATABASE_URL, JWT_SECRET, CONTRASENA_SEMILLA  secretos del ambiente (20.2)
-#   ENSAYO=1       imagenes locales: no las descarga
+#   IMAGENES_LOCALES=1  imagenes construidas en la corrida: no las descarga
 set -euo pipefail
 : "${EN_APP:?}" "${EN_DB:?}" "${DIR:?}" "${ETIQUETA:?}" "${IMAGEN_API:?}" "${IMAGEN_PORTAL:?}" "${DOMINIO:?}"
 : "${DATABASE_URL:?}" "${JWT_SECRET:?}" "${CONTRASENA_SEMILLA:?}"
@@ -34,7 +34,7 @@ db "docker exec -u postgres sce-db pg_dump -Fc -d sce -f /respaldos/$RESPALDO"
 
 # 3. Imagenes. 4. pgAudit antes de migrar, para que registre el DDL; migraciones y datos sinteticos; pgAudit otra vez,
 # sobre las tablas nuevas. 5. Arranque.
-[ "${ENSAYO:-}" = 1 ] || app "docker compose pull --quiet api web"
+[ "${IMAGENES_LOCALES:-}" = 1 ] || app "docker compose pull --quiet api web"
 app "docker compose pull --quiet proxy"
 pgaudit() { db "docker exec -i -u postgres sce-db psql -d sce -v ON_ERROR_STOP=1 -q" < db/pgaudit.sql; }
 pgaudit
