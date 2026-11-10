@@ -13,7 +13,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 
 | ID | Severidad | Descripción breve | Criterio de auditoría | Responsable | Fecha comprometida | Estado |
 |---|---|---|---|---|---|---|
-| NC-001 | Mayor | Pull request #29 fusionado sin aprobación de otro integrante | AU-04, AU-11 | SJOM (revisión) · FJMP (acceso) | 7 de noviembre de 2026 | Abierta; acción 1 vencida: la invitación caducó |
+| NC-001 | Mayor | Pull request #29 fusionado sin aprobación de otro integrante | AU-04, AU-11 | SJOM (revisión) · FJMP (acceso) | 17 de noviembre de 2026 | Abierta; invitación reenviada el 10 de noviembre |
 | NC-002 | Mayor | Fase 1 iniciada sin acta de aceptación de la fase 0 firmada | AU-07 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
 | NC-003 | Menor | Sin registro de aprobación de la versión 2.0 del manual | AU-01 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
 | NC-004 | Menor | Elementos P1 del plan de trabajo (#7 a #15) vencidos sin reprogramación escrita | AU-02, AU-43 | FJMP | 27 de noviembre de 2026 | Abierta con plan |
@@ -22,6 +22,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-007 | Menor | El catálogo de casos CS-SEG del repositorio divergió de la Tabla 49 del manual | AU-02, AU-05, AU-29 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación |
 | NC-008 | Menor | Cambios CC-001 a CC-006 implementados sin aprobación registrada | AU-06 | SJOM | 7 de noviembre de 2026 | Abierta con plan |
 | NC-009 | Mayor | Batch 4 (fase 2) iniciado sin el acta de la fase 1 firmada, por decisión de FJMP | AU-07 | FJMP · SJOM | Al firmar ACT-F1-001 | Abierta con plan |
+| NC-010 | Mayor | Batch 7 (fase 3) iniciado sin el acta de la fase 2 firmada, por decisión de FJMP | AU-07 | FJMP · SJOM | Al firmar ACT-F2-001 | Abierta con plan |
 
 ---
 
@@ -44,6 +45,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción preventiva:** las ramas `main` y `Desarrollo` exigen una aprobación y los checks de CI, y la regla aplica también a administradores. Se verificó en la configuración el 5 de noviembre de 2026. Con esto, la plataforma ya no permite fusionar sin revisión.
 - **Verificación de eficacia:** QA del sprint S4 (FJMP) o el equipo auditor comprueban que el PR #29 tenga revisión registrada y que todos los PR posteriores al 7 de noviembre tengan aprobación de alguien distinto al autor.
 - **Seguimiento, 8 de noviembre de 2026:** la acción 1 venció sin cumplirse, y no podía cumplirse. La invitación del 23 de octubre caducó el 30 de octubre, porque GitHub vence las invitaciones a los 7 días; la API la reporta como `expired`. Nadie lo detectó en dos semanas porque el repositorio la seguía mostrando como pendiente. **Nueva acción:** FJMP reenvía la invitación y SJOM la acepta antes de que venza. Fecha: a confirmar por FJMP.
+- **Seguimiento, 10 de noviembre de 2026:** FJMP reenvió la invitación con permiso de escritura; la caducada se borró. La nueva vence el 17 de noviembre de 2026, que pasa a ser la fecha de la acción. Si vuelve a caducar, se reenvía el mismo día y se avisa a SJOM por otro medio.
 
 ## NC-002 — Acta de la fase 0 sin firmar
 
@@ -133,3 +135,15 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** firmar ACT-F1-001 y fusionar la fase 1 antes de revisar el Batch 4. Responsables: SJOM firma; FJMP prepara. Fecha: al firmarse ACT-F1-001.
 - **Acción preventiva:** si vuelve a ocurrir, la decisión se registra como esta, antes de empezar el batch.
 - **Verificación de eficacia:** QA comprueba que la fusión de la fase 2 ocurre después de la firma de ACT-F1-001.
+
+## NC-010 — Fase 3 iniciada sin el acta de la fase 2
+
+- **Fuente:** autodeclaración, 10 de noviembre de 2026, antes de empezar el Batch 7, como pide la acción preventiva de NC-009.
+- **Descripción:** el Batch 7 abre la fase 3 (oferta y horarios, RF-003). La regla 4 de `plan-de-sistema.md` pide antes el acta de la fase 2 firmada. ACT-F2-001 está en borrador y su apartado 9 lista lo que falta; ACT-F1-001 tampoco está firmada (NC-009). FJMP decidió continuar el desarrollo.
+- **Severidad:** Mayor. Es la tercera vez que una fase se abre sin el acta de la anterior (NC-002, NC-009).
+- **Evidencia:** PR del Batch 7, apilado sobre #61, y la decisión registrada en esta entrada antes del primer commit del batch.
+- **Causa:** la misma de NC-009. Sin acceso de SJOM (NC-001) nadie puede aprobar, fusionar ni firmar, y el calendario sigue corriendo.
+- **Contención:** el código de la fase 3 **no se fusiona** a `develop` antes de firmarse ACT-F1-001 y ACT-F2-001, en ese orden. La pila de PR se revisa de abajo hacia arriba.
+- **Acción correctiva:** cerrar las fases 1 y 2 (firmas, fusiones, despliegue de `v0.2.0-rc.1` en staging y auditoría de la Tabla 60) antes de revisar el Batch 7. Responsables: SJOM firma; FJMP prepara. Fecha: al firmarse ACT-F2-001.
+- **Acción preventiva:** el Batch 9 abre la fase 4. No se empieza sin el acta de la fase 3 salvo una nueva decisión registrada como esta.
+- **Verificación de eficacia:** QA comprueba que la fusión de la fase 3 ocurre después de las firmas de ACT-F1-001 y ACT-F2-001.
