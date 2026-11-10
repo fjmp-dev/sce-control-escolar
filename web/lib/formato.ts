@@ -61,3 +61,42 @@ const FECHA_Y_HORA = new Intl.DateTimeFormat('es-MX', {
 
 /** Un momento, no un día: se muestra en la hora del centro de México. */
 export const momentoLegible = (iso: string) => FECHA_Y_HORA.format(new Date(iso));
+
+const PESOS = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+export const pesos = (importe: number) => PESOS.format(importe);
+
+/** La fecha de hoy en la Ciudad de México, como AAAA-MM-DD. */
+export const hoyEnMexico = () =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Mexico_City' }).format(new Date());
+
+export const ETIQUETA_TIPO_TRAMITE: Record<string, string> = {
+  constancia: 'Constancia de estudios',
+  no_adeudo: 'Constancia de no adeudo',
+  historial: 'Historial académico',
+};
+
+export const ETIQUETA_ESTADO_TRAMITE: Record<string, string> = {
+  recibida: 'Recibida',
+  en_proceso: 'En proceso',
+  lista: 'Lista para descargar',
+  entregada: 'Entregada',
+  rechazada: 'Rechazada',
+};
+
+/** Fig. 6: el rechazo se muestra con su motivo. */
+export const estadoDeTramite = (t: { estado: string; motivoRechazo?: string | null }) =>
+  t.estado === 'rechazada' ? `Rechazada: ${t.motivoRechazo}` : (ETIQUETA_ESTADO_TRAMITE[t.estado] ?? t.estado);
+
+export const ETIQUETA_ESTADO_PAGO: Record<string, string> = {
+  pendiente: 'Pendiente',
+  aplicado: 'Pagado',
+  rechazado: 'Rechazado',
+  cancelado: 'Cancelado',
+};
+
+export const ETIQUETA_MOVIMIENTO: Record<string, string> = {
+  cargo: 'Cargo',
+  abono: 'Pago',
+  ajuste: 'Ajuste',
+  beca: 'Beca',
+};

@@ -69,6 +69,16 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
             etiqueta: 'Mi expediente',
             descripcion: 'Consultar tus datos, historial y trayectoria',
           },
+          {
+            ruta: '/mi-cuenta',
+            etiqueta: 'Mi cuenta',
+            descripcion: 'Consultar tu saldo, pagar e imprimir tus recibos',
+          },
+          {
+            ruta: '/mis-tramites',
+            etiqueta: 'Mis trámites',
+            descripcion: 'Solicitar constancias e historial, seguir su estado y descargarlos',
+          },
         ]
       : []),
     ...(roles.includes('profesor')
@@ -100,6 +110,20 @@ export function menuDe(roles: readonly Rol[]): Enlace[] {
             ruta: '/expedientes',
             etiqueta: 'Expedientes',
             descripcion: 'Buscar, dar de alta, cambiar de plantel y de estatus',
+          },
+          {
+            ruta: '/tramites',
+            etiqueta: 'Trámites',
+            descripcion: 'Atender solicitudes: tomar, emitir o rechazar, y verificar documentos',
+          },
+        ]
+      : []),
+    ...(roles.includes('caja')
+      ? [
+          {
+            ruta: '/caja',
+            etiqueta: 'Caja',
+            descripcion: 'Estado de cuenta, becas, cargos del periodo y corte del día',
           },
         ]
       : []),

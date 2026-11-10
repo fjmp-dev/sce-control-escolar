@@ -24,6 +24,7 @@ La fase 0 (alcance validado) cerró con la línea base documental. La fase 1 arr
 - Pipeline de GitHub Actions con las etapas 1 a 8 de la Tabla 53, incluida la puerta de calidad de SonarQube (Tabla 51) y las imágenes firmadas. La 8 despliega a staging solo con etiqueta SemVer, acta y aprobación de PO y QA.
 - Oferta y horarios (RF-003, Batch 7): coordinación abre el periodo, define grupos sin traslape de aula ni de profesor y publica la oferta; el alumno solo ve la oferta publicada y su horario, y el profesor sus grupos.
 - Calificaciones e historial (RF-004 y RF-005, Batch 8): el profesor captura por parcial en sus grupos mientras el periodo está en curso, el alumno las consulta al momento, coordinación cierra el periodo con recálculo de promedio, créditos y avance, y autoriza correcciones posteriores con motivo y evidencia. Kárdex y exportación del historial en CSV.
+- Pagos simulados y trámites (RF-006, RF-007 y RF-010, Batch 9): caja genera los cargos del periodo, registra becas y hace el corte del día; el alumno paga en una pasarela simulada (sin Mercado Pago ni dinero real) y el pago se aplica una sola vez, con recibo. El alumno pide constancia, no adeudo o historial; control escolar lo toma, lo emite o lo rechaza con motivo; el documento lleva folio y hash SHA-256, queda entregado al descargarlo y control escolar verifica su autenticidad.
 - Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
 
 Pendiente de fase 1, para cerrarla: revisión y fusión de los pull requests, manual v2.1 y etiqueta `v0.1.0`. Ver `docs/gobierno/actas/acta-aceptacion-fase-1.md`, apartado 9.
@@ -127,7 +128,7 @@ Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `
 
 - **2026A, cerrado:** `2420001` acreditó Programación I.
 - **2026B, en curso:** Bases de datos (`ISW-301-B`, de `profesor@`) tiene el parcial 1 de tres alumnos, y Auditoría de sistemas (`ISW-701-C`, de `profesor2@`) está sin calificar.
-- **2027A, abierto:** siete grupos para la inscripción; `2420002` tiene un adeudo sintético y el grupo `ISW-702-A` ya no tiene lugares.
+- **2027A, abierto:** siete grupos para la inscripción; `2420002` tiene un adeudo sintético de $1,850, que puede pagar en Mi cuenta, y el grupo `ISW-702-A` ya no tiene lugares.
 
 Para tomar este seed, una base local anterior necesita `npm run db:reset`, que borra sus datos. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
 

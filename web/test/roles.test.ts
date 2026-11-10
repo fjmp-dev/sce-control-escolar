@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Rol } from '@/lib/contrato';
 import { ALTAS, ETIQUETA_ROL, menuDe, puedeDarDeAlta, ROLES, type Catalogo } from '@/lib/roles';
-import { ETIQUETA_ESTADO_PERIODO, fechaLegible } from '@/lib/formato';
+import { ETIQUETA_ESTADO_PERIODO, estadoDeTramite, fechaLegible, hoyEnMexico, pesos } from '@/lib/formato';
 
 const COLUMNAS: Rol[] = ['alumno', 'profesor', 'control_escolar', 'coordinacion', 'caja', 'direccion', 'administrador'];
 const MATRIZ = readFileSync(resolve(__dirname, '../../docs/calidad/matriz-rol-endpoint.md'), 'utf8');
@@ -33,6 +33,10 @@ describe('El portal ofrece lo que la matriz rol por endpoint permite (AU-15)', (
     ['/oferta', 'POST', '/grupos'],
     ['/mis-calificaciones', 'GET', '/alumnos/actual/calificaciones'],
     ['/correcciones', 'PUT', '/calificaciones/{id}/correccion'],
+    ['/mi-cuenta', 'GET', '/alumnos/actual/cuenta'],
+    ['/mis-tramites', 'POST', '/tramites'],
+    ['/caja', 'GET', '/pagos'],
+    ['/tramites', 'GET', '/tramites'],
   ])('%s: solo quien puede consultar %s %s lo ve en el menu', (pagina, metodo, ruta) => {
     const conPagina = ROLES.filter((rol) => menuDe([rol]).some((enlace) => enlace.ruta === pagina));
     expect(conPagina).toEqual(rolesPermitidos(metodo, ruta));
@@ -63,5 +67,12 @@ describe('formato', () => {
   it('muestra la fecha sin recorrerla un dia', () => {
     expect(fechaLegible('2030-01-15T00:00:00.000Z')).toContain('15');
     expect(ETIQUETA_ESTADO_PERIODO.en_curso).toBe('En curso');
+  });
+
+  it('pesos, dia de hoy en Mexico y rechazo con su motivo', () => {
+    expect(pesos(1850.5)).toBe('$1,850.50');
+    expect(hoyEnMexico()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(estadoDeTramite({ estado: 'rechazada', motivoRechazo: 'Faltan datos' })).toBe('Rechazada: Faltan datos');
+    expect(estadoDeTramite({ estado: 'lista' })).toBe('Lista para descargar');
   });
 });

@@ -448,3 +448,18 @@ details .formulario {
     color: var(--suave);
   }
 }
+
+/* RF-006 y RF-010: saldo destacado y documento emitido en texto plano, que respeta saltos y no desborda en 390 px. */
+.saldo {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.documento {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: inherit;
+  border: 1px solid var(--linea);
+  padding: 1rem;
+  max-width: 70ch;
+}

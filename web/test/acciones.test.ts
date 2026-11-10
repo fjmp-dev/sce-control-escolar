@@ -22,6 +22,10 @@ import {
   crearPlan,
   iniciarSesion,
   quitarPrerrequisito,
+  generarCargos,
+  iniciarPago,
+  rechazarTramite,
+  simularPago,
 } from '@/lib/acciones';
 
 const m = vi.hoisted(() => ({ fijar: vi.fn(), borrar: vi.fn(), revalidar: vi.fn() }));
@@ -520,5 +524,36 @@ describe('iniciarCurso y cerrarPeriodo (CC-019, RF-005)', () => {
       campos: [],
     });
     expect(m.revalidar).not.toHaveBeenCalled();
+  });
+});
+
+describe('Pagos simulados y tramites (RF-006, RF-007)', () => {
+  it('el pago se inicia con el importe como numero y lleva a la pasarela', async () => {
+    const espia = responder(201, { id: 7 });
+    await expect(iniciarPago({}, formulario({ importe: '1850,50' }))).rejects.toThrow('REDIRECCION:/mi-cuenta/pagos/7');
+    expect(enviado(espia)).toEqual({ ruta: '/pagos', metodo: 'POST', cuerpo: { importe: 1850.5 } });
+  });
+
+  it('la pasarela aprueba con el boton principal y rechaza con el alterno', async () => {
+    const espia = responder(200, {});
+    await expect(simularPago({}, formulario({ id: '7' }))).rejects.toThrow('REDIRECCION:/mi-cuenta/pagos/7');
+    await expect(simularPago({}, formulario({ id: '7', intencion: 'rechazado' }))).rejects.toThrow('REDIRECCION');
+    const cuerpos = espia.mock.calls.map((c) => JSON.parse((c as unknown as [string, RequestInit])[1].body as string));
+    expect(cuerpos).toEqual([{ resultado: 'aprobado' }, { resultado: 'rechazado' }]);
+  });
+
+  it('los cargos dicen cuantos son nuevos y cuantos ya existian', async () => {
+    responder(200, { periodoClave: '2027A', concepto: 'Inscripción 2027A', generados: 3, yaExistian: 1 });
+    const estado = await generarCargos(
+      {},
+      formulario({ periodoClave: '2027A', concepto: 'Inscripción 2027A', importe: '1850' }),
+    );
+    expect(estado.exito).toBe('Inscripción 2027A: cargos nuevos, 3; ya lo tenían, 1.');
+  });
+
+  it('el rechazo de un tramite fuera de lugar se queda en el formulario con su causa y el motivo escrito', async () => {
+    responder(409, { codigo: 'TRAMITE_TRANSICION_INVALIDA', mensaje: 'Solo se rechaza en proceso.', campos: [] });
+    const estado = await rechazarTramite({}, formulario({ folio: 'TRA-1', motivo: 'Faltan datos' }));
+    expect(estado).toMatchObject({ error: 'Solo se rechaza en proceso.', valores: { motivo: 'Faltan datos' } });
   });
 });

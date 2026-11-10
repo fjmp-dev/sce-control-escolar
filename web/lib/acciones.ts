@@ -390,3 +390,95 @@ export async function corregirCalificacion(_: EstadoDeFormulario, datos: FormDat
     valores,
   );
 }
+
+const importe = (datos: FormData) => Number(texto(datos, 'importe').replace(',', '.'));
+
+/** RF-006: el alumno inicia el pago y pasa a la pasarela simulada. */
+export async function iniciarPago(_: EstadoDeFormulario, datos: FormData): Promise<EstadoDeFormulario> {
+  let id: number;
+  try {
+    ({ id } = await llamar<Esquemas['PagoRespuesta']>('POST', '/pagos', { importe: importe(datos) }));
+  } catch (error) {
+    return aEstado(error, { importe: texto(datos, 'importe') });
+  }
+  redirect(`/mi-cuenta/pagos/${id}`);
+}
+
+/** Pasarela simulada: el botón principal aprueba y el alterno rechaza. La página muestra el resultado real. */
+export async function simularPago(_: EstadoDeFormulario, datos: FormData): Promise<EstadoDeFormulario> {
+  const id = encodeURIComponent(texto(datos, 'id'));
+  const resultado = texto(datos, 'intencion') === 'rechazado' ? 'rechazado' : 'aprobado';
+  try {
+    await llamar('POST', `/pagos/${id}/simulacion`, { resultado });
+  } catch (error) {
+    return aEstado(error);
+  }
+  revalidatePath('/mi-cuenta');
+  redirect(`/mi-cuenta/pagos/${id}`);
+}
+
+export async function registrarBeca(_: EstadoDeFormulario, datos: FormData) {
+  const valores = {
+    matricula: texto(datos, 'matricula'),
+    concepto: texto(datos, 'concepto'),
+    importe: texto(datos, 'importe'),
+  };
+  const cuerpo: Esquemas['MovimientoDeCajaDto'] = { concepto: valores.concepto, importe: importe(datos) };
+  return enviar(
+    'POST',
+    `/alumnos/${encodeURIComponent(valores.matricula)}/becas`,
+    cuerpo,
+    '/caja',
+    `Beca registrada a ${valores.matricula}.`,
+    valores,
+  );
+}
+
+export async function generarCargos(_: EstadoDeFormulario, datos: FormData): Promise<EstadoDeFormulario> {
+  const valores = {
+    periodoClave: texto(datos, 'periodoClave'),
+    concepto: texto(datos, 'concepto'),
+    importe: texto(datos, 'importe'),
+  };
+  const cuerpo: Esquemas['MovimientoDeCajaDto'] = { concepto: valores.concepto, importe: importe(datos) };
+  try {
+    const r = await llamar<Esquemas['CargosRespuesta']>(
+      'POST',
+      `/periodos/${encodeURIComponent(valores.periodoClave)}/cargos`,
+      cuerpo,
+    );
+    return { exito: `${r.concepto}: cargos nuevos, ${r.generados}; ya lo tenían, ${r.yaExistian}.` };
+  } catch (error) {
+    return aEstado(error, valores);
+  }
+}
+
+export async function solicitarTramite(_: EstadoDeFormulario, datos: FormData) {
+  const cuerpo: Esquemas['SolicitudDto'] = { tipo: texto(datos, 'tipo') as Esquemas['SolicitudDto']['tipo'] };
+  return enviar('POST', '/tramites', cuerpo, '/mis-tramites', 'Solicitud recibida. Sigue su estado en la tabla.');
+}
+
+/** Cada paso cambia la fila de estado y su formulario desaparece: el resultado se muestra en la página (Fig. 6). */
+async function pasoDeTramite(datos: FormData, paso: 'proceso' | 'emision' | 'rechazo', cuerpo?: unknown) {
+  const folio = texto(datos, 'folio');
+  try {
+    await llamar('POST', `/tramites/${encodeURIComponent(folio)}/${paso}`, cuerpo);
+  } catch (error) {
+    return aEstado(error, { motivo: texto(datos, 'motivo') });
+  }
+  revalidatePath('/tramites');
+  redirect(`/tramites?hecho=${paso}&folio=${encodeURIComponent(folio)}`);
+}
+
+export async function tomarTramite(_: EstadoDeFormulario, datos: FormData) {
+  return pasoDeTramite(datos, 'proceso');
+}
+
+export async function emitirTramite(_: EstadoDeFormulario, datos: FormData) {
+  return pasoDeTramite(datos, 'emision');
+}
+
+export async function rechazarTramite(_: EstadoDeFormulario, datos: FormData) {
+  const cuerpo: Esquemas['RechazoDto'] = { motivo: texto(datos, 'motivo') };
+  return pasoDeTramite(datos, 'rechazo', cuerpo);
+}
