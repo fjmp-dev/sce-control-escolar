@@ -158,6 +158,7 @@ jobs:
       - name: Navegadores de Playwright (Tabla 50)
         id: navegadores
         if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
+        timeout-minutes: 15 # sin tope, una instalacion colgada espera 6 h (PR #106)
         run: npm ci && npx playwright install --with-deps chromium firefox webkit
         working-directory: web
         env:
