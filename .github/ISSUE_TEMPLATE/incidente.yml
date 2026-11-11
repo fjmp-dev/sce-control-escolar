@@ -1,0 +1,64 @@
+name: Incidente
+description: Evento que afecta o puede afectar la operación, los datos o la seguridad (sección 37; Tabla 38; respuesta-a-incidentes.md)
+labels: ['incidente']
+body:
+  - type: input
+    id: deteccion
+    attributes:
+      label: Detección
+      description: Fecha y hora (UTC-6) y cómo se detectó (alerta, usuario, conciliación, bitácora).
+    validations: { required: true }
+  - type: dropdown
+    id: impacto
+    attributes:
+      label: Impacto (sección 37)
+      multiple: true
+      options: [Inscripción, Pagos, Calificaciones, Disponibilidad, Seguridad o datos personales, Otro]
+    validations: { required: true }
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad (Tabla 52, en la primera hora)
+      description: La misma escala de los defectos. Agregar la etiqueta sev- correspondiente.
+      options:
+        - 'Crítica: comunicar de inmediato al Product Owner'
+        - 'Alta: comunicar el mismo día hábil'
+        - 'Media o baja: comunicar en el siguiente reporte de sprint'
+    validations: { required: true }
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Qué pasó y a quién afectó
+      description: Sin datos personales en el issue. Si hacen falta, se citan por identificador interno.
+    validations: { required: true }
+  - type: textarea
+    id: contencion
+    attributes:
+      label: Contención, con la hora de cada paso (respuesta-a-incidentes.md, apartado 2)
+    validations: { required: true }
+  - type: textarea
+    id: comunicacion
+    attributes:
+      label: Comunicación
+      value: |
+        - Product Owner, fecha y hora:
+        - Notificación de vulneración, si aplica (respuesta-a-incidentes.md, apartado 4.1):
+    validations: { required: true }
+  - type: textarea
+    id: causa
+    attributes:
+      label: Causa y recurrencia
+      description: Si es la segunda vez en el semestre con la misma causa o el mismo componente, es un problema (respuesta-a-incidentes.md, apartado 6).
+      value: |
+        - Causa:
+        - Incidentes anteriores con la misma causa:
+        - Cambio de emergencia, si hubo (CC-NNN, documentado en 24 h):
+        - NC trasladada:
+  - type: textarea
+    id: cierre
+    attributes:
+      label: Cierre
+      value: |
+        - Contuvo:
+        - Verificó y cerró (no puede ser quien contuvo):
+        - Fecha de cierre:
