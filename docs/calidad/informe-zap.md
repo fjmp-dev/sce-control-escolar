@@ -16,7 +16,7 @@ Cada alerta de ZAP tiene aquí su decisión y su evidencia. Se actualiza cuando 
 |---|---|---|---|
 | API con los siete roles (CS-SEG-05) | `scripts/zap.sh` | Etapa 5 de cada pull request y `zap-completo.yml` | 9 escaneos activos: uno por rol, más dos de las operaciones que revocan la sesión, con una cuenta desechable. 8661 peticiones, 7691 con sesión. **Las 60 operaciones del OpenAPI llegaron más allá de 401 y 403.** Ningún 5xx. Registros sin secretos. Great Expectations después: 33 expectativas, 0 incumplidas |
 | Acceso cruzado (CS-SEG-03) | `scripts/zap-acceso-cruzado.sh` | Etapa 5 de cada pull request y `zap-completo.yml` | 1345 peticiones del alumno B sobre las 17 operaciones con identificadores del alumno A. **Ningún 2xx**, y lo de A quedó igual |
-| Portal con cada rol | `scripts/zap-portal.sh` | `zap-completo.yml`: a mano, cada lunes y con cada etiqueta `v*-rc.*` | 7 escaneos completos, uno por rol, de 26 a 51 URL cada uno. El portal llamó a la API con la sesión de cada rol (de 442 a 10956 peticiones), y la sesión seguía viva al terminar. **Ningún 5xx de la API.** La primera corrida de control escolar encontró un 500 del propio portal (30002): se corrigió y el segundo escaneo salió limpio |
+| Portal con cada rol | `scripts/zap-portal.sh` | `zap-completo.yml`: a mano, cada lunes y con cada etiqueta `v*` | 7 escaneos completos, uno por rol, de 26 a 51 URL cada uno. El portal llamó a la API con la sesión de cada rol (de 442 a 10956 peticiones), y la sesión seguía viva al terminar. **Ningún 5xx de la API.** La primera corrida de control escolar encontró un 500 del propio portal (30002): se corrigió y el segundo escaneo salió limpio |
 
 **Por riesgo, sumando los tres:**
 - **Alta:** ninguna.

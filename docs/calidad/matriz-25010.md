@@ -1,6 +1,6 @@
 # Matriz ISO/IEC 25010:2023 — SCE
 
-**Fuente:** SCE-MC-001 v2.0, sección 8.2 (Tablas 14 y 15) y 8.4; manual v3.0 (`docs/gobierno/manual-v3.0.md`), apartado 2.2; CC-021. **Sub-batch:** 12.5, issue #75. **Versión:** 1.0, 11 de noviembre de 2026. **Responsable:** QA (hoy FJMP; NC-012).
+**Fuente:** SCE-MC-001 v2.0, sección 8.2 (Tablas 14 y 15) y 8.4; manual v3.0 (`docs/gobierno/manual-v3.0.md`), apartado 2.2; CC-021. **Sub-batch:** 12.5, issue #75. **Versión:** 1.1, 11 de noviembre de 2026 (Batch 13, #76: rendimiento, continuidad, monitoreo y flexibilidad construidos). **Responsable:** QA (hoy FJMP; NC-012).
 
 La Tabla 15 tiene 37 subcaracterísticas en nueve características. Esta matriz liga cada una con su requisito (sección 9 y CC-021), sus casos y la evidencia. La clasificación de cada requisito está en `catalogo-requisitos.md`, apartado 5. El resumen por característica es el Anexo A (`anexo-a.md`).
 
@@ -8,6 +8,7 @@ La Tabla 15 tiene 37 subcaracterísticas en nueve características. Esta matriz 
 - **Cumple:** el caso corre en CI o en staging y está en verde.
 - **Cumple con pasarela simulada:** cumple contra la pasarela simulada de CC-020. Mercado Pago no se prueba.
 - **Pendiente (13.x):** se construye en el Batch 13; el número es su sub-batch.
+- **Construido, se mide en 13.6:** el caso existe desde el Batch 13 y se ejecuta sobre el candidato `v1.0.0-rc.N`. Lo que hay antes es un ensayo local o a escala de prueba, sin valor de referencia.
 - **Preparado, no ejecutado:** depende de personas o de la institución (`plan-de-sistema.md`, apartado 8).
 - **No aplica en esta versión:** el criterio pide el piloto, que la v3.0 deja fuera (apartado 2.1).
 
@@ -20,9 +21,9 @@ Las rutas de la evidencia son del repositorio. "Etapa N" es la etapa del pipelin
 | 1 | Adecuación funcional | Completitud funcional | Alta | RF-001 a RF-010 | CF-EXP-01, CF-INS-01, CF-HOR-01, CF-CAL-01, CF-PAG-01, CF-TRA-01 | `web/cypress/e2e/` en la etapa 7, con video | Cumple con pasarela simulada |
 | 2 | | Corrección funcional | Alta | RF-001, RF-002, RF-003, RF-005, RF-006, RNF-DAT-001 | CF-INS-01 y 02, CF-HOR-01, CI-API-01, CI-CAL-01, CI-PAG-01, CD-DAT-02 | `api/test/unitarias/` (dominio, etapa 3) y `api/test/integracion/` (etapa 4); GX en la etapa 4 | Cumple |
 | 3 | | Pertinencia funcional | Alta | RF-008, RF-009, RF-010 | CF-ROL-01, CS-SEG-04, CF-REP-01, CF-TRA-02 | `roles.spec.ts` contra `matriz-rol-endpoint.md`; Newman en la etapa 4 | Cumple |
-| 4 | Eficiencia de desempeño | Comportamiento temporal | Alta | RNF-REN-001 | CR-REN-01; Lighthouse (rendimiento percibido) | JMeter en staging; `scripts/lighthouse.sh` en la etapa 7 | Pendiente (13.4). Lighthouse ya corre |
-| 5 | | Utilización de recursos | Media | RNF-REN-001 (CPU y _pool_) | CR-REN-01, CO-FIA-01 | Prometheus durante la carga | Pendiente (13.3 y 13.4) |
-| 6 | | Capacidad | Alta | RNF-REN-002 | CR-REN-02; CI-API-01 (cupo con peticiones simultáneas) | k6 en staging; `inscripcion.spec.ts` | Pendiente (13.4). CI-API-01 cumple: cinco alumnos simultáneos por los lugares del grupo, sin sobrecupo |
+| 4 | Eficiencia de desempeño | Comportamiento temporal | Alta | RNF-REN-001 | CR-REN-01; Lighthouse (rendimiento percibido) | JMeter en staging; `scripts/lighthouse.sh` en la etapa 7 | Construido, se mide en 13.6 (`rendimiento.yml`, `informe-rendimiento.md`). Lighthouse ya corre |
+| 5 | | Utilización de recursos | Media | RNF-REN-001 (CPU y _pool_) | CR-REN-01, CO-FIA-01 | Prometheus durante la carga | Construido, se mide en 13.6: `infra/rendimiento/metas.sh` lee de Prometheus la CPU y las conexiones durante la carga |
+| 6 | | Capacidad | Alta | RNF-REN-002 | CR-REN-02; CI-API-01 (cupo con peticiones simultáneas) | k6 en staging; `inscripcion.spec.ts` | Construido, se mide en 13.6. CI-API-01 cumple: cinco alumnos simultáneos por los lugares del grupo, sin sobrecupo |
 | 7 | Compatibilidad | Coexistencia | Baja | — | — | — | No aplica en esta versión: sin piloto no hay sistemas de la facultad con los que coexistir |
 | 8 | | Interoperabilidad | Alta | RF-006, RNF-FLE-002 | CI-PAG-01, CF-PAG-01, CD-DAT-03, CO-COM-01 | `pagos.spec.ts`, Newman, suite `conciliacion` de GX; Playwright en las etapas 7 y 8 | Cumple con pasarela simulada |
 | 9 | Capacidad de interacción | Reconocibilidad de adecuación | Media | RNF-USU-001 | Demostración por rol; sesiones de usabilidad (Anexo G) | `demostracion-por-rol.cy.ts` en la etapa 7 | Preparado, no ejecutado: falta SUS con participantes. La demostración por rol sí corre |
@@ -33,9 +34,9 @@ Las rutas de la evidencia son del repositorio. "Etapa N" es la etapa del pipelin
 | 14 | | Inclusividad | Media | RNF-USU-002 | CO-ACC-01, CO-ACC-02, CO-ACC-03 | axe y Lighthouse en la etapa 7 (`accesibilidad.md`); revisión manual WCAG 2.2 AA | Cumple con axe, Lighthouse y la revisión manual. VoiceOver pendiente; NVDA fuera de alcance |
 | 15 | | Autodescripción | Media | RNF-USU-001 | CF-INS-02, CO-ACC-03 | Mensaje con causa y corrección por motivo de rechazo; lista manual de `accesibilidad.md` | Cumple |
 | 16 | Fiabilidad | Ausencia de fallos | Media | — (indicador de la Tabla 59) | Densidad de defectos por fase | `informe-fase-4.md`, tablero de indicadores | Medido. La tendencia no baja (informe de fase 4) |
-| 17 | | Disponibilidad | Alta | RNF-FIA-001 | CO-FIA-01 | Monitoreo y `scripts/disponibilidad.py` | Pendiente (13.3). Sin piloto, la meta mensual no se mide (manual v3.0, 2.2) |
+| 17 | | Disponibilidad | Alta | RNF-FIA-001 | CO-FIA-01 | Monitoreo y `scripts/disponibilidad.py` | Construido, se mide en 13.6. Monitoreo y alertas ensayados en local el 11 de noviembre (`docs/evidencias/ensayos/2026-11-11-monitoreo-y-alertas.md`). Sin piloto, la meta mensual no se mide (manual v3.0, 2.2) |
 | 18 | | Tolerancia a fallos | Media | RF-006 | CI-PAG-01 (pasarela que falla), AMFE de pagos | `pagos.spec.ts`: el pago queda pendiente y el estado de cuenta no cambia | Cumple con pasarela simulada |
-| 19 | | Recuperabilidad | Alta | RNF-FIA-002 | CO-FIA-02 | `pg_dump` cifrado y restauración cronometrada | Pendiente (13.2) |
+| 19 | | Recuperabilidad | Alta | RNF-FIA-002 | CO-FIA-02 | `pg_dump` cifrado y restauración cronometrada | Construido, se mide en 13.6 con el rollback de rc.2. Ensayo local del 11 de noviembre: restauración en 12 s y rollback en 25 s (`docs/evidencias/ensayos/2026-11-11-restauracion-y-rollback.md`) |
 | 20 | Seguridad | Confidencialidad | Alta | RF-008, RNF-SEG-002 | CS-SEG-02, CS-SEG-03, CS-SEG-05, CF-ROL-01 | Supertest (etapa 4); ZAP en la etapa 5 y `informe-zap.md` | Cumple |
 | 21 | | Integridad | Alta | RNF-SEG-001 | CS-SEG-01, CS-SEG-06 | `cs-seg-06-*.sql` y GX (etapa 4) | Cumple |
 | 22 | | No repudio | Alta | RF-007, RNF-SEG-001 | CS-SEG-06 en pago, calificación y constancia | Bitácora con autor; documento con hash SHA-256 (`tramites.spec.ts`) | Cumple |
@@ -43,19 +44,19 @@ Las rutas de la evidencia son del repositorio. "Etapa N" es la etapa del pipelin
 | 24 | | Autenticidad | Alta | RF-008, RNF-SEG-001 | CI-AUTH-01, CS-SEG-07 | `roles.spec.ts`, `sesiones.spec.ts`, `autenticacion.cy.ts` | Cumple |
 | 25 | | Resistencia | Media | RNF-SEG-002 | CS-SEG-03 (identificadores ajenos); bloqueo por intentos | `scripts/zap-acceso-cruzado.sh`; `sesiones.spec.ts` | Cumple |
 | 26 | Mantenibilidad | Modularidad | Alta | RNF-MAN-001 | CO-MAN-02 | `api/eslint.config.mjs` y `scripts/co-man-02.sh` en la etapa 2 | Cumple |
-| 27 | | Reusabilidad | Baja | RNF-FLE-001 | CO-FLE-01 | Alta de una segunda facultad en staging | Pendiente (13.5) |
+| 27 | | Reusabilidad | Baja | RNF-FLE-001 | CO-FLE-01 | Alta de una segunda facultad en staging | Cumple en la etapa 4 (`flexibilidad.spec.ts`); en staging, con `co-fle-01.sql` sobre el candidato |
 | 28 | | Analizabilidad | Media | RNF-MAN-001 | CO-MAN-01 | `scripts/reglas-must.sh` (cada regla Must con su ID en una prueba), registros JSON con código de negocio | Cumple |
 | 29 | | Modificabilidad | Media | RNF-MAN-001 | CF-HOR-01; oferta de 2027A (#73) | La oferta nueva se cargó como datos, sin tocar el expediente ni el esquema | Cumple |
 | 30 | | Capacidad de ser probado | Alta | RNF-MAN-001 | CO-MAN-01; cobertura del dominio al 80 %; puerta de SonarQube | Etapas 2, 3 y 5 | Cumple |
 | 31 | Flexibilidad | Adaptabilidad | Media | RNF-FLE-002 | CO-COM-01 | Playwright en 1366×768, 1920×1080 y 390×844 | Cumple |
-| 32 | | Escalabilidad | Media | RNF-FLE-001 | CO-FLE-01 | Alta de una segunda facultad sin migración estructural | Pendiente (13.5) |
+| 32 | | Escalabilidad | Media | RNF-FLE-001 | CO-FLE-01 | Alta de una segunda facultad sin migración estructural | Cumple en la etapa 4 (`flexibilidad.spec.ts`: huella del esquema y `prisma migrate diff --exit-code`) |
 | 33 | | Facilidad de instalación | Baja | — | Despliegue en las etapas 7 y 8 | `docker-compose.yml`, `scripts/staging.sh` | Cumple: el mismo despliegue en desarrollo, pruebas y staging |
 | 34 | | Capacidad de ser reemplazado | Baja | — | — | — | No aplica en esta versión: sustituir el papel es tarea del piloto |
 | 35 | Seguridad física | Identificación de riesgos | Baja | — | Matriz de riesgos y AMFE | `matriz-riesgos.md`, `amfe-inscripcion.md` | Cumple |
 | 36 | | Comportamiento seguro ante fallo | Baja | RF-002, RF-006 | CI-PAG-01, CI-API-01 | Pasarela que falla deja el pago pendiente; cupo agotado revierte la transacción (Fig. 4) | Cumple |
 | 37 | | Restricción operacional | Baja | RF-002, RF-004 | CF-CAL-01, CF-INS-01 | Captura solo en periodo en curso (D-6); inscripción solo con periodo abierto | Cumple |
 
-**Conteo:** 37 subcaracterísticas. 25 cumplen, 3 de ellas con pasarela simulada. 7 están pendientes del Batch 13, y en 2 de esas hay evidencia parcial (Lighthouse y CI-API-01). 2 están preparadas sin ejecutar y 2 no aplican en esta versión. La 16, Ausencia de fallos, se mide pero no cumple su tendencia.
+**Conteo:** 37 subcaracterísticas. 27 cumplen, 3 de ellas con pasarela simulada. 5 están construidas en el Batch 13 y se miden sobre el candidato en 13.6: en 2 hay evidencia parcial (Lighthouse y CI-API-01) y en otras 2 un ensayo local. 2 están preparadas sin ejecutar y 2 no aplican en esta versión. La 16, Ausencia de fallos, se mide pero no cumple su tendencia.
 
 ## 2. Subcaracterísticas Alta y pruebas de aceptación (8.4)
 
@@ -70,13 +71,13 @@ Para la segunda, en el SCE una prueba de aceptación es la que el PO y QA miran 
 | Completitud funcional | CF-EXP-01, CF-INS-01, CF-HOR-01, CF-CAL-01, CF-PAG-01, CF-TRA-01 (Cypress) | Fases 2, 3 y 4 | Cubierta |
 | Corrección funcional | CF-INS-01 y 02, CF-HOR-01, CF-CAL-01 (Cypress); CD-DAT-02 | Fases 2 y 3 | Cubierta |
 | Pertinencia funcional | Demostración por rol (`demostracion-por-rol.cy.ts`), CF-REP-01, CF-TRA-02 | Fases 1 y 4 | Cubierta |
-| Comportamiento temporal | CR-REN-01 | Acta de promoción de `v1.0.0-rc` | **Pendiente (13.4)** |
-| Capacidad | CR-REN-02 | Acta de promoción de `v1.0.0-rc` | **Pendiente (13.4).** CI-API-01 la cubre a escala de prueba |
+| Comportamiento temporal | CR-REN-01 | Acta de promoción de `v1.0.0-rc` | **Construido; se acepta con CR-REN-01 sobre el candidato (13.6)** |
+| Capacidad | CR-REN-02 | Acta de promoción de `v1.0.0-rc` | **Construido; se acepta con CR-REN-02 sobre el candidato (13.6).** CI-API-01 la cubre a escala de prueba |
 | Interoperabilidad | CF-PAG-01 (Cypress), CO-COM-01 (Playwright) | Fase 4 y acta de promoción | Cubierta con pasarela simulada |
 | Operabilidad | CF-INS-02 (Cypress), CO-ACC-02 (Playwright) | Fase 2; acta de promoción | Cubierta |
 | Protección contra errores de usuario | CF-INS-01 y 02, CF-PAG-01 (Cypress) | Fases 2 y 4 | Cubierta |
-| Disponibilidad | CO-FIA-01 | Acta de promoción de `v1.0.0-rc` | **Pendiente (13.3).** Ensayo en staging, sin meta mensual |
-| Recuperabilidad | CO-FIA-02 | Acta de continuidad (13.2) | **Pendiente (13.2)** |
+| Disponibilidad | CO-FIA-01 | Acta de promoción de `v1.0.0-rc` | **Construido; se acepta con el candidato (13.6).** Ensayo local el 11 de noviembre, sin meta mensual |
+| Recuperabilidad | CO-FIA-02 | Acta de restauración del candidato (13.6) | **Construido; se acepta con el rollback de rc.2 (13.6).** Ensayo local el 11 de noviembre |
 | Confidencialidad | CF-ROL-01 en la demostración por rol; CS-SEG-03 y 05 | Fases 1 a 4 | Cubierta |
 | Integridad | CS-SEG-06; CF-CAL-01 (corrección con autorizador) | Fases 3 y 4 | Cubierta |
 | No repudio | CF-TRA-01 (documento con folio y hash); CS-SEG-06 | Fase 4 | Cubierta |
@@ -85,7 +86,7 @@ Para la segunda, en el SCE una prueba de aceptación es la que el PO y QA miran 
 | Modularidad | CO-MAN-02 | Acta de fase 4 o la de promoción, la primera que se firme después de 12.5 | Cubierta desde 12.5 |
 | Capacidad de ser probado | CO-MAN-01 y puerta de calidad | Fases 1 a 4 | Cubierta |
 
-**Resultado:** 13 de 17 subcaracterísticas Alta están cubiertas en aceptación. Las 4 que faltan son de rendimiento y continuidad, y se construyen en el Batch 13. Mientras no se cubran, ningún acta de promoción a `v1.0.0` es aceptable (8.4-2).
+**Resultado:** 13 de 17 subcaracterísticas Alta están cubiertas en aceptación. Las 4 que faltan, de rendimiento y continuidad, ya están construidas (Batch 13) y se aceptan sobre el candidato en 13.6. Mientras no se cubran, ningún acta de promoción a `v1.0.0` es aceptable (8.4-2).
 
 ## 3. Etiquetas `25010:*` en GitHub
 

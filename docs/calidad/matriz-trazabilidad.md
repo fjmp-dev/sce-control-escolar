@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.6, 11 de noviembre de 2026 (sub-batches 12.2 y 12.5: ZAP con los siete roles, CC-021 y Parte B).
+**Versión:** 2.7, 11 de noviembre de 2026 (Batch 13: CO-FIA-01 y 02, CO-FLE-01 en la fase 4 y CR-REN-01 a 05 con sus guiones). 2.6: sub-batches 12.2 y 12.5 (ZAP con los siete roles, CC-021 y Parte B).
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 
@@ -109,11 +109,13 @@ El manual nombra CR-REN-01 a 05 y define cinco tipos de prueba, pero no asigna u
 
 | Caso | Tipo (Tabla 47) | Escenario | Herramienta |
 |---|---|---|---|
-| CR-REN-01 | Carga | 300 usuarios virtuales durante 15 minutos; perfil de lectura intensiva | JMeter |
-| CR-REN-02 | Concurrencia | 300 usuarios sin pérdida ni duplicación; 100 alumnos por los últimos 5 lugares | k6 |
+| CR-REN-01 | Carga | 300 usuarios virtuales durante 15 minutos; perfil de lectura intensiva | JMeter 5.6.3 (`infra/rendimiento/sce.jmx`) |
+| CR-REN-02 | Concurrencia | 300 usuarios sin pérdida ni duplicación; 100 alumnos por los últimos 5 lugares | k6 1.6.0 (`cr-ren-02.js`; enviadas contra persistidas con `cr-ren-02.sql`) |
 | CR-REN-03 | Estrés | Incremento progresivo hasta 800 usuarios | JMeter |
 | CR-REN-04 | Pico | Salto de 50 a 400 usuarios en un minuto | JMeter |
 | CR-REN-05 | Resistencia | Carga media durante cuatro horas continuas | JMeter |
+
+Los cinco corren con `.github/workflows/rendimiento.yml` sobre una etiqueta candidata, en staging con dimensionamiento de referencia; `infra/rendimiento/metas.sh` juzga la Tabla 46 y `docs/calidad/informe-rendimiento.md` reúne los registros de la Tabla 48. CR-REN-01 y 02 se corren tres veces por candidato y cuenta la mediana.
 
 ### 3.6 Operación, accesibilidad, compatibilidad y modularidad (familia `CO-`)
 
