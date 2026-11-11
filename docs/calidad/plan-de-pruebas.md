@@ -97,7 +97,7 @@ Medición local del sub-batch 12.1: por caso, 37.9 % unitarias, 57.9 % integraci
 | Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). En staging, escaneo pasivo del portal sobre HTTPS en cada despliegue (`scripts/verificar-staging.sh`); el activo se queda en la etapa 5, sobre el mismo digest |
 | Cifrado en tránsito | testssl.sh | — | 3.2 | **En uso** en cada staging, de la etapa 7 y de la 8: ningún protocolo anterior a TLS 1.2 (Tabla 38) |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
-| Accesibilidad | axe y Lighthouse | 4 / 11 | axe-core 4.14, Lighthouse 13.6 | **En uso** en la etapa 7 (`docs/calidad/accesibilidad.md`). NVDA: Batch 12 |
+| Accesibilidad | axe y Lighthouse | 4 / 11 | axe-core 4.14, Lighthouse 13.6 | **En uso** en la etapa 7 (`docs/calidad/accesibilidad.md`): axe en el inicio de los siete roles y Lighthouse en 21 páginas desde 12.4, con revisión manual de WCAG 2.2 AA. NVDA, fuera de alcance; VoiceOver, pendiente (apartado 6 de ese documento) |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
 
 ### 4.1 Etapas del pipeline
