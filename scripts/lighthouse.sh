@@ -32,9 +32,15 @@ api() { # token método ruta [cuerpo-json]
 medir() { # nombre ruta [token]
   local cabeceras='{}'
   [ -n "${3:-}" ] && cabeceras="{\"Cookie\":\"sce_sesion=$3\"}"
-  npx --yes "lighthouse@$VERSION" "$PORTAL$2" --quiet --output=json --output=html \
-    --output-path="$REPORTES/$1" --only-categories=accessibility,performance,best-practices \
-    --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" >/dev/null 2>&1
+  local intento
+  for intento in 1 2 3; do # Lighthouse pide repetir ante errores de traza como NO_NAVSTART
+    npx --yes "lighthouse@$VERSION" "$PORTAL$2" --quiet --output=json --output=html \
+      --output-path="$REPORTES/$1" --only-categories=accessibility,performance,best-practices \
+      --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" \
+      >"$REPORTES/$1.log" 2>&1 && break
+    [ "$intento" -lt 3 ] || { tail -20 "$REPORTES/$1.log" >&2; echo "::error::Lighthouse fallo tres veces al medir $2" >&2; exit 1; }
+    echo "::warning::Lighthouse fallo al medir $2 (intento $intento): $(jq -r '.runtimeError.code // "sin reporte"' "$REPORTES/$1.report.json" 2>/dev/null)" >&2
+  done
   jq -e --arg ruta "$2" '(.finalDisplayedUrl | endswith($ruta)) and (.categories.accessibility.score != null)' \
     "$REPORTES/$1.report.json" >/dev/null || { echo "::error::Lighthouse no midió $2" >&2; exit 1; }
 }

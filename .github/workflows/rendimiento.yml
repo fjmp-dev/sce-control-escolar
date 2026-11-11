@@ -4,7 +4,8 @@
 # de referencia", declarado en cada registro:
 # - runner ubuntu-latest de 4 vCPU; servidor de aplicacion (API, portal y proxy) en los nucleos 0 y 1, servidor de base
 #   en el 2, y generador y monitoreo en el 3, con cpuset. La corrida es invalida si el generador pasa de 80 % de CPU.
-# Cada corrida mide un caso. CR-REN-01 y 02 se corren tres veces por candidato y se informa la mediana
+# Cada corrida mide un caso. CR-REN-01 y 02 se corren tres veces por candidato y se informa la mediana. Sin
+# concurrency: un grupo comun cancelaria las corridas en espera, y cada una ya tiene su runner
 # (docs/calidad/informe-rendimiento.md).
 # En un pull request que toca los guiones solo los revisa; eso tambien registra el workflow, que asi se puede despachar
 # sobre release/1.0.0 sin estar en main (gh workflow run rendimiento.yml --ref release/1.0.0 -f etiqueta=... -f caso=...).
@@ -46,10 +47,7 @@ jobs:
   rendimiento:
     name: ${{ inputs.caso }} sobre ${{ inputs.etiqueta }}
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    concurrency:
-      group: rendimiento
-      cancel-in-progress: false
+    runs-on: ubuntu-latest # cada corrida en su runner, con su staging: varias a la vez no se estorban
     timeout-minutes: 330 # CR-REN-05 dura 4 h 5 min
     env:
       CASO: ${{ inputs.caso }}
