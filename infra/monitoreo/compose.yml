@@ -1,0 +1,69 @@
+# Monitoreo del ambiente (sec. 35, Tabla 57; CO-FIA-01). Corre en el nodo de aplicacion, en la red privada de la Fig. 9:
+# Prometheus lee /metricas de la API (que el proxy no publica), la base por postgres-exporter con el rol sce_monitor, el
+# nodo y los contenedores; blackbox sondea la salud por el proxy, como el monitor externo. Alertmanager avisa por correo
+# a DevOps y, si toca inscripcion o pagos, al Product Owner. En staging el correo lo recibe mailpit.
+# Lo levanta scripts/monitoreo.sh con las variables de .staging/ambiente.env. Solo escucha en 127.0.0.1.
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=40d, --web.enable-lifecycle]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alertas.yml:/etc/prometheus/alertas.yml:ro
+    ports: ['127.0.0.1:9090:9090']
+    networks: [privada, frontera]
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    volumes: ['./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro']
+    ports: ['127.0.0.1:9093:9093']
+    networks: [privada]
+  correo:
+    image: axllent/mailpit:v1.27
+    ports: ['127.0.0.1:8025:8025']
+    networks: [privada]
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_CONTRASENA:?}
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+    volumes:
+      - ./grafana/aprovisionamiento:/etc/grafana/provisioning:ro
+      - ./grafana/tableros:/var/lib/grafana/tableros:ro
+    ports: ['127.0.0.1:3300:3000']
+    networks: [privada]
+  blackbox:
+    image: prom/blackbox-exporter:v0.27.0
+    command: [--config.file=/etc/blackbox/blackbox.yml]
+    volumes:
+      - ./blackbox.yml:/etc/blackbox/blackbox.yml:ro
+      - ${CA_MONITOREO:?}:/etc/blackbox/ca.crt:ro # CA del certificado del proxy
+    networks: [frontera]
+  postgres:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    environment:
+      DATA_SOURCE_NAME: ${URL_MONITOR:?}
+    networks:
+      privada: # dentro del rango que la base acepta (pg_hba.conf)
+        ipv4_address: ${IP_MONITOR:?}
+  nodo:
+    image: prom/node-exporter:v1.9.1
+    command: [--path.rootfs=/host]
+    pid: host
+    volumes: ['/:/host:ro,rslave']
+    networks: [privada]
+  contenedores:
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks: [privada]
+networks:
+  privada:
+    external: true
+    name: ${RED:?}
+  frontera: { external: true, name: sce-frontera }

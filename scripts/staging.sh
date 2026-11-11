@@ -23,6 +23,7 @@ DB_IP=$SUBRED.10
 BASE="$PWD/.staging" # bajo $HOME, que es lo que Colima monta; fuera de reportes/, que CI publica
 REPORTES=reportes/staging
 CLAVE_APP="$(openssl rand -hex 24)"
+CLAVE_MONITOR="$(openssl rand -hex 16)"
 CONTRASENA_SEMILLA="${CONTRASENA_SEMILLA:-$(openssl rand -hex 16)}" # staging.yml la pasa para Playwright
 AMBIENTE="${AMBIENTE:-staging}"
 [ "$AMBIENTE" = piloto ] && SEMILLA=0
@@ -35,6 +36,7 @@ app_compose() { (cd "$BASE/app" && COMPOSE_FILE=compose.yml:red.yml docker compo
 proxy_compose() { (cd "$BASE/app/proxy" && docker compose "$@"); }
 limpiar() {
   [ "${CONSERVAR:-}" = 1 ] && return
+  docker ps -aq --filter label=com.docker.compose.project=sce-monitoreo | xargs docker rm -fv >/dev/null 2>&1 || true
   proxy_compose down >/dev/null 2>&1 || true
   app_compose --profile tareas down -v --remove-orphans >/dev/null 2>&1 || true
   db_compose down -v >/dev/null 2>&1 || true
@@ -56,7 +58,7 @@ services:
 networks: { privada: { external: true, name: $RED } }
 EOF
 printf '%s\n' "COMPOSE_FILE=compose.yml:red.yml" "POSTGRES_PASSWORD=$(openssl rand -hex 16)" \
-  "SCE_APP_PASSWORD=$CLAVE_APP" "RED_APP=$SUBRED.16/28" "NOMBRE_DB=$DB_IP" "ESCUCHA=127.0.0.1" > "$BASE/db/.env"
+  "SCE_APP_PASSWORD=$CLAVE_APP" "SCE_MONITOR_PASSWORD=$CLAVE_MONITOR" "RED_APP=$SUBRED.16/28" "NOMBRE_DB=$DB_IP" "ESCUCHA=127.0.0.1" > "$BASE/db/.env"
 db_compose up -d --build --wait --wait-timeout 120
 
 # Servidor de aplicacion: certificado para localhost (autofirmado, o firmado por la CA del ambiente si viene en CA_CRT y
@@ -87,10 +89,11 @@ EOF
 export EN_DB="sh -c" EN_APP="env COMPOSE_FILE=compose.yml:red.yml sh -c" EN_PROXY="sh -c" DIR="$BASE/app"
 JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
 export ETIQUETA="${ETIQUETA:-commit-$(git rev-parse --short=12 HEAD)}" DOMINIO=localhost IMAGEN_API IMAGEN_PORTAL JWT_SECRET
-export DATABASE_URL="postgresql://sce_app:$CLAVE_APP@$DB_IP:5432/sce?schema=public&sslmode=require&sslcert=/certs/db.crt&sslaccept=strict"
-export URL=https://localhost CURL_CA_BUNDLE="$CA_CONFIANZA"
-# Conexion al ambiente para respaldo, restauracion y rollback; queda en .staging, que no se publica.
-(umask 077 && for v in EN_DB EN_APP EN_PROXY DIR URL CURL_CA_BUNDLE; do printf '%s=%q\n' "$v" "${!v}"; done \
+export DATABASE_URL="postgresql://sce_app:$CLAVE_APP@$DB_IP:5432/sce?schema=public&sslmode=require&sslcert=/certs/db.crt&sslaccept=strict&connection_limit=20&pool_timeout=10" # pool explicito (Tabla 46)
+export URL=https://localhost CURL_CA_BUNDLE="$CA_CONFIANZA" RED="$RED" IP_MONITOR="$SUBRED.24" \
+  URL_MONITOR="postgresql://sce_monitor:$CLAVE_MONITOR@$DB_IP:5432/sce?sslmode=require"
+# Conexion al ambiente para respaldo, restauracion, rollback y monitoreo; queda en .staging, que no se publica.
+(umask 077 && for v in EN_DB EN_APP EN_PROXY DIR URL CURL_CA_BUNDLE RED IP_MONITOR URL_MONITOR; do printf '%s=%q\n' "$v" "${!v}"; done \
   > "$BASE/ambiente.env")
 if [ -n "${ETIQUETA_ANTERIOR:-}" ]; then
   ETIQUETA="$ETIQUETA_ANTERIOR" IMAGEN_API="${ANTERIOR_API:?}" IMAGEN_PORTAL="${ANTERIOR_PORTAL:?}" \
@@ -120,6 +123,10 @@ psql_desde "$SUBRED.22" "postgresql://postgres:x@$DB_IP:5432/sce?sslmode=require
 mkdir -p "$REPORTES"
 echo "base: rechaza otra direccion, sin TLS, TLS 1.1 y superusuario por red; acepta TLS verificado" \
   | tee "$REPORTES/rechazos.txt"
+docker exec -i -u postgres sce-db psql -d sce -At -v ON_ERROR_STOP=1 < api/prisma/verificacion/roles-login.sql \
+  > "$BASE/roles-login.txt"
+[ ! -s "$BASE/roles-login.txt" ] || falla "roles con LOGIN de mas: $(cat "$BASE/roles-login.txt")"
+echo "roles con LOGIN: postgres por socket, sce_app y sce_monitor, sin atributos de mas" | tee -a "$REPORTES/rechazos.txt"
 
 # pgAudit registro el DDL de las migraciones de esta corrida.
 db_compose logs --no-log-prefix db > "$BASE/registro-db.txt"

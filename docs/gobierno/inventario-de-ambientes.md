@@ -138,6 +138,8 @@ gh secret set AGE_IDENTIDAD -R fjmp-dev/sce-control-escolar < ~/keys/sce-respald
 
 Las claves y la prueba negativa están en `cifrado-y-claves.md`. Las contingencias de pasarela y ventanilla, en `contingencias.md`.
 
+El monitoreo, las alertas y la disponibilidad mensual están en `monitoreo.md`. La revisión de accesos, en `revision-de-accesos.md`, y el acceso directo a la base, en `acceso-directo-a-la-base.md`.
+
 ## 8. Registro de despliegues (31.2)
 
 Cada corrida deja el artefacto `despliegue-staging-<etiqueta>` o `despliegue-piloto-<etiqueta>` (90 días): registro del despliegue y de las migraciones, rechazos de la base, humo, Newman, testssl, ZAP y consultas de la base. Al cerrar la fase, se copia a `docs/evidencias/` (Tabla 62).

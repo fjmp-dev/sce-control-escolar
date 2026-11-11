@@ -33,6 +33,9 @@ fi
 [ "$(curl -s -o /dev/null -w '%{http_code}' "http://${URL#https://}/")" = 301 ] || falla "HTTP no redirige a HTTPS"
 curl -sfI "$URL/" | grep -qi '^strict-transport-security: max-age=' || falla "falta HSTS"
 echo "HTTP a HTTPS y HSTS: ok" | tee -a "$REPORTES/humo.txt"
+# Las metricas de la API solo se leen en la red privada (Tabla 57, Fig. 9).
+[ "$(curl -s -o /dev/null -w '%{http_code}' "$URL/api/metricas")" = 404 ] || falla "el proxy publica /api/metricas"
+echo "/api/metricas no sale por el proxy: ok" | tee -a "$REPORTES/humo.txt"
 
 # TLS 1.2 o superior (Tabla 38): ningun protocolo anterior se ofrece.
 # testssl corre con un usuario sin privilegios: su directorio debe admitir escritura.

@@ -122,6 +122,9 @@ jobs:
       - name: Vitest y React Testing Library con cobertura (Tablas 42 y 53)
         working-directory: web
         run: npm run test:unitarias -- --reporter=default --reporter=json --outputFile.json=coverage/vitest.json
+      - name: Calculo de disponibilidad mensual, con valores limite (CO-FIA-01)
+        working-directory: .
+        run: python3 -I scripts/disponibilidad.py --autoprueba
       - uses: actions/upload-artifact@v4
         if: always()
         with:

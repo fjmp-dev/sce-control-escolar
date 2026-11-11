@@ -1,7 +1,7 @@
 # Matriz de rol por endpoint — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 y Tablas 5, 11, 12 y 38; CC-007. **Criterio de auditoría:** AU-15.
-**Versión:** 1.7, 10 de noviembre de 2026 (Batch 10). Crece con cada batch.
+**Versión:** 1.8, 11 de noviembre de 2026 (Batch 13: nota de `/metricas`). Crece con cada batch.
 
 Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7). El portal solo presenta lo que esta matriz permite, y `web/test/roles.test.ts` lo comprueba; quien autoriza siempre es la API.
 
@@ -71,6 +71,7 @@ Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba *
 ## Decisiones
 
 - **Los dos anónimos:** `POST /sesiones` porque es la autenticación misma; `GET /salud` porque lo sondea un monitor externo (Tabla 57) y no devuelve datos. Ninguno es una operación Must de negocio (Tabla 38).
+- **`GET /metricas` no está en la matriz ni en el contrato (13.3):** es la lectura de Prometheus (Tabla 57), sin sesión y sin datos personales: duraciones por ruta, errores por código de negocio y métricas del proceso. Solo se alcanza dentro de la red privada de la aplicación. El proxy no la publica, y `scripts/verificar-staging.sh` comprueba que `/api/metricas` responde 404 desde fuera. `gateway.spec.ts` comprueba que no lleva matrículas, correos ni tokens.
 - **El administrador no da de alta materias ni periodos:** son de coordinación (Tabla 5, Fig. 7). Mínimo privilegio (6.2-5).
 - **El alumno consulta su expediente solo por `/alumnos/actual`:** la matrícula sale de su sesión, nunca de la petición. Ninguna ruta acepta una matrícula de un alumno (CS-SEG-03).
 - **El alumno se inscribe y ajusta solo con su sesión:** `POST /inscripciones` no acepta matrícula y rechaza cualquier campo de más; un folio ajeno en `PUT /inscripciones/{folio}/grupos` responde 404, igual que uno inexistente (CS-SEG-03).
