@@ -1,12 +1,12 @@
 # Imagen sce-portal (Fig. 9; Tabla 53, etapa 6; Trivy la escanea en CI). Solo lleva la salida standalone de Next.js.
-FROM node:24-slim AS construccion
+FROM node:26-slim AS construccion
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN CYPRESS_INSTALL_BINARY=0 npm ci
 COPY . .
 RUN npm run build
 
-FROM node:24-slim
+FROM node:26-slim
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=construccion /app/.next/standalone ./
