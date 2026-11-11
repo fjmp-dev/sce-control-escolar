@@ -1,7 +1,7 @@
 # Reglas de negocio — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, secciones 8.3, 9, 12.1 y 38 (Tablas 16 y 59).
-**Versión:** 1.1, 8 de noviembre de 2026 (Batch 5; v1.0: 5 de noviembre de 2026).
+**Versión:** 1.2, 10 de noviembre de 2026 (sub-batch 11.2; v1.1: 8 de noviembre de 2026; v1.0: 5 de noviembre de 2026).
 **Estado:** provisional hasta que el Product Owner lo ratifique.
 
 El manual exige que promedio, créditos y montos coincidan con las "reglas publicadas del periodo" (Tabla 16), pero no publica esas reglas. Este documento las reúne, separa lo que el manual fija de lo que el equipo propone, y sirve de inventario para medir la cobertura de reglas Must (Tabla 59).
@@ -35,36 +35,38 @@ Son propuestas del equipo, no reglas de la UAEM. **El Product Owner debe contras
 
 Base de la métrica "Cobertura de reglas Must" (Tabla 59): reglas Must con prueba automatizada entre reglas Must totales. Meta: 100 % antes del piloto.
 
-Se cuenta solo lo integrado en la rama de integración. El código de la rama local `feature/sce-modulos` no cuenta.
+Una regla cuenta cuando una prueba automatizada que la verifica lleva su ID (R-xx) en el título del `describe` o del `it`. `scripts/reglas-must.sh` busca los ID de esta tabla en `api/test`, `web/test` y `web/cypress`, publica el reporte `reglas-must` en la etapa 2 del pipeline y falla por debajo de 100 % (CO-MAN-01). No cuentan las pruebas que no corren o que se espera que fallen (`.skip`, `.todo`, `.failing`, `xit`, `xdescribe`) ni las líneas comentadas. El script solo comprueba que el ID esté en el título. Que la prueba de verdad verifique la regla lo revisa quien aprueba el PR. Se cuenta solo lo integrado en la rama de integración.
 
-| ID | Regla | Fuente | Caso | Batch | Prueba integrada |
-|---|---|---|---|---|---|
-| R-01 | Un solo expediente por matrícula | RF-001, Fig. 8 | CF-EXP-01, CD-DAT-01 | 1 y 4 | Sí |
-| R-02 | El cambio de plantel no duplica el expediente ni pierde historial | RF-001, RK-01 | CF-EXP-01 | 4 | Sí |
-| R-03 | Sin prerrequisitos obligatorios no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | Sí |
-| R-04 | Con adeudo vigente no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | Sí |
-| R-05 | Con choque de horario no se confirma la carga, y se avisa antes | RF-003, Fig. 4 | CF-HOR-01 | 5 y 7 | Sí; desde el Batch 7, también al definir la oferta (D-13) |
-| R-06 | Sin cupo la transacción revierte y la inscripción termina rechazada | Fig. 4, Tabla 29 | CF-INS-02, CI-API-01 | 5 | Sí |
-| R-07 | Las validaciones van en orden fijo: prerrequisitos, adeudos y choques | Fig. 4 | CF-INS-01 | 5 | Sí |
-| R-08 | Toda inscripción inválida termina en estado explícito con su causa | RNF-USU-001, Fig. 6 | CF-INS-02 | 5 | Sí |
-| R-09 | El profesor captura solo en sus grupos asignados | RF-004 | CF-CAL-01 | 8 | Sí |
-| R-10 | El alumno consulta la calificación al momento de la captura | RF-004 | CF-CAL-01, CI-CAL-01 | 8 | Sí |
-| R-11 | Promedio con dos decimales y redondeo en una sola función | Tabla 16, RF-005 | CD-DAT-02 | 8 | Sí |
-| R-12 | Los créditos acumulados coinciden con la regla publicada tras el cierre | RF-005, RNF-DAT-001 | CD-DAT-02 | 8 | Sí |
-| R-13 | El avance de carrera se recalcula al cierre | RF-005 | CD-DAT-02 | 8 | Sí |
-| R-14 | Un pago se refleja una sola vez, aunque la pasarela notifique varias | RF-006, Fig. 5 | CF-PAG-01, CI-PAG-01 | 9 | Sí al integrar #69: CI-PAG-01 en `pagos.spec.ts` y en Newman. Aviso repetido o empalmado, un abono; dos intentos por el mismo adeudo, el segundo se rechaza con 409 `PAGO_NO_APLICABLE` y el saldo no queda negativo |
-| R-15 | Ante fallo de pasarela o de base, el estado queda pendiente y nunca confirmado | Tabla 15, RK-08 | CI-PAG-01 | 9 | Sí al integrar #69: `pagos.spec.ts`, la bitácora falla a mitad de la aplicación y el pago sigue pendiente, sin abono ni recibo y con el saldo intacto |
-| R-16 | El trámite solo sigue las transiciones de la Fig. 6, con fecha visible | RF-007, RF-010 | CF-TRA-01, CF-TRA-02 | 10 | No |
-| R-17 | No hay constancia sin historial | Tabla 16 | CF-TRA-01 | 10 | No |
-| R-18 | La autorización se comprueba por rol y se deniega por omisión | RF-008, 14.1-7 | CI-AUTH-01, CF-ROL-01 | 2 | Sí, matriz completa sobre lo que existe |
-| R-19 | Toda operación requiere autenticación; ningún endpoint Must es anónimo | RNF-SEG-001, Tabla 38 | CS-SEG-04 | 2 | Sí, con Newman |
-| R-20 | La sesión expira y un token revocado no se reutiliza | Tabla 38 | CS-SEG-07 | 2 | Sí |
-| R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9 y 10 | Parcial: cambio de plantel y calificación |
-| R-22 | La bitácora es inmutable | Tabla 29, RK-03 | Control de RK-03 | 1 | Sí |
-| R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4 | Sí, sobre el expediente |
-| R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4 | Sí al integrar #69: en calificaciones, desde el Batch 8; en pagos, `pagos.spec.ts` compara kárdex e historial antes y después de cargos, beca, pago, recibo y corte |
+Rutas de las pruebas bajo `api/test/`, salvo las que empiezan con `web/`.
 
-**Situación al 10 de noviembre de 2026, en la rama del Batch 8: 18 de 24 con prueba completa (R-01 a R-13, R-18, R-19, R-20, R-22 y R-23) y 2 parciales (R-21 y R-24).** R-05 se repitió con la interfaz de oferta en el Batch 7, que además aplica D-13 al definir grupos. Todavía no están integradas en la rama de integración, porque los PR esperan aprobación; la métrica se reporta en cada cierre de fase.
+| ID | Regla | Fuente | Caso | Batch | Archivo de prueba | Estado |
+|---|---|---|---|---|---|---|
+| R-01 | Un solo expediente por matrícula | RF-001, Fig. 8 | CF-EXP-01, CD-DAT-01 | 1 y 4 | `integracion/expediente.spec.ts`, `integracion/datos.spec.ts` | Con prueba |
+| R-02 | El cambio de plantel no duplica el expediente ni pierde historial | RF-001, RK-01 | CF-EXP-01 | 4 | `integracion/expediente.spec.ts` | Con prueba |
+| R-03 | Sin prerrequisitos obligatorios no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | `integracion/inscripcion.spec.ts`, `unitarias/calificacion.spec.ts` | Con prueba |
+| R-04 | Con adeudo vigente no se confirma la carga | RF-002, Fig. 4 | CF-INS-01 | 5 | `integracion/inscripcion.spec.ts` | Con prueba |
+| R-05 | Con choque de horario no se confirma la carga, y se avisa antes | RF-003, Fig. 4 | CF-HOR-01 | 5 y 7 | `integracion/inscripcion.spec.ts` | Con prueba; desde el Batch 7, también al definir la oferta (D-13) |
+| R-06 | Sin cupo la transacción revierte y la inscripción termina rechazada | Fig. 4, Tabla 29 | CF-INS-02, CI-API-01 | 5 | `integracion/inscripcion.spec.ts` | Con prueba, también con cinco alumnos a la vez por dos lugares |
+| R-07 | Las validaciones van en orden fijo: prerrequisitos, adeudos y choques | Fig. 4 | CF-INS-01 | 5 | `integracion/inscripcion.spec.ts`, `unitarias/inscripcion.spec.ts` | Con prueba |
+| R-08 | Toda inscripción inválida termina en estado explícito con su causa | RNF-USU-001, Fig. 6 | CF-INS-02 | 5 y 11 | `integracion/inscripcion.spec.ts`, `unitarias/inscripcion.spec.ts`, `integracion/datos.spec.ts` | Con prueba. Desde el sub-batch 11.2, además, `api/prisma/verificacion/tasa-conclusion.sql` mide la tasa de conclusión de la Tabla 59 y exige cero inscripciones sin estado, en Jest y en Great Expectations |
+| R-09 | El profesor captura solo en sus grupos asignados | RF-004 | CF-CAL-01 | 8 | `integracion/calificaciones.spec.ts` | Con prueba |
+| R-10 | El alumno consulta la calificación al momento de la captura | RF-004 | CF-CAL-01, CI-CAL-01 | 8 | `integracion/calificaciones.spec.ts` | Con prueba |
+| R-11 | Promedio con dos decimales y redondeo en una sola función | Tabla 16, RF-005 | CD-DAT-02 | 8 | `unitarias/calificacion.spec.ts`, `unitarias/historial.spec.ts` | Con prueba |
+| R-12 | Los créditos acumulados coinciden con la regla publicada tras el cierre | RF-005, RNF-DAT-001 | CD-DAT-02 | 8 | `integracion/calificaciones.spec.ts`, `unitarias/historial.spec.ts` | Con prueba |
+| R-13 | El avance de carrera se recalcula al cierre | RF-005 | CD-DAT-02 | 8 | `integracion/calificaciones.spec.ts`, `unitarias/historial.spec.ts` | Con prueba |
+| R-14 | Un pago se refleja una sola vez, aunque la pasarela notifique varias | RF-006, Fig. 5 | CF-PAG-01, CI-PAG-01 | 9 | `integracion/pagos.spec.ts`, `unitarias/pagos-tramites.spec.ts`; Newman | Con prueba (#69, integrado con #71). Aviso repetido o empalmado, un abono; dos intentos por el mismo adeudo, el segundo se rechaza con 409 `PAGO_NO_APLICABLE` y el saldo no queda negativo |
+| R-15 | Ante fallo de pasarela o de base, el estado queda pendiente y nunca confirmado | Tabla 15, RK-08 | CI-PAG-01 | 9 | `integracion/pagos.spec.ts` | Con prueba. La bitácora falla a mitad de la aplicación o del rechazo, y el pago sigue pendiente, sin abono ni recibo y con el saldo intacto |
+| R-16 | El trámite solo sigue las transiciones de la Fig. 6, con fecha visible | RF-007, RF-010 | CF-TRA-01, CF-TRA-02 | 10 | `integracion/tramites.spec.ts`, `unitarias/pagos-tramites.spec.ts`, `web/test/pagos-tramites.test.tsx` | Con prueba. La v1.1 decía "No" porque las pruebas del Batch 10 no se habían registrado aquí. El portal muestra la fecha de solicitud y la del último cambio |
+| R-17 | No hay constancia sin historial | Tabla 16 | CF-TRA-01 | 10 | `integracion/tramites.spec.ts` | Con prueba desde el sub-batch 11.2: ningún documento se emite para un expediente sin su fila de historial (409 `SIN_HISTORIAL`), y Great Expectations exige que todo expediente tenga historial (Tabla 16, Completitud). Hasta entonces la constancia se emitía igual, con promedio cero. Interpretación que el PO debe ratificar: "historial" es el registro de la Fig. 8, que todo expediente tiene desde el alta (R-01), no los periodos cerrados; una constancia de primer semestre sí procede. El documento "historial" sin periodos cerrados tampoco se emite |
+| R-18 | La autorización se comprueba por rol y se deniega por omisión | RF-008, 14.1-7 | CI-AUTH-01, CF-ROL-01 | 2 | `integracion/roles.spec.ts` | Con prueba, con la matriz completa sobre lo que existe |
+| R-19 | Toda operación requiere autenticación; ningún endpoint Must es anónimo | RNF-SEG-001, Tabla 38 | CS-SEG-04 | 2 | `integracion/openapi.spec.ts`; Newman | Con prueba |
+| R-20 | La sesión expira y un token revocado no se reutiliza | Tabla 38 | CS-SEG-07 | 2 | `integracion/sesiones.spec.ts` | Con prueba |
+| R-21 | Todo cambio de calificación, pago, constancia o plantel deja autor, acción, valor anterior y fecha | RNF-SEG-001, Tabla 38 | CS-SEG-06 | 4, 8, 9, 10 y 11 | `integracion/expediente.spec.ts`, `integracion/calificaciones.spec.ts`, `integracion/pagos.spec.ts`, `integracion/tramites.spec.ts`, `integracion/datos.spec.ts` | Con prueba desde el sub-batch 11.2. Cubre el plantel y la calificación, el pago aplicado y el rechazado, y los cinco pasos del trámite. El rechazo de la pasarela no dejaba asiento y ahora lo firma el usuario técnico (CC-015). CS-SEG-06 tiene una consulta SQL por entidad (`api/prisma/verificacion/cs-seg-06-*.sql`), que corre en Jest y en Great Expectations y que detecta un cambio sin asiento |
+| R-22 | La bitácora es inmutable | Tabla 29, RK-03 | Control de RK-03 | 1 | `integracion/seguridad.spec.ts` | Con prueba |
+| R-23 | Un alumno no accede a datos de otro alumno | RNF-SEG-002, 18.2 | CS-SEG-03 | 4, 5, 9 y 10 | `integracion/expediente.spec.ts`, `integracion/inscripcion.spec.ts`, `integracion/pagos.spec.ts`, `integracion/tramites.spec.ts` | Con prueba sobre el expediente, la inscripción, el pago y el documento. Las dos últimas se llamaban CS-SEG-02 (NC-007) |
+| R-24 | Caja no modifica el historial académico | 18.2, Tabla 10 | CS-SEG-02 | 4, 8 y 9 | `integracion/expediente.spec.ts`, `integracion/calificaciones.spec.ts`, `integracion/pagos.spec.ts` | Con prueba. En pagos, `pagos.spec.ts` compara el kárdex y el historial antes y después de los cargos, la beca, el pago, el recibo y el corte |
+
+**Situación al 10 de noviembre de 2026, en la rama del sub-batch 11.2 sobre develop, que ya integra #71: 24 de 24 reglas Must con prueba automatizada (100 %), según el reporte de `scripts/reglas-must.sh`.** Develop las cuenta cuando se integre este PR. Hasta entonces, develop tiene 22 reglas con prueba, R-21 parcial, porque el rechazo de la pasarela no dejaba asiento, y R-17 sin prueba que la verifique, porque la constancia se emitía sin historial; además, sus pruebas no llevan los ID en el título. La métrica se reporta en cada corrida del pipeline y en cada cierre de fase.
 
 ---
 

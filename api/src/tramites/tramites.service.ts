@@ -60,6 +60,13 @@ export class TramitesService {
   emitir(autor: string, folio: string) {
     return this.cambiar(autor, folio, 'emitir_documento', async (t, fila) => {
       t.emitir();
+      // R-17 (Tabla 16, Completitud): ningún documento de un expediente sin su fila de historial (Fig. 8, uno a uno).
+      if (!(await this.tramites.tieneHistorial(fila.matricula))) {
+        throw new ErrorDeNegocio(
+          'SIN_HISTORIAL',
+          'El expediente no tiene historial: no hay constancia sin historial. Recházalo con ese motivo.',
+        );
+      }
       const expediente = await this.expedientes.consultar(fila.matricula);
       const { materias } = await this.historial.deAlumno(fila.matricula);
       const cerradas = materias.filter((m) => m.estadoPeriodo === 'cerrado' && m.final !== null);

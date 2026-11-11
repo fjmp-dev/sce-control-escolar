@@ -32,7 +32,7 @@ beforeAll(async () => {
 afterAll(() => app.close());
 
 describe('CF-EXP-01: un solo expediente, aun tras el cambio de plantel', () => {
-  it('el alta crea el expediente con su historial y su cuenta, y la matricula repetida se rechaza', async () => {
+  it('R-01: el alta crea el expediente con su historial y su cuenta, y la matricula repetida se rechaza', async () => {
     const res = await alta('3100001').expect(201);
     expect(res.body).toMatchObject({
       matricula: '3100001',
@@ -46,7 +46,7 @@ describe('CF-EXP-01: un solo expediente, aun tras el cambio de plantel', () => {
     expect((await alta('3100001').expect(409)).body.codigo).toBe('YA_EXISTE');
   });
 
-  it('tras cambiar de facultad la consulta devuelve un solo expediente activo y el historial completo', async () => {
+  it('R-02: tras cambiar de facultad la consulta devuelve un solo expediente activo y el historial completo', async () => {
     await alta('3100002').expect(201);
     await prisma.historial.update({
       where: { matricula: '3100002' },
@@ -92,7 +92,7 @@ describe('CF-EXP-01: un solo expediente, aun tras el cambio de plantel', () => {
     ]);
   });
 
-  it('el cambio de plantel deja autor, accion, valor anterior y fecha en bitacora (Tabla 38)', async () => {
+  it('R-21: el cambio de plantel deja autor, accion, valor anterior y fecha en bitacora (Tabla 38)', async () => {
     await alta('3100003').expect(201);
     await http()
       .put('/alumnos/3100003/facultad')
@@ -198,7 +198,7 @@ describe('CF-EXP-01: un solo expediente, aun tras el cambio de plantel', () => {
   });
 });
 
-describe('CS-SEG-03: el token de un alumno no accede al expediente de otro', () => {
+describe('R-23 y CS-SEG-03: el token de un alumno no accede al expediente de otro', () => {
   it('cada alumno ve solo el suyo, y la matricula sale de su sesion', async () => {
     const uno = await entrar(app, 'alumno@sce.test');
     const dos = await entrar(app, 'alumno.dos@sce.test');
@@ -224,7 +224,7 @@ describe('CS-SEG-03: el token de un alumno no accede al expediente de otro', () 
   });
 });
 
-describe('CS-SEG-02: caja no modifica el historial academico', () => {
+describe('R-24 y CS-SEG-02: caja no modifica el historial academico', () => {
   it('ninguna ruta de la API escribe el historial, y caja no escribe expedientes', async () => {
     const caja = await entrar(app, 'caja@sce.test');
     for (const [ruta, cuerpo] of [
@@ -239,7 +239,7 @@ describe('CS-SEG-02: caja no modifica el historial academico', () => {
   });
 });
 
-describe('CS-SEG-06 en cambio de plantel: consulta SQL de verificacion', () => {
+describe('R-21 y CS-SEG-06 en cambio de plantel: consulta SQL de verificacion', () => {
   it('cero filas tras los cambios hechos por la API', async () => {
     expect(await prisma.$queryRawUnsafe<unknown[]>(consultaCsSeg06)).toEqual([]);
   });

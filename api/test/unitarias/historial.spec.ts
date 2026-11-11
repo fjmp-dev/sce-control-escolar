@@ -10,7 +10,7 @@ import {
 } from '../../src/academico/dominio/calificacion';
 import { Historial, IntentoConMateria } from '../../src/expediente/dominio/historial';
 
-describe('redondear: el unico redondeo, half-up', () => {
+describe('R-11: redondear, el unico redondeo, half-up', () => {
   it.each([
     [1, 2, 1, 'la mitad sube'],
     [5, 2, 3, 'la mitad sube tambien en impares'],
@@ -68,7 +68,7 @@ describe('intentos y vigentes, D-5', () => {
   });
 });
 
-describe('Historial.recalcular, RF-005', () => {
+describe('R-12 y R-13: Historial.recalcular, RF-005', () => {
   it('sin calificaciones cerradas, todo en cero', () => {
     expect(Historial.recalcular([])).toEqual(new Historial(0, 0, 0));
   });

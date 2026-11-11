@@ -1,5 +1,5 @@
 // RF-003 en la API (Batch 7): abrir periodo, definir grupos sin traslape de aula ni de profesor (D-13), publicar la
-// oferta (CC-012, Fig. 7) y consultarla segun el rol (Tabla 4). CS-SEG-03 sobre la oferta. Cada prueba usa su periodo.
+// oferta (CC-012, Fig. 7) y consultarla segun el rol (Tabla 4). CS-SEG-05 sobre la oferta. Cada prueba usa su periodo.
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { PrismaService } from '../../src/persistencia/prisma.service';
@@ -155,7 +155,7 @@ describe('Definir grupos (RF-003, D-13)', () => {
     expect((await definir(clave, 'G-1', [[2, '07:00', '09:00', 'B1']]).expect(409)).body.codigo).toBe('YA_EXISTE');
   });
 
-  it('CS-SEG-03: no se fija la ocupacion ni el id desde la peticion; entradas fuera de rango dan 400', async () => {
+  it('CS-SEG-05: no se fija la ocupacion ni el id desde la peticion; entradas fuera de rango dan 400', async () => {
     const clave = await periodo();
     const sesion: Sesion = [1, '07:00', '09:00', 'B1'];
     const conOcupacion = await definir(clave, 'G-1', [sesion], { ocupacion: 25 }).expect(400);
