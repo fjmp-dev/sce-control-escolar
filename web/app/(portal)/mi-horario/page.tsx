@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Aviso } from '@/componentes/aviso';
 import { Sesiones } from '@/componentes/horario';
 import { consultar, ErrorApi } from '@/lib/api';
@@ -28,7 +29,12 @@ export default async function PaginaMiHorario() {
   return (
     <>
       <h1>Mi horario</h1>
-      {vigentes.length === 0 && <p>No tienes una carga confirmada. Inscríbete en la página Inscripción.</p>}
+      {vigentes.length === 0 && (
+        <Aviso tipo="informacion">
+          No tienes una carga confirmada. Inscríbete en la página <Link href="/inscripcion">Inscripción</Link>.
+        </Aviso>
+      )}
+      {vigentes.length > 0 && <p className="entrada">Tus sesiones de la semana, en orden de día y hora.</p>}
       {vigentes.map((i) => (
         <section key={i.folio} aria-labelledby={`horario-${i.folio}`}>
           <h2 id={`horario-${i.folio}`}>Periodo {i.periodoClave}</h2>

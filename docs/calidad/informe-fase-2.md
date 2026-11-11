@@ -32,8 +32,8 @@ Desde la primera aceptación, un fallo se registra como issue `defecto` (30.2).
 
 ## 3. Desviaciones
 
-- **Calendario:** la fase abrió sin el acta de la fase 1 firmada (NC-009). CC-013, que es Mayor, se implementó sin aprobar, y su código no se fusiona hasta que se apruebe.
-- **Separación de funciones:** la invitación de SJOM al repositorio caducó sin aceptarse. Nadie distinto del autor ha revisado los batches de la fase.
+- **Calendario:** la fase abrió sin el acta de la fase 1 firmada (NC-009). CC-013, que es Mayor, se implementó sin aprobar, y su código no se fusiona hasta que se apruebe. _(Corregido el 10 de noviembre de 2026: ese día el código se fusionó en `develop` con el PR #30, antes de aprobarse CC-013; NC-008.)_
+- **Separación de funciones:** la primera invitación de SJOM al repositorio caducó sin aceptarse. La segunda la aceptó el 10 de noviembre de 2026, con permiso _write_, pero SJOM no revisó ni aprobó ningún batch (NC-012). Nadie distinto del autor ha revisado los batches de la fase.
 - **Staging efímero (CC-018):** no se rentan servidores; staging se arma en GitHub Actions con la topología de la Fig. 9 y corre el humo del Anexo D en cada pull request. Falta la corrida de la etapa 8 con `v0.2.0-rc.1`, que necesita las fusiones.
 - **Auditoría interna y revisión del manual:** pendientes. Ver el acta, apartado 9.
 

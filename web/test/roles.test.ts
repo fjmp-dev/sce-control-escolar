@@ -52,10 +52,17 @@ describe('El portal ofrece lo que la matriz rol por endpoint permite (AU-15)', (
 describe('menuDe', () => {
   it('describe si el rol solo consulta o tambien da de alta', () => {
     const descripcion = (rol: Rol, ruta: string) => menuDe([rol]).find((e) => e.ruta === ruta)?.descripcion;
-    expect(descripcion('alumno', '/materias')).toBe('Consultar');
-    expect(descripcion('coordinacion', '/materias')).toBe('Consultar y dar de alta');
-    expect(descripcion('coordinacion', '/facultades')).toBe('Consultar');
-    expect(descripcion('administrador', '/facultades')).toBe('Consultar y dar de alta');
+    expect(descripcion('alumno', '/materias')).toBe(
+      'Consultar las materias de cada plan, sus créditos y prerrequisitos',
+    );
+    expect(descripcion('coordinacion', '/materias')).toMatch(/^Consultar y dar de alta las materias/);
+    expect(descripcion('coordinacion', '/facultades')).toBe('Consultar las facultades y sus claves');
+    expect(descripcion('administrador', '/facultades')).toMatch(/^Consultar y dar de alta las facultades/);
+  });
+
+  it('agrupa lo propio bajo el rol, luego Catálogos y al final Cuenta, en el orden del menú', () => {
+    const grupos = menuDe(['caja', 'alumno']).map((enlace) => enlace.grupo);
+    expect([...new Set(grupos)]).toEqual(['Alumno', 'Caja', 'Catálogos', 'Cuenta']);
   });
 
   it('una cuenta con varios roles suma permisos', () => {

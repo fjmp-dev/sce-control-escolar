@@ -23,8 +23,8 @@ Lo describen `docs/gobierno/notas-version/v0.1.0.md` y la condición de la Tabla
 
 ## 3. Desviaciones
 
-- **Calendario:** la fase inició sin acta de fase 0 firmada (NC-002). El código se escribió antes de aprobarse los CC (NC-008), sin fusionarse.
-- **Separación de funciones:** SJOM no ha aceptado la invitación al repositorio (NC-001), así que nadie distinto del autor ha revisado estos batches.
+- **Calendario:** la fase inició sin acta de fase 0 firmada (NC-002). El código se escribió antes de aprobarse los CC (NC-008), sin fusionarse. _(Corregido el 10 de noviembre de 2026: ese día el código se fusionó en `develop` con el PR #30, sin aprobación de los CC; NC-008.)_
+- **Separación de funciones:** SJOM aceptó la invitación al repositorio el 10 de noviembre de 2026 y tiene permiso _write_, pero no revisó ni aprobó estos batches (NC-001, NC-012). Nadie distinto del autor los ha revisado. _(Corregido el 10 de noviembre de 2026: decía que SJOM no había aceptado la invitación.)_
 - **Auditor interno y manual v2.1:** pendientes. Ver el acta, apartado 9.
 
 ## 4. Lista de verificación de QA

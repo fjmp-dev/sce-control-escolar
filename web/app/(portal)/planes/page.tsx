@@ -47,7 +47,7 @@ export default async function PaginaPlanes() {
         columnas={[
           { titulo: 'Clave', celda: (p) => p.clave },
           { titulo: 'Facultad', celda: (p) => p.facultadClave },
-          { titulo: 'Créditos totales', celda: (p) => p.creditosTotales },
+          { titulo: 'Créditos totales', celda: (p) => p.creditosTotales, numerica: true },
           { titulo: 'Vigente desde', celda: (p) => fechaLegible(p.vigenteDesde) },
         ]}
       />

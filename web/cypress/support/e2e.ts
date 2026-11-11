@@ -14,6 +14,15 @@ declare global {
   }
 }
 
+/**
+ * La captura de página completa pega varias vistas desplazadas: la barra lateral, que es sticky, saldría repetida.
+ * Durante la captura queda estática.
+ */
+Cypress.Screenshot.defaults({
+  onBeforeScreenshot: ($el) => Cypress.$($el).find('.navegacion-lista').css('position', 'static'),
+  onAfterScreenshot: ($el) => Cypress.$($el).find('.navegacion-lista').css('position', ''),
+});
+
 /** Por la etiqueta visible, como lo haria una persona: si la etiqueta no esta asociada al campo, falla (28.1). */
 Cypress.Commands.add('campo', (etiqueta: string) =>
   cy
@@ -50,6 +59,8 @@ Cypress.Commands.add('revisarAxe', (nombre: string) => {
           motor: resultado.testEngine,
           reglasAprobadas: resultado.passes.length,
           incumplimientos: resultado.violations,
+          // Lo que axe no pudo decidir (p. ej. texto sobre un degradado): queda como evidencia de revisión manual.
+          sinDecidir: resultado.incomplete.map((r) => ({ id: r.id, nodos: r.nodes.map((n) => n.target.join(' ')) })),
         });
         expect(resultado.passes.length, 'reglas evaluadas').to.be.greaterThan(0);
         expect(

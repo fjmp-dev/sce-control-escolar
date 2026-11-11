@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 export interface Columna<F> {
   titulo: string;
   celda: (fila: F) => ReactNode;
+  /** Importes, créditos y conteos: alineados a la derecha con cifras tabulares. */
+  numerica?: boolean;
 }
 
 /**
@@ -20,14 +22,14 @@ export function Tabla<F>({
   filas: F[];
   clave: (fila: F) => string;
 }) {
-  if (filas.length === 0) return <p>Todavía no hay registros.</p>;
+  if (filas.length === 0) return <p className="vacio">Todavía no hay registros.</p>;
   return (
     <table role="table" className="tabla">
       <caption className="solo-lector">{titulo}</caption>
       <thead role="rowgroup">
         <tr role="row">
           {columnas.map((columna) => (
-            <th key={columna.titulo} role="columnheader" scope="col">
+            <th key={columna.titulo} role="columnheader" scope="col" className={columna.numerica ? 'num' : undefined}>
               {columna.titulo}
             </th>
           ))}
@@ -37,7 +39,12 @@ export function Tabla<F>({
         {filas.map((fila) => (
           <tr key={clave(fila)} role="row">
             {columnas.map((columna) => (
-              <td key={columna.titulo} role="cell" data-etiqueta={columna.titulo}>
+              <td
+                key={columna.titulo}
+                role="cell"
+                data-etiqueta={columna.titulo}
+                className={columna.numerica ? 'num' : undefined}
+              >
                 {columna.celda(fila)}
               </td>
             ))}

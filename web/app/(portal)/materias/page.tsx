@@ -74,7 +74,7 @@ export default async function PaginaMaterias() {
           { titulo: 'Clave', celda: (m) => m.clave },
           { titulo: 'Nombre', celda: (m) => m.nombre },
           { titulo: 'Plan', celda: (m) => m.planClave },
-          { titulo: 'Créditos', celda: (m) => m.creditos },
+          { titulo: 'Créditos', celda: (m) => m.creditos, numerica: true },
           {
             titulo: 'Prerrequisitos',
             celda: ({ requiereDe = [] }) =>

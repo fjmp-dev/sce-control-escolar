@@ -9,7 +9,7 @@
 
 ## 1. Contexto
 
-El equipo debe construir el SCE completo, con interfaz, conforme al manual. La rama de integración `Desarrollo` solo tiene la fase 1 parcial: base de datos, autenticación y catálogos. El PR #30 agrega altas de usuarios, CI ampliado y la respuesta F-01; sigue sin aprobar, y la invitación de `samuel0rtiz` al repositorio sigue pendiente.
+El equipo debe construir el SCE completo, con interfaz, conforme al manual. La rama de integración `Desarrollo` solo tiene la fase 1 parcial: base de datos, autenticación y catálogos. El PR #30 agrega altas de usuarios, CI ampliado y la respuesta F-01; sigue sin aprobar, y la invitación de `samuel0rtiz` al repositorio sigue pendiente. _(Así se creía el 5 de noviembre, pero la invitación del 23 de octubre había caducado el 30 de octubre (NC-001). Se reenvió el 10 de noviembre y `samuel0rtiz` la aceptó ese día. Tiene permiso write, pero no revisó ni aprobó ningún entregable: apartado 6.2.)_
 
 Antes de este plan se escribió una API completa en la rama local `feature/sce-modulos` (commit `8c5ad1b`, sin subir). Al leer el manual completo se comprobó que **ese código no cumple la letra del manual** (sección 4). Por eso:
 
@@ -30,6 +30,7 @@ Antes de este plan se escribió una API completa en la rama local `feature/sce-m
    - Un defecto no lo cierra quien lo corrigió.
    - Los cambios Must que tocan pagos, calificaciones o seguridad llevan revisor explícito de dominio o seguridad.
    - FJMP trabaja con un asistente de IA. Queda declarado en `Co-Authored-By` y en `roles-y-raci.md`; FJMP rinde cuentas por ese código.
+   - _Desde el 10 de noviembre de 2026 esta regla no se cumple: FJMP ocupa todos los roles (6.2, NC-012)._
 4. **Apilado:** un PR que espera revisión puede tener batches apilados **solo dentro de la misma fase**. Los batches que abren fase (4, 7, 9 y 14) esperan el acta firmada de la fase anterior, como ya se declaró en NC-002. **Ninguna fase cierra sin fusión.**
 5. **Diseño antes de código** (6.2-9, Tabla 54): un cambio de arquitectura o de modelo de datos primero lleva CC (Anexo C) y figuras actualizadas. El código de un cambio Mayor no se fusiona sin su CC aprobado.
 6. **Seguridad y accesibilidad en cada incremento** (6.2-10). En cada batch se repiten los casos de rol y de identificadores ajenos sobre los endpoints nuevos.
@@ -138,7 +139,14 @@ web/             Next.js: interfaces por rol; nunca toca la base de datos
 
 ## 6. Batches
 
-### 6.1 Compactación del 10 de noviembre de 2026 (vigente)
+### 6.1 Compactación del 10 de noviembre de 2026 (vigente con la nota de abajo)
+
+> **Nota del 10 de noviembre de 2026: la retoma (6.2) modifica este apartado.** Siguen vigentes el pago simulado, la tabla de los batches 9 y 10, "se conserva" y las fechas. Quedan sin efecto:
+>
+> - "Lo que sigue sustituye a los batches 9 a 14": los batches 11 a 14 se rigen por 6.2, no por la referencia de abajo.
+> - En "Fuera de alcance": Playwright, NVDA, monitoreo, pruebas de carga y ambiente piloto. NVDA se sustituye por VoiceOver, y el piloto es un ensayo efímero en GitHub Actions. Siguen fuera Mercado Pago real y su webhook (CC-020), la usabilidad con participantes y la ejecución de la fase 5.
+> - "Sin papeleo nuevo" completo: hay actas, CC y una NC por cada cosa que no se cumpla.
+> - "Otros documentos" completo. Donde un documento cita el Batch 11 por los reportes (RF-009), se sigue leyendo el 10. El cierre de la fase 4 y los batches 12 a 14 son los de 6.2.
 
 FJMP decidió que el pago sea **simulado**, sin Mercado Pago, y que el resto se compacte: es un proyecto escolar y basta con que funcione bien de punta a punta. Los batches 0 a 8 se construyeron del 5 al 10 de noviembre de 2026. Lo que sigue sustituye a los batches 9 a 14 de abajo, que quedan como referencia:
 
@@ -152,6 +160,158 @@ FJMP decidió que el pago sea **simulado**, sin Mercado Pago, y que el resto se 
 - **Sin papeleo nuevo:** sin actas, CC ni NC adicionales.
 - **Otros documentos:** donde citan los batches 11 a 14, el 11 se lee como el 10, y los batches 12 a 14 quedan fuera de alcance.
 - **Fechas:** el calendario real está en `plan-de-trabajo.md`, apartado 1. Las fases 1 a 4 cierran a más tardar el 11 de diciembre de 2026.
+
+### 6.2 Retoma de los batches 11 a 14 (decisión de FJMP del 10 de noviembre de 2026)
+
+**Qué cambia respecto a 6.1.** FJMP retoma los batches 11 a 14 "al máximo": todo lo que se puede hacer en local y en CI, sin facultad piloto, sin participantes, sin auditor independiente y sin Windows. Lo que requiere personas o a la institución se prepara y se declara. El pago sigue **simulado** (CC-020). Las frases de 6.1 que quedan sin efecto están en la nota de 6.1. Siguen vigentes las reglas del apartado 2: un PR por sub-batch con CI en verde, y ninguna funcionalidad nueva mientras haya un defecto crítico abierto. Dos no se cumplen y se declaran: la regla 3, separación de funciones (NC-012), y la regla 8 en las fases 1 a 3, que se cierran con etiqueta retroactiva sin `release/x.y.z` ni fusión a `main` (NC-015). La documentación va al pie de la letra: actas, CC, informes y una NC por cada cosa que no se cumpla.
+
+**Estado verificado el 10 de noviembre de 2026** (hora de México; GitHub registra UTC, ya 11 de noviembre):
+
+- La pila #66 a #55 se fusionó entre las 20:38 y las 20:39, cada PR sobre el anterior. El PR #30 se fusionó en `develop` a las 21:21 con merge commit (`1d2b48d`, padres `3a0c4c6` y `69e1318`), así que los commits de cada batch se conservan.
+- Con la cascada, #55 y #56 se fusionaron cuando apenas arrancaba la corrida de su nueva cabeza (`4116785`). Esas corridas (42947523663 y 42947515929) fallaron después, a las 20:52 y 20:53, en la puerta de calidad de SonarQube (S2699, bloqueante). La corrida del #30 sobre la misma cabeza (42947533386) falló en Commitlint a las 20:41. Se corrigió con el commit `69e1318` (20:58), sin revisión; su corrida (42949577646) terminó en verde a las 21:21, y el #30 se fusionó en seguida.
+- El pipeline de `develop` sobre `1d2b48d` (run 42952266697) falló en el paso Commitlint de la etapa 2 por el mensaje "Merge #30", y omitió las etapas 3 a 7.
+- El PR #68 deja los commits de fusión fuera de Commitlint. Se fusionó a las 21:46 con el commit `f3434cf`, que es la punta de `develop`.
+- El run de `develop` sobre `f3434cf` (42954928046) terminó en verde a las 22:11, con las etapas 1 a 7. **La etapa 6, Empaquetado, corrió por primera vez sobre `develop`:** publicó las imágenes con la etiqueta `sha-f3434cfdc60f` y verificó su firma con cosign. Digests: `sce-api` `sha256:cbcfacfefcf762bc564bdc01367a14af5908f81642d51ab89609db8152674095` y `sce-portal` `sha256:9f57b3f33a05394d90662c79ba7cc6cd3122940f923d16d12c762c2ebb3ef1db`.
+- El defecto de cobro doble está abierto como issue #69, con las etiquetas `defecto` y `sev-critica`. Por la regla 1, mientras siga abierto no se inicia funcionalidad nueva: 11.1 es el primer código.
+- `main` sigue en `12feb3a` (fase 0).
+- No hay etiquetas, releases ni environments en GitHub, y `staging.yml` no está en `main`.
+- `notas-version/v1.0.0.md` y `evidencias/fase-4/corridas.md` dicen que existen una etiqueta y una release v1.0.0. **Es falso y se corrige en 11.4.**
+- `samuel0rtiz` aceptó la invitación a las 20:24 (evento `MemberEvent` del 11 de noviembre a las 02:24 UTC) y es colaborador con permiso _write_. No revisó ni aprobó ningún entregable: los PR #30, #55 a #66 y #68 tienen cero revisiones, y todos los fusionó `fjmp-dev`.
+- El issue #67 (mejora gráfica) tiene abierto el PR #70 hacia `develop`, desde las 22:30, con un commit `feat` posterior a la apertura de #69 (21:51). El título del issue aún dice "v1.1.0" y su cuerpo, "después de la entrega v1.0.0"; se corrigen cuando se pueda escribir en GitHub.
+
+**Desviaciones que se declaran una sola vez (11.0) y se citan en cada acta:**
+
+- FJMP produce, acepta, audita y firma como PO, QA, Seguridad y DevOps, con asistente de IA declarado. Hoy no existe ningún environment. El environment `staging` se crea en 11.4 con FJMP como revisor y con la autoaprobación permitida (NC-012).
+- No hay auditor independiente para la Tabla 60: las auditorías se hacen como autoauditoría por reejecución (NC-013).
+- La pasarela es simulada (CC-020).
+- No hay piloto: el "piloto" es un ensayo efímero en GitHub Actions.
+- El rendimiento y la continuidad se miden en el runner, no en el hardware del piloto.
+- NVDA se sustituye por VoiceOver, y opcionalmente por NVDA automatizado.
+- Las figuras de CC-020 se redibujan en 13.1, después de fusionar su código (NC-014).
+- Las fases 1 a 3 se etiquetan sin `release/x.y.z` ni fusión a `main`, y las correcciones van en `feature/`, no en `fix/` (NC-015).
+
+**Numeración nueva:**
+
+- CC-020: cambio de proveedor crítico, de Mercado Pago a pasarela simulada (Tabla 55).
+- CC-021: RNF-USU-002 y RNF-FLE-002, y los casos CO-ACC-01 a 03, CO-COM-01 y CO-MAN-02. El prefijo `CO-` ya entra en la Tabla 31 con la corrección #11 del manual v3.0.
+- CC-022: piloto de ensayo efímero, Fig. 9 y 10, y Tabla 6.
+- NC-011 (fase 4 sin el acta de la fase 3), NC-012 (separación de funciones), NC-013 (auditor independiente), NC-014 (figuras de CC-020 después de fusionar) y NC-015 (ramas y etiquetas fuera de la Tabla 31).
+- Casos: CO-ACC-01 a 03 (accesibilidad), CO-COM-01 (Tabla 50) y CO-MAN-02 (modularidad). No se usan los prefijos CU, CA ni CN.
+
+#### Sub-batches
+
+Las ramas siguen la regla 2: `feature/<issue>-<descripción>`, y `release/x.y.z` solo para releases. La Tabla 31 y la sección 15.2 prevén `fix/id` para corregir defectos. Aquí no se usa: el defecto #69 y las correcciones de `release/1.0.0` van en `feature/`, y se distinguen por la etiqueta `defecto` de su issue (NC-015). El issue de cada rama es el de su batch (#51 a #54) o el del defecto (#69). Los issues #52 a #54 se cerraron con la compactación de 6.1; FJMP los reabre al empezar su batch.
+
+| Sub-batch | Contenido (resumen) | Herramientas | Casos | AU | PR | Esfuerzo |
+|---|---|---|---|---|---|---|
+| **11.0** Desbloqueo y decisión fechada | #68 fusionado y run de `develop` con la etapa 6 (imágenes firmadas). Esta sección 6.2. Aprobación fechada de CC-010 a CC-019 y NC-008 ampliada. CC-020. NC-011 a NC-015. Reasignar a FJMP las NC que dicen SJOM, con plan fechado para las Mayor. Corregir la afirmación sobre la invitación: `samuel0rtiz` aceptó y tiene permiso _write_, pero no revisó nada (roles-y-raci §2 y §6). Acta del sprint S3. Manual v3.0 §2.2 a §2.4 y registro de cambios del plan | gh, git | — | 04, 06, 36, 40, 43 | `feature/51-retoma-documental` → develop | S (0,5 d) |
+| **11.1** Pagos: defecto de cobro doble y CI-PAG-01 | Issue #69 (`defecto`, `sev-critica`). `simular()` vuelve a validar el saldo con la cuenta bloqueada, o se agrega un CHECK saldo ≥ 0. Prueba de dos pagos pendientes aprobados. Carpeta Newman de pagos, trámites y reportes (doble simulación, un solo abono, rechazo, recibo, corte, constancia y reporte, con esquemas `additionalProperties:false`). R-15 (fallo a mitad de la aplicación) y R-24 (caja no toca el historial) | Jest, Supertest, Newman | CF-PAG-01, CI-PAG-01, CF-TRA-01/02, CF-REP-01 | 24, 26 | `feature/69-cobro-doble` | S (1 d) |
+| **11.2** Reglas Must al 100 % y bitácora de pago y constancia | `cs-seg-06-pago.sql` y `cs-seg-06-constancia.sql` en calidad-datos y en datos.spec. `tasa-conclusion.sql`. Prefijo R-xx en los títulos de las pruebas y un grep en ci.yml que falla por debajo del 100 % (CO-MAN-01). Renombrar CS-SEG-02 → CS-SEG-03 en pagos.spec:147 y tramites.spec:111. reglas-de-negocio §2: 24 de 24 | Jest, GX, bash/grep | CO-MAN-01, CS-SEG-06, CS-SEG-03 | 15, 16, 30 | `feature/51-reglas-must` | M (1 d) |
+| **11.3** Cierre documental de la fase 4 | Puntos de historia en #31 y #41 a #51, con la nota "estimado después de construir". `informe-fase-4.md` con la Tabla 59 (10 métricas, comando de recálculo y tendencia F1→F4) y la Tabla 13 (6 dimensiones; 4 como "No se mide"). Informes 1 a 3 con su valor real. Matriz de riesgos revisada (RK-02, RK-03 y RK-08, y el riesgo aceptado de CC-020 con su RK, nivel y responsable). Decisión de CC-001 a CC-009, firma del acta de cambios mayores e issues `cambio` de CC-016 a CC-020 (NC-008). `amfe-pagos.md`. Controles 27001/27002 y OWASP Top 10 en `stride.md` (un solo archivo). `auditoria-fase-2.md`, `auditoria-fase-4-evidencia.md` y `auditoria-fase-4.md` (Anexo F) como **autoauditoría por reejecución, con NC por independencia** (NC-013). `acta-aceptacion-fase-4.md` y actas 1 a 3 sin SJOM, firmadas en orden. Lecciones de la fase 4 y MJ-002 | gh, jq, Markdown | — | 07, 37, 39, 40, 42 | `feature/51-cierre-fase-4` | M (1,5 d) |
+| **11.4** Release v0.4.0 | Etiquetas retroactivas v0.1.0 a v0.3.0 sobre el commit de cierre de cada fase, con la leyenda "creada el <fecha>". `staging.yml` con `on: push: tags: ['v*']` y acta por convención `acta-promocion-<etiqueta>.md`. Environment `staging` (revisor FJMP, autoaprobación permitida). `release/0.4.0` y `v0.4.0-rc.1` → etapa 8. `v1.0.0.md` pasa a `v0.4.0.md`, con las figuras de CC-020 declaradas pendientes (NC-014), y se corrigen corridas.md y ACCESO-Y-AUDITORIA.txt. El acta de promoción declara NC-015. PR a main con merge commit, `v0.4.0` sobre el commit del rc, release con despliegue-pruebas.zip y su SHA-256. Línea base (§7 del acta) e inventario §8 | git, gh, cosign, Actions | CF-ROL-01 (regresión) | 09, 12, 13 | `release/0.4.0` → main | S (1 d) |
+| **12.1** Calidad de datos completa y pirámide | CC-011 aprobado e implementado: migración `pago.fecha_confirmacion` llenada con `clock_timestamp()`. `cd-dat-03.sql` (saldo contra movimientos, pago contra abono, corte contra abonos del día UTC-6) y `cd-dat-06.sql`, con suites de GX que no pasan en vacío y pruebas de detección. Expectativas de la Tabla 16 (trámites, formatos D-11, importes). `muestreo-bitacora.sql` y `accesos.sql` en la etapa 4 como artefacto. calidad-datos.sh también en staging. Regla de conteo y `scripts/piramide.sh` (dos conteos, solo avisa) | GX 1.24, Jest, jq | CD-DAT-01 a 06, CS-SEG-06 | 16, 21, 22, 24, 30 | `feature/52-calidad-datos` | M (1,5 d) |
+| **12.2** Seguridad completa | zap.sh con los 7 roles (ninguna operación solo 401/403) y calidad-datos.sh completo después del escaneo (CS-SEG-05). `zap-acceso-cruzado.sh` (CS-SEG-03). `zap-portal.sh` con full scan autenticado en `zap-completo.yml` (dispatch, cron semanal y tags v\*). `informe-zap.md` con el tratamiento de cada alerta. CSP con nonce (después de #67). `revision-cs-seg-08.md` v2. STRIDE v1.7 (pagos, caja, trámites y reportes; cumplimiento de la Tabla 38 y 18.2). AMFE de inscripción v1.1 | ZAP 2.17, Docker | CS-SEG-03, 05, 08 | 13, 15, 20, 37 | `feature/52-zap-completo` | L (2 d) |
+| **12.3** Compatibilidad con Playwright | `@playwright/test` 1.65 en web. Proyectos de la Tabla 50: chrome actual y anterior, firefox, edge, iphone-webkit, android-chromium y zoom-200. Specs de sesión por rol, inscripción, pago y consulta (sin duplicar el e2e de Cypress). Fixture de desborde y controles críticos, teclado (28.1-1), objetivo táctil de 24 px y axe-core inyectado. `scripts/playwright.sh`, `matriz-compatibilidad.sh` y job `compatibilidad` en la etapa 7 (Must bloquea, Should con continue-on-error) y en staging.yml | Playwright 1.65, axe-core 4.14, jq | CO-COM-01, CO-ACC-02 | 32 | `feature/52-playwright` | M (2 d) |
+| **12.4** Accesibilidad completa | axe por rol y en el error de pago (Cypress). Lighthouse en las páginas que faltan (mi-cuenta, pasarela, recibo, horario, expediente, trámites, caja, inicio de los 7 roles), con LCP, TBT y CLS y umbral de rendimiento 90 como criterio del equipo. Lista manual firmada (WCAG 2.2 AA, zoom real). **VoiceOver** sobre los flujos Must. Revisión manual en el simulador de iOS y el emulador de Android (`compatibilidad-dispositivos.md`). Registro de hallazgos HA-NN. accesibilidad.md v2.0. Opcional: `nvda.yml` con Guidepup en windows-latest | Cypress, Lighthouse 13.6, VoiceOver, Xcode y AVD | CO-ACC-01, 02, 03 | 32 | `feature/52-accesibilidad` | M (1,5 d; +2 d si se hace NVDA) |
+| **12.5** Matrices ISO y Anexo A | CC-021 (RNF-USU-002 y RNF-FLE-002, catálogo de 22). `matriz-25010.md` (37 subcaracterísticas y sección de Alta y aceptación), `matriz-25012.md` (15 atributos), Anexo A con columnas de resultado, evidencia y estado, y filas de Accesibilidad y Seguridad física. CO-MAN-02 (`no-restricted-imports`). Etiquetas `25010:*` en las historias. Tabla de la Parte B en matriz-trazabilidad. plan-de-pruebas al día (línea 277 y §4 con versiones) | ESLint, gh | CO-MAN-02 | 40, 42 | `feature/52-matrices-iso` | M (1,5 d) |
+| **12.6** Parte B: datos personales y riesgos | `docs/gobierno/datos-personales/`: inventario, aviso **MODELO** (integral y simplificado), base de licitud, ARCO, documento de seguridad. respuesta-a-incidentes §4.1 (vulneraciones) con ensayo de mesa y acta. Aplicabilidad de la ley estatal (cotejada con la Gaceta). Retención del expediente (D-18, "por ratificar"). RK-11 a RK-14. Página `/privacidad` y enlace en ingresar, con axe (después de #67) | Markdown, Next.js, Cypress | — | 14, 18, 37, 40 | `feature/52-parte-b` | M (1,5 d) |
+| **13.1** Etapa 8 y piloto de ensayo | CC-022. `staging.yml` elige el ambiente por etiqueta (`-rc.N` → staging; `vX.Y.Z` → `piloto` con puertas 1 y 2 comprobadas por API y acta de liberación). Environment `piloto` con secretos propios y CA del ambiente. Proxy como proyecto compose propio (Fig. 9). `SEMILLA=0` con su prueba. Humo de la puerta 2 completo (Anexo D §1: pago con doble aviso, consulta, inscripción y rechazos). Rulesets de `release/**` y `v*`. Plantillas `.env.example` de infra. Figuras 1, 2, 3, 5, 9 y 10 sin Mercado Pago (CC-020). Inventario §3, §4 y §8 y fichas de proveedores (GitHub real, GHCR, Sigstore, Docker Hub) | Actions, gh api, Compose, PlantUML | — | 08, 09, 12, 13, 17, 33, 38 | `feature/53-etapa8-piloto-ensayo` | M (1,5 d) |
+| **13.2** Continuidad | `respaldo.sh` (pg_dump cifrado con age, inventario.csv, RETENCION_DIAS e incluye registros de contenedor). `restauracion.sh` (RTO, conteos, CD-DAT y humo). `rollback.sh` (obligatorio desde rc.2). `continuidad.yml` cada 12 h: restaura el respaldo anterior, genera actividad con Newman, respalda, verifica RPO y también corre calidad-datos.sh (es la "operación recurrente" ensayada). Release `respaldos` semanal como copia fuera del sitio. `cifrado-y-claves.md` (FileVault, inventario de claves, prueba negativa). `contingencias.md` (pasarela y ventanilla) con simulación de mesa. matriz-retencion con ubicaciones | age, pg_dump/pg_restore, Actions | CO-FIA-02 | 17, 33, 34, 40 | `feature/53-continuidad` | M (2 d) |
+| **13.3** Monitoreo y seguridad operativa | `prom-client` (histograma por ruta plantilla y contador de errores de negocio), `/metricas` interno con 404 en nginx. `infra/monitoreo/` (Prometheus, Grafana con tablero y alertas por correo, blackbox, node, cadvisor y postgres-exporter), que también usa rendimiento. `connection_limit` explícito. pgBadger con parámetros ocultos. `disponibilidad.py` con autoprueba y plantilla de mantenimiento (48 h). `revision-de-accesos.md` y `seguridad-operativa.yml` mensual. `acceso-directo-a-la-base.md` y verificación de roles LOGIN. Decidir la baja de `samuel0rtiz` o su permanencia con permiso _write_ | Prometheus, Grafana, pgBadger, gh | CO-FIA-01 (ensayo) | 14, 15, 16, 17, 35 | `feature/53-monitoreo` | L (2,5 d) |
+| **13.4** Rendimiento | `rendimiento.yml` (etiqueta y caso; cpuset con dimensionamiento de referencia; inválido si el generador pasa de 80 % de CPU). `datos-carga.sql` (1 000 alumnos sintéticos y grupo de 5 lugares). `sce.jmx` parametrizado (CR-REN-01, 03, 04 y 05). `cr-ren-02.js` y `.sql`. `metas.sh` y `registro.sh`. Humo k6 con umbrales en la etapa 7 (y modo SOLO_LECTURA). Lighthouse durante la meseta. Plantilla `informe-rendimiento.md` | JMeter 5.6.3, k6 1.x, Prometheus | CR-REN-01 a 05 | 31 | `feature/53-rendimiento` | M (2 d) |
+| **13.5** Flexibilidad y usabilidad preparada | `flexibilidad.spec.ts`, carpeta Newman y `co-fle-01.sql` en verificar-staging (RNF-FLE-001 pasa a la fase 4, pero se verifica después de su cierre, sobre el rc). Anexo G: guiones por rol (caja: "corte del día"), hojas CSV, consentimiento, inducción. `scripts/usabilidad/sus.py` con autoprueba. Plantilla de issue `hallazgo-usabilidad.yml`. Tabla de 26.1 con su evidencia | Supertest, Newman, Python stdlib | CO-FLE-01 | 32, 42 | `feature/53-flexibilidad-usabilidad` | M (1 d) |
+| **13.6** Candidato v1.0.0-rc.N | Corte de `release/1.0.0` (después de #67 y de 12.x a 13.5). `v1.0.0-rc.1` y `rc.2` → etapa 8 con rollback. CR-REN-01 a 05 sobre el rc (CR-REN-01 y 02 tres veces, mediana). `informe-rendimiento.md`. Acta de restauración. Actas de promoción. Anexo A y matrices con el resultado del rc. Paquete de la auditoría "Antes de la liberación" con NC por independencia (NC-013). Copia de evidencias con SHA-256 | git, gh, Actions | CR-REN, CO-FIA-02, CO-COM-01, CO-ACC | 09, 12, 31, 33, 34, 37, 40 | `release/1.0.0`; solo recibe correcciones, cada una en `feature/<issue>-<descripción>` | M (1,5 d) |
+| **14.1** Liberación v1.0.0 sin piloto | Seis puertas de 20.1 en el acta de promoción (puerta 3 "medido en el runner"; puerta 6 = piloto de ensayo). `acta-liberacion-v1.0.0.md` (36.1; criterio 7: "secretos propios verificados por huella; pago simulado"). Despliegue al environment `piloto`. PR release → main, `v1.0.0` sobre el commit del último rc y retrofusión a develop. Notas y release. `dictamen-25040.md` (conformidad y calificación; idoneidad "no evaluada"). NC Mayor cerradas o aceptadas con plan fechado | gh, Actions | — | 09, 33, 40, 42 | `release/1.0.0` → main | S (1 d) |
+| **14.2** Fase 5 preparada, no ejecutada | `plan-de-evaluacion-piloto.md` con la cláusula contra controles paralelos. Plantillas `incidente.yml`, emergencia en `cambio.yml` (24 h) y apartado "Problemas". `informe-cierre-piloto.md` (Tablas 13 y 59, con los comandos de 11.3). Lista de Anexo F para "Cierre del semestre". Acta de fase 5 "preparada, no ejecutada" | Markdown, gh | — | 36, 39 | `feature/54-fase-5-preparada` | S (0,5 d) |
+
+**Orden y calendario:**
+
+1. 11.0 a 11.4 en serie, antes del 20 de noviembre. El cobro doble (#69) es el primer código porque bloquea funcionalidad nueva.
+2. Fusionar el PR #70 (issue #67, mejora gráfica) después de cerrar #69 (regla 1) y antes de 12.3, 12.4, el `/privacidad` de 12.6 y la CSP de 12.2. Las demás partes de 12.x no dependen de #67.
+3. 12.1 → 12.2; 12.3 → 12.4; 12.5 y 12.6 en paralelo. Todo en el sprint S4 (16 al 27 de noviembre).
+4. 13.1 → 13.2 → 13.3 → 13.4; 13.5 en paralelo; 13.6 al final. Todo en el sprint S5 (30 de noviembre al 11 de diciembre).
+5. 14.1 y 14.2 a más tardar el 11 de diciembre.
+
+Esfuerzo total: unos 27 días-persona. Cada sprint cierra con su acta y su retrospectiva.
+
+**Simplificaciones deliberadas:**
+
+- Ni `operacion.yml` ni `tablero.sh`: lo cubren `continuidad.yml` y los comandos escritos en el informe.
+- `sesion-usabilidad.yml` (túnel cloudflared) se hace solo si aparecen participantes.
+- NVDA con Guidepup es opcional.
+- El monitor externo (healthchecks.io) se usa solo si hay un ambiente persistente en el Mac.
+- Hay un solo stack de monitoreo, compartido con rendimiento.
+
+#### No factible y lo que queda preparado
+
+| Qué | Por qué | Qué queda preparado |
+|---|---|---|
+| Uso por una facultad durante un semestre y aceptación de la fase 5 | No hay facultad, usuarios ni datos reales | 14.2: plan de evaluación, plantillas y acta "preparada" |
+| Auditorías de la Tabla 60 (cierre de F2, cierre de F4, antes de liberar y cierre del semestre) con auditor independiente | No hay auditor (39.1). Una IA coautora tampoco es independiente | Paquete de evidencia y lista prellenada; autoauditoría por reejecución con NC-013. Se ofrece a la profesora o al equipo de PA-SCE-001 |
+| Rendimiento en el servidor del piloto (24.2, 7.2) | No hay servidor | CR-REN-01 a 05 en el runner con dimensionamiento declarado; scripts con la URL por variable |
+| Disponibilidad mensual (RNF-FIA-001) y alertas en operación | No hay ambiente encendido un mes | `disponibilidad.py` probado y alertas disparadas a propósito |
+| Frecuencias de la Tabla 39 en piloto (diaria, semanal, continua y al cierre) | No hay operación | En cada pipeline, cada staging y cada 12 h en `continuidad.yml` |
+| CD-DAT-06 con significado | Con la pasarela simulada, confirmación y reflejo van en la misma transacción | Columna, consulta y expectativa, declaradas "triviales por construcción" |
+| Retención "semestre más uno" demostrada | El proyecto cierra el 11 de diciembre | RETENCION_DIAS=365, release `respaldos` e inventario |
+| Matriz según los navegadores de la facultad (27) | No hay inventario de dispositivos | Tabla 50 tal como está publicada |
+| Safari de iOS y Chrome de Android reales automatizados | Playwright no maneja Mobile Safari; KVM en Actions es costoso | WebKit y Chromium con descriptor en CI; revisión manual en el simulador y el emulador |
+| Sesión manual con NVDA | No hay Windows | VoiceOver como sustituto declarado; Guidepup opcional |
+| Sesiones con 5 participantes por rol y SUS ≥ 70 | No hay participantes | Guiones, hojas, consentimiento, `sus.py` e inducción |
+| Credenciales de Mercado Pago distintas de las de sandbox (36.1-7, al pie de la letra) | Pago simulado (CC-020) | Secretos propios del environment `piloto`, verificados por huella |
+| Let's Encrypt con dominio público | Sin dominio ni costo | CA propia del environment y testssl |
+| Aviso de privacidad emitido y plazos ARCO oficiales | El responsable es la universidad | Modelos marcados "no emitido por la institución" |
+| Separación de funciones (1.2, 10.4, 29.1 y 30.2) | En la práctica, una sola persona: SJOM es colaborador, pero no participa | Desviación declarada en 11.0 (NC-012) y citada en cada acta |
+| Dictamen de idoneidad (25040) | Requiere el piloto | Conformidad y calificación dictaminadas |
+| AU-31 a 35 exigibles en la fase 5 | El proyecto se declara en fase 4 vigente, con la fase 5 preparada | Evidencia de staging para cuando se evalúen |
+
+#### Cambios al manual v3.0 (sin firmar) por esta retoma
+
+En 11.0 se aplican 2.2, 2.3 y las versiones (`manual-v3.0.md`, apartados 2.2 a 2.4), junto con el apartado 1, la fila de las Tablas 23 y 25, la fila de Mercado Pago de la Tabla 55 (CC-020), la frase sobre SJOM del apartado 9 y el historial del borrador. Lo demás entra con el sub-batch que lo implementa.
+
+- **2.1**:
+  - Piloto: "piloto de ensayo efímero en GitHub Actions con la topología de la Fig. 9, sin facultad ni datos reales (CC-022)".
+  - Tabla 4, Pagos: CD-DAT-03 es una conciliación interna entre estado de cuenta, abonos y corte, y sí se verifica.
+  - Tabla 41, Integración: "pasarela simulada".
+  - Tabla 6: la fila Piloto queda "piloto de ensayo" y la fila Staging añade "carga en el runner".
+- **2.2**:
+  - RNF-REN-001: "medido en staging con dimensionamiento de referencia, no en el piloto".
+  - RNF-REN-002: CR-REN-02 en el runner con dimensionamiento de referencia, no en el piloto (13.4 y 13.6).
+  - RNF-FIA-002: "respaldo cifrado, restauración cronometrada y rollback ensayados en CI, con acta".
+  - RNF-FIA-001: "cálculo ensayado sobre una ventana de observación".
+  - Se añade RNF-FLE-001: se verifica con CO-FLE-01 en staging.
+- **2.3**:
+  - 24, 27, 34 y 35 aplican en staging o en ensayo. De 26 aplica la preparación y los criterios 1 a 3.
+  - 36 y 20.1 aplican con salvedades: puerta 3 en el runner, 36.1-7 por secretos propios, PO y QA como una sola persona.
+  - 37 aplica solo como plantillas.
+  - Accesibilidad: axe en Cypress y Playwright, Lighthouse, teclado y zoom manuales, VoiceOver en lugar de NVDA.
+  - 25040: conformidad y calificación sí; idoneidad no.
+  - Tabla 60: "Cierre de fase 2", "Cierre de fase 4" y "Antes de la liberación" se hacen como autoauditoría con NC; "Cierre del semestre" no se realiza.
+- **Apartado 3**:
+  - Tabla 7: Monitoreo con Prometheus, Grafana, pgBadger y alertas; Pagos simulados; Fig. 9 y 10 sin Mercado Pago.
+  - Tabla 42: Playwright 1.65, axe-core en lugar de axe DevTools, Lighthouse 13.6, k6 1.x, GX 1.24.
+- **Tabla 39:** las frecuencias "en piloto" pasan a "cada pipeline, cada staging y cada 12 h en continuidad".
+- **Tabla 59:** las metas "antes del piloto" y "en piloto" pasan a "al cierre de cada fase o etiqueta". Son 10 métricas, y la tasa de conclusión se mide sobre datos sintéticos.
+- **Apartado 5:** CC-011 pasa de "incorporado" a implementado en 12.1. Se añaden CC-020, 021 y 022.
+- **Tablas:**
+  - Tabla 36: RK-11 a RK-14.
+  - Tabla 38: Datos personales con aviso, ARCO, inventario y documento de seguridad.
+  - Tabla 62: ubicaciones de respaldos, registros y grabaciones.
+  - Tabla 63: columnas de resultado y filas de Accesibilidad y Seguridad física.
+  - Tabla 55: GHCR, Sigstore, Docker Hub e iCloud. La fila de Mercado Pago ya se aplicó en 11.0 (CC-020).
+- **Apartado 7:** se cierra el "por confirmar" de la ley estatal y se fija la autoridad a notificar.
+- **Apartados 8 y 9:** alinear "quien produce no acepta" con la desviación declarada.
+- **Versiones:** la fase 4 se entrega como v0.4.0 y v1.0.0 es la liberación sin piloto (Tabla 54 y notas).
+
+#### Versiones
+
+| Etiqueta | Dónde | Cuándo |
+|---|---|---|
+| v0.1.0, v0.2.0, v0.3.0 | Commit de cierre de cada fase en la historia de `develop` (conservada por el merge commit del #30); anotadas como retroactivas, sin `release/x.y.z` ni fusión a `main` (regla 8; NC-015) | 11.4 |
+| v0.4.0-rc.1 → v0.4.0 | `release/0.4.0`; v0.4.0 sobre el mismo commit del rc, fusionado a main | Cierre de B11 |
+| v1.0.0-rc.1, rc.2, … | `release/1.0.0`, cortada después de #67 y de B12 a 13.5 | 13.6 |
+| v1.0.0 | Mismo commit que el último rc, en main | 14.1, sin piloto. Si algún día hay piloto, su operación va en v1.x |
+
+**Decisión sobre v1.0.0:** el 10 de noviembre de 2026 FJMP revocó su decisión previa de etiquetar v1.0.0 de inmediato. El código de hoy cierra la fase 4, pero no ha pasado por un rc, por staging de la etapa 8, por rollback ni por las puertas. La fase 4 se entrega como v0.4.0 (11.4), y v1.0.0 sale al final, sobre el último rc de 13.6 (14.1).
 
 ### Batch 0 — Base documental y reconciliación (sin código de producto)
 **Fuente:** sec. 1, 5, 11, 12, 16, 17, 33, 40–43; Tabla 49; PA-SCE-001 sec. 3.3, 7 y 11.
@@ -452,18 +612,18 @@ Los casos `CO-*` son propuestos por el repo y se aprueban en la nueva versión d
 
 | Qué | Quién | Bloquea |
 |---|---|---|
-| **Aceptar la invitación al repositorio** | SJOM | Todas las aprobaciones y fusiones |
-| Firmar el acta de fase 0 **ya con su adenda** y el registro de aprobación del manual v2.0; aprobar PR #30; revisar PR #29 | SJOM | Compromisos ante Rodolfo (NC-001, 002, 003) |
-| Aprobar CC-001 a CC-006 y los nuevos, con fecha y responsable | SJOM | Fusión de cambios Mayor |
-| Aprobar cada PR, ejecutar QA y firmar actas | SJOM | Cada batch y cada fase |
+| ~~Aceptar la invitación al repositorio~~: aceptada el 10 de noviembre de 2026, con permiso _write_. SJOM no revisó ni aprobó ningún entregable (NC-012) | SJOM | Ya no bloquea: desde el 10 de noviembre aprueba y fusiona FJMP (6.2) |
+| ~~Firmar el acta de fase 0 **ya con su adenda** y el registro de aprobación del manual v2.0; aprobar PR #30; revisar PR #29~~: desde el 10 de noviembre de 2026 firma FJMP (NC-012). El #30 se fusionó ese día sin aprobación, y el #29 sigue sin revisión (NC-001) | ~~SJOM~~ FJMP | Compromisos ante Rodolfo (NC-001, 002, 003) |
+| ~~Aprobar CC-001 a CC-006 y los nuevos, con fecha y responsable~~: desde el 10 de noviembre de 2026 aprueba FJMP (NC-012). Aprobó CC-010 a CC-020; CC-001 a CC-009 siguen sin decisión (NC-008) | ~~SJOM~~ FJMP | Fusión de cambios Mayor |
+| ~~Aprobar cada PR, ejecutar QA y firmar actas~~: desde el 10 de noviembre de 2026 lo hace FJMP (NC-012) | ~~SJOM~~ FJMP | Ya no bloquea (6.2) |
 | Ratificar D-5 a D-14 con reglas reales de la UAEM | PO | Batches 3, 5, 7, 8 y 9 |
-| **Acta de levantamiento** con control escolar, coordinación y caja. No se puede redactar sin que esas entrevistas ocurran | Ambos | Conformidad de fase 0 (NC-006) |
+| **Acta de levantamiento** con control escolar, coordinación y caja. No se puede redactar sin que esas entrevistas ocurran | FJMP (antes ambos) | Conformidad de fase 0 (NC-006) |
 | **Auditor interno independiente** para los cuatro momentos de la Tabla 60 (no desarrolla ni opera) | Profesora o equipo auditor | Batches 6, 11, 13 y 14 |
 | ~~Proveedor de staging y su costo~~: resuelto con CC-018, staging efímero en GitHub Actions sin costo | FJMP | Batch 6 |
-| Cuenta y credenciales sandbox de Mercado Pago | FJMP | Batch 9 |
-| Revisión con NVDA en un equipo Windows | Ambos | Batch 12 |
-| Cinco participantes por rol para SUS | Ambos | Batch 13 |
-| Infraestructura de piloto, facultad piloto, Dirección y convenio con Mercado Pago | Institución | Batch 14 |
+| ~~Cuenta y credenciales sandbox de Mercado Pago~~: no aplica, pasarela simulada (CC-020) | FJMP | Ya no bloquea |
+| ~~Revisión con NVDA en un equipo Windows~~: se sustituye por VoiceOver (6.2, 12.4) | FJMP | Ya no bloquea |
+| Cinco participantes por rol para SUS | FJMP (antes ambos) | Criterios 4 y 5 de 26.1 (13.5 los prepara) |
+| Infraestructura de piloto, facultad piloto y Dirección. Sin convenio con Mercado Pago (CC-020) | Institución | Fase 5, que no se ejecuta (6.2, 14.2) |
 
 ---
 

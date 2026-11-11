@@ -4,7 +4,8 @@ import { Tabla } from '@/componentes/tabla';
 import { emitirTramite, rechazarTramite, tomarTramite } from '@/lib/acciones';
 import { consultar, ErrorApi } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
-import { ETIQUETA_TIPO_TRAMITE, estadoDeTramite, momentoLegible } from '@/lib/formato';
+import { ETIQUETA_TIPO_TRAMITE } from '@/lib/formato';
+import { EstadoDeTramite, Hoja, Momento } from './piezas';
 
 export const metadata = { title: 'Trámites' };
 
@@ -74,11 +75,15 @@ export default async function PaginaTramites({
   return (
     <>
       <h1>Trámites</h1>
+      <p className="entrada">
+        Toma las solicitudes recibidas, emite o rechaza las que están en proceso y verifica un documento por su folio.
+      </p>
       {resultado && (
         <Aviso tipo="exito">
           El trámite {cambiado?.folio} {resultado.mensaje}.
         </Aviso>
       )}
+      <h2>Cola de solicitudes</h2>
       <form method="get" className="busqueda">
         <label htmlFor="filtro">Mostrar</label>
         <select id="filtro" name="filtro" defaultValue={filtro}>
@@ -97,12 +102,19 @@ export default async function PaginaTramites({
         filas={todos.filter((t) => vigente.estados.includes(t.estado))}
         clave={(t) => t.folio}
         columnas={[
-          { titulo: 'Folio', celda: (t) => t.folio },
+          { titulo: 'Folio', celda: (t) => <span className="folio">{t.folio}</span> },
           { titulo: 'Matrícula', celda: (t) => t.matricula },
           { titulo: 'Documento', celda: (t) => ETIQUETA_TIPO_TRAMITE[t.tipo] ?? t.tipo },
-          { titulo: 'Estado', celda: estadoDeTramite },
-          { titulo: 'Solicitado', celda: (t) => momentoLegible(t.fechaSolicitud) },
-          { titulo: 'Acciones', celda: (t) => <Acciones tramite={t} /> },
+          { titulo: 'Estado', celda: (t) => <EstadoDeTramite tramite={t} /> },
+          { titulo: 'Solicitado', celda: (t) => <Momento iso={t.fechaSolicitud} /> },
+          {
+            titulo: 'Acciones',
+            celda: (t) => (
+              <div className="tramites-acciones">
+                <Acciones tramite={t} />
+              </div>
+            ),
+          },
         ]}
       />
 
@@ -122,7 +134,7 @@ export default async function PaginaTramites({
               ? `El documento ${verificacion.folio} es auténtico: su contenido no ha cambiado desde que se emitió.`
               : `El documento ${verificacion.folio} fue alterado: su contenido no coincide con el que se emitió.`}
           </Aviso>
-          <pre className="documento">{verificacion.contenido}</pre>
+          <Hoja documento={verificacion} />
         </>
       )}
     </>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Logotipo } from '@/componentes/icono';
 import { Navegacion } from '@/componentes/navegacion';
 import { cerrarSesion } from '@/lib/acciones';
 import { sesionActual } from '@/lib/api';
@@ -12,10 +13,17 @@ export default async function LayoutPortal({ children }: { children: ReactNode }
       <header className="cabecera">
         <div className="cabecera-fila">
           <Link href="/" prefetch={false} className="marca">
+            <Logotipo />
             Sistema de Control Escolar
           </Link>
           <p className="persona">
-            {correo} · {roles.map((rol) => ETIQUETA_ROL[rol]).join(', ')}
+            <span>{correo}</span>
+            <span className="persona-rol">
+              <span className="persona-separador" aria-hidden="true">
+                {' · '}
+              </span>
+              {roles.map((rol) => ETIQUETA_ROL[rol]).join(', ')}
+            </span>
           </p>
           <form action={cerrarSesion}>
             <button type="submit" className="boton boton-secundario">
@@ -23,11 +31,13 @@ export default async function LayoutPortal({ children }: { children: ReactNode }
             </button>
           </form>
         </div>
-        <Navegacion enlaces={menuDe(roles)} />
       </header>
-      <main id="contenido" tabIndex={-1} className="contenido">
-        {children}
-      </main>
+      <div className="portal">
+        <Navegacion enlaces={menuDe(roles)} />
+        <main id="contenido" tabIndex={-1} className="contenido">
+          {children}
+        </main>
+      </div>
     </>
   );
 }

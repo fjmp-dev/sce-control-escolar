@@ -93,7 +93,7 @@ describe('Layout y navegacion por rol', () => {
   it('muestra quien entro con su rol legible, el menu de su rol y como salir', async () => {
     api(['coordinacion']);
     mostrar(await LayoutPortal({ children: <p>Contenido</p> }));
-    screen.getByText(/yo@sce\.test · Coordinación académica/);
+    expect(document.querySelector('.persona')?.textContent).toBe('yo@sce.test · Coordinación académica');
     screen.getByRole('button', { name: 'Cerrar sesión' });
     const menu = screen.getByRole('navigation', { name: 'Principal' });
     expect(within(menu).queryByRole('link', { name: 'Usuarios' })).toBeNull();
@@ -182,7 +182,9 @@ describe('Usuarios', () => {
     const otra = screen.getByRole('row', { name: /otra@sce\.test/ });
     within(otra).getByRole('cell', { name: 'Inactivo' });
     within(otra).getByRole('cell', { name: 'Caja' });
-    within(otra).getByText('Cambiar acceso de otra@sce.test');
+    expect(within(otra).getByText('Cambiar acceso', { selector: 'summary', exact: false }).textContent).toBe(
+      'Cambiar acceso de otra@sce.test',
+    );
     expect(within(otra).getByLabelText<HTMLInputElement>('Cuenta activa', { selector: 'input' }).checked).toBe(false);
     expect(within(otra).getByLabelText<HTMLInputElement>('Caja', { selector: 'input' }).checked).toBe(true);
     expect(screen.getByRole('button', { name: 'Dar de alta' })).toBeTruthy();
@@ -211,7 +213,7 @@ describe('Paginas sin datos', () => {
     cleanup();
     mostrar(PaginaSinPermiso());
     screen.getByRole('alert');
-    screen.getByRole('link', { name: 'inicio' });
+    screen.getByRole('link', { name: 'Volver al inicio' });
     cleanup();
     mostrar(PaginaNoEncontrada());
     expect(screen.getByRole('heading', { name: 'Esta página no existe' })).toBeTruthy();

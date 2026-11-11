@@ -50,18 +50,18 @@ export default async function PaginaOferta({
         <select id="periodo" name="periodo" defaultValue={periodo.clave}>
           {periodos.map((p) => (
             <option key={p.clave} value={p.clave}>
-              {p.clave}, {ETIQUETA_ESTADO_PERIODO[p.estado] ?? p.estado}
+              {p.clave} ({ETIQUETA_ESTADO_PERIODO[p.estado] ?? p.estado})
             </option>
           ))}
         </select>
-        <button type="submit" className="boton boton-secundario">
+        <button type="submit" className="boton">
           Ver oferta
         </button>
       </form>
 
       {periodo.ofertaPublicadaEn ? (
         <Aviso tipo="exito">
-          Oferta publicada el {momentoLegible(periodo.ofertaPublicadaEn)}. Los alumnos la ven y los grupos que agregues
+          Oferta publicada el {momentoLegible(periodo.ofertaPublicadaEn)}; los alumnos la ven y los grupos que agregues
           aparecen al momento.
         </Aviso>
       ) : (
@@ -87,8 +87,11 @@ export default async function PaginaOferta({
           { titulo: 'Materia', celda: (g) => `${g.materiaClave} ${g.materiaNombre}` },
           { titulo: 'Grupo', celda: (g) => g.clave },
           { titulo: 'Profesor', celda: (g) => g.profesor },
-          { titulo: 'Inscritos', celda: (g) => `${g.ocupacion} de ${g.cupo}` },
-          { titulo: 'Horario', celda: (g) => g.horarios.map(horarioLegible).join('; ') },
+          { titulo: 'Inscritos', celda: (g) => `${g.ocupacion} de ${g.cupo}`, numerica: true },
+          {
+            titulo: 'Horario',
+            celda: (g) => g.horarios.map(horarioLegible).map((sesion) => <div key={sesion}>{sesion}</div>),
+          },
         ]}
       />
       {grupos.length > 0 && (
@@ -129,13 +132,20 @@ export default async function PaginaOferta({
               correccion="Escribe un número entero mayor que cero."
             />
             {Array.from({ length: SESIONES_DEL_FORMULARIO }, (_, i) => i + 1).map((s) => (
-              <fieldset key={s} className="campo">
+              <fieldset key={s} className="campo oferta-sesion">
                 <legend>{s === 1 ? 'Sesión 1' : `Sesión ${s} (opcional)`}</legend>
                 <Selector
                   nombre={`dia${s}`}
                   etiqueta="Día"
                   correccion="Elige el día de la sesión."
                   opciones={DIAS}
+                  opcional={s > 1}
+                />
+                <Campo
+                  nombre={`aula${s}`}
+                  etiqueta="Aula"
+                  ayuda="Hasta 20 caracteres. Ejemplo: A1."
+                  correccion="Escribe el aula, hasta 20 caracteres."
                   opcional={s > 1}
                 />
                 <Campo
@@ -151,13 +161,6 @@ export default async function PaginaOferta({
                   tipo="time"
                   ayuda="Posterior a la hora de inicio."
                   correccion="Escribe una hora posterior a la de inicio, como 09:00."
-                  opcional={s > 1}
-                />
-                <Campo
-                  nombre={`aula${s}`}
-                  etiqueta="Aula"
-                  ayuda="Hasta 20 caracteres. Ejemplo: A1."
-                  correccion="Escribe el aula, hasta 20 caracteres."
                   opcional={s > 1}
                 />
               </fieldset>

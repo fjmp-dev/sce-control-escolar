@@ -23,7 +23,9 @@ async function reporteDe(clave: string): Promise<Esquemas['ReporteRespuesta'] | 
 }
 
 /** RF-009, dirección: inscripción, avance y cobranza por facultad y de toda la universidad, sin datos de alumnos. */
-export default async function PaginaReportes({ searchParams }: Readonly<{ searchParams: Promise<{ periodo?: string }> }>) {
+export default async function PaginaReportes({
+  searchParams,
+}: Readonly<{ searchParams: Promise<{ periodo?: string }> }>) {
   const periodos = (await consultar<Esquemas['PeriodoRespuesta'][]>('/periodos')).toSorted((a, b) =>
     b.clave.localeCompare(a.clave),
   );
@@ -47,10 +49,10 @@ export default async function PaginaReportes({ searchParams }: Readonly<{ search
       </form>
       {typeof reporte === 'string' && <Aviso tipo="error">{reporte}</Aviso>}
       {typeof reporte === 'object' && (
-        <>
-          <p>
-            Periodo {reporte.periodoClave}, generado el {momentoLegible(reporte.generadoEn)}. La última fila suma toda
-            la universidad.
+        <div className="reportes">
+          <p className="entrada">
+            Periodo {reporte.periodoClave} (generado el {momentoLegible(reporte.generadoEn)}). La última fila,
+            resaltada, suma toda la universidad.
           </p>
           <h2>Inscripción</h2>
           <Tabla
@@ -59,9 +61,9 @@ export default async function PaginaReportes({ searchParams }: Readonly<{ search
             clave={(f) => f.facultadClave ?? 'universidad'}
             columnas={[
               facultad,
-              { titulo: 'Alumnos activos', celda: (f) => f.alumnosActivos },
-              { titulo: 'Inscritos', celda: (f) => f.inscritos },
-              { titulo: 'Inscritos de los activos', celda: (f) => porciento(f.inscripcionPorcentaje) },
+              { titulo: 'Alumnos activos', celda: (f) => f.alumnosActivos, numerica: true },
+              { titulo: 'Inscritos', celda: (f) => f.inscritos, numerica: true },
+              { titulo: 'Inscritos de los activos', celda: (f) => porciento(f.inscripcionPorcentaje), numerica: true },
             ]}
           />
           <h2>Avance académico</h2>
@@ -71,8 +73,8 @@ export default async function PaginaReportes({ searchParams }: Readonly<{ search
             clave={(f) => f.facultadClave ?? 'universidad'}
             columnas={[
               facultad,
-              { titulo: 'Promedio general', celda: (f) => f.promedioGeneral.toFixed(2) },
-              { titulo: 'Avance de carrera promedio', celda: (f) => porciento(f.avancePromedio) },
+              { titulo: 'Promedio general', celda: (f) => f.promedioGeneral.toFixed(2), numerica: true },
+              { titulo: 'Avance de carrera promedio', celda: (f) => porciento(f.avancePromedio), numerica: true },
             ]}
           />
           <h2>Cobranza</h2>
@@ -82,15 +84,15 @@ export default async function PaginaReportes({ searchParams }: Readonly<{ search
             clave={(f) => f.facultadClave ?? 'universidad'}
             columnas={[
               facultad,
-              { titulo: 'Cargos', celda: (f) => pesos(f.cargos) },
-              { titulo: 'Pagado', celda: (f) => pesos(f.pagado) },
-              { titulo: 'Becas', celda: (f) => pesos(f.becas) },
-              { titulo: 'Saldo pendiente', celda: (f) => pesos(f.saldoPendiente) },
-              { titulo: 'Alumnos con adeudo', celda: (f) => f.alumnosConAdeudo },
-              { titulo: 'Cobrado', celda: (f) => porciento(f.cobranzaPorcentaje) },
+              { titulo: 'Cargos', celda: (f) => pesos(f.cargos), numerica: true },
+              { titulo: 'Pagado', celda: (f) => pesos(f.pagado), numerica: true },
+              { titulo: 'Becas', celda: (f) => pesos(f.becas), numerica: true },
+              { titulo: 'Saldo pendiente', celda: (f) => pesos(f.saldoPendiente), numerica: true },
+              { titulo: 'Alumnos con adeudo', celda: (f) => f.alumnosConAdeudo, numerica: true },
+              { titulo: 'Cobrado', celda: (f) => porciento(f.cobranzaPorcentaje), numerica: true },
             ]}
           />
-        </>
+        </div>
       )}
     </>
   );

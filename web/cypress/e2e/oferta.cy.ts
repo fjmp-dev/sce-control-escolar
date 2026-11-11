@@ -58,7 +58,7 @@ describe('Oferta del periodo (RF-003)', () => {
 
     cy.contains('button', `Publicar la oferta de ${PERIODO}`).click();
     // El formulario de publicar desaparece; el aviso de la pagina, que es el mismo `role=status`, cambia en su lugar.
-    cy.contains('[role=status]', 'Oferta publicada el').should('contain', 'Los alumnos la ven');
+    cy.contains('[role=status]', 'Oferta publicada el').should('contain', 'los alumnos la ven');
     cy.contains('button', 'Publicar la oferta').should('not.exist');
     cy.revisarAxe('coordinacion-oferta-publicada');
     cy.screenshot('oferta-publicada', { capture: 'fullPage' });

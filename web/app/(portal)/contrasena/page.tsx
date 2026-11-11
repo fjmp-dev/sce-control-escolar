@@ -7,7 +7,7 @@ export default function PaginaContrasena() {
   return (
     <>
       <h1>Mi contraseña</h1>
-      <p>Al cambiarla se cierran tus sesiones abiertas y tendrás que entrar de nuevo.</p>
+      <p className="entrada">Al cambiarla se cierran tus sesiones abiertas y tendrás que entrar de nuevo.</p>
       <Formulario accion={cambiarContrasena} envio="Cambiar contraseña">
         <Campo
           nombre="actual"

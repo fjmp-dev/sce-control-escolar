@@ -12,12 +12,12 @@ Los criterios de 28.1 nombran los formularios de inscripción y pago. El de insc
 | Operable por teclado, orden de foco lógico y foco visible | HTML nativo, sin atajos propios. Enlace para saltar al contenido. Contorno de 3 px en `:focus-visible` | `accesibilidad.cy.ts` recorre el inicio de sesión con Tab y comprueba orden y contorno; entra con Enter | Automatizado solo en inicio de sesión. **El resto del portal falta revisarlo a mano** |
 | Todo campo con etiqueta asociada | `Campo`, `Selector` y `Casillas` generan la asociación. Cypress localiza cada campo por su etiqueta visible | axe y `componentes.test.tsx` | Cumple |
 | Errores con causa y corrección | Aviso general con foco, y mensaje por campo que dice cómo corregir, unido con `aria-describedby`. Lo escrito no se pierde, salvo contraseñas | Cypress y Vitest | Cumple |
-| Contraste de al menos 4.5:1 | Paleta del planteamiento, con el gris de texto oscurecido | axe, regla `color-contrast`, y Lighthouse | Cumple |
-| Estado no solo por color | Todo aviso lleva `Error:`, `Listo:` o `Aviso:`. Cuenta activa o inactiva, en texto. Página actual, en negrita y subrayada | `componentes.test.tsx` | Cumple |
+| Contraste de al menos 4.5:1 | Paleta del batch #67: el azul del planteamiento más vivo (`#1a5fb4`). Pares calculados por luminancia relativa: texto azul sobre blanco 6.29:1, azul oscuro sobre blanco 8.76:1 y sobre azul tenue 7.68:1, gris suave sobre blanco 6.91:1 y sobre azul tenue 6.06:1, azul claro sobre la cabecera 4.68:1 en su extremo más claro, insignias de 7.13:1 a 9.10:1. Bordes de control y del error de 3.32:1 a 5.44:1 | axe, regla `color-contrast`, y Lighthouse. El texto sobre el degradado de la cabecera se verifica por cálculo, porque axe lo deja en revisión manual (`incomplete`, que se guarda en cada JSON de `cypress/reportes/axe/`) | Cumple |
+| Estado no solo por color | Todo aviso lleva `Error:`, `Listo:` o `Aviso:`. Cuenta activa o inactiva, en texto. Página actual, con franja lateral y negritas, además del tono; en una subpágina se marca su sección igual | `componentes.test.tsx` | Cumple |
 | Zoom al 200 % sin ocultar acciones | Diseño fluido; sin alturas fijas | Cypress en 683×384, equivalente a 200 % sobre 1366×768. **Es una aproximación:** falta la prueba con zoom real en el navegador | Cumple en la prueba |
-| Objetivo táctil de WCAG 2.2 | Controles de 44 px; el mínimo AA es de 24 px | Cypress mide cada control en las cuatro resoluciones | Cumple |
+| Objetivo táctil de WCAG 2.2 | Controles de 44 px; el mínimo AA es de 24 px | Cypress mide cada control en las cuatro resoluciones; en 390×844 y 683×384 abre el menú, lo pasa por axe y mide sus enlaces | Cumple |
 
-**Conectividad limitada (Tabla 15, Inclusividad):** cerca de 150 KB por página, según Lighthouse. Sin librerías de interfaz ni imágenes, y los formularios funcionan aunque no cargue JavaScript, porque son acciones de servidor. **Etiquetas sin diccionario técnico (Tabla 16):** los roles y estados se muestran en español legible, y Vitest lo comprueba para los roles.
+**Conectividad limitada (Tabla 15, Inclusividad):** cerca de 150 KB por página, según Lighthouse. Sin librerías de interfaz ni imágenes, y los formularios funcionan aunque no cargue JavaScript, porque son acciones de servidor. Sin JavaScript, el menú de celular queda abierto y el botón «Menú» no se muestra. **Etiquetas sin diccionario técnico (Tabla 16):** los roles y estados se muestran en español legible, y Vitest lo comprueba para los roles.
 
 ## 2. Evaluación (28.2)
 
@@ -46,6 +46,9 @@ Clasificación de 28.2: Should o Could, salvo que bloqueen por completo un flujo
 | Al quitar un prerrequisito, el formulario desaparecía con su fila: sin confirmación y con el foco perdido | Should | Cypress | Corregido: un formulario único que no se desmonta |
 | Tras un error, un selector volvía a la opción vacía | Should | Vitest | Corregido |
 | Las casillas de opción heredaban negritas, y costaba distinguirlas de la leyenda del grupo | Could | Revisión de capturas | Corregido |
+| Las tarjetas de la oferta (Batch 67) volvieron a heredar negritas y perdieron su relleno: `.campo label` les ganaba por especificidad | Could | Revisión de capturas | Corregido: el reinicio de `.campo` usa `:where()` |
+| En celular, sin JavaScript, el menú (Batch 67) no se podía abrir | Should | Revisión de código | Corregido: con `<noscript>` la lista queda abierta |
+| Importes, correos y folios se partían a media palabra en tablas apretadas por la barra lateral | Could | Revisión de capturas | Corregido: las cifras no se parten y las tablas se apilan con 48rem o menos |
 
 ## 5. Revisión manual de QA
 
