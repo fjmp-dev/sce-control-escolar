@@ -121,8 +121,8 @@ it('un cambio sin nada que cambiar da 400 y no deja asiento ni revoca', async ()
 });
 
 it('responde 404 a un usuario inexistente y 400 a un id que no es UUID', async () => {
-  await cambio('5ce00000-0000-4000-8000-00000000ffff', { activo: true }).expect(404);
-  await cambio('abc', { activo: true }).expect(400);
+  expect((await cambio('5ce00000-0000-4000-8000-00000000ffff', { activo: true })).status).toBe(404);
+  expect((await cambio('abc', { activo: true })).status).toBe(400);
 });
 
 it('14.1-6: si la bitacora falla, el alta se revierte', async () => {
