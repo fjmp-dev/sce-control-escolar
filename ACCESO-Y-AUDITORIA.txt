@@ -95,14 +95,14 @@ F. Gobierno y control
                    informe-fase-1.md a informe-fase-3.md
    docs/auditoria/ respuesta-F-01-SCE-002.md
 
-G. Los pull requests #30 y #55 a #65, revisados y aprobados por Samuel (SJOM).
+G. Los pull requests #30 y #55 a #66, revisados y aprobados por Samuel (SJOM).
 
 
 6. PENDIENTE ANTES DE ENTREGAR
 ------------------------------
 - Samuel acepta la invitación al repositorio (vence el 17 de noviembre de 2026).
-- Samuel revisa y aprueba los PR #30 y #55 a #65 (el de la v3.0 se suma a la lista).
-- Se fusionan en orden a develop: #30, luego #55, #56 y así hasta el último.
+- Samuel revisa y aprueba los PR #30 y #55 a #66.
+- Se fusionan en orden a develop: #30, luego #55, #56 y así hasta #66.
 - Samuel firma: manual v3.0 (apartado 9), registro de aprobación de la v2.0, actas de fase y aprobaciones de CC.
 - Confirmar en la Gaceta del Gobierno el nombre y la fecha de la ley estatal de datos personales
   (manual v3.0, apartado 7).
