@@ -32,8 +32,15 @@ describe('GET /metricas (Tabla 57, RNF-REN-001)', () => {
   it('percentil 95 por ruta plantilla y errores de negocio, sin identificadores ni datos personales', async () => {
     await http().get('/alumnos/1234567').expect(401);
     await http().post('/sesiones').send({ correo: 'alumno@sce.test', contrasena: 'equivocada-123' }).expect(401);
-    const texto = (await http().get('/metricas').expect(200).expect('Content-Type', /text\/plain/)).text;
-    expect(texto).toMatch(/sce_http_duracion_segundos_bucket\{le="3",metodo="GET",ruta="\/alumnos\/:matricula",estado="401"\} [1-9]/);
+    const texto = (
+      await http()
+        .get('/metricas')
+        .expect(200)
+        .expect('Content-Type', /text\/plain/)
+    ).text;
+    expect(texto).toMatch(
+      /sce_http_duracion_segundos_bucket\{le="3",metodo="GET",ruta="\/alumnos\/:matricula",estado="401"\} [1-9]/,
+    );
     expect(texto).toMatch(/sce_errores_negocio_total\{codigo="CREDENCIALES_INVALIDAS"\} [1-9]/);
     expect(texto).toMatch(/sce_process_resident_memory_bytes \d/);
     expect(texto).not.toMatch(/1234567|alumno@sce\.test|equivocada/);
