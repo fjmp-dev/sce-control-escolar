@@ -159,15 +159,10 @@ jobs:
       - name: Navegadores de Playwright (Tabla 50)
         id: navegadores
         if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
-        timeout-minutes: 15 # sin tope, una instalacion colgada espera 6 h (PR #106)
+        timeout-minutes: 25 # npm ci y dos intentos; sin tope, una instalacion colgada espera 6 h (PR #106)
         run: |
-          # El 11-nov-2026 esta instalacion se colgo tres veces en el PR #106; en rc.1, apt bajo 114 MB del espejo de
-          # Azure a 2 MB/s. Sin tiempo de espera, apt espera para siempre una conexion que no responde.
-          # Ese dia el runner tampoco resolvia azure.archive.ubuntu.com (15:43 y 16:18 UTC): se usa el archivo de Ubuntu.
-          printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "3";\n' | sudo tee /etc/apt/apt.conf.d/99tiempos >/dev/null
-          sudo sed -i 's#http://azure.archive.ubuntu.com#http://archive.ubuntu.com#' /etc/apt/apt-mirrors.txt 2>/dev/null || true
-          npm ci && npx playwright install --with-deps chromium firefox webkit
-        working-directory: web
+          (cd web && npm ci)
+          scripts/navegadores.sh
         env:
           CYPRESS_INSTALL_BINARY: 0
           DEBUG: pw:install # cada descarga queda en el registro
