@@ -1,5 +1,7 @@
-// Batch 9 sin base de datos: Pago.aplicarUnaVez (R-14) y las transiciones del tramite (Fig. 6, R-16).
+// Batch 9 sin base de datos: Pago.aplicarUnaVez (R-14), el abono que no rebasa el saldo (#69) y las transiciones del
+// tramite (Fig. 6, R-16).
 import { ErrorDeNegocio } from '../../src/dominio/error-de-negocio';
+import { CuentaAlumno } from '../../src/pagos/dominio/cuenta-alumno';
 import { EstadoPago, Pago } from '../../src/pagos/dominio/pago';
 import { EstadoTramite, huella, redactar, Tramite } from '../../src/tramites/dominio/tramite';
 
@@ -30,6 +32,38 @@ describe('Pago.aplicarUnaVez', () => {
     pago.rechazar();
     expect(pago.estado).toBe('rechazado');
     expect(codigo(() => new Pago('aplicado').rechazar())).toBe('PAGO_NO_APLICABLE');
+  });
+});
+
+describe('CuentaAlumno.admiteAbono (#69)', () => {
+  it.each([
+    [1850, 1850, true],
+    [1850, 1850.01, false],
+    [0, 0.01, false],
+    [0.1 + 0.2, 0.3, true],
+    [0.3, 0.1 + 0.2, true], // en coma flotante, 0.1 + 0.2 > 0.3
+  ])('saldo %p, abono %p: %p', (saldo, importe, admite) => {
+    expect(new CuentaAlumno(saldo).admiteAbono(importe)).toBe(admite);
+  });
+});
+
+describe('Pago.aprobar (#69, CI-PAG-01)', () => {
+  it('pendiente que cabe en el saldo: se aplica una vez', () => {
+    const pago = new Pago('pendiente');
+    expect(pago.aprobar(true)).toBe(true);
+    expect(pago.aprobar(false)).toBe(false); // aviso repetido de un pago ya aplicado: no hace nada
+    expect(pago.estado).toBe('aplicado');
+  });
+
+  it('pendiente que ya no cabe: se rechaza y no se aplica', () => {
+    const pago = new Pago('pendiente');
+    expect(pago.aprobar(false)).toBe(false);
+    expect(pago.estado).toBe('rechazado');
+    expect(codigo(() => pago.aprobar(true))).toBe('PAGO_NO_APLICABLE');
+  });
+
+  it.each(['rechazado', 'cancelado'] as EstadoPago[])('un pago %s nunca se aprueba', (estado) => {
+    expect(codigo(() => new Pago(estado).aprobar(true))).toBe('PAGO_NO_APLICABLE');
   });
 });
 

@@ -139,7 +139,7 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 ### 4.4 Contratos y escaneo dinámico
 
-**Newman.** `api/test/contratos/sce.postman_collection.json` tiene dos carpetas: CS-SEG-04 prueba sin token cada operación protegida, y Contratos valida códigos y esquemas de respuesta. `openapi.spec.ts` falla si una operación protegida del contrato no está en la primera carpeta.
+**Newman.** `api/test/contratos/sce.postman_collection.json` tiene tres carpetas: CS-SEG-04 prueba sin token cada operación protegida; Contratos valida códigos y esquemas de respuesta; y Pagos, trámites y reportes recorre, con los roles del seed, cargos del periodo, beca, pago simulado, CI-PAG-01, recibo, corte del día, constancia hasta entregada y reporte de dirección, con esquemas JSON cerrados (`additionalProperties: false`). `openapi.spec.ts` falla si una operación protegida del contrato no está en la primera carpeta.
 
 **ZAP.** El escaneo usa una cuenta con los roles administrador y coordinación: con uno solo, los endpoints del otro responden 403 antes de validar la entrada, y esa validación quedaría sin probar. Se le quitan del OpenAPI el cierre de sesión y el cambio de contraseña, porque revocarían su propio token. Además de las alertas, `scripts/zap.sh` comprueba con los registros de la API que ZAP llegó autenticado, que no hubo ningún 5xx, que el token sigue vigente y que CD-DAT-01 y 04 siguen en cero filas.
 
@@ -272,9 +272,11 @@ El orden lo fija `docs/gobierno/plan-de-sistema.md`. Cada caso sale de su batch 
 | 1 | 1, 2 y 3 | CI-MIG-01 completo, Newman, ZAP, CS-SEG-04, 05, 07 y 08, CI-AUTH-01, Vitest, Cypress, axe, Lighthouse | 5 al 7 de noviembre de 2026 | 11 de diciembre de 2026 |
 | 2 | 4, 5 y 6 | CF-EXP-01, CF-INS-01 y 02, CI-API-01, CF-HOR-01 con Jest, CD-DAT-05, CS-SEG-02, 03 y 06, Great Expectations, ZAP en staging | 7 al 8 de noviembre de 2026 | 11 de diciembre de 2026 |
 | 3 | 7 y 8 | CF-HOR-01 con Cypress, CF-CAL-01, CI-CAL-01, CD-DAT-02, CS-SEG-01 | 10 de noviembre de 2026 | 11 de diciembre de 2026 |
-| 4 | 9 y 10 | CF-PAG-01 y CF-TRA-01 y 02 con pago simulado, CF-REP-01, CS-SEG-02, 03 y 06 en pagos y trámites | 10 al 13 de noviembre de 2026 | 11 de diciembre de 2026 |
+| 4 | 9 y 10 | CF-PAG-01, CI-PAG-01 y CF-TRA-01 y 02 con pago simulado, CF-REP-01, CS-SEG-02, 03 y 06 en pagos y trámites | 10 al 13 de noviembre de 2026 | 11 de diciembre de 2026 |
 
-Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): CI-PAG-01 contra el sandbox de Mercado Pago, Playwright, NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5.
+Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): Playwright, NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5.
+
+CI-PAG-01 sí corre, contra la pasarela simulada: Supertest en `api/test/integracion/pagos.spec.ts` y Newman en la carpeta Pagos, trámites y reportes. Desde el 10 de noviembre de 2026 cubre también dos intentos por el mismo adeudo (#69). La conexión con Mercado Pago no se prueba porque el pago sigue simulado.
 
 ---
 
