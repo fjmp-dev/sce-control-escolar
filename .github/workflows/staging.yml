@@ -119,7 +119,8 @@ jobs:
           }
           for nombre in api portal; do
             ref="$(imagen "$nombre" "$COMMIT")"
-            docker buildx imagetools create --tag "${ref%@*}:$ETIQUETA" "$ref"
+            # Copia exacta: sin --prefer-index=false, buildx envuelve el manifiesto en un indice nuevo, con otro digest y sin firma.
+            docker buildx imagetools create --prefer-index=false --tag "${ref%@*}:$ETIQUETA" "$ref"
             echo "IMAGEN_${nombre^^}=$ref" >> "$GITHUB_ENV"
           done
           # Rollback ensayado (20.2): desde rc.2, staging.sh despliega la candidata anterior, esta, vuelve a la anterior

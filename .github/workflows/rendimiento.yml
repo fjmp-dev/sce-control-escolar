@@ -76,9 +76,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Imagenes de la etiqueta, firmadas por la etapa 6 (AU-12)
         run: |
+          commit="$(git rev-parse HEAD)"
           for nombre in api portal; do
             ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}/sce-$nombre"
-            digest="$(docker buildx imagetools inspect "$ref:$ETIQUETA" --format '{{json .Manifest}}' | jq -er .digest)"
+            # La etiqueta SemVer en el registro prueba que la etapa 8 la promovio. Se despliega por el commit (sha-<12>),
+            # que es el manifiesto firmado: hasta rc.1, la etiqueta SemVer era un indice nuevo que lo envolvia, sin firma.
+            docker buildx imagetools inspect "$ref:$ETIQUETA" >/dev/null || { echo "::error::$ETIQUETA no paso por la etapa 8"; exit 1; }
+            digest="$(docker buildx imagetools inspect "$ref:sha-${commit:0:12}" --format '{{json .Manifest}}' | jq -er .digest)"
             cosign verify "$ref@$digest" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
               --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/ci.yml@refs/heads/(develop|main|release/.+)$" >/dev/null
             echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
