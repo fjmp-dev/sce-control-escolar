@@ -4,7 +4,7 @@
 
 **Etiqueta:** `v1.0.0-rc.2` · **Rama:** `release/1.0.0` · **Ambiente:** staging efímero en GitHub Actions (CC-018) · **Fecha:** pendiente · **Responsable de DevOps:** FJMP
 
-**Qué se promueve:** el segundo candidato de `v1.0.0`. Sobre `v1.0.0-rc.1` solo agrega los resultados de su promoción. Si se promueve, `v1.0.0` se etiqueta sobre este mismo commit: la etapa 8 del piloto comprueba que el commit ya pasó staging (puerta 2, CC-022).
+**Qué se promueve:** el segundo candidato de `v1.0.0`. Sobre `v1.0.0-rc.1` agrega los resultados de su promoción y dos correcciones de flujos: la etiqueta SemVer de las imágenes como copia exacta del manifiesto firmado, y `rendimiento.yml` resuelto por ese manifiesto. No cambia la aplicación. Su función es ensayar el rollback hacia rc.1 (puerta 6). `v1.0.0` va sobre el commit de rc.1, que es el que se midió con CR-REN.
 
 ## 1. Condiciones previas
 

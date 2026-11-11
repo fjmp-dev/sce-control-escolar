@@ -4,19 +4,19 @@
 
 **Etiqueta:** `v1.0.0` · **Rama:** `release/1.0.0` · **Ambiente:** piloto de ensayo (environment `piloto`, CC-022) · **Fecha:** pendiente · **Responsable de DevOps:** FJMP
 
-**Qué se libera:** el mismo commit que `v1.0.0-rc.2`, ya promovido a staging (acta `acta-promocion-v1.0.0-rc.2.md`). La etapa 8 del piloto no despliega un commit que no haya pasado staging: consulta por API las puertas 1 y 2 antes de empezar.
+**Qué se libera:** el mismo commit que `v1.0.0-rc.1` (`8e26059`), ya promovido a staging (acta `acta-promocion-v1.0.0-rc.1.md`) y medido con CR-REN-01 a 05. Es el que se probó; rc.2 solo agrega documentos y correcciones de flujos, y sirve para ensayar el rollback hacia rc.1, como se hizo con `v0.4.0`. La etapa 8 del piloto no despliega un commit que no haya pasado staging: consulta por API las puertas 1 y 2 antes de empezar.
 
 **Alcance del piloto de ensayo:** no hay servidor de piloto ni facultad piloto (manual v3.0, 2.2). El piloto de ensayo usa las mismas imágenes firmadas, con los secretos y la CA del environment `piloto`, sin usuarios ni datos (`SEMILLA=0`). No sustituye a la fase 5 del manual, que pide una facultad real durante un semestre.
 
-Esta acta se escribe antes de etiquetar, porque `v1.0.0` debe caer en el commit que ya pasó staging, y ese commit tiene que traer su acta. Los resultados se llenan en el pull request de resultados del Batch 14.
+Esta acta se escribe antes de etiquetar, porque `v1.0.0` debe caer en el commit que ya pasó staging, y ese commit tiene que traer su acta. La copia de `8e26059` decía que ese commit sería el de rc.2; se cambió cuando CR-REN se corrió sobre rc.1. Los resultados se llenan en el pull request de resultados del Batch 14.
 
 ## 1. Puertas de promoción a piloto (sección 20.1), en orden
 
 | # | Condición | Resultado | Evidencia |
 |---|---|---|---|
 | 1 | Integración continua en verde sobre el tag candidato, con pruebas unitarias, de integración y de seguridad básica | Pendiente | Paso "Puertas 1 y 2" de la etapa 8: etapas 1 a 7 en verde sobre el commit |
-| 2 | Despliegue y prueba de humo en staging | Pendiente | `acta-promocion-v1.0.0-rc.2.md` y el mismo paso, que encuentra la corrida de staging del commit |
-| 3 | Prueba de rendimiento sobre el tag candidato con resultado dentro de las metas de RNF-REN | Pendiente | `informe-rendimiento.md`, apartado 4, sobre `v1.0.0-rc.2` |
+| 2 | Despliegue y prueba de humo en staging | Pendiente | `acta-promocion-v1.0.0-rc.1.md` y el mismo paso, que encuentra la corrida de staging del commit |
+| 3 | Prueba de rendimiento sobre el tag candidato con resultado dentro de las metas de RNF-REN | Pendiente | `informe-rendimiento.md`, apartado 4, sobre `v1.0.0-rc.1` |
 | 4 | Acta de aceptación de la fase firmada por Product Owner y QA | Pendiente | `acta-aceptacion-fase-4.md` (ACT-F4-001), firmada por FJMP en ambos papeles (NC-012) |
 | 5 | Riesgos de nivel Alto mitigados o aceptados por escrito | Pendiente | `docs/calidad/matriz-riesgos.md` |
 | 6 | Inventario actualizado con tag, fecha, responsable de DevOps y dirección del piloto, y rollback verificado | Pendiente | `inventario-de-ambientes.md` §8 y rollback de `acta-promocion-v1.0.0-rc.2.md` |
@@ -26,7 +26,7 @@ Esta acta se escribe antes de etiquetar, porque `v1.0.0` debe caer en el commit 
 | # | Criterio | Resultado | Evidencia |
 |---|---|---|---|
 | 1 | Etiqueta SemVer creada y notas de versión publicadas | Pendiente | Etiqueta `v1.0.0` y `docs/gobierno/notas-version/v1.0.0.md` |
-| 2 | Pruebas Must en verde y prueba de humo en staging satisfactoria | Pendiente | Etapas 3 a 5 y 7; humo del Anexo D en `acta-promocion-v1.0.0-rc.2.md` |
+| 2 | Pruebas Must en verde y prueba de humo en staging satisfactoria | Pendiente | Etapas 3 a 5 y 7; humo del Anexo D en `acta-promocion-v1.0.0-rc.1.md` |
 | 3 | Prueba de rendimiento dentro de las metas de RNF-REN | Pendiente | Puerta 3 |
 | 4 | Cero defectos críticos y riesgos de nivel Alto mitigados o aceptados por escrito | Pendiente | Issues con severidad crítica; puerta 5 |
 | 5 | Acta de aceptación de la fase firmada por Product Owner y QA | Pendiente | Puerta 4 |

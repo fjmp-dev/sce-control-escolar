@@ -144,6 +144,7 @@ Cada corrida deja el artefacto `despliegue-staging-<etiqueta>` o `despliegue-pil
 | Fecha | Etiqueta | Digest de la API | Digest del portal | Responsable | Resultado | Corrida |
 |---|---|---|---|---|---|---|
 | 11-nov-2026 01:31 (CST) | `v0.4.0-rc.1` | `sha256:d188e5be2716f8268264ea3ef27edd0938ab38a4bcaef1b08c032ae1c35353ae` | `sha256:7a67e67bf6dfdfcacf31ebff6c6acacdb12d74aeb9e2ff3d8c84bc326b30fcf0` | FJMP | Aprobado: humo, Newman, TLS, ZAP pasivo y base en verde; 5 migraciones aplicadas | [42979816446](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/42979816446) |
+| 11-nov-2026 07:15 (CST) | `v1.0.0-rc.1` | `sha256:44963d08de9ceb28a584b8ae1a794f0b9fc434515fb42bf70671bda9898574ba` | `sha256:3a1f2c3fe40411260076c2f9a19f92a1760c9f6a3cb08623b5a01450a305f200` | FJMP | Aprobado: humo del Anexo D, Newman, CO-FLE-01, TLS, ZAP pasivo, base, matriz Must y humo k6 en verde; 6 migraciones aplicadas | [43027397938](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027397938) |
 
 ## 9. Staging en cada pull request
 
