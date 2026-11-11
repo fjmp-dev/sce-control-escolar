@@ -160,10 +160,15 @@ jobs:
         id: navegadores
         if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
         timeout-minutes: 15 # sin tope, una instalacion colgada espera 6 h (PR #106)
-        run: npm ci && npx playwright install --with-deps chromium firefox webkit
+        run: |
+          # El 11-nov-2026 esta instalacion se colgo tres veces en el PR #106; en rc.1, apt bajo 114 MB del espejo de
+          # Azure a 2 MB/s. Sin tiempo de espera, apt espera para siempre una conexion que no responde.
+          printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "3";\n' | sudo tee /etc/apt/apt.conf.d/99tiempos >/dev/null
+          npm ci && npx playwright install --with-deps chromium firefox webkit
         working-directory: web
         env:
           CYPRESS_INSTALL_BINARY: 0
+          DEBUG: pw:install # cada descarga queda en el registro
       - name: Compatibilidad Must - Chrome 1366 y 1920, iPhone, Android y zoom 200 % (Tabla 50, CO-COM-01)
         if: steps.navegadores.outcome == 'success'
         run: scripts/playwright.sh https://localhost reportes/staging/playwright/must --project='must-*'
