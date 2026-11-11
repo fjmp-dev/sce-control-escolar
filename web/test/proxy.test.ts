@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it, vi } from 'vitest';
-import { config, proxy } from '@/proxy';
+import { config, politicaDeSeguridad, proxy } from '@/proxy';
 
 const ahora = () => Math.floor(Date.now() / 1000);
 const jwt = (segundos: number) =>
@@ -10,14 +10,21 @@ const peticion = (token?: string) =>
 const siguio = (r: Response) => r.headers.get('x-middleware-next') === '1';
 
 describe('proxy (Tabla 38, renovacion controlada)', () => {
-  it('sin sesion solo pasan el ingreso, la salud, el aviso de privacidad y los estaticos', () => {
-    const pideSesion = new RegExp(`^${config.matcher[0]}$`);
-    for (const ruta of ['/ingresar', '/salud', '/privacidad', '/icon.svg', '/_next/static/chunks/a.js']) {
-      expect(pideSesion.test(ruta), ruta).toBe(false);
+  it('pasa por toda pagina; solo quedan fuera la salud y los estaticos', () => {
+    const pasa = new RegExp(`^${config.matcher[0]}$`);
+    for (const ruta of ['/salud', '/icon.svg', '/_next/static/chunks/a.js']) {
+      expect(pasa.test(ruta), ruta).toBe(false);
     }
-    for (const ruta of ['/', '/facultades', '/mi-expediente', '/usuarios']) {
-      expect(pideSesion.test(ruta), ruta).toBe(true);
+    for (const ruta of ['/', '/ingresar', '/privacidad', '/facultades', '/mi-expediente', '/usuarios']) {
+      expect(pasa.test(ruta), ruta).toBe(true);
     }
+  });
+
+  it('sin sesion solo pasan el ingreso y el aviso de privacidad', async () => {
+    for (const ruta of ['/ingresar', '/ingresar?motivo=sesion', '/privacidad']) {
+      expect(siguio(await proxy(new NextRequest(`http://localhost:3000${ruta}`))), ruta).toBe(true);
+    }
+    expect(siguio(await proxy(new NextRequest('http://localhost:3000/ingresar-falso')))).toBe(false);
   });
 
   it('sin cookie lleva a ingresar, sin motivo', async () => {
@@ -67,5 +74,35 @@ describe('proxy (Tabla 38, renovacion controlada)', () => {
     expect(siguio(await proxy(peticion(jwt(100))))).toBe(true);
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('sin red')));
     expect(siguio(await proxy(peticion(jwt(100))))).toBe(true);
+  });
+});
+
+describe('proxy (12.2, CSP con nonce)', () => {
+  const nonceDe = (r: Response) =>
+    /'nonce-([A-Za-z0-9+/=]+)'/.exec(r.headers.get('content-security-policy') ?? '')?.[1];
+
+  it('cada respuesta trae su propio nonce, sin unsafe-inline, y Next.js lo recibe en la peticion', async () => {
+    const [a, b] = [await proxy(peticion(jwt(3000))), await proxy(new NextRequest('http://localhost:3000/ingresar'))];
+    const csp = a.headers.get('content-security-policy') ?? '';
+    expect(csp).toMatch(/script-src 'self' 'nonce-[^']+' 'strict-dynamic'(;|$)/);
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).not.toContain('unsafe-inline');
+    expect(nonceDe(a)).toHaveLength(48); // base64 de los 36 caracteres del UUID
+    expect(nonceDe(a)).not.toBe(nonceDe(b));
+    expect(a.headers.get('x-middleware-request-x-nonce')).toBe(nonceDe(a));
+    expect(a.headers.get('x-middleware-request-content-security-policy')).toBe(csp);
+  });
+
+  it('tambien la lleva la redireccion a ingresar', async () => {
+    const r = await proxy(peticion());
+    expect(r.headers.get('location')).toBe('http://localhost:3000/ingresar');
+    expect(nonceDe(r)).toBeTruthy();
+  });
+
+  it('upgrade-insecure-requests solo con HTTPS: el ambiente local declara COOKIE_SEGURA=false', () => {
+    expect(politicaDeSeguridad('n')).toContain('upgrade-insecure-requests');
+    vi.stubEnv('COOKIE_SEGURA', 'false');
+    expect(politicaDeSeguridad('n')).not.toContain('upgrade-insecure-requests');
+    vi.unstubAllEnvs();
   });
 });

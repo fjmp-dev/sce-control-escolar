@@ -29,7 +29,7 @@ Al cierre de cada sprint, de cada fase y del semestre piloto se capturan leccion
 | MJ-003 | Integrar cada sub-batch a `develop` en cuanto su CI está en verde, sin apilar más de una fase. Después de cada fusión, comprobar que el pipeline de `develop` termina en verde, con las etapas 6 y 7 | Acta del sprint S3 | FJMP | 20 de noviembre de 2026 | Abierta |
 | MJ-004 | Al cerrar cada sprint, cerrar los issues entregados y mover los pendientes al hito siguiente. Cada issue de batch lleva hito | Acta del sprint S3 (AU-43) | FJMP | 13 de noviembre de 2026 | Abierta |
 | MJ-005 | Estimar los puntos de historia en el issue antes de empezar su trabajo. Primero #75, #76 y #77 | NC-016 | FJMP | Antes del sub-batch 12.1 | Abierta |
-| MJ-006 | Todo PR que toque dinero, cupos o calificaciones cita su modo del AMFE y su fila de STRIDE, y cada modo de severidad 9 o más tiene una prueba antes de fusionar | NC-017; #69 | FJMP | Sub-batch 12.2 | Abierta |
+| MJ-006 | Todo PR que toque dinero, cupos o calificaciones cita su modo del AMFE y su fila de STRIDE, y cada modo de severidad 9 o más tiene una prueba antes de fusionar | NC-017; #69 | FJMP | Sub-batch 12.2 | En vigor desde 12.2: casilla en `.github/pull_request_template.md`. Falta comprobarla en el primer PR de esa clase |
 | MJ-007 | Dividir todo issue estimado en más de 13 puntos antes de empezarlo | `auditoria-fase-4.md`, OB-06 (#51, 21 puntos) | FJMP | Antes del sub-batch 12.1 | Abierta |
 | MJ-008 | Al cerrar cada fase, agregar sus casos con estado y corrida a `plan-de-pruebas.md`, apartado 6. Primero los de la fase 4 | `auditoria-fase-4.md`, OB-08 | FJMP | Sub-batch 12.1 | Abierta |
 | MJ-009 | Un PR por issue: no juntar alcances para ahorrar CI | Lección del #78 | FJMP | Desde el sub-batch 12.1 | Abierta |

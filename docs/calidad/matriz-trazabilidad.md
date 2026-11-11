@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.6, 11 de noviembre de 2026 (sub-batch 12.5: CC-021 y Parte B).
+**Versión:** 2.6, 11 de noviembre de 2026 (sub-batches 12.2 y 12.5: ZAP con los siete roles, CC-021 y Parte B).
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 
@@ -83,12 +83,12 @@ La definición y la herramienta de cada caso son las del manual. El **Batch** es
 |---|---|---|---|
 | CS-SEG-01 | El rol alumno no captura ni altera calificaciones. | Supertest | 8 |
 | CS-SEG-02 | El rol caja no modifica el historial académico. | Supertest | 4, 8 y 9 |
-| CS-SEG-03 | El token de un alumno no accede al expediente de otro alumno. | OWASP ZAP y Supertest | 4 y siguientes |
+| CS-SEG-03 | El token de un alumno no accede al expediente de otro alumno. | Supertest y, desde 12.2, OWASP ZAP (`zap-acceso-cruzado.sh`, etapa 5) | 4 y siguientes; 12 |
 | CS-SEG-04 | Un endpoint Must sin token responde con código 401. | Newman | 2 y siguientes |
-| CS-SEG-05 | Una entrada malformada no corrompe la base ni expone trazas con secretos. | OWASP ZAP | 2 y 12 |
+| CS-SEG-05 | Una entrada malformada no corrompe la base ni expone trazas con secretos. | OWASP ZAP con los siete roles y Great Expectations después (`zap.sh`); el portal, con `zap-portal.sh` cada semana | 2 y 12 |
 | CS-SEG-06 | Todo cambio de calificación, pago o constancia deja registro en bitácora. | Consulta SQL de verificación | 4, 8, 9, 10 y 11 |
 | CS-SEG-07 | La sesión expira en el tiempo configurado y el token revocado no se reutiliza. | Supertest | 2 |
-| CS-SEG-08 | No existen secretos en el repositorio, en los registros ni en las respuestas de la API. | Gitleaks y revisión manual | 1, 2 y 12 |
+| CS-SEG-08 | No existen secretos en el repositorio, en los registros ni en las respuestas de la API. | Gitleaks y revisión manual (v2 en 12.2, con el portal) | 1, 2 y 12 |
 
 ### 3.4 Calidad de datos (Tabla 39)
 
@@ -138,6 +138,8 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 - `docs/calidad/matriz-rol-endpoint.md`: rol por endpoint (AU-15), ejecutada por CF-ROL-01 y CI-AUTH-01.
 - `docs/calidad/stride.md`: amenazas y controles por componente (Tabla 37).
 - `docs/calidad/revision-cs-seg-08.md`: revisión manual de CS-SEG-08.
+- `docs/calidad/informe-zap.md`: alertas de ZAP con su decisión y evidencia (CS-SEG-03 y 05).
+- `docs/calidad/amfe-inscripcion.md`: modos de fallo de la inscripción (Tabla 37).
 - `docs/calidad/accesibilidad.md`: lista de 28.1, hallazgos y compatibilidad (AU-32).
 - `docs/calidad/anexo-a.md`: Anexo A con resultado, evidencia y estado por característica (AU-42).
 - `docs/calidad/matriz-25010.md` y `docs/calidad/matriz-25012.md`: modelo de calidad, con la cobertura de las subcaracterísticas Alta en aceptación (8.4, AU-42).

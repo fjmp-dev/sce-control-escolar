@@ -1,7 +1,7 @@
 # Documento de seguridad de datos personales — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 (Tablas 38 y 37) y sección 17; PA-SCE-001, Parte B (AU-18, AU-14, AU-17 y AU-37).
-**Versión:** 1.0, 10 de noviembre de 2026 (sub-batch 12.6, issue #75). **Elaboró y aprobó:** FJMP como Seguridad y Product Owner (NC-012). No hay revisión independiente.
+**Versión:** 1.1, 11 de noviembre de 2026 (sub-batch 12.2): acción 14 hecha. La 1.0 es del 10 de noviembre de 2026 (sub-batch 12.6, issue #75). **Elaboró y aprobó:** FJMP como Seguridad y Product Owner (NC-012). No hay revisión independiente.
 
 > **Alcance.** Es el documento de seguridad del SCE como sistema. El de la universidad, como responsable, lo emite ella. Todo dato del SCE es sintético (RK-09).
 
@@ -103,7 +103,7 @@ Los niveles están en `docs/calidad/matriz-riesgos.md`, y las amenazas por compo
 | 11 | Límite de peticiones por origen en nginx | DevOps | 13 |
 | 12 | Umbral mínimo de alumnos por fila en el reporte de dirección | Product Owner decide | Por decidir |
 | 13 | Revisión del texto libre de `tramite.motivo_rechazo`: aviso al capturar que no lleve datos sensibles | Desarrollo | Por decidir |
-| 14 | Revisar los registros del portal: los errores de Next.js van a la salida del contenedor y no se ha comprobado que no lleven datos | Seguridad | CS-SEG-08 v2 (12.2) |
+| 14 | Revisar los registros del portal: los errores de Next.js van a la salida del contenedor y no se ha comprobado que no lleven datos | Seguridad | **Hecha el 11 de noviembre de 2026:** sin datos personales ni secretos (`revision-cs-seg-08.md` v2) |
 | 15 | Alerta por un volumen anormal de consultas de expedientes de una sola cuenta (hallazgo H-2 del ensayo) | DevOps | Monitoreo del Batch 13 |
 
 ---

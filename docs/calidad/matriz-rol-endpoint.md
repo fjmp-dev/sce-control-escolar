@@ -1,9 +1,11 @@
 # Matriz de rol por endpoint — SCE
 
 **Fuente:** SCE-MC-001 v2.0, sección 18 y Tablas 5, 11, 12 y 38; CC-007. **Criterio de auditoría:** AU-15.
-**Versión:** 1.7, 10 de noviembre de 2026 (Batch 10). Crece con cada batch.
+**Versión:** 1.8, 11 de noviembre de 2026 (sub-batch 12.2): la lee también ZAP. Las filas no cambian desde la 1.7 (Batch 10). Crece con cada batch.
 
 Esta tabla es ejecutable: `api/test/integracion/roles.spec.ts` la lee y prueba **cada token contra cada endpoint** (CF-ROL-01, CI-AUTH-01). Otra prueba exige que sus filas sean exactamente las operaciones de `docs/api/openapi.json`, así que un endpoint nuevo no se integra sin decidir quién lo usa. Toda ruta sin rol declarado se deniega (14.1-7). El portal solo presenta lo que esta matriz permite, y `web/test/roles.test.ts` lo comprueba; quien autoriza siempre es la API.
+
+Desde el sub-batch 12.2, `scripts/zap.sh` también la lee (CS-SEG-05): escanea con la cuenta de cada rol solo las operaciones de su columna con "Sí", y las públicas con el primero. Así cada operación llega a su validación y no se queda en el 403. Por eso el orden de las columnas importa: es el de `ROLES` en el script.
 
 | Método | Ruta | Alumno | Profesor | Control escolar | Coordinación | Caja | Dirección | Administrador |
 |---|---|---|---|---|---|---|---|---|
