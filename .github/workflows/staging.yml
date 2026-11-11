@@ -1,12 +1,18 @@
 # Etapa 8 de la Tabla 53: despliegue manual a staging, solo con etiqueta SemVer y acta, con autorizacion de PO y QA
 # (sec. 31.2). La autorizacion es la regla de revisores del ambiente "staging" de GitHub: el job no empieza hasta que lo
-# aprueban, y quien lo lanza no puede aprobarlo. Despliega las imagenes que firmo la etapa 6 para el commit de la
+# aprueban (hoy FJMP aprueba lo que lanza: NC-012). Despliega las imagenes que firmo la etapa 6 para el commit de la
 # etiqueta, sin reconstruirlas: el mismo digest ira a piloto (Tabla 30). Staging es efimero (CC-018): se arma en este
 # runner con la topologia de la Fig. 9, se verifica y se destruye; la evidencia queda como artefacto. Procedimiento:
 # docs/gobierno/inventario-de-ambientes.md.
 name: 8 Despliegue a staging
 
+# 11.4: tambien corre al empujar una etiqueta candidata vX.Y.Z-rc.N. GitHub usa entonces el staging.yml del commit
+# etiquetado, asi que no necesita estar en main, y el acta se toma por convencion:
+# docs/gobierno/actas/acta-promocion-<etiqueta>.md. La etiqueta final vX.Y.Z va sobre el commit del candidato ya
+# promovido y no vuelve a desplegar.
 on:
+  push:
+    tags: ['v*-rc.*']
   workflow_dispatch:
     inputs:
       etiqueta:
@@ -32,8 +38,8 @@ jobs:
       contents: read
       packages: write # agrega la etiqueta SemVer a las imagenes ya firmadas
     env:
-      ETIQUETA: ${{ inputs.etiqueta }}
-      ACTA: ${{ inputs.acta }}
+      ETIQUETA: ${{ inputs.etiqueta || github.ref_name }}
+      ACTA: ${{ inputs.acta || format('docs/gobierno/actas/acta-promocion-{0}.md', github.ref_name) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,6 +80,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: despliegue-staging-${{ inputs.etiqueta }}
+          name: despliegue-staging-${{ inputs.etiqueta || github.ref_name }}
           path: reportes/staging/
           retention-days: 90

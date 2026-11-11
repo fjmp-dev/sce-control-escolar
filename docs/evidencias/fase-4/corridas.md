@@ -1,4 +1,4 @@
-# Corridas de CI de la entrega v1.0.0
+# Corridas de CI de la fase 4 (v0.4.0)
 
 Se copiaron el 10 de noviembre de 2026. Las fases 1 a 4 se entregan juntas en la pila de pull requests #30 y #55 a #66, por la compactación del plan (`docs/gobierno/plan-de-sistema.md`, 6.1), así que esta carpeta cubre las cuatro fases.
 
@@ -57,6 +57,6 @@ Son los artefactos de esa corrida, tal como los entregó GitHub y sin descomprim
 
 ## Fuera del repositorio, por tamaño
 
-`despliegue-pruebas.zip` pesa 29.7 MB. Trae los videos y las capturas de Cypress, 40 reportes de axe y los JUnit. Se adjunta a la release `v1.0.0` de GitHub.
+`despliegue-pruebas.zip` pesa 29.7 MB. Trae los videos y las capturas de Cypress, 40 reportes de axe y los JUnit. Se adjunta a la release `v0.4.0` de GitHub. (Corrección del 10-nov-2026: antes decía `v1.0.0`, que no existe; ver `notas-version/v0.4.0.md`.)
 
 SHA-256: `af1ff0609f12bdbc617a4ceebdb66e3933727df86217570cde72d9b4287b796d`.

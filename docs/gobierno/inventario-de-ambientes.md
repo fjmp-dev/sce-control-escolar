@@ -37,14 +37,14 @@ Cada ambiente tiene los suyos y no se reutilizan entre ambientes (20.2). Ninguno
 
 **Staging no guarda secretos (CC-018):** `scripts/staging.sh` genera en cada corrida, con `openssl rand`, la clave del superusuario de la base, la del rol `sce_app`, la firma de los tokens y la contraseña de las cuentas sintéticas. Mueren con el ambiente y no se escriben en el registro.
 
-**Regla de protección del ambiente `staging` de GitHub** (Settings → Environments):
-- revisores requeridos PO y QA, que hoy son SJOM (`roles-y-raci.md`);
-- "impedir la autoaprobación" activado;
-- solo se despliega desde `develop` y `main`.
+**Regla de protección del ambiente `staging` de GitHub** (Settings → Environments), configurada el 10 de noviembre de 2026 en el sub-batch 11.4:
+- revisor requerido: FJMP, que ocupa PO y QA desde que SJOM dejó el proyecto (`roles-y-raci.md` §6);
+- autoaprobación permitida (`prevent_self_review: false`), porque no hay una segunda persona;
+- sin variables ni secretos.
 
-Quien lanza el despliegue no puede aprobarlo (31.2). El ambiente no necesita variables ni secretos.
+El manual pide que quien lanza el despliegue no lo apruebe (31.2) y que el revisor sea otra persona. Con una sola persona no se cumple, y la desviación está declarada en NC-012. Cuando haya un segundo revisor, se agrega y se activa "impedir la autoaprobación".
 
-> **Nota del 10 de noviembre de 2026:** esta regla no está configurada. El repositorio no tiene ningún environment (`gh api repos/fjmp-dev/sce-control-escolar/environments`: 0), y SJOM no revisa ni aprueba. El environment `staging` se crea en el sub-batch 11.4 con FJMP como revisor y con la autoaprobación permitida (NC-012). Este apartado se reescribe ahí.
+> **Corrección del 10 de noviembre de 2026.** Antes este apartado describía como configurada una regla que no existía: el repositorio no tenía environments. Ahora describe la regla real.
 
 ## 4. Alta
 
@@ -52,10 +52,10 @@ No hay servidores que dar de alta. Lo único que se configura, una vez, es la re
 
 ## 5. Despliegue (etapa 8 de la Tabla 53)
 
-1. **Etiqueta** SemVer sobre un commit ya integrado en `develop`, `main` o `release/*`, con imágenes firmadas por la etapa 6: `git tag -a v0.2.0-rc.1 -m "..." <commit>` y `git push origin v0.2.0-rc.1`.
-2. **Acta de promoción** en `docs/gobierno/actas/` que nombre la etiqueta, con el Anexo D.
-3. **Lanzar** "8 Despliegue a staging" en Actions, desde `develop`, con la etiqueta y la ruta del acta.
-4. **PO y QA aprueban** el despliegue en el ambiente `staging`.
+1. **Acta de promoción** en `docs/gobierno/actas/acta-promocion-<etiqueta>.md`, con el Anexo D. Se versiona antes de etiquetar, porque el workflow la lee del commit etiquetado.
+2. **Etiqueta** SemVer anotada sobre un commit de `release/*`, `develop` o `main` cuyas imágenes ya firmó la etapa 6: `git tag -a v0.4.0-rc.1 -m "..." <commit>` y `git push origin v0.4.0-rc.1`.
+3. **El push de la etiqueta candidata lanza** "8 Despliegue a staging" (`on: push: tags: ['v*-rc.*']`). La etiqueta final `vX.Y.Z` va sobre el commit del candidato ya promovido y no vuelve a desplegar. GitHub usa el `staging.yml` del commit etiquetado. Para repetir una corrida o desplegar una etiqueta anterior, se lanza a mano con `workflow_dispatch`, con la etiqueta y la ruta del acta.
+4. **El revisor aprueba** el despliegue en el ambiente `staging` (hoy FJMP; NC-012).
 5. **El workflow:**
    - comprueba la etiqueta y el acta;
    - verifica la firma de las imágenes del commit y les agrega la etiqueta SemVer;
