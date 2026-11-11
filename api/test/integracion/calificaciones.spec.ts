@@ -153,7 +153,7 @@ describe('Iniciar el curso (CC-019): termina la inscripcion y empieza la captura
 });
 
 describe('CF-CAL-01 y CI-CAL-01: captura solo en grupos asignados y consulta al momento', () => {
-  it('el profesor captura en su grupo y el alumno ve la calificacion en cuanto se confirma la transaccion', async () => {
+  it('R-10: el profesor captura en su grupo y el alumno ve la calificacion en cuanto se confirma la transaccion', async () => {
     const { grupos, alumnos } = await escenario();
     const [{ folio, correo }] = alumnos;
     const res = await capturar(profesor, grupos[0].id, 1, [[folio, 8.75]]).expect(200);
@@ -185,7 +185,7 @@ describe('CF-CAL-01 y CI-CAL-01: captura solo en grupos asignados y consulta al 
     ]);
   });
 
-  it('otro profesor no captura ni consulta el grupo, ni averigua quien esta inscrito', async () => {
+  it('R-09: otro profesor no captura ni consulta el grupo, ni averigua quien esta inscrito', async () => {
     const { grupos, alumnos } = await escenario();
     const res = await capturar(ajeno, grupos[0].id, 1, [[alumnos[0].folio, 10]]).expect(403);
     expect(res.body.codigo).toBe('GRUPO_NO_ASIGNADO');
@@ -203,7 +203,7 @@ describe('CF-CAL-01 y CI-CAL-01: captura solo en grupos asignados y consulta al 
     expect(await prisma.calificacion.count({ where: { folio: alumnos[0].folio } })).toBe(0);
   });
 
-  it('cambiar una calificacion deja el valor anterior en bitacora; repetir el mismo valor no deja asiento', async () => {
+  it('R-21: cambiar una calificacion deja autor, accion, valor anterior y fecha en bitacora; repetir el mismo valor no deja asiento', async () => {
     const { grupos, alumnos } = await escenario();
     const [{ folio }] = alumnos;
     await capturar(profesor, grupos[0].id, 1, [[folio, 7]]).expect(200);
@@ -213,7 +213,12 @@ describe('CF-CAL-01 y CI-CAL-01: captura solo en grupos asignados y consulta al 
     expect(Number(guardada.valor)).toBe(8);
     const lista = await asientos(`calificacion:${guardada.id}`);
     expect(lista).toHaveLength(2);
-    expect(lista[1].valorAnterior).toMatchObject({ valor: 7, profesorId });
+    expect(lista[1]).toMatchObject({
+      autor: profesorId,
+      accion: 'captura_calificacion',
+      valorAnterior: { valor: 7, profesorId },
+      fecha: expect.any(Date),
+    });
   });
 
   it('D-6: fuera de la ventana de captura, 409, con el periodo abierto o cerrado', async () => {
@@ -273,7 +278,7 @@ describe('Cierre del periodo (RF-005, UC06, D-16)', () => {
     expect(await asientos(`periodo:${clave}`)).toEqual([]);
   });
 
-  it('completo: periodo cerrado, cargas cerradas, historial recalculado con bitacora, y ya no se captura', async () => {
+  it('R-12 y R-13: completo: periodo cerrado, cargas cerradas, historial recalculado con bitacora, y ya no se captura', async () => {
     const { clave, grupos, alumnos } = await escenario({ alumnos: 2 });
     const [a, b] = alumnos;
     await capturar(profesor, grupos[0].id, 1, [
@@ -312,7 +317,7 @@ describe('Cierre del periodo (RF-005, UC06, D-16)', () => {
     expect((await cerrar(clave).expect(409)).body.codigo).toBe('PERIODO_NO_EN_CURSO');
   });
 
-  it('CS-SEG-02: caja y direccion no cierran periodos ni corrigen calificaciones', async () => {
+  it('R-24 y CS-SEG-02: caja y direccion no cierran periodos ni corrigen calificaciones', async () => {
     const { clave } = await escenario();
     for (const cuenta of ['caja@sce.test', 'direccion@sce.test']) {
       const token = await entrar(app, cuenta);
@@ -359,7 +364,7 @@ describe('Cierre del periodo (RF-005, UC06, D-16)', () => {
   });
 });
 
-describe('CD-DAT-02 (Tabla 39, AU-23): recalculo independiente sobre 30 expedientes', () => {
+describe('R-12 y R-13, CD-DAT-02 (Tabla 39, AU-23): recalculo independiente sobre 30 expedientes', () => {
   it('el historial de 30 alumnos, con reprobadas y recursadas, coincide con el recalculo en SQL', async () => {
     const materias = [`R-${n + 1}-1`, `R-${n + 1}-2`];
     const primero = await escenario({ alumnos: 30, materias });
@@ -435,7 +440,7 @@ describe('CD-DAT-02 (Tabla 39, AU-23): recalculo independiente sobre 30 expedien
   });
 });
 
-describe('Correccion posterior al cierre (D-17; PA-SCE-001, Parte B) y CS-SEG-06 en calificacion', () => {
+describe('R-21: correccion posterior al cierre (D-17; PA-SCE-001, Parte B) y CS-SEG-06 en calificacion', () => {
   it('coordinacion corrige con motivo y evidencia: bitacora completa, profesor de origen y historial recalculado', async () => {
     const { clave, grupos, alumnos } = await escenario();
     const [{ folio, matricula }] = alumnos;

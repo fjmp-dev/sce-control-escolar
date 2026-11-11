@@ -129,11 +129,11 @@ Con Docker instalado:
 docker compose up --build    # Portal en http://localhost:3000 y API en http://localhost:3001, migrada y con seed
 ```
 
-Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test` y `profesor2@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. El calendario es el del 10 de noviembre de 2026:
+Hay una cuenta sintética por rol: `alumno@`, `profesor@`, `control.escolar@`, `coordinacion@`, `caja@`, `direccion@` y `administrador@sce.test`, más `alumno.dos@sce.test` y `profesor2@sce.test`, todas con la contraseña `sce-dev-2026`. Hay diez expedientes sintéticos, de `2420001` a `2420010`; los dos alumnos con cuenta tienen los dos primeros. El plan `ISW-2024` trae 18 materias, de `ISW-101` a `ISW-703` (120 de sus 400 créditos), con cadenas cortas de prerrequisitos. El calendario es el del 10 de noviembre de 2026:
 
 - **2026A, cerrado:** `2420001` acreditó Programación I.
 - **2026B, en curso:** Bases de datos (`ISW-301-B`, de `profesor@`) tiene el parcial 1 de tres alumnos, y Auditoría de sistemas (`ISW-701-C`, de `profesor2@`) está sin calificar.
-- **2027A, abierto:** siete grupos para la inscripción; `2420002` tiene un adeudo sintético de $1,850, que puede pagar en Mi cuenta, y el grupo `ISW-702-A` ya no tiene lugares.
+- **2027A, abierto:** dieciséis grupos para la inscripción. `2420001` puede inscribir, sin choques, Programación II y cinco materias nuevas: Cálculo diferencial, Matemáticas discretas, Álgebra lineal, Estructuras de datos y Desarrollo web. Nadie acreditó todavía los prerrequisitos de `ISW-302-A`, `ISW-401-A`, `ISW-502-A` e `ISW-601-A`, así que sirven para ver el rechazo por prerrequisito; Redes de computadoras, Seguridad informática y Gestión de proyectos de software no se ofrecen en 2027A. `2420002` tiene un adeudo sintético de $1,850, que puede pagar en Mi cuenta, y el grupo `ISW-702-A` ya no tiene lugares.
 
 Para tomar este seed, una base local anterior necesita `npm run db:reset`, que borra sus datos. CI levanta este mismo ambiente en cada pull request, inicia sesión con los siete roles, ejecuta Newman, OWASP ZAP, Cypress, axe y Lighthouse, y escanea las imágenes con Trivy.
 

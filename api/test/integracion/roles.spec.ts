@@ -26,7 +26,7 @@ it('la matriz cubre los siete roles en cada fila', () => {
   }
 });
 
-it.each(casos)('%s %s con token de %s: permitido = %s', async (metodo, ruta, cuenta, permitido) => {
+it.each(casos)('R-18: %s %s con token de %s: permitido = %s', async (metodo, ruta, cuenta, permitido) => {
   const verbo = metodo.toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete';
   const url = ruta
     .replace('{id}', '5ce00000-0000-4000-8000-00000000ffff')

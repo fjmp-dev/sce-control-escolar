@@ -3,7 +3,7 @@ import { aCentesimas, materiasAcreditadas, promedio } from '../../src/academico/
 import { describirFaltante, faltantes } from '../../src/academico/dominio/prerequisito';
 import { CuentaAlumno } from '../../src/pagos/dominio/cuenta-alumno';
 
-describe('promedio, una sola funcion de redondeo (Tabla 16)', () => {
+describe('R-11: promedio, una sola funcion de redondeo (Tabla 16)', () => {
   it.each([
     [[850, 700, 900], 817, '8.1666 baja'],
     [[600, 599], 600, '5.995 sube por half-up'],
