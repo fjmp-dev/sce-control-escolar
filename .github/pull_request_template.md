@@ -14,6 +14,7 @@
 
 ## Lista de verificación
 
+- [ ] El issue tiene sus puntos de historia, estimados antes del primer commit de su trabajo (MJ-005)
 - [ ] CI en verde: construcción, análisis estático y pruebas Must del área afectada
 - [ ] Puerta de calidad aprobada para el código nuevo (Tabla 51)
 - [ ] Deuda técnica nueva menor a un día; si no, documentada aquí y agendada (Tabla 51)

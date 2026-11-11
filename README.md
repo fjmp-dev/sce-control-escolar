@@ -4,17 +4,18 @@ Sistema de Control Escolar Universitario (SCE). Centro Universitario UAEM Tiangu
 
 | Campo | Valor |
 |---|---|
-| Manual de calidad | SCE-MC-001 v2.0, 16 de septiembre de 2026 |
-| Fase actual | **1 — Núcleo institucional** (en desarrollo) |
+| Manual de calidad | SCE-MC-001 v2.0, 16 de septiembre de 2026; v3.0 emitida el 10 de noviembre de 2026, por firmar (`docs/gobierno/manual-v3.0.md`) |
+| Versión | **`v1.0.0`**, liberada al piloto de ensayo el 11 de noviembre de 2026 ([notas](docs/gobierno/notas-version/v1.0.0.md)) |
+| Fase actual | Fases 0 a 4 construidas; fase 5 (piloto con una facultad) preparada, no ejecutada |
 | Autores | Francisco Javier Martínez Peñas · Samuel Jezoar Ortiz Martínez |
-| Auditoría en curso | PA-SCE-001 v1.1, equipo Aerial Forge |
+| Auditoría | PA-SCE-001 v1.1, equipo Aerial Forge (auditor líder: Rodolfo Ruíz Vaca) |
 | Plan de construcción | [`docs/gobierno/plan-de-sistema.md`](docs/gobierno/plan-de-sistema.md), batches 0 a 14 |
 
 ---
 
 ## Estado del repositorio
 
-El sistema está completo en las fases 1 a 4 (alcance compactado el 10 de noviembre de 2026, `docs/gobierno/plan-de-sistema.md` 6.1; el piloto de la fase 5 queda fuera). Incluye:
+El sistema está completo en las fases 1 a 4 y se liberó como `v1.0.0` el 11 de noviembre de 2026 al piloto de ensayo, sin usuarios ni datos (`docs/gobierno/actas/acta-liberacion-v1.0.0.md`). La fase 5, un semestre con una facultad real, queda preparada y no ejecutada (`docs/gobierno/plan-de-evaluacion-piloto.md`). Incluye:
 
 - Base de datos PostgreSQL con las veintiuna entidades de la sección 13.6, migradas con Prisma, y sus restricciones de integridad.
 - Auditoría de base de datos con pgAudit (`db/pgaudit.sql`), activa en staging junto con SCRAM y TLS (CC-005).
@@ -26,9 +27,12 @@ El sistema está completo en las fases 1 a 4 (alcance compactado el 10 de noviem
 - Calificaciones e historial (RF-004 y RF-005, Batch 8): el profesor captura por parcial en sus grupos mientras el periodo está en curso, el alumno las consulta al momento, coordinación cierra el periodo con recálculo de promedio, créditos y avance, y autoriza correcciones posteriores con motivo y evidencia. Kárdex y exportación del historial en CSV.
 - Pagos simulados y trámites (RF-006, RF-007 y RF-010, Batch 9): caja genera los cargos del periodo, registra becas y hace el corte del día; el alumno paga en una pasarela simulada (sin Mercado Pago ni dinero real) y el pago se aplica una sola vez, con recibo. El alumno pide constancia, no adeudo o historial; control escolar lo toma, lo emite o lo rechaza con motivo; el documento lleva folio y hash SHA-256, queda entregado al descargarlo y control escolar verifica su autenticidad.
 - Reportes de dirección (RF-009, Batch 10): inscripción, avance académico y cobranza de un periodo por facultad y de toda la universidad, solo agregados, sin matrículas ni nombres, y sin acceso a la bitácora.
-- Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
+- Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta. El piloto de ensayo usa el mismo guion con los secretos del environment `piloto` (CC-022).
+- Calidad transversal (Batch 12): matriz de compatibilidad de la Tabla 50 con Playwright, CD-DAT-01 a 06 en Great Expectations, axe y Lighthouse en 21 páginas, ZAP con los siete roles, matrices ISO/IEC 25010 y 25012 y Anexo A.
+- Operación (Batch 13): respaldo cifrado con restauración cronometrada y rollback (`continuidad.yml`), monitoreo con Prometheus, Grafana y alertas (`infra/monitoreo/`), seguridad operativa y rendimiento CR-REN-01 a 05 con JMeter y k6 (`rendimiento.yml`, `docs/calidad/informe-rendimiento.md`).
+- Liberación (Batch 14): acta de liberación, dictamen ISO/IEC 25040 (`docs/calidad/dictamen-25040.md`) y evidencia de cada corrida con su SHA-256 (`docs/evidencias/v1.0.0/corridas.md`).
 
-Desde el 10 de noviembre de 2026 el proyecto sigue sin SJOM: FJMP fusiona y firma, y la desviación de separación de funciones se declara en `docs/gobierno/roles-y-raci.md`, apartado 6. Pendiente, sin código: firmar el manual v3.0 (`docs/gobierno/manual-v3.0.md`) y las actas. Ver `docs/gobierno/plan-de-trabajo.md`, apartado 1.
+Desde el 10 de noviembre de 2026 el proyecto sigue sin SJOM: FJMP fusiona y firma, y la desviación de separación de funciones se declara en `docs/gobierno/roles-y-raci.md`, apartado 6. Pendiente, sin código: firmar el manual v3.0, las actas de las fases 0 a 4 y el acta de liberación, y atender las no conformidades abiertas (`docs/calidad/registro-no-conformidades.md`; NC-019 a NC-022 son las de `v1.0.0`). Ver `docs/gobierno/plan-de-trabajo.md`, apartado 2.
 
 **Para verlo funcionar:** doble clic en `abrir-sce.command` (macOS), o `docker compose up -d --build` y abrir http://localhost:3000. Cuentas de demostración y lista de entrega al auditor: [`ACCESO-Y-AUDITORIA.txt`](ACCESO-Y-AUDITORIA.txt).
 
@@ -68,8 +72,13 @@ api/                NestJS + Prisma (sección 3.6)
   test/integracion/       CI-MIG, CI-AUTH, CF-ROL, CS-SEG y CD-DAT, sobre PostgreSQL efímero
   test/contratos/         Colección de Postman: contratos y CS-SEG-04
 .github/workflows/ci.yml  Etapas 1 a 7 de la Tabla 53 (sección 31)
-.github/workflows/staging.yml  Etapa 8: despliegue manual a staging con etiqueta SemVer y acta
-infra/staging/            Servidores de staging (Fig. 9): nginx con TLS 1.2+, y PostgreSQL 16 con pgAudit, SCRAM y TLS
+.github/workflows/staging.yml  Etapa 8: despliegue a staging (vX.Y.Z-rc.N) o al piloto de ensayo (vX.Y.Z), con acta y aprobación
+.github/workflows/        También continuidad, seguridad operativa, rendimiento y ZAP completo
+infra/staging/            Servidores de staging y del piloto de ensayo (Fig. 9): nginx con TLS 1.2+, y PostgreSQL 16 con pgAudit, SCRAM y TLS
+infra/monitoreo/          Prometheus, Alertmanager, Grafana y blackbox (pgBadger: scripts/pgbadger.sh)
+infra/rendimiento/        Guiones de JMeter y k6 de CR-REN-01 a 05
+infra/respaldos/          Destinatario público de age; el respaldo y la restauración están en scripts/
+infra/github/             Rulesets de release/** y de las etiquetas v*
 scripts/                  Puerta de calidad, Gitleaks, Newman, OWASP ZAP, humo, Cypress, Lighthouse, publicación de imágenes, y staging efímero con su despliegue y su humo
 docker-compose.yml        Ambiente de pruebas: PostgreSQL 16, API y portal, con datos sintéticos
 db/
@@ -99,10 +108,14 @@ docs/
     stride.md                 Amenazas y controles por componente (Tabla 37)
     revision-cs-seg-08.md     Revisión manual de secretos en repositorio, registros y respuestas
     accesibilidad.md          Lista de 28.1, hallazgos y compatibilidad (AU-32)
-    informe-fase-1.md         Tablero de la Tabla 59 y lista de QA de la fase
+    informe-fase-1.md         Tablero de la Tabla 59 y lista de QA de la fase (también fases 2 a 4)
+    informe-rendimiento.md    CR-REN-01 a 05 sobre v1.0.0-rc.1
+    matriz-25010.md, anexo-a.md  Calificación frente a ISO/IEC 25010 (Tabla 63)
+    auditoria-*.md            Autoauditorías de las fases 2 y 4 y "Antes del piloto" (Tabla 60)
+    dictamen-25040.md         Dictamen ISO/IEC 25040 de v1.0.0
     contradicciones-manual-v2.0.md  Contradicciones y vacíos del manual
   auditoria/        Respuestas del auditado a las solicitudes de PA-SCE-001
-  evidencias/       Reportes que sustentan cada cierre de fase (Tabla 62)
+  evidencias/       Reportes que sustentan cada cierre de fase y cada versión, con SHA-256 (Tabla 62): fase-4/, v1.0.0/, ensayos/ y seguridad/
   gobierno/
     plan-de-sistema.md        Orden de construcción por batches
     cambios/                  Solicitudes de cambio desde CC-007
@@ -115,7 +128,9 @@ docs/
     registro-de-cambios.md    Solicitudes de cambio CC (sección 16)
     respuesta-a-incidentes.md Procedimiento de la Tabla 38
     registro-aprobacion-manual-v2.0.md  Revisión y aprobación del manual (sección 1.2)
-    actas/                    Actas de aceptación de fase y de sprint
+    actas/                    Actas de aceptación de fase, de sprint, de promoción y de liberación
+    inventario-de-ambientes.md  Ambientes, despliegues y rollback (sección 20)
+    plan-de-evaluacion-piloto.md  Fase 5, preparada y no ejecutada
     notas-version/            Notas de cada etiqueta vX.Y.Z (14.4)
 ```
 

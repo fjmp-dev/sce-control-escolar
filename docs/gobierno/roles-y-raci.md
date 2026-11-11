@@ -1,7 +1,7 @@
 # Roles y RACI con personas asignadas — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, secciones 1.2, 5.1, 5.2 y 5.3.
-**Vigente desde:** 15 de octubre de 2026.
+**Vigente desde:** 15 de octubre de 2026. **Actualizado:** 10 de noviembre de 2026 (el proyecto sigue sin SJOM; apartado 6).
 
 Este documento resuelve lo que el manual deja abierto: las tablas 2, 11 y 12 nombran roles e instancias, pero no personas. El criterio AU-04 de la auditoría verifica que cada rol tenga persona asignada y que quien desarrolla no acepte su propia entrega.
 

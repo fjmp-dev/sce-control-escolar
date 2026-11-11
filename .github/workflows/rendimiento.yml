@@ -4,7 +4,8 @@
 # de referencia", declarado en cada registro:
 # - runner ubuntu-latest de 4 vCPU; servidor de aplicacion (API, portal y proxy) en los nucleos 0 y 1, servidor de base
 #   en el 2, y generador y monitoreo en el 3, con cpuset. La corrida es invalida si el generador pasa de 80 % de CPU.
-# Cada corrida mide un caso. CR-REN-01 y 02 se corren tres veces por candidato y se informa la mediana
+# Cada corrida mide un caso. CR-REN-01 y 02 se corren tres veces por candidato y se informa la mediana. Sin
+# concurrency: un grupo comun cancelaria las corridas en espera, y cada una ya tiene su runner
 # (docs/calidad/informe-rendimiento.md).
 # En un pull request que toca los guiones solo los revisa; eso tambien registra el workflow, que asi se puede despachar
 # sobre release/1.0.0 sin estar en main (gh workflow run rendimiento.yml --ref release/1.0.0 -f etiqueta=... -f caso=...).
@@ -36,8 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: sce.jmx, guiones de k6 y de metas
         run: |
-          sudo apt-get install -qq -y libxml2-utils >/dev/null
-          xmllint --noout infra/rendimiento/sce.jmx
+          python3 -c 'import sys, xml.etree.ElementTree as E; E.parse(sys.argv[1])' infra/rendimiento/sce.jmx # sin apt: el espejo de Azure fallo el 11-nov-2026
           bash -n infra/rendimiento/metas.sh infra/rendimiento/registro.sh scripts/lighthouse.sh
           for g in humo cr-ren-02; do
             docker run --rm -v "$PWD/infra/rendimiento:/r:ro" grafana/k6:1.6.0 inspect "/r/$g.js" >/dev/null
@@ -46,10 +46,7 @@ jobs:
   rendimiento:
     name: ${{ inputs.caso }} sobre ${{ inputs.etiqueta }}
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    concurrency:
-      group: rendimiento
-      cancel-in-progress: false
+    runs-on: ubuntu-latest # cada corrida en su runner, con su staging: varias a la vez no se estorban
     timeout-minutes: 330 # CR-REN-05 dura 4 h 5 min
     env:
       CASO: ${{ inputs.caso }}
@@ -78,9 +75,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Imagenes de la etiqueta, firmadas por la etapa 6 (AU-12)
         run: |
+          commit="$(git rev-parse HEAD)"
           for nombre in api portal; do
             ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}/sce-$nombre"
-            digest="$(docker buildx imagetools inspect "$ref:$ETIQUETA" --format '{{json .Manifest}}' | jq -er .digest)"
+            # La etiqueta SemVer en el registro prueba que la etapa 8 la promovio. Se despliega por el commit (sha-<12>),
+            # que es el manifiesto firmado: hasta rc.1, la etiqueta SemVer era un indice nuevo que lo envolvia, sin firma.
+            docker buildx imagetools inspect "$ref:$ETIQUETA" >/dev/null || { echo "::error::$ETIQUETA no paso por la etapa 8"; exit 1; }
+            digest="$(docker buildx imagetools inspect "$ref:sha-${commit:0:12}" --format '{{json .Manifest}}' | jq -er .digest)"
             cosign verify "$ref@$digest" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
               --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/ci.yml@refs/heads/(develop|main|release/.+)$" >/dev/null
             echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
@@ -104,7 +105,7 @@ jobs:
           docker ps -q --filter label=com.docker.compose.project=sce-monitoreo | xargs docker update --cpuset-cpus "$CPUS_GENERADOR" >/dev/null
           docker ps --format '{{.Names}}' | xargs docker inspect -f '{{.Name}} cpuset={{.HostConfig.CpusetCpus}}'
           mkdir -p "$SALIDA" && chmod a+rwx "$SALIDA"
-      - name: JMeter (CR-REN-01, 03, 04 y 05), con Lighthouse durante la meseta de CR-REN-01
+      - name: JMeter (CR-REN-01, 03, 04 y 05), y Lighthouse al terminar CR-REN-01
         if: inputs.caso != 'CR-REN-02'
         run: |
           case "$CASO" in
@@ -123,16 +124,17 @@ jobs:
           # shellcheck disable=SC2086 # el perfil son varias propiedades
           (umask 077 && printf '%s\n' host=localhost puerto=443 protocolo=https ruta=/api "contrasena=$CONTRASENA_SEMILLA" \
             "grupo=$GRUPO" $perfil > "$RUNNER_TEMP/jmeter.properties")
-          if [ "$CASO" = CR-REN-01 ]; then # 2 min despues de llegar el ultimo usuario
-            (sleep 420 && set -a && . .staging/ambiente.env && set +a \
-              && PORTAL=https://localhost API=https://localhost/api taskset -c "$CPUS_GENERADOR" scripts/lighthouse.sh "$SALIDA/lighthouse" \
-              > "$SALIDA/lighthouse.txt" 2>&1 || echo "::warning::Lighthouse durante la meseta no midio o no paso su umbral (lighthouse.txt)") &
-          fi
           inicio="$(date +%s)"
           taskset -c "$CPUS_GENERADOR" "$RUNNER_TEMP/apache-jmeter-$JMETER/bin/jmeter" -n -t infra/rendimiento/sce.jmx \
             -q "$RUNNER_TEMP/jmeter.properties" -l "$SALIDA/resultados.jtl" -e -o "$SALIDA/informe-jmeter" -j "$SALIDA/jmeter.log"
           printf '%s\n' "INICIO=$inicio" "FIN=$(date +%s)" "HERRAMIENTA=JMeter $JMETER" "PERFIL=$texto ($perfil)" >> "$GITHUB_ENV"
-          wait
+          # Despues de la carga y fuera de la ventana de metas: con 4 nucleos no hay uno libre, y Chrome junto a JMeter
+          # satura el del generador (92 a 98 % en las tres corridas de rc.1, que quedaron invalidas) y se estorban entre si.
+          if [ "$CASO" = CR-REN-01 ]; then
+            (set -a && . .staging/ambiente.env && set +a \
+              && PORTAL=https://localhost API=https://localhost/api taskset -c "$CPUS_GENERADOR" scripts/lighthouse.sh "$SALIDA/lighthouse" \
+              > "$SALIDA/lighthouse.txt" 2>&1) || echo "::warning::Lighthouse al terminar la carga no midio o no paso su umbral (lighthouse.txt)"
+          fi
       - name: k6 (CR-REN-02) y enviadas contra persistidas
         if: inputs.caso == 'CR-REN-02'
         run: |

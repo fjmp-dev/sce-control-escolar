@@ -6,8 +6,8 @@
 # Crea datos propios de la corrida con la API: un cargo de 2026A para 2420001 (alumno@sce.test), su pago pendiente
 # (pasarela) y su aprobación (recibo). La cuenta de alumno.dos, que paga Cypress, no se toca.
 # Uso: [PORTAL=http://localhost:3000] [API=http://localhost:3001] [CONTRASENA_SEMILLA=...] scripts/lighthouse.sh [dir-de-reportes]
-#      rendimiento.yml lo corre contra staging (https://localhost, certificado autofirmado) durante la meseta de
-#      CR-REN-01 para medir el rendimiento percibido con carga.
+#      rendimiento.yml lo corre contra staging (https://localhost, certificado autofirmado) al terminar la carga de
+#      CR-REN-01: durante la meseta comparte el nucleo del generador y lo satura.
 set -euo pipefail
 
 REPORTES="${1:-reportes/lighthouse}"
@@ -32,9 +32,15 @@ api() { # token método ruta [cuerpo-json]
 medir() { # nombre ruta [token]
   local cabeceras='{}'
   [ -n "${3:-}" ] && cabeceras="{\"Cookie\":\"sce_sesion=$3\"}"
-  npx --yes "lighthouse@$VERSION" "$PORTAL$2" --quiet --output=json --output=html \
-    --output-path="$REPORTES/$1" --only-categories=accessibility,performance,best-practices \
-    --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" >/dev/null 2>&1
+  local intento
+  for intento in 1 2 3; do # Lighthouse pide repetir ante errores de traza como NO_NAVSTART
+    npx --yes "lighthouse@$VERSION" "$PORTAL$2" --quiet --output=json --output=html \
+      --output-path="$REPORTES/$1" --only-categories=accessibility,performance,best-practices \
+      --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" \
+      >"$REPORTES/$1.log" 2>&1 && break
+    [ "$intento" -lt 3 ] || { tail -20 "$REPORTES/$1.log" >&2; echo "::error::Lighthouse fallo tres veces al medir $2" >&2; exit 1; }
+    echo "::warning::Lighthouse fallo al medir $2 (intento $intento): $(jq -r '.runtimeError.code // "sin reporte"' "$REPORTES/$1.report.json" 2>/dev/null)" >&2
+  done
   jq -e --arg ruta "$2" '(.finalDisplayedUrl | endswith($ruta)) and (.categories.accessibility.score != null)' \
     "$REPORTES/$1.report.json" >/dev/null || { echo "::error::Lighthouse no midió $2" >&2; exit 1; }
 }

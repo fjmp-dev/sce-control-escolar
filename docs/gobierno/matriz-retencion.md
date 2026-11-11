@@ -1,6 +1,6 @@
 # Matriz de retención documental — SCE
 
-**Fuente:** SCE-MC-001 v2.0, sección 42 (Tabla 62). **Vigente desde:** 5 de noviembre de 2026.
+**Fuente:** SCE-MC-001 v2.0, sección 42 (Tabla 62). **Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batches 13.2 y 13.3: respaldos cifrados, registros del piloto, métricas y revisión de accesos).
 
 Las columnas Documento, Responsable y Retención son las de la Tabla 62. La columna Ubicación precisa dónde se cumple en este proyecto.
 

@@ -7,6 +7,10 @@ name: Seguridad operativa - revision mensual de accesos
 on:
   schedule:
     - cron: '23 14 1 * *' # dia 1 de cada mes; GitHub solo programa el flujo de la rama principal
+  # Solo registra el flujo: GitHub no despacha un workflow que nunca corrio, y este aun no esta en main. Asi se lanza
+  # sobre release/1.0.0 (gh workflow run <archivo> --ref release/1.0.0). En el pull request el job se salta.
+  pull_request:
+    paths: [.github/workflows/seguridad-operativa.yml]
   workflow_dispatch:
 
 permissions:
@@ -18,6 +22,7 @@ permissions:
 jobs:
   revision:
     name: Accesos, roles de la base y muestreo de bitacora
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:

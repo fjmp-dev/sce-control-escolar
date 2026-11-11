@@ -395,8 +395,10 @@ jobs:
       # reportes quedan en reportes/playwright, dentro del artefacto despliegue-pruebas.
       - name: Navegadores de Playwright (Tabla 50)
         if: always()
-        run: npx playwright install --with-deps chromium firefox webkit
-        working-directory: web
+        timeout-minutes: 20 # dos intentos; sin tope, una instalacion colgada espera 6 h (PR #106)
+        env:
+          DEBUG: pw:install # cada descarga queda en el registro
+        run: scripts/navegadores.sh
       - name: Compatibilidad Must - Chrome 1366 y 1920, iPhone, Android y zoom 200 % (Tabla 50, CO-COM-01)
         if: always()
         run: scripts/playwright.sh http://localhost:3000 reportes/playwright/must --project='must-*'

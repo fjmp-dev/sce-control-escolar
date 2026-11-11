@@ -9,6 +9,10 @@ name: Continuidad - respaldo y restauracion
 on:
   schedule:
     - cron: '17 */12 * * *' # GitHub solo programa el flujo de la rama principal
+  # Solo registra el flujo: GitHub no despacha un workflow que nunca corrio, y este aun no esta en main. Asi se lanza
+  # sobre release/1.0.0 (gh workflow run <archivo> --ref release/1.0.0). En el pull request el job se salta.
+  pull_request:
+    paths: [.github/workflows/continuidad.yml]
   workflow_dispatch:
     inputs:
       fuera_del_sitio:
@@ -28,6 +32,7 @@ concurrency:
 jobs:
   continuidad:
     name: Respaldo, restauracion y RPO (CO-FIA-02)
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -44,6 +49,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: age y el respaldo de la corrida anterior
         run: |
+          sudo sed -i 's#http://azure.archive.ubuntu.com#http://archive.ubuntu.com#' /etc/apt/apt-mirrors.txt 2>/dev/null || true # el 11-nov-2026 el runner no resolvia el espejo de Azure
           sudo apt-get install -y -qq age >/dev/null
           corrida="$(gh run list -w continuidad.yml -s success -L 1 --json databaseId -q '.[0].databaseId')"
           if [ -n "$corrida" ] && gh run download "$corrida" -n respaldo -D "$ANTERIOR"; then
