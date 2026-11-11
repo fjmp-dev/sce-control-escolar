@@ -113,6 +113,8 @@ Esta limitación se declara de forma expresa ante el equipo auditor, en lugar de
 - Si se aprueba CC-007, FJMP suma Desarrollo y Administrador del sistema en sus sprints. Las acciones del administrador quedan en bitácora.
 - **FJMP trabaja con un asistente de IA (Claude Code)**. Se declara en cada commit con `Co-Authored-By`. El asistente no aprueba ni acepta nada, y FJMP rinde cuentas por el código que entrega.
 
+**Cambio del 10 de noviembre de 2026: el proyecto sigue sin SJOM.** SJOM no aceptó la invitación al repositorio ni revisó los entregables, y FJMP decidió continuar sin él. Desde esa fecha, FJMP produce y también aprueba: fusiona sus pull requests, firma el manual v3.0 y las actas, y verifica sus propios defectos. Por eso **las garantías 1 a 3 de arriba dejan de cumplirse**. No se presenta como separación de funciones: es una desviación de las secciones 1.2, 10.4 y 29 del manual, y se declara aquí ante el equipo auditor. Lo que queda como control independiente es automático: CI en verde, puerta de calidad, Gitleaks, Trivy, Newman y la matriz rol × endpoint ejecutable.
+
 ## 7. Aprobación
 
 Sección 5.3 del manual: organigrama funcional y RACI aprobados por el Product Owner.

@@ -158,14 +158,14 @@ Fuentes:
 
 ## 9. Revisión y aprobación (sección 1.2)
 
-**Autor:** Francisco Javier Martínez Peñas, con asistente de IA declarado en `roles-y-raci.md`.
-**Revisor (QA y Seguridad) y aprobador (Product Owner):** Samuel Jezoar Ortiz Martínez. Separación de funciones: quien produce no acepta (`metodologia-de-trabajo.md`, sección 1).
+**Autor, revisor y aprobador:** Francisco Javier Martínez Peñas, con asistente de IA declarado en `roles-y-raci.md`.
+
+**Desviación declarada:** la sección 1.2 pide revisión de QA y de Seguridad y aprobación del Product Owner. Desde el 10 de noviembre de 2026 el proyecto sigue sin SJOM (`roles-y-raci.md`, apartado 6), así que el autor también revisa y aprueba. No hay revisión independiente de esta versión.
 
 | Rol | Persona | Medio | Firma | Fecha |
 |---|---|---|---|---|
-| Revisor: QA | Samuel Jezoar Ortiz Martínez | Aprobación del pull request y firma manuscrita | | |
-| Revisor: Seguridad | Samuel Jezoar Ortiz Martínez | Firma manuscrita | | |
-| Aprobador: Product Owner | Samuel Jezoar Ortiz Martínez | Firma manuscrita | | |
 | Autor | Francisco Javier Martínez Peñas | Firma manuscrita | | |
+| Revisor: QA y Seguridad | Francisco Javier Martínez Peñas | Firma manuscrita | | |
+| Aprobador: Product Owner | Francisco Javier Martínez Peñas | Firma manuscrita | | |
 
 Hasta que se firme, la v3.0 es un borrador y rige la v2.0 con las decisiones registradas en `plan-de-sistema.md` y en el registro de cambios.

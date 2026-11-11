@@ -28,7 +28,7 @@ El sistema está completo en las fases 1 a 4 (alcance compactado el 10 de noviem
 - Reportes de dirección (RF-009, Batch 10): inscripción, avance académico y cobranza de un periodo por facultad y de toda la universidad, solo agregados, sin matrículas ni nombres, y sin acceso a la bitácora.
 - Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
 
-Pendiente, sin código: que SJOM revise y apruebe los pull requests apilados, fusionarlos en orden a `develop`, que SJOM firme el manual v3.0 (`docs/gobierno/manual-v3.0.md`) y las actas de fase, y etiquetar. Ver `docs/gobierno/plan-de-trabajo.md`, apartado 1.
+Desde el 10 de noviembre de 2026 el proyecto sigue sin SJOM: FJMP fusiona y firma, y la desviación de separación de funciones se declara en `docs/gobierno/roles-y-raci.md`, apartado 6. Pendiente, sin código: firmar el manual v3.0 (`docs/gobierno/manual-v3.0.md`) y las actas. Ver `docs/gobierno/plan-de-trabajo.md`, apartado 1.
 
 **Para verlo funcionar:** doble clic en `abrir-sce.command` (macOS), o `docker compose up -d --build` y abrir http://localhost:3000. Cuentas de demostración y lista de entrega al auditor: [`ACCESO-Y-AUDITORIA.txt`](ACCESO-Y-AUDITORIA.txt).
 
