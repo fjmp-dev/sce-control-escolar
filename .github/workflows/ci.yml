@@ -64,10 +64,14 @@ jobs:
       - name: Prettier (Tabla 32)
         run: npm run format:check
       - name: Commitlint (Tablas 31 y 32)
-        run: >-
-          npx commitlint --verbose
-          --from ${{ github.event.pull_request.base.sha || github.event.before }}
-          --to ${{ github.event.pull_request.head.sha || github.sha }}
+        env:
+          DESDE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HASTA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          # Al crear una rama (release/x.y.z), GitHub manda "before" en ceros: se revisa desde el primer padre, porque
+          # lo anterior ya paso por el pull request que lo integro.
+          [ "$DESDE" != 0000000000000000000000000000000000000000 ] || DESDE="$(git rev-parse "$HASTA~1")"
+          npx commitlint --verbose --from "$DESDE" --to "$HASTA"
       - run: npm ci
         working-directory: api
       - run: npx prisma generate
@@ -225,7 +229,11 @@ jobs:
           (cd api && npm audit --audit-level=high)
           (cd web && npm audit --audit-level=high)
       - name: Puerta de calidad sobre codigo nuevo (Tabla 51)
-        run: scripts/sonar-puerta.sh "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD reportes/sonar
+        env:
+          DESDE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          [ "$DESDE" != 0000000000000000000000000000000000000000 ] || DESDE="$(git rev-parse HEAD~1)" # rama nueva
+          scripts/sonar-puerta.sh "$DESDE" HEAD reportes/sonar
       - name: Resumen de la puerta
         if: always()
         run: cat reportes/sonar/resumen.md >> "$GITHUB_STEP_SUMMARY" || true

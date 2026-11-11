@@ -96,7 +96,7 @@ Cada corrida deja el artefacto `despliegue-staging-<etiqueta>` (90 días): regis
 
 | Fecha | Etiqueta | Digest de la API | Digest del portal | Responsable | Resultado | Corrida |
 |---|---|---|---|---|---|---|
-| | | | | | | |
+| 11-nov-2026 01:31 (CST) | `v0.4.0-rc.1` | `sha256:d188e5be2716f8268264ea3ef27edd0938ab38a4bcaef1b08c032ae1c35353ae` | `sha256:7a67e67bf6dfdfcacf31ebff6c6acacdb12d74aeb9e2ff3d8c84bc326b30fcf0` | FJMP | Aprobado: humo, Newman, TLS, ZAP pasivo y base en verde; 5 migraciones aplicadas | [42979816446](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/42979816446) |
 
 ## 9. Staging en cada pull request
 
