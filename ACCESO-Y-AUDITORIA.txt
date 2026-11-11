@@ -85,8 +85,8 @@ D. Requisitos, diseño y trazabilidad
 E. Evidencia de pruebas
    - La corrida de CI en verde de cada pull request, en la pestaña Actions de GitHub.
    - Sus reportes: cobertura, Newman, Cypress con video y axe, ZAP, Trivy, Gitleaks y SonarQube.
-   - OJO: los artefactos de GitHub caducan a los 90 días. Antes de entregar, copiarlos a docs/evidencias/
-     según docs/evidencias/README.md.
+   - Copia de esos reportes, con SHA-256: docs/evidencias/fase-4/corridas.md y reportes/. Los artefactos
+     de GitHub caducan a los 90 días. El video de Cypress va adjunto a la release v1.0.0.
 
 F. Gobierno y control
    docs/gobierno/  registro-de-cambios.md (CC-001 a CC-019, con aprobaciones), actas/ (fases 0 a 3 y sprints),
@@ -106,5 +106,4 @@ G. Los pull requests #30 y #55 a #66, con su CI en verde.
 - FJMP firma: manual v3.0 (apartado 9), registro de aprobación de la v2.0, actas de fase y aprobaciones de CC.
 - Confirmar en la Gaceta del Gobierno el nombre y la fecha de la ley estatal de datos personales
   (manual v3.0, apartado 7).
-- Copiar a docs/evidencias/ los reportes de CI (apartado 5.E).
-- Etiquetar la versión entregada.
+- Etiquetar v1.0.0 (notas: docs/gobierno/notas-version/v1.0.0.md).
