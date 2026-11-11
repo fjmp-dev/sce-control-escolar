@@ -118,8 +118,10 @@ describe('CF-REP-01: reportes agregados de direccion (RF-009)', () => {
   });
 
   it('un periodo que no existe responde 404; una clave mal escrita, 400', async () => {
-    await http().get('/periodos/1999A/reporte').set('Authorization', direccion).expect(404);
-    await http().get('/periodos/2027X/reporte').set('Authorization', direccion).expect(400);
+    const codigo = async (clave: string) =>
+      (await http().get(`/periodos/${clave}/reporte`).set('Authorization', direccion)).status;
+    expect(await codigo('1999A')).toBe(404);
+    expect(await codigo('2027X')).toBe(400);
   });
 
   it('el reporte no expone matriculas ni nombres de alumnos (Tabla 16, minimizacion)', async () => {

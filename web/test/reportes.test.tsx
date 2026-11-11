@@ -81,5 +81,6 @@ describe('Reportes de dirección (RF-009)', () => {
     api({ '/periodos': [] });
     render(await PaginaReportes(buscar()));
     screen.getByText('Todavía no hay periodos.');
+    expect(screen.queryByRole('table')).toBeNull();
   });
 });
