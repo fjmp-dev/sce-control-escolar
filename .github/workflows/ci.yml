@@ -276,7 +276,11 @@ jobs:
           exit-code: '1'
           format: table
           output: trivy-repositorio.txt
-      - name: OWASP ZAP - CS-SEG-05 y registros sin datos sensibles (Tablas 30, 42 y 49; AU-20)
+      - name: OWASP ZAP - CS-SEG-03, un alumno contra lo de otro (Tablas 42 y 49)
+        if: always()
+        run: scripts/zap-acceso-cruzado.sh reportes/zap-acceso-cruzado
+      # Al final: deja bloqueada 15 minutos la cuenta del administrador (Tabla 38).
+      - name: OWASP ZAP - CS-SEG-05 con los siete roles, registros sin datos sensibles y calidad de datos (Tablas 30, 42 y 49; AU-20)
         if: always()
         run: scripts/zap.sh reportes/zap
       - uses: actions/upload-artifact@v4
@@ -289,7 +293,9 @@ jobs:
         if: always()
         with:
           name: zap
-          path: reportes/zap/
+          path: |
+            reportes/zap/
+            reportes/zap-acceso-cruzado/
           if-no-files-found: ignore
           retention-days: 90
 

@@ -23,6 +23,7 @@ vi.mock('next/headers', () => ({
   cookies: async () => ({ get: () => ({ value: 'tok' }), set: vi.fn(), delete: vi.fn() }),
 }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
+vi.mock('next/server', async (original) => ({ ...(await original<object>()), connection: async () => undefined }));
 vi.mock('next/navigation', () => ({
   usePathname: () => '/',
   redirect: (destino: string) => {
@@ -111,8 +112,8 @@ describe('Layout y navegacion por rol', () => {
     expect(screen.getByText('Dar de alta, cambiar roles y dar de baja')).toBeTruthy();
   });
 
-  it('la raiz declara el idioma y el salto al contenido', () => {
-    const html = renderToStaticMarkup(LayoutRaiz({ children: <p>x</p> }));
+  it('la raiz declara el idioma y el salto al contenido', async () => {
+    const html = renderToStaticMarkup(await LayoutRaiz({ children: <p>x</p> }));
     expect(html).toContain('lang="es-MX"');
     expect(html).toContain('href="#contenido"');
   });
@@ -229,7 +230,13 @@ describe('Paginas sin datos', () => {
     mostrar(PaginaPrivacidad());
     screen.getByRole('heading', { level: 1, name: 'Aviso de privacidad simplificado' });
     expect(screen.getByRole('status').textContent).toContain('Modelo no oficial');
-    for (const apartado of ['Quién trata tus datos', 'Para qué', 'Tu consentimiento', 'Transferencias', 'Tus derechos']) {
+    for (const apartado of [
+      'Quién trata tus datos',
+      'Para qué',
+      'Tu consentimiento',
+      'Transferencias',
+      'Tus derechos',
+    ]) {
       screen.getByRole('heading', { level: 2, name: apartado });
     }
     expect(screen.getAllByRole('listitem')).toHaveLength(7);
