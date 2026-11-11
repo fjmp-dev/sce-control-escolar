@@ -707,6 +707,13 @@ a.boton-secundario:hover {
   font-size: 0.9375rem;
 }
 
+/* WCAG 2.5.8 (HA-08): un enlace suelto, fuera de una frase, mide lo que un control y no 18 px de renglón. */
+.enlace-suelto {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--objetivo);
+}
+
 .error-campo {
   margin: 0;
   color: var(--error);
