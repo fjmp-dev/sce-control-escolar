@@ -1,0 +1,70 @@
+# Alertas de la Tabla 57 y de las metas de la Tabla 46. "area" decide si tambien va al Product Owner (sec. 35).
+groups:
+  - name: sce
+    rules:
+      - alert: SaludCaida
+        expr: probe_success{job="salud"} == 0
+        for: 1m
+        labels: { severidad: critica, area: inscripcion-y-pagos }
+        annotations:
+          resumen: 'La salud de {{ $labels.instance }} no responde (RNF-FIA-001)'
+      - alert: Percentil95AltoEnInscripcionOPago
+        expr: >-
+          histogram_quantile(0.95, sum by (le, ruta) (rate(sce_http_duracion_segundos_bucket{job="api",
+          ruta=~"/inscripciones.*|/pagos.*"}[5m]))) > 3
+        for: 5m
+        labels: { severidad: alta, area: inscripcion-y-pagos }
+        annotations:
+          resumen: 'p95 de {{ $labels.ruta }} = {{ $value | humanizeDuration }}, meta 3 s (RNF-REN-001)'
+      - alert: Percentil95AltoEnConsultas
+        expr: >-
+          histogram_quantile(0.95, sum by (le, ruta) (rate(sce_http_duracion_segundos_bucket{job="api",
+          metodo="GET", ruta!~"/inscripciones.*|/pagos.*|/metricas|/salud"}[5m]))) > 2
+        for: 5m
+        labels: { severidad: alta, area: operacion }
+        annotations:
+          resumen: 'p95 de {{ $labels.ruta }} = {{ $value | humanizeDuration }}, meta 2 s (RNF-REN-001)'
+      - alert: Errores5xx
+        expr: >-
+          sum(rate(sce_http_duracion_segundos_count{job="api", estado=~"5.."}[5m]))
+          / sum(rate(sce_http_duracion_segundos_count{job="api"}[5m])) > 0.01
+        for: 5m
+        labels: { severidad: critica, area: inscripcion-y-pagos }
+        annotations:
+          resumen: 'Errores 5xx en {{ $value | humanizePercentage }} de las peticiones (meta: menos de 1 %)'
+      - alert: ErroresDeNegocioAltos
+        expr: sum by (codigo) (rate(sce_errores_negocio_total{codigo!~"NO_AUTENTICADO|NO_ENCONTRADO"}[10m])) * 600 > 50
+        for: 10m
+        labels: { severidad: aviso, area: operacion }
+        annotations:
+          resumen: '{{ $value }} respuestas {{ $labels.codigo }} en 10 minutos'
+      - alert: CPUAlta
+        expr: 1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) > 0.8
+        for: 10m
+        labels: { severidad: alta, area: operacion }
+        annotations:
+          resumen: 'CPU del servidor en {{ $value | humanizePercentage }} (Tabla 46: menos de 80 %)'
+      - alert: DiscoCasiLleno # hallazgo C-2 del ensayo de contingencias del 11-nov-2026
+        expr: 1 - node_filesystem_avail_bytes{mountpoint="/", fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="rootfs"} > 0.85
+        for: 10m
+        labels: { severidad: alta, area: operacion }
+        annotations:
+          resumen: 'Disco al {{ $value | humanizePercentage }}'
+      - alert: ConexionesCercaDelLimite
+        expr: sum(pg_stat_database_numbackends{datname="sce"}) > 16 # 80 % de connection_limit=20
+        for: 5m
+        labels: { severidad: alta, area: inscripcion-y-pagos }
+        annotations:
+          resumen: '{{ $value }} conexiones a la base; el pool de la API es de 20 (Tabla 46)'
+      - alert: CertificadoPorVencer
+        expr: probe_ssl_earliest_cert_expiry{job="salud"} - time() < 14 * 86400
+        for: 1h
+        labels: { severidad: aviso, area: operacion }
+        annotations:
+          resumen: 'El certificado de {{ $labels.instance }} vence en menos de 14 dias'
+      - alert: DestinoSinDatos
+        expr: up == 0
+        for: 2m
+        labels: { severidad: alta, area: operacion }
+        annotations:
+          resumen: 'Prometheus no lee {{ $labels.job }} ({{ $labels.instance }})'

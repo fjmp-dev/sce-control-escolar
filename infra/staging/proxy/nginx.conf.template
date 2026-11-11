@@ -1,4 +1,5 @@
-# Proxy inverso de la Fig. 9: termina TLS 1.2+ (Tabla 38) y enruta al portal y a la API.
+# Proxy inverso de la Fig. 9, en su propio nodo y en la red de frontera (CC-022): termina TLS 1.2+ (Tabla 38) y
+# enruta al portal y a la API.
 # La imagen de nginx sustituye ${DOMINIO}; las variables de nginx ($host y demas) quedan intactas.
 server_tokens off;
 
@@ -29,8 +30,9 @@ server {
     proxy_set_header X-Forwarded-Proto https;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
-    # La API, para el humo, Newman y el webhook de Mercado Pago (Fig. 9, Batch 9). Salvo /salud y el inicio de
-    # sesion, toda ruta pide sesion (Tabla 38).
+    # La API, para el humo, Newman y el aviso de la pasarela simulada (Fig. 9, CC-020). Salvo /salud y el inicio de
+    # sesion, toda ruta pide sesion (Tabla 38). /metricas solo se lee desde la red privada, por Prometheus (13.3).
+    location = /api/metricas { return 404; }
     location /api/ { proxy_pass http://api:3001/; }
     location / { proxy_pass http://web:3000; }
 }

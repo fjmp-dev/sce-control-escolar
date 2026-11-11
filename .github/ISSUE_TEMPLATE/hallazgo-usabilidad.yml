@@ -1,0 +1,36 @@
+name: Hallazgo de usabilidad
+description: Hallazgo de una sesión de usabilidad (sección 26 del manual, Anexo G)
+labels: ['usabilidad']
+body:
+  - type: input
+    id: tarea
+    attributes:
+      label: Rol y tarea del guion (p. ej. Alumno A4)
+    validations: { required: true }
+  - type: input
+    id: participantes
+    attributes:
+      label: Participantes que lo tuvieron (códigos, nunca nombres)
+    validations: { required: true }
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Qué pasó, qué esperaba el participante y qué dijo
+    validations: { required: true }
+  - type: dropdown
+    id: clase
+    attributes:
+      label: Clase (26.2, paso 5)
+      options:
+        - 'Must: impide concluir una tarea de un flujo Must o confunde un estado (adeudo, requisito, choque, en proceso, lista)'
+        - 'Should: la tarea concluye, con errores o fuera del tiempo máximo'
+        - 'Could: mejora de comodidad'
+    validations: { required: true }
+  - type: input
+    id: criterio
+    attributes:
+      label: Criterio de 26.1 o de WCAG 2.2 afectado
+  - type: input
+    id: evidencia
+    attributes:
+      label: Evidencia (hoja, minuto de la grabación, captura)

@@ -1,6 +1,6 @@
 # ZAP completo (plan 12.2; Tablas 42 y 49): el portal con sesión de cada rol (zap-portal.sh, full scan), el acceso de un
 # alumno a lo de otro (zap-acceso-cruzado.sh, CS-SEG-03) y la API con los siete roles (zap.sh, CS-SEG-05). Lo que no cabe
-# en cada pull request: corre a mano, cada semana y con cada etiqueta candidata. El tratamiento de cada alerta queda en
+# en cada pull request: corre a mano, cada semana y con cada etiqueta. El tratamiento de cada alerta queda en
 # docs/calidad/informe-zap.md; los reportes, como artefacto.
 name: ZAP completo
 
@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '0 9 * * 1' # lunes 03:00 en la Ciudad de México
   push:
-    tags: ['v*-rc.*']
+    tags: ['v*'] # candidatas y versiones (plan 12.2)
 
 permissions:
   contents: read

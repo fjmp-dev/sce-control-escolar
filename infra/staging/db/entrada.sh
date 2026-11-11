@@ -22,6 +22,7 @@ cat > /etc/sce/pg_hba.conf <<EOF
 # TIPO   BASE  USUARIO   ORIGEN      METODO
 local    all   postgres              peer
 hostssl  sce   sce_app   $RED_APP    scram-sha-256
+hostssl  sce   sce_monitor $RED_APP  scram-sha-256
 EOF
 
 exec docker-entrypoint.sh "$@"

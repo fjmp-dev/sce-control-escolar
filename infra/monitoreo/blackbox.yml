@@ -1,0 +1,12 @@
+modules:
+  https_salud:
+    prober: http
+    timeout: 5s
+    http:
+      valid_status_codes: [200]
+      fail_if_not_ssl: true
+      fail_if_body_not_matches_regexp: ['"estado":"ok"']
+      tls_config:
+        ca_file: /etc/blackbox/ca.crt
+        server_name: localhost # el dominio del certificado; en un servidor real, el DOMINIO del ambiente
+        min_version: TLS12

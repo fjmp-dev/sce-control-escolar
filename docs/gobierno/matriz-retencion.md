@@ -13,8 +13,10 @@ Las columnas Documento, Responsable y Retención son las de la Tabla 62. La colu
 | Informes de prueba | QA | Dos años | GitHub Actions (90 días) y `docs/evidencias/` en cada cierre de fase |
 | Tickets y acciones correctivas | QA | Dos años | GitHub Issues y `docs/calidad/registro-no-conformidades.md` |
 | Informes de auditoría | Auditor | Tres años | Repositorio del auditor; las respuestas del auditado, en `docs/auditoria/` |
-| Registros y bitácora del piloto | DevOps | Semestre más uno | Almacenamiento con acceso restringido; se define en el Batch 13 |
-| Respaldos de base de datos | DevOps | Según objetivos de continuidad: semestre en curso más uno anterior (Tabla 56) | Respaldo cifrado; se define en el Batch 13 |
+| Registros y bitácora del piloto | DevOps | Semestre más uno | Registros de `sce-db` (pgAudit), `sce-api`, `sce-portal` y `sce-proxy`, cifrados con age junto a cada respaldo (`*.registros.gz.age`, `scripts/respaldo.sh`); misma ubicación y retención que los respaldos. Rotación local: 10 archivos de 50 MB por contenedor |
+| Respaldos de base de datos | DevOps | Según objetivos de continuidad: semestre en curso más uno anterior (Tabla 56) | Cifrados con age (`cifrado-y-claves.md`): artefacto `respaldo` de `continuidad.yml` (35 días) y release `respaldos` semanal fuera del sitio (un año). Detalle en `inventario-de-ambientes.md`, apartado 7 |
+| Métricas y alertas | DevOps | 40 días en Prometheus; la disponibilidad mensual, como los informes de prueba | Prometheus del nodo de aplicación (`infra/monitoreo/`). La tabla mensual de `scripts/disponibilidad.py` va al tablero de indicadores; los correos de alerta, al buzón de DevOps |
+| Revisión de accesos | Seguridad | Dos años, como los tickets | Issue mensual "Revisión de accesos AAAA-MM" de `seguridad-operativa.yml`, con su artefacto (90 días), y `docs/gobierno/revision-de-accesos.md` |
 
 **Expediente académico (fuera de la Tabla 62; D-18, por ratificar).** Son datos personales, no documentos del proyecto. El plazo real lo fija el catálogo de disposición documental de la universidad; mientras no se tenga, rige la propuesta de D-18 en `docs/calidad/reglas-de-negocio.md`. Hoy el SCE no borra nada.
 

@@ -1,7 +1,7 @@
 # Matriz de trazabilidad — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 12.3 (Tabla 27) y tablas 39, 43, 45, 47 y 49.
-**Versión:** 2.6, 11 de noviembre de 2026 (sub-batches 12.2 y 12.5: ZAP con los siete roles, CC-021 y Parte B).
+**Versión:** 2.7, 11 de noviembre de 2026 (Batch 13: CO-FIA-01 y 02, CO-FLE-01 en la fase 4 y CR-REN-01 a 05 con sus guiones). 2.6: sub-batches 12.2 y 12.5 (ZAP con los siete roles, CC-021 y Parte B).
 
 La matriz se actualiza en cada sprint siguiendo la cadena requisito, diseño, código, caso de prueba, resultado y acta (manual, sección 12.3). El orden de construcción y los batches están en `docs/gobierno/plan-de-sistema.md`.
 
@@ -40,7 +40,7 @@ Desde el 11 de noviembre de 2026 son veintidós: CC-021 añade RNF-USU-002 (acce
 | RNF-DAT-001 | Datos y expediente | CD-DAT-01 a CD-DAT-06 | 2 y 5 | 1, 4, 8, 12 y 14 | Tabla 27 y Anexo A |
 | RNF-USU-001 | Inscripción | CF-INS-02 | 2 | 5 | Añadida |
 | RNF-MAN-001 | Pipeline y dominio | CO-MAN-01 | 1 a 5 | 1 y cada módulo | Añadida |
-| RNF-FLE-001 | Catálogos institucionales | CO-FLE-01 | 5 | 11 y 13 | Añadida |
+| RNF-FLE-001 | Catálogos institucionales | CO-FLE-01 | 4 | 11 y 13 | Añadida. Pasa a la fase 4 en el Batch 13: la segunda facultad se da de alta solo con datos sobre lo que existe al cierre de la fase 4 |
 | RNF-USU-002 | Portal, flujos críticos | CO-ACC-01, CO-ACC-02, CO-ACC-03 | 1 a 5 | 3, 12 y cada interfaz | CC-021, sección 28 |
 | RNF-FLE-002 | Portal, Tabla 50 | CO-COM-01 | 1 a 5 | 12 y cada interfaz | CC-021, sección 27 |
 
@@ -109,11 +109,13 @@ El manual nombra CR-REN-01 a 05 y define cinco tipos de prueba, pero no asigna u
 
 | Caso | Tipo (Tabla 47) | Escenario | Herramienta |
 |---|---|---|---|
-| CR-REN-01 | Carga | 300 usuarios virtuales durante 15 minutos; perfil de lectura intensiva | JMeter |
-| CR-REN-02 | Concurrencia | 300 usuarios sin pérdida ni duplicación; 100 alumnos por los últimos 5 lugares | k6 |
+| CR-REN-01 | Carga | 300 usuarios virtuales durante 15 minutos; perfil de lectura intensiva | JMeter 5.6.3 (`infra/rendimiento/sce.jmx`) |
+| CR-REN-02 | Concurrencia | 300 usuarios sin pérdida ni duplicación; 100 alumnos por los últimos 5 lugares | k6 1.6.0 (`cr-ren-02.js`; enviadas contra persistidas con `cr-ren-02.sql`) |
 | CR-REN-03 | Estrés | Incremento progresivo hasta 800 usuarios | JMeter |
 | CR-REN-04 | Pico | Salto de 50 a 400 usuarios en un minuto | JMeter |
 | CR-REN-05 | Resistencia | Carga media durante cuatro horas continuas | JMeter |
+
+Los cinco corren con `.github/workflows/rendimiento.yml` sobre una etiqueta candidata, en staging con dimensionamiento de referencia; `infra/rendimiento/metas.sh` juzga la Tabla 46 y `docs/calidad/informe-rendimiento.md` reúne los registros de la Tabla 48. CR-REN-01 y 02 se corren tres veces por candidato y cuenta la mediana.
 
 ### 3.6 Operación, accesibilidad, compatibilidad y modularidad (familia `CO-`)
 
@@ -121,10 +123,10 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 
 | Caso | Requisito | Qué verifica | Batch |
 |---|---|---|---|
-| CO-FIA-01 | RNF-FIA-001 | Registro de healthchecks y cálculo mensual de disponibilidad frente a la meta. | 13 y 14 |
-| CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. | 13 y 14 |
+| CO-FIA-01 | RNF-FIA-001 | Registro de healthchecks y cálculo mensual de disponibilidad frente a la meta. Desde 13.3: sondeo de salud de API y web por el proxy cada 15 s (`infra/monitoreo/`), alertas de la Tabla 57 a DevOps y al PO, `scripts/monitoreo.sh salud` y `scripts/disponibilidad.py` (99,0 % en inscripción y cortes, 98,0 % el resto; mantenimientos con 48 h), con autoprueba de valores límite en la etapa 3. Procedimiento: `docs/gobierno/monitoreo.md`. Acta: `docs/evidencias/ensayos/2026-11-11-monitoreo-y-alertas.md` | 13 y 14 |
+| CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. Desde 13.2: `scripts/respaldo.sh` (age, conteos, prueba negativa), `scripts/restauracion.sh` (RTO, conteos y CD-DAT), `scripts/rollback.sh` (etapa 8 desde rc.2) y `continuidad.yml` cada 12 h (RPO). Acta: `docs/evidencias/ensayos/2026-11-11-restauracion-y-rollback.md` | 13 y 14 |
 | CO-MAN-01 | RNF-MAN-001 | Reporte de cobertura del pipeline: 100 % de reglas Must y 80 % en el dominio. Desde el sub-batch 11.2, `scripts/reglas-must.sh` cuenta en la etapa 2 las reglas Must que tienen prueba con su ID en el título, publica el reporte `reglas-must` y falla por debajo de 100 %. | 1, 11 y cada módulo |
-| CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. | 11 y 13 |
+| CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. Supertest y Testcontainers (`flexibilidad.spec.ts`: huella del esquema y de las migraciones, y `prisma migrate diff --exit-code`), Newman (carpeta CO-FLE-01) y SQL en staging (`co-fle-01.sql`). La materia se liga a la facultad por su plan, como en la Fig. 8 (materia → plan de estudios → facultad) | 11 y 13 |
 | CO-ACC-01 | RNF-USU-002 | Revisión automatizada de 28.2: axe en el inicio de los siete roles y en los errores de inscripción y pago (Cypress); Lighthouse en 21 páginas, donde la accesibilidad bloquea. Etapa 7. | 3 y 12 |
 | CO-ACC-02 | RNF-USU-002 | Criterios 28.1 en cada plataforma de la Tabla 50 con Playwright: teclado, objetivo táctil de 24 px, zoom al 200 % y axe inyectado. Etapas 7 y 8. | 12 |
 | CO-ACC-03 | RNF-USU-002 | Revisión manual de 28.2: lista de WCAG 2.2 AA con zoom real, lector de pantalla (VoiceOver en lugar de NVDA, manual v3.0) y registro HA-NN en `accesibilidad.md`. Firmada en cada cierre de fase. | 12 y cierres |

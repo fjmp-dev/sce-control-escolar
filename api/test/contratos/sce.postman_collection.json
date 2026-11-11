@@ -4367,6 +4367,500 @@
           ]
         }
       ]
+    },
+    {
+      "name": "CO-FLE-01 Segunda facultad sin migración",
+      "item": [
+        {
+          "name": "Sesion de administrador",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"administrador@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Sufijo por corrida: la carpeta se puede repetir sobre la misma base (local) sin chocar con claves únicas.",
+                  "const s = String(Date.now() % 1000000).padStart(6, '0');",
+                  "pm.collectionVariables.set('fleSufijo', s);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('fleAdmin', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de coordinacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"coordinacion@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('fleCoord', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de control escolar",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"control.escolar@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('fleControl', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de direccion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"direccion@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('fleDireccion', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Facultad nueva F3 (administrador)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleAdmin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"F3-{{fleSufijo}}\",\n  \"nombre\": \"Facultad de Flexibilidad {{fleSufijo}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Plan de F3 (administrador)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleAdmin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"F3P-{{fleSufijo}}\",\n  \"facultadClave\": \"F3-{{fleSufijo}}\",\n  \"creditosTotales\": 300,\n  \"vigenteDesde\": \"2027-01-01\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Profesor propio de la corrida (administrador)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleAdmin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"p{{fleSufijo}}@sce.test\",\n  \"contrasena\": \"Flexibilidad-{{fleSufijo}}-x\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cuenta del alumno de F3 (administrador)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleAdmin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"a39{{fleSufijo}}@sce.test\",\n  \"contrasena\": \"Flexibilidad-{{fleSufijo}}-x\",\n  \"roles\": [\n    \"alumno\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Materia del plan de F3 (coordinacion)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleCoord}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"FLX-{{fleSufijo}}\",\n  \"planClave\": \"F3P-{{fleSufijo}}\",\n  \"nombre\": \"Introducción a la flexibilidad\",\n  \"creditos\": 6\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grupo de F3 en 2027A (coordinacion)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleCoord}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"clave\": \"FLX-{{fleSufijo}}-A\",\n  \"materiaClave\": \"FLX-{{fleSufijo}}\",\n  \"profesor\": \"p{{fleSufijo}}@sce.test\",\n  \"cupo\": 20,\n  \"horarios\": [\n    {\n      \"dia\": 6,\n      \"horaInicio\": \"08:00\",\n      \"horaFin\": \"10:00\",\n      \"aula\": \"F3-{{fleSufijo}}\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('fleGrupo', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alumno de F3 (control escolar)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleControl}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matricula\": \"39{{fleSufijo}}\",\n  \"nombre\": \"Alumno Sintético de F3\",\n  \"facultadClave\": \"F3-{{fleSufijo}}\",\n  \"fechaIngreso\": \"2027-01-08\",\n  \"correo\": \"a39{{fleSufijo}}@sce.test\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de alumno de F3",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"a39{{fleSufijo}}@sce.test\",\n  \"contrasena\": \"Flexibilidad-{{fleSufijo}}-x\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('fleAlumno', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inscripcion al grupo de F3 (alumno)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleAlumno}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [\n    {{fleGrupo}}\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('queda confirmada', () => pm.expect(pm.response.json().estado).to.eql('confirmada'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "F3 en el reporte de 2027A (direccion)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/2027A/reporte",
+              "host": ["{{base}}"],
+              "path": ["periodos", "2027A", "reporte"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{fleDireccion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "const f3 = pm.response.json().filas.find((f) => f.facultadClave === 'F3-' + pm.collectionVariables.get('fleSufijo'));",
+                  "pm.test('F3 aparece con su inscrito, sin migración', () => pm.expect(f3 && f3.inscritos).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "variable": []
 }

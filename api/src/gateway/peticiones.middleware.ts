@@ -1,6 +1,7 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { Autenticado } from '../identidad/autenticacion.service';
+import { duracion, erroresDeNegocio } from './metricas';
 
 type Peticion = Request & { autenticado?: Autenticado };
 
@@ -19,13 +20,18 @@ export class PeticionesMiddleware implements NestMiddleware {
     respuesta.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
     respuesta.setHeader('Cache-Control', 'no-store'); // las respuestas llevan tokens y datos personales
     respuesta.on('finish', () => {
+      const ms = performance.now() - inicio;
+      const ruta = (peticion.route as { path?: string } | undefined)?.path ?? 'sin_ruta';
+      const codigo = (respuesta.locals.codigo as string | undefined) ?? null;
+      duracion.observe({ metodo: peticion.method, ruta, estado: respuesta.statusCode }, ms / 1000);
+      if (codigo) erroresDeNegocio.inc({ codigo });
       this.log.log({
         metodo: peticion.method,
-        ruta: (peticion.route as { path?: string } | undefined)?.path ?? 'sin_ruta',
+        ruta,
         estado: respuesta.statusCode,
-        ms: Math.round(performance.now() - inicio),
+        ms: Math.round(ms),
         usuario: peticion.autenticado?.usuario.id ?? null,
-        codigo: (respuesta.locals.codigo as string | undefined) ?? null,
+        codigo,
       });
     });
     siguiente();
