@@ -131,11 +131,7 @@ En un servidor real, el procedimiento es el mismo paso 3: `AMBIENTE_ENV` con `EN
 
 La contraseña de la semilla viaja cifrada junto al respaldo, porque la base restaurada guarda sus hashes.
 
-**Pendiente de FJMP:** el secreto `AGE_IDENTIDAD` del repositorio. Sin él, el flujo respalda pero no restaura, y lo avisa. Se da de alta con:
-
-```
-gh secret set AGE_IDENTIDAD -R fjmp-dev/sce-control-escolar < ~/keys/sce-respaldos.agekey
-```
+El secreto `AGE_IDENTIDAD` del repositorio lo dio de alta FJMP el 11 de noviembre de 2026 a las 11:40 UTC, desde `~/keys/sce-respaldos.agekey`. Sin él, el flujo respalda pero no restaura, y lo avisa.
 
 Las claves y la prueba negativa están en `cifrado-y-claves.md`. Las contingencias de pasarela y ventanilla, en `contingencias.md`.
 
