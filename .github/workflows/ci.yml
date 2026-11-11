@@ -116,12 +116,12 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - name: Jest con cobertura, al menos 80 % en el dominio (Tablas 53 y 59)
-        run: npm run test:unitarias
+        run: npm run test:unitarias -- --json --outputFile=coverage/unitarias/jest.json # para la pirámide (etapa 7)
       - run: npm ci
         working-directory: web
       - name: Vitest y React Testing Library con cobertura (Tablas 42 y 53)
         working-directory: web
-        run: npm run test:unitarias
+        run: npm run test:unitarias -- --reporter=default --reporter=json --outputFile.json=coverage/vitest.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -154,16 +154,25 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - name: Supertest y Testcontainers sobre PostgreSQL 16 efimero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG, CD-DAT)
-        run: npm run test:integracion
+        run: npm run test:integracion -- --json --outputFile=coverage/integracion/jest.json # para la pirámide
       - name: Levantar PostgreSQL 16 y la API con datos sinteticos
         working-directory: .
         run: docker compose up -d --build --wait --wait-timeout 240 api
       - name: Newman - contratos de API y CS-SEG-04 (Tablas 30, 42 y 49)
         working-directory: .
         run: scripts/newman.sh http://localhost:3001 reportes/newman
-      - name: Great Expectations - CD-DAT-01 y 04, expediente, CS-SEG-06 y tasa de conclusión (Tablas 39, 42 y 59; AU-22)
+      - name: Great Expectations - CD-DAT-01 a 06, Tabla 16, CS-SEG-06 y tasa de conclusión (Tablas 16, 39, 42 y 59; AU-22)
         working-directory: .
         run: scripts/calidad-datos.sh reportes/calidad-datos
+      - name: Muestreo de bitácora y revisión de accesos, como artefacto (Tabla 57, sec. 18; AU-16)
+        if: always()
+        working-directory: .
+        run: |
+          mkdir -p reportes/calidad-datos
+          for consulta in muestreo-bitacora accesos; do
+            docker compose exec -T db psql -U sce_app -d sce -v ON_ERROR_STOP=1 \
+              < "api/prisma/verificacion/$consulta.sql" > "reportes/calidad-datos/$consulta.txt"
+          done
       - if: failure()
         working-directory: .
         run: docker compose logs
@@ -376,7 +385,20 @@ jobs:
         if: always()
         continue-on-error: true
         run: scripts/playwright.sh http://localhost:3000 reportes/playwright/should --project='should-*'
-      - name: Staging efimero con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit y humo del Anexo D (CC-018)
+      - uses: actions/download-artifact@v4
+        if: always()
+        with:
+          pattern: cobertura-* # con los reportes JSON de Jest y Vitest de las etapas 3 y 4
+          path: ${{ runner.temp }}/piramide
+      - name: Pirámide de pruebas, por caso y por archivo, contra 70/20/10 (Tabla 40); solo avisa
+        if: always()
+        run: |
+          mkdir -p reportes
+          scripts/piramide.sh "$RUNNER_TEMP/piramide/cobertura-unitarias/jest.json" \
+            "$RUNNER_TEMP/piramide/cobertura-portal/vitest.json" \
+            "$RUNNER_TEMP/piramide/cobertura-integracion/jest.json" reportes/cypress/reportes/junit \
+            | tee reportes/piramide.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Staging efimero con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit, humo del Anexo D y calidad de datos (CC-018)
         run: scripts/staging.sh "${IMAGEN_API:-sce-api:local}" "${IMAGEN_PORTAL:-sce-portal:local}"
       - name: Registro del despliegue (31.2)
         if: always()

@@ -92,12 +92,12 @@ La definición y la herramienta de cada caso son las del manual. El **Batch** es
 |---|---|---|---|---|
 | CD-DAT-01 | Detección de matrículas duplicadas en la tabla alumno. | Cada ejecución del pipeline | Cero duplicados | 1 |
 | CD-DAT-02 | Recálculo de promedio y créditos sobre muestra de 30 expedientes al cierre de periodo. | Cierre de cada periodo | 100 % de coincidencia con la regla publicada | 8 y 14 |
-| CD-DAT-03 | Conciliación entre estado de cuenta del alumno y corte de caja. | Diaria en piloto | Cero diferencias no explicadas | 9 y 14 |
+| CD-DAT-03 | Conciliación entre estado de cuenta del alumno y corte de caja. Con la pasarela simulada es interna (CC-020): saldo contra movimientos, un solo abono por pago aplicado, ningún movimiento de un pago no aplicado y corte del día contra sus abonos (`cd-dat-03.sql`, suite `conciliacion`, `integracion/datos.spec.ts` y `pagos.spec.ts`; sub-batch 12.1). | Diaria en piloto; aquí, en cada pull request | Cero diferencias no explicadas | 9, 12 y 14 |
 | CD-DAT-04 | Integridad referencial: ausencia de calificaciones sin grupo, periodo o profesor. | Cada ejecución del pipeline | Cero registros huérfanos | 1 |
 | CD-DAT-05 | Completitud: inscripciones sin matrícula, periodo o carga. | Semanal en inscripción | Cero registros incompletos | 5 y 14 |
-| CD-DAT-06 | Actualidad: diferencia entre confirmación de pago y reflejo en estado de cuenta. | Continua en piloto | Menor a un minuto en el 95 % de los casos | 9 y 14 |
+| CD-DAT-06 | Actualidad: diferencia entre confirmación de pago y reflejo en estado de cuenta, con `pago.fecha_confirmacion` (CC-011; `cd-dat-06.sql`, suite `actualidad`, `integracion/datos.spec.ts` y `pagos.spec.ts`; sub-batch 12.1). Con la pasarela simulada se cumple por construcción (`plan-de-sistema.md`, 6.2). | Continua en piloto; aquí, en cada pull request | Menor a un minuto en el 95 % de los casos | 9, 12 y 14 |
 
-Herramienta: consultas SQL de verificación y Great Expectations (Tabla 42).
+Herramienta: consultas SQL de verificación (`api/prisma/verificacion/`) y Great Expectations (Tabla 42, `scripts/calidad-datos.py`).
 
 ### 3.5 Rendimiento (Anexo A y Tabla 47)
 
