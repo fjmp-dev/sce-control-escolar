@@ -1,7 +1,7 @@
 # Inventario de ambientes — SCE
 
 **Fuente:** SCE-MC-001 v2.0, secciones 3.5, 13.7, 20 y 31; Tablas 30, 38 y 55; Fig. 9.
-**Actualizado:** 11 de noviembre de 2026 (sub-batch 13.1, [#76](https://github.com/fjmp-dev/sce-control-escolar/issues/76); CC-018 y CC-022).
+**Actualizado:** 11 de noviembre de 2026 (sub-batch 13.1, [#76](https://github.com/fjmp-dev/sce-control-escolar/issues/76); CC-018 y CC-022. Sub-batch 14.1, [#77](https://github.com/fjmp-dev/sce-control-escolar/issues/77): despliegue de `v1.0.0` al piloto de ensayo).
 
 Es la referencia operativa de la sección 20. Cada despliegue a staging o al piloto de ensayo actualiza la tabla 1 y agrega una fila al registro de la sección 8.
 
@@ -14,7 +14,7 @@ Es la referencia operativa de la sección 20. Cada despliegue a staging o al pil
 | Desarrollo | Docker Compose local, sobre Colima | Rama de trabajo | Seed sintético, con la contraseña del README | FJMP | `http://localhost:3000` |
 | Pruebas / integración | GitHub Actions, base efímera (etapas 4, 5 y 7) | Commit de cada corrida | Seed sintético | FJMP | Existe mientras dura la corrida |
 | Staging | **Efímero, en GitHub Actions (CC-018):** `scripts/staging.sh` lo arma con la configuración de `infra/staging/`, lo verifica y lo destruye. La etapa 8 lo corre con una etiqueta candidata `vX.Y.Z-rc.N`; la 7, en cada pull request | Ver sección 8 | Seed sintético, con contraseña generada en cada corrida | FJMP | `https://localhost` dentro del runner, mientras dura la corrida |
-| Piloto de ensayo | **Efímero, en GitHub Actions (CC-022):** el mismo `scripts/staging.sh` con `AMBIENTE=piloto`, en el environment `piloto`, con la etiqueta final `vX.Y.Z` | Ninguna todavía (`v1.0.0` en 14.1) | **Ninguno:** `SEMILLA=0`; solo los roles y el usuario técnico de CC-015 | FJMP | `https://localhost` dentro del runner, mientras dura la corrida |
+| Piloto de ensayo | **Efímero, en GitHub Actions (CC-022):** el mismo `scripts/staging.sh` con `AMBIENTE=piloto`, en el environment `piloto`, con la etiqueta final `vX.Y.Z` | `v1.0.0`, el 11 de noviembre de 2026 (sección 8) | **Ninguno:** `SEMILLA=0`; solo los roles y el usuario técnico de CC-015 | FJMP | `https://localhost` dentro del runner, mientras dura la corrida |
 | Piloto institucional | No existe: sin facultad, usuarios ni servidores. La fase 5 queda preparada, no ejecutada (14.2) | — | — | — | — |
 
 ## 2. Staging: topología (Fig. 9, Tabla 30)
@@ -64,7 +64,7 @@ No hay servidores que dar de alta (CC-018 y CC-022). Lo que se configura una vez
 | Environment `piloto` con revisor y política de etiquetas | `gh api -X PUT .../environments/piloto` (sección 3) | 11 de noviembre de 2026 |
 | Secretos del environment `piloto` | `bash scripts/alta-piloto.sh` | Dados de alta por FJMP el 11 de noviembre de 2026 a las 11:39 UTC: `JWT_SECRET`, `CONTRASENA_SEMILLA`, `CA_CRT` y `CA_KEY`. Huella SHA-256 de la CA: `FE:FC:95:A7:…:62:E0:95:CE`. El asistente no puede escribir secretos |
 | _Rulesets_ de `release/**` y `v*` | `infra/github/` | Aplicados por FJMP el 11 de noviembre de 2026, a las 05:38 (UTC-6): ramas `release/**` (id 27027338) y etiquetas `v*` (id 27027346), sin excepciones. El asistente no puede cambiar la configuración del repositorio. `release/1.0.0` se cortó minutos antes, en `5385940`, sin cambios directos |
-| Workflows programados: `continuidad.yml` (12 h), `seguridad-operativa.yml` (mensual) y el cron de `zap-completo.yml` | GitHub solo programa los workflows de la rama por defecto (`main`) | Desde que `release/1.0.0` se fusione a `main` (14.1). Mientras, se lanzan a mano sobre `release/1.0.0`: un disparador de pull request que solo toca el propio archivo los registra, con el job saltado |
+| Workflows programados: `continuidad.yml` (12 h), `seguridad-operativa.yml` (mensual) y el cron de `zap-completo.yml` | GitHub solo programa los workflows de la rama por defecto (`main`) | Desde que `release/1.0.0` se fusionó a `main`, el 11 de noviembre de 2026 (14.1). Antes se lanzaban a mano sobre `release/1.0.0`: un disparador de pull request que solo toca el propio archivo los registra, con el job saltado |
 
 Si algún día hay servidores reales, `scripts/desplegar-staging.sh` ya admite `EN_APP`, `EN_DB` y `EN_PROXY` por SSH; su alta y su certificado se documentarían aquí.
 
@@ -145,6 +145,7 @@ Cada corrida deja el artefacto `despliegue-staging-<etiqueta>` o `despliegue-pil
 |---|---|---|---|---|---|---|
 | 11-nov-2026 01:31 (CST) | `v0.4.0-rc.1` | `sha256:d188e5be2716f8268264ea3ef27edd0938ab38a4bcaef1b08c032ae1c35353ae` | `sha256:7a67e67bf6dfdfcacf31ebff6c6acacdb12d74aeb9e2ff3d8c84bc326b30fcf0` | FJMP | Aprobado: humo, Newman, TLS, ZAP pasivo y base en verde; 5 migraciones aplicadas | [42979816446](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/42979816446) |
 | 11-nov-2026 07:15 (CST) | `v1.0.0-rc.1` | `sha256:44963d08de9ceb28a584b8ae1a794f0b9fc434515fb42bf70671bda9898574ba` | `sha256:3a1f2c3fe40411260076c2f9a19f92a1760c9f6a3cb08623b5a01450a305f200` | FJMP | Aprobado: humo del Anexo D, Newman, CO-FLE-01, TLS, ZAP pasivo, base, matriz Must y humo k6 en verde; 6 migraciones aplicadas | [43027397938](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027397938) |
+| 11-nov-2026 11:52 (CST) | `v1.0.0`, piloto de ensayo en `https://localhost` (efímero, dentro del runner) | `sha256:44963d08de9ceb28a584b8ae1a794f0b9fc434515fb42bf70671bda9898574ba` | `sha256:3a1f2c3fe40411260076c2f9a19f92a1760c9f6a3cb08623b5a01450a305f200` | FJMP | Liberado: puertas 1 y 2, secretos del piloto, humo del Anexo D sin usuarios, TLS, base, ZAP pasivo y humo k6 en verde; 6 migraciones, `SEMILLA=0`. Rollback sin ensayo en staging (NC-022) | [43071987661](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43071987661) |
 
 ## 9. Staging en cada pull request
 

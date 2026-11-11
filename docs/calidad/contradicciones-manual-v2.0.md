@@ -1,7 +1,7 @@
 # Contradicciones y vacíos del manual SCE-MC-001 v2.0
 
 **Propósito:** lista de trabajo para la siguiente versión del manual (issue #15) y evidencia para el criterio AU-02 de PA-SCE-001.
-**Fecha:** 5 de noviembre de 2026.
+**Fecha:** 5 de noviembre de 2026. **Actualizado:** 10 de noviembre de 2026 (X-25, Batches 7 y 8).
 
 Una contradicción no se resuelve en silencio: mientras el manual no se corrija, aplica la "Decisión vigente", registrada en su solicitud de cambio o en `docs/gobierno/plan-de-sistema.md`.
 

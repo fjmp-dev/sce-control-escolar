@@ -8,7 +8,7 @@
 # - Generador: si su nucleo pasa de 80 %, la corrida es invalida (lo que se mide seria el generador).
 # Por caso: CR-REN-01 cumple o no con todo lo anterior; CR-REN-02 ademas con los umbrales de k6 (K6_SALIDA) y cero filas
 # en cr-ren-02.sql (<dir>/cr-ren-02.txt); CR-REN-03 y 04 son informativos, con la serie por minuto y el punto de quiebre
-# (primer minuto que rompe una meta); CR-REN-05 cumple si el p95 de la ultima media hora y la memoria de la API no crecen
+# (primer minuto que rompe una meta de latencia, errores o CPU); CR-REN-05 cumple si el p95 de la ultima media hora y la memoria de la API no crecen
 # mas de 20 % frente a los minutos 15 a 45 (criterio del equipo para "sin fugas ni degradacion").
 # Uso: INICIO=<s> FIN=<s> [K6_SALIDA=<codigo>] infra/rendimiento/metas.sh CR-REN-0N <dir>
 #      Sale con 0 si cumple o es informativo, 1 si no cumple y 2 si la corrida es invalida.
@@ -42,9 +42,10 @@ def meta(etiqueta):
 
 
 cpu = lambda nucleos: serie(f'1 - avg(rate(node_cpu_seconds_total{{mode="idle",cpu=~"{nucleos}"}}[1m]))')
+cpu_app, cpu_db = cpu(APP), cpu(DB)
 recursos = {
-    "CPU del servidor de aplicacion (nucleos " + APP.replace("|", " y ") + ")": (cpu(APP), 0.8, "%"),
-    "CPU del servidor de base (nucleo " + DB + ")": (cpu(DB), 0.8, "%"),
+    "CPU del servidor de aplicacion (nucleos " + APP.replace("|", " y ") + ")": (cpu_app, 0.8, "%"),
+    "CPU del servidor de base (nucleo " + DB + ")": (cpu_db, 0.8, "%"),
     "Conexiones activas de la base": (serie('sum(pg_stat_activity_count{datname="sce",state="active"})'), POOL, ""),
 }
 generador = cpu(GEN)
@@ -52,7 +53,7 @@ memoria = serie('sce_process_resident_memory_bytes{job="api"}')
 abiertas = serie('sum(pg_stat_database_numbackends{datname="sce"})')
 
 total = errores = codigos503 = 0
-por_etiqueta, por_minuto = defaultdict(list), defaultdict(lambda: {"tx": [], "consulta": [], "err": 0, "n": 0, "hilos": 0})
+por_etiqueta, por_minuto = defaultdict(list), defaultdict(lambda: {"tx": [], "consulta": [], "err": 0, "n": 0, "llegan": 0})
 jtl = os.path.join(dir_, "resultados.jtl")
 if os.path.exists(jtl):
     filas = list(csv.DictReader(open(jtl)))
@@ -64,7 +65,9 @@ if os.path.exists(jtl):
         por_etiqueta[f["label"]].append(ms)
         b = por_minuto[m]
         b["consulta" if f["label"].startswith("consulta") else "tx"].append(ms)
-        b["err"], b["n"], b["hilos"] = b["err"] + error, b["n"] + 1, max(b["hilos"], int(f["allThreads"]))
+        # JMeter arranca todos los hilos al inicio y cada uno espera su llegada: allThreads es siempre el total.
+        # Un usuario llega cuando ingresa, una sola vez.
+        b["err"], b["n"], b["llegan"] = b["err"] + error, b["n"] + 1, b["llegan"] + (f["label"] == "ingresar")
 
 k6 = os.path.join(dir_, "k6.json")
 if not os.path.exists(k6 if caso == "CR-REN-02" else jtl):
@@ -117,14 +120,17 @@ if memoria:
                   f"{memoria[-1] / 2**20:.0f} MiB al final")
 
 if por_minuto and caso in ("CR-REN-03", "CR-REN-04", "CR-REN-05"):
-    lineas.append("\n| Minuto | Usuarios | Peticiones | p95 transacciones (ms) | p95 consultas (ms) | 5xx o sin respuesta |\n|---|---|---|---|---|---|")
-    quiebre = None
+    lineas.append("\n| Minuto | Usuarios que han llegado | Peticiones | p95 transacciones (ms) | p95 consultas (ms) | 5xx o sin respuesta "
+                  "| CPU aplicacion | CPU base |\n|---|---|---|---|---|---|---|---|")
+    quiebre, usuarios = None, 0
+    por_min = lambda v, m: max(v[4 * m:4 * m + 4], default=float("nan"))  # pasos de 15 s desde el inicio del generador
     for m in sorted(por_minuto):
         b = por_minuto[m]
         tx, co, err = p(b["tx"], .95), p(b["consulta"], .95), b["err"] / b["n"]
-        if quiebre is None and (tx > 3000 or co > 2000 or err >= 0.01):
-            quiebre = (m, b["hilos"])
-        lineas.append(f"| {m} | {b['hilos']} | {b['n']} | {tx} | {co} | {err:.2%} |")
+        ca, cd, usuarios = por_min(cpu_app, m), por_min(cpu_db, m), usuarios + b["llegan"]
+        if quiebre is None and (tx > 3000 or co > 2000 or err >= 0.01 or ca >= 0.8 or cd >= 0.8):
+            quiebre = (m, usuarios)
+        lineas.append(f"| {m} | {usuarios} | {b['n']} | {tx} | {co} | {err:.2%} | {ca:.0%} | {cd:.0%} |")
     lineas.append("\n- Punto de quiebre: " + (f"minuto {quiebre[0]}, con {quiebre[1]} usuarios" if quiebre else "no se alcanzo"))
     if caso == "CR-REN-05":
         todos = lambda a, b: [x for m in range(a, b) for x in por_minuto[m]["tx"] + por_minuto[m]["consulta"]]

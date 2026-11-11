@@ -48,11 +48,11 @@ CR-REN-01 a 05 corren después de la promoción con `rendimiento.yml`, sobre las
 
 | Caso | Resultado | Corrida |
 |---|---|---|
-| CR-REN-01, mediana de tres | Pendiente | |
-| CR-REN-02, mediana de tres | Pendiente | |
-| CR-REN-03 | Pendiente (informativo) | |
-| CR-REN-04 | Pendiente (informativo) | |
-| CR-REN-05 | Pendiente | |
+| CR-REN-01, mediana de tres | Cumple. p95 de 66 ms en inscripción, 44 ms en pago y 26 ms en la peor consulta. 0 % de 5xx. CPU de la aplicación al 46.5 % y de la base al 41.9 %; 2 conexiones activas | [43034376604](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034376604), [43034382156](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034382156), [43034388666](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034388666). Una primera tanda quedó inválida por el generador (`informe-rendimiento.md`, 4.2) |
+| CR-REN-02, mediana de tres | Cumple. p95 de 2 277 ms con 300 inscripciones a la vez. En las tres corridas, 5 confirmadas y 95 rechazadas por cupo, sin pérdida ni duplicación | [43027941665](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027941665), [43027952315](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027952315), [43027963171](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027963171) |
+| CR-REN-03 | Informativo. Quiebre por CPU de la aplicación (99.5 %), sin errores ni latencias fuera de meta hasta 800 usuarios. La saturación empieza entre 545 y 673 usuarios | [43034639983](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034639983) |
+| CR-REN-04 | Informativo. Sin quiebre: el p95 subió en el minuto del pico y volvió al siguiente | [43034644974](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034644974) |
+| CR-REN-05 | Cumple. 4 h con 150 usuarios: 1 090 874 peticiones y 0 % de 5xx. Sin degradación: p95 de consultas de 8 ms en los minutos 15 a 45 y de 2 ms al final. Sin fuga: la memoria de la API bajó de 334 MiB a 198 MiB | [43027876968](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027876968) |
 
 ## 4. Desviaciones declaradas
 
@@ -67,6 +67,8 @@ CR-REN-01 a 05 corren después de la promoción con `rendimiento.yml`, sobre las
 Corrida de la etapa 8: [43027397938](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027397938), en verde. Artefacto `despliegue-staging-v1.0.0-rc.1`, con 90 días de retención; la copia con SHA-256 está en `docs/evidencias/v1.0.0/corridas.md`.
 
 **Hallazgo de la promoción:** al ponerle la etiqueta SemVer a las imágenes, `imagetools create` envolvió el manifiesto firmado en un índice nuevo, con otro digest y sin firma. El despliegue usó el digest firmado y no se vio afectado. Sí falló la primera tanda de CR-REN, que tomaba el digest de la etiqueta. Se corrige en rc.2.
+
+**Nota del 11 de noviembre de 2026, 17:50 UTC.** No hubo rc.2 en staging. El PR #106, que la preparaba, se fusionó a las 17:37 UTC, después de casi cuatro horas de fallas de red en la etapa 7. El Product Owner decidió liberar `v1.0.0` sobre este commit sin etiquetar rc.2. El rollback del apartado 4 no se ensayó en staging (NC-022).
 
 ## 6. Decisión
 

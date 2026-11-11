@@ -1,7 +1,7 @@
 # Metodología de trabajo — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, secciones 5, 10, 11, 12, 15, 16 y 29.
-**Vigente desde:** 15 de octubre de 2026.
+**Vigente desde:** 15 de octubre de 2026. **Actualizado:** 5 de noviembre de 2026 (roles por entregable).
 **Equipo:** Francisco Javier Martínez Peñas (FJMP) · Samuel Jezoar Ortiz Martínez (SJOM).
 
 Este documento aterriza la metodología de la sección 11 del manual a un equipo de dos personas con entre cinco y diez horas semanales. Lo que el manual declara en abstracto, aquí se vuelve una regla que se puede verificar.

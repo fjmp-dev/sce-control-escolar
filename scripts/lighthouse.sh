@@ -6,8 +6,8 @@
 # Crea datos propios de la corrida con la API: un cargo de 2026A para 2420001 (alumno@sce.test), su pago pendiente
 # (pasarela) y su aprobación (recibo). La cuenta de alumno.dos, que paga Cypress, no se toca.
 # Uso: [PORTAL=http://localhost:3000] [API=http://localhost:3001] [CONTRASENA_SEMILLA=...] scripts/lighthouse.sh [dir-de-reportes]
-#      rendimiento.yml lo corre contra staging (https://localhost, certificado autofirmado) durante la meseta de
-#      CR-REN-01 para medir el rendimiento percibido con carga.
+#      rendimiento.yml lo corre contra staging (https://localhost, certificado autofirmado) al terminar la carga de
+#      CR-REN-01: durante la meseta comparte el nucleo del generador y lo satura.
 set -euo pipefail
 
 REPORTES="${1:-reportes/lighthouse}"

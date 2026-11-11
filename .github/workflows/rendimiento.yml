@@ -105,7 +105,7 @@ jobs:
           docker ps -q --filter label=com.docker.compose.project=sce-monitoreo | xargs docker update --cpuset-cpus "$CPUS_GENERADOR" >/dev/null
           docker ps --format '{{.Names}}' | xargs docker inspect -f '{{.Name}} cpuset={{.HostConfig.CpusetCpus}}'
           mkdir -p "$SALIDA" && chmod a+rwx "$SALIDA"
-      - name: JMeter (CR-REN-01, 03, 04 y 05), con Lighthouse durante la meseta de CR-REN-01
+      - name: JMeter (CR-REN-01, 03, 04 y 05), y Lighthouse al terminar CR-REN-01
         if: inputs.caso != 'CR-REN-02'
         run: |
           case "$CASO" in
@@ -124,16 +124,17 @@ jobs:
           # shellcheck disable=SC2086 # el perfil son varias propiedades
           (umask 077 && printf '%s\n' host=localhost puerto=443 protocolo=https ruta=/api "contrasena=$CONTRASENA_SEMILLA" \
             "grupo=$GRUPO" $perfil > "$RUNNER_TEMP/jmeter.properties")
-          if [ "$CASO" = CR-REN-01 ]; then # 2 min despues de llegar el ultimo usuario
-            (sleep 420 && set -a && . .staging/ambiente.env && set +a \
-              && PORTAL=https://localhost API=https://localhost/api taskset -c "$CPUS_GENERADOR" scripts/lighthouse.sh "$SALIDA/lighthouse" \
-              > "$SALIDA/lighthouse.txt" 2>&1 || echo "::warning::Lighthouse durante la meseta no midio o no paso su umbral (lighthouse.txt)") &
-          fi
           inicio="$(date +%s)"
           taskset -c "$CPUS_GENERADOR" "$RUNNER_TEMP/apache-jmeter-$JMETER/bin/jmeter" -n -t infra/rendimiento/sce.jmx \
             -q "$RUNNER_TEMP/jmeter.properties" -l "$SALIDA/resultados.jtl" -e -o "$SALIDA/informe-jmeter" -j "$SALIDA/jmeter.log"
           printf '%s\n' "INICIO=$inicio" "FIN=$(date +%s)" "HERRAMIENTA=JMeter $JMETER" "PERFIL=$texto ($perfil)" >> "$GITHUB_ENV"
-          wait
+          # Despues de la carga y fuera de la ventana de metas: con 4 nucleos no hay uno libre, y Chrome junto a JMeter
+          # satura el del generador (92 a 98 % en las tres corridas de rc.1, que quedaron invalidas) y se estorban entre si.
+          if [ "$CASO" = CR-REN-01 ]; then
+            (set -a && . .staging/ambiente.env && set +a \
+              && PORTAL=https://localhost API=https://localhost/api taskset -c "$CPUS_GENERADOR" scripts/lighthouse.sh "$SALIDA/lighthouse" \
+              > "$SALIDA/lighthouse.txt" 2>&1) || echo "::warning::Lighthouse al terminar la carga no midio o no paso su umbral (lighthouse.txt)"
+          fi
       - name: k6 (CR-REN-02) y enviadas contra persistidas
         if: inputs.caso == 'CR-REN-02'
         run: |
