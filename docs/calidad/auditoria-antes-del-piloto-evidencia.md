@@ -36,7 +36,7 @@ Todas en `docs/evidencias/v1.0.0/corridas.md`, con los SHA-256 de los reportes c
 | Staging 43027397938 | `v1.0.0-rc.1` | Etapa 8: humo del Anexo D, Newman, CO-FLE-01, TLS, matriz Must y humo k6 |
 | Continuidad 43014009079 y 43014050248 | `5385940` (`release/1.0.0`) | Respaldo cifrado y su restauración en 20 s |
 | Seguridad operativa 43014013011 | `5385940` | Revisión de accesos y muestreo de 51 asientos de bitácora |
-| Rendimiento 43034376604, 43034382156, 43034388666 (CR-REN-01); 43027941665, 43027952315, 43027963171 (CR-REN-02); 43034639983 (03); 43034644974 (04); 43027876968 (05) | `v1.0.0-rc.1` | CR-REN-01 y 02 cumplen; 03 y 04 informativos; tabla, medianas y hallazgos en `informe-rendimiento.md`, apartado 4 |
-| Staging de rc.2 | `v1.0.0-rc.2` | Rollback a rc.1: `acta-promocion-v1.0.0-rc.2.md` |
+| Rendimiento 43034376604, 43034382156, 43034388666 (CR-REN-01); 43027941665, 43027952315, 43027963171 (CR-REN-02); 43034639983 (03); 43034644974 (04); 43027876968 (05) | `v1.0.0-rc.1` | CR-REN-01, 02 y 05 cumplen; 03 y 04 informativos; tabla, medianas y hallazgos en `informe-rendimiento.md`, apartado 4 |
+| Staging de rc.2 | No se hizo | `acta-promocion-v1.0.0-rc.2.md`, estado; NC-022 |
 
 Cómo recalcular cada cifra: el resumen de cada artefacto (`resumen.json` de Great Expectations, `jest.json`, `newman.json`, `reglas-must.json`) y la regla de conteo de `plan-de-pruebas.md`, apartado 3.

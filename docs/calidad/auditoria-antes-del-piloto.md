@@ -103,10 +103,10 @@ Resultados con la escala de PA-SCE-001. "CI" es la corrida 43022020442 sobre `8e
 |---|---|---|---|
 | 1 | CI en verde sobre el tag candidato | Cumple | Corrida 43022020442: etapas 1 a 7 en verde, al primer intento |
 | 2 | Despliegue y humo en staging | Cumple | Corrida 43027397938 y `acta-promocion-v1.0.0-rc.1.md` |
-| 3 | Rendimiento dentro de las metas de RNF-REN | CR-REN-01 y 02 cumplen; CR-REN-03 y 04 son informativos; CR-REN-05 está en curso (`informe-rendimiento.md`, apartado 4.1) | CR-REN-01 a 05 sobre `v1.0.0-rc.1`, en el runner (manual v3.0, 2.2) |
+| 3 | Rendimiento dentro de las metas de RNF-REN | Cumple: CR-REN-01, 02 y 05 cumplen; CR-REN-03 y 04 son informativos (`informe-rendimiento.md`, apartado 4.1) | CR-REN-01 a 05 sobre `v1.0.0-rc.1`, en el runner (manual v3.0, 2.2) |
 | 4 | Acta de aceptación de la fase firmada por PO y QA | **No cumple (H-04)** | `acta-aceptacion-fase-4.md` (ACT-F4-001) está lista para firma, sin firmar. Antes deben firmarse ACT-F0-001 a ACT-F3-001 |
 | 5 | Riesgos Alto mitigados o aceptados por escrito | Cumple, con la aceptación de quien produce (NC-012) | AU-37 |
-| 6 | Inventario actualizado y rollback verificado | Ver `acta-promocion-v1.0.0-rc.2.md` | Rollback de rc.2 a rc.1 en la etapa 8; `inventario-de-ambientes.md`, apartado 8 |
+| 6 | Inventario actualizado y rollback verificado | **Cumple en parte (NC-022).** El inventario se actualiza con el despliegue de `v1.0.0`. El rollback solo se ensayó en local (25 s): rc.2 no se etiquetó y no hubo ensayo en staging | `2026-11-11-restauracion-y-rollback.md`; `acta-promocion-v1.0.0-rc.2.md`, estado; `inventario-de-ambientes.md`, apartado 8 |
 
 El criterio 7 de 36.1 (credenciales de pago del piloto) no se cumple: es H-01.
 

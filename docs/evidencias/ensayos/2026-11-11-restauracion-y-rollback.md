@@ -44,7 +44,8 @@ Las etiquetas `v9.9.9-rc.1` y `v9.9.9-rc.2` son de ensayo y no existen en el rep
 | Fecha | Dónde | Etiqueta | RTO del rollback | RTO de la restauración | Resultado |
 |---|---|---|---|---|---|
 | 11-nov-2026 | Local | `v9.9.9-rc.2` | 25 s | 12 s | Aprobado |
-| Pendiente (13.6) | Etapa 8, GitHub Actions | `v1.0.0-rc.2` | | | |
+| No se hizo | Etapa 8, GitHub Actions | `v1.0.0-rc.2` | — | — | No ejecutado: rc.2 no se etiquetó (NC-022) |
+| 11-nov-2026 | `continuidad.yml`, GitHub Actions | `release/1.0.0` (`5385940`) | No aplica | 20 s | Aprobado: conteos iguales (359 filas) y CD-DAT en verde (corrida [43014050248](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43014050248)) |
 | Cada 12 h | `continuidad.yml` | commit de `main` | No aplica | En el resumen de la corrida | Requiere el secreto `AGE_IDENTIDAD` |
 
 ## 4. Firma
