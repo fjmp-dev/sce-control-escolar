@@ -36,8 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: sce.jmx, guiones de k6 y de metas
         run: |
-          sudo apt-get install -qq -y libxml2-utils >/dev/null
-          xmllint --noout infra/rendimiento/sce.jmx
+          python3 -c 'import sys, xml.etree.ElementTree as E; E.parse(sys.argv[1])' infra/rendimiento/sce.jmx # sin apt: el espejo de Azure fallo el 11-nov-2026
           bash -n infra/rendimiento/metas.sh infra/rendimiento/registro.sh scripts/lighthouse.sh
           for g in humo cr-ren-02; do
             docker run --rm -v "$PWD/infra/rendimiento:/r:ro" grafana/k6:1.6.0 inspect "/r/$g.js" >/dev/null

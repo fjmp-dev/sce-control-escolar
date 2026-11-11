@@ -158,10 +158,13 @@ jobs:
       - name: Navegadores de Playwright (Tabla 50)
         id: navegadores
         if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
-        run: npm ci && npx playwright install --with-deps chromium firefox webkit
-        working-directory: web
+        timeout-minutes: 25 # npm ci y dos intentos; sin tope, una instalacion colgada espera 6 h (PR #106)
+        run: |
+          (cd web && npm ci)
+          scripts/navegadores.sh
         env:
           CYPRESS_INSTALL_BINARY: 0
+          DEBUG: pw:install # cada descarga queda en el registro
       - name: Compatibilidad Must - Chrome 1366 y 1920, iPhone, Android y zoom 200 % (Tabla 50, CO-COM-01)
         if: steps.navegadores.outcome == 'success'
         run: scripts/playwright.sh https://localhost reportes/staging/playwright/must --project='must-*'

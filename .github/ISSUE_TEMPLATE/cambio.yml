@@ -42,3 +42,14 @@ body:
     attributes:
       label: Decisión
       description: Aprobado o rechazado, con fecha y responsable. Quien aprueba no es quien solicitó.
+  - type: textarea
+    id: emergencia
+    attributes:
+      label: Solo si es de emergencia (Tabla 34; sección 37)
+      description: 'Defecto crítico en piloto que afecta expediente, pago o acceso. Lo autorizan el Product Owner y DevOps, y se documenta en las 24 horas siguientes a aplicarlo.'
+      value: |
+        - Incidente o defecto que lo motivó:
+        - Autorizó (Product Owner y DevOps), fecha y hora:
+        - Aplicado, fecha y hora:
+        - Documentado, fecha y hora (máximo 24 h después de aplicarlo):
+        - Pruebas que se corrieron antes y después:

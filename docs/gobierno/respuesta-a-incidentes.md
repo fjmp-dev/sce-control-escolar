@@ -1,7 +1,7 @@
 # Procedimiento de respuesta a incidentes — SCE
 
 **Fuente:** SCE-MC-001 v2.0, Tabla 38 (respuesta a incidentes: clasificación, contención, comunicación al Product Owner y registro como no conformidad), Tabla 52 y sección 40. **Criterio de auditoría:** AU-18.
-**Versión:** 1.1, 10 de noviembre de 2026 (sub-batch 12.6: §4.1). v1.0: 7 de noviembre de 2026 (Batch 4). **Responsable del procedimiento:** Seguridad.
+**Versión:** 1.2, 11 de noviembre de 2026 (sub-batch 14.2: plantilla `incidente.yml` y §6, problemas). v1.1: 10 de noviembre de 2026 (12.6: §4.1). v1.0: 7 de noviembre de 2026 (Batch 4). **Responsable del procedimiento:** Seguridad.
 
 Un incidente es cualquier evento que comprometa o pueda comprometer la confidencialidad, integridad o disponibilidad del expediente, las calificaciones, los pagos o las cuentas. Por ejemplo: acceso de un rol a datos que no le tocan, secreto expuesto, cuenta usada por un tercero, bitácora alterada o datos reales fuera del piloto.
 
@@ -72,3 +72,13 @@ Antes de corregir, se conserva:
 Antes del piloto se ensaya la contención de una cuenta comprometida y la rotación de `JWT_SECRET` en staging, con acta (Batch 13).
 
 La notificación de vulneraciones (§4.1) se ensayó en mesa el 10 de noviembre de 2026, con un escenario sintético. El acta está en `docs/evidencias/ensayos/`.
+
+## 6. Problemas (sección 37)
+
+Un problema es la causa común de incidentes que se repiten. La sección 37 pide buscar su causa raíz y abrir una acción correctiva.
+
+- **Cuándo hay un problema:** un incidente con la misma causa o en el mismo componente que otro del mismo semestre. Lo marca quien lo registra, en el campo "Causa y recurrencia" de `incidente.yml`.
+- **Qué se hace:** una NC en `docs/calidad/registro-no-conformidades.md`, con los cinco porqués y la acción correctiva y preventiva. Enlaza todos los incidentes que comparten la causa.
+- **Cuándo se cierra:** cuando el auditor, o QA si no es quien corrigió, verifica que no hubo otro incidente con esa causa en el periodo siguiente.
+
+Los incidentes se registran con la plantilla `.github/ISSUE_TEMPLATE/incidente.yml` y la etiqueta `incidente`. Un cambio para corregirlos que no pueda esperar el flujo normal es de emergencia (Tabla 34) y se documenta en 24 horas en `cambio.yml`.
