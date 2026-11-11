@@ -4,9 +4,9 @@
 **Objeto:** fase 1, Núcleo institucional · release `v0.1.0`
 **Fecha real de la decisión:** pendiente; no se antedata
 **Etiqueta o commit:** pendiente
-**Participantes:** Samuel Jezoar Ortiz Martínez (Product Owner y QA de este entregable); Francisco Javier Martínez Peñas (autor)
+**Participantes:** Francisco Javier Martínez Peñas (Product Owner, QA y autor; desviación, NC-012), con asistente de IA declarado. SJOM figuraba como Product Owner y QA; no revisó ningún entregable
 
-> **Estado: borrador preparado por el autor al terminar el Batch 3. No está lista para firma.** La evidencia técnica corresponde a la rama del PR, no a una etiqueta. Antes de firmar debe cumplirse el apartado 9.
+> **Estado: borrador del autor al terminar el Batch 3, revisado el 10 de noviembre de 2026 (sub-batch 11.3).** La evidencia técnica corresponde a la rama del PR, no a una etiqueta. La firma FJMP como Product Owner y QA (NC-012), después de ACT-F0-001 y antes de ACT-F2-001. Antes de firmar debe cumplirse lo que el apartado 9 marca como previo.
 
 ---
 
@@ -83,24 +83,28 @@ Etiqueta `v0.1.0`; requisitos RF-008, RNF-SEG-001, RNF-SEG-002 y RNF-MAN-001, en
 
 | Rol | Nombre | Firma | Fecha |
 |---|---|---|---|
-| Product Owner (rinde cuentas de la aceptación) | Samuel Jezoar Ortiz Martínez | | |
-| QA (declara si la evidencia es suficiente) | Samuel Jezoar Ortiz Martínez | | |
-| Autor del entregable (no decide) | Francisco Javier Martínez Peñas | | |
+| Acepta: Product Owner y QA (desviación, NC-012) | Francisco Javier Martínez Peñas | | |
+| Produjo | Francisco Javier Martínez Peñas | | |
+
+> SJOM no firma: no revisó ningún entregable de la fase. Se declara en lugar de dejar la fila vacía sin explicación. El asistente de IA es coautor y no firma.
 
 ## 9. Lo que falta antes de firmar
 
 > **Nota del 10 de noviembre de 2026 (retoma, `plan-de-sistema.md`, 6.2):** lo que este apartado asigna a SJOM pasa a FJMP (NC-012). Los PR de la fase ya se fusionaron en `develop` el 10 de noviembre, sin revisión ni aprobación (NC-001 y NC-012). El cierre de versión es una etiqueta retroactiva sobre `develop`, sin `release/0.x.0` ni fusión a `main` (NC-015). El apartado se reescribe al firmar el acta, en el sub-batch 11.3.
 
-| # | Qué | Responsable |
-|---|---|---|
-| 1 | ~~Aceptar la invitación al repositorio~~: aceptada el 10 de noviembre de 2026, con permiso _write_. SJOM no revisó ni aprobó ningún entregable (NC-012) | SJOM |
-| 2 | Firmar el acta de la fase 0 (NC-002) | SJOM |
-| 3 | Aprobar CC-001 a CC-015 con fecha y responsable | SJOM |
-| 4 | Revisar y fusionar a `develop`, en orden, los PR #30, #55, #56, #57 y el del Batch 3 | SJOM |
-| 5 | Ratificar la regla D-11 con el catálogo institucional | PO |
-| 6 | Revisión de Seguridad de CS-SEG-08, y revisión manual de accesibilidad | SJOM |
-| 7 | **Emitir el manual v2.1** con su registro de aprobación (D-1, NC-004) | Ambos |
-| 8 | Comprobar las etapas 6 y 7 sobre `develop` | FJMP, verifica SJOM |
-| 9 | Crear `release/0.1.0`, fusionar a `main`, etiquetar `v0.1.0` y publicar las notas de versión | FJMP, autoriza SJOM |
-| 10 | Copiar reportes a `docs/evidencias/fase-1/` con su corrida y SHA-256 (Tabla 62) | FJMP |
-| 11 | Informe de fase con el tablero de la Tabla 59 actualizado a la etiqueta | QA |
+| # | Qué | Responsable | Estado al 10 de noviembre de 2026 |
+|---|---|---|---|
+| 1 | Aceptar la invitación al repositorio | SJOM | Hecho el 10 de noviembre, con permiso _write_. No revisó ni aprobó ningún entregable (NC-012) |
+| 2 | **Previo a la firma:** firmar el acta de la fase 0 (NC-002) | FJMP | Pendiente. Fecha comprometida: 20 de noviembre de 2026 |
+| 3 | Aprobar CC-001 a CC-015 con fecha y responsable | FJMP | CC-010 y CC-012 a CC-015, aprobados el 10 de noviembre, después de fusionarse; CC-011, antes de implementarse. **CC-001 a CC-009, sin decisión** (NC-008, 20 de noviembre de 2026) |
+| 4 | Revisar y fusionar a `develop`, en orden, los PR #30, #55, #56, #57 y #58 | FJMP | Fusionados el 10 de noviembre, sin revisión (NC-001 y NC-012) |
+| 5 | Ratificar la regla D-11 con el catálogo institucional | Product Owner (FJMP) | Pendiente; rige como provisional |
+| 6 | Revisión de Seguridad de CS-SEG-08 | FJMP como Seguridad | Pendiente; sin sub-batch en el plan |
+| 7 | Revisión manual de accesibilidad | FJMP | Pendiente; sub-batch 12.4 |
+| 8 | Emitir el manual v2.1 con su registro de aprobación (D-1, NC-004) | FJMP | Lo reemplaza el manual v3.0 (`manual-v3.0.md`), emitido el 10 de noviembre; sin firma |
+| 9 | Comprobar las etapas 6 y 7 sobre `develop` | FJMP | Hecho: corrida 42963020677 sobre `fdaae09`, etapas 1 a 7 en verde |
+| 10 | **Previo a la firma:** etiqueta `v0.1.0` | FJMP | Cambia: retroactiva sobre `develop` en 11.4, sin `release/0.1.0` ni fusión a `main` (NC-015) |
+| 11 | Copiar reportes a `docs/evidencias/fase-1/` con su corrida y SHA-256 (Tabla 62) | FJMP | Pendiente; sin sub-batch en el plan. Solo existe `docs/evidencias/fase-4/` |
+| 12 | Informe de fase con el tablero de la Tabla 59 actualizado a la etiqueta | FJMP como QA | Densidad actualizada en 11.3. Falta la lista de QA sobre la etiqueta (11.4) |
+
+**Orden de firma:** ACT-F0-001, ACT-F1-001, ACT-F2-001, ACT-F3-001 y ACT-F4-001, cada una con su fecha real. Antes de firmar esta acta: los puntos marcados como previos. Lo demás queda como condición si se acepta con condiciones.

@@ -1,7 +1,7 @@
 # Modelo de amenazas STRIDE — SCE
 
 **Fuente:** SCE-MC-001 v2.0, Tabla 37 ("riesgos de seguridad por componente"), sección 18 y Tabla 28.
-**Versión:** 1.6, 10 de noviembre de 2026 (Batch 8). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11).
+**Versión:** 1.6, 10 de noviembre de 2026 (Batch 8). Se actualiza en cada batch que agrega un componente: inscripción (5), académico (7 y 8), pagos (9), trámites (10) y reportes (11). **Apartado de controles ISO/IEC 27001 y OWASP:** 10 de noviembre de 2026 (sub-batch 11.3). Pagos, caja, trámites y reportes **no están todavía en la tabla por componente**; entran en la v1.7 (sub-batch 12.2) y la falta se registra en NC-017.
 
 Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscripción, oferta, catálogos, bitácora, persistencia e imágenes. **S**uplantación, **T**ampering (alteración), **R**epudio, **I**nformación expuesta, **D**enegación de servicio, **E**levación de privilegios.
 
@@ -65,3 +65,31 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscrip
 - **Segundo factor para el administrador.** PA-SCE-001, Parte B, pide "control adicional para roles privilegiados". Se implementó sesión corta y confirmación de contraseña, sin dependencia ni columna nueva. Un segundo factor (TOTP) sería más fuerte y requeriría un CC. Lo decide Seguridad.
 - **Recuperación de contraseña.** No existe: el manual no la pide. Hoy, quien olvida su contraseña depende de otra alta. El administrador conoce la contraseña inicial que asigna, y el usuario puede cambiarla, pero nada lo obliga. Exigir el cambio en el primer acceso requeriría una columna y un CC.
 - **Qué roles son privilegiados.** Solo `administrador`. Control escolar y caja manejan datos sensibles; Seguridad decide si se suman (una línea en `identidad/dominio/usuario.ts`).
+
+## Controles de ISO/IEC 27001:2022 y OWASP Top 10 2021
+
+**Fuente:** Tabla 38 del manual, Tabla 60 (criterios de la auditoría de cierre de la fase 4) y sección 18.2. Los controles son los del Anexo A de ISO/IEC 27001:2022; ISO/IEC 27002:2022 da su guía con la misma numeración. Estado al 10 de noviembre de 2026, sobre `d4cce7d`. La corrida citada es la 42966111975 (PR #78) y la verificación local del mismo día (`informe-fase-4.md`, apartado 5).
+
+| Control de la Tabla 38 | ISO/IEC 27001:2022, Anexo A | OWASP Top 10 2021 | Evidencia en el repositorio | Estado |
+|---|---|---|---|---|
+| Autenticación | 5.17 Información de autenticación; 8.5 Autenticación segura | A07 Fallas de identificación y autenticación | `api/src/identidad/autenticacion.service.ts` (bcrypt, bloqueo tras 5 fallos); `sesiones.spec.ts`; CS-SEG-04 en Newman ("Endpoint sin token responde 401") | Cumple. Sin segundo factor (decisiones abiertas) |
+| Autorización | 5.15 Control de acceso; 5.18 Derechos de acceso; 8.3 Restricción del acceso a la información | A01 Control de acceso roto | `APP_GUARD` en `api/src/identidad/identidad.module.ts`; `roles.spec.ts` (CF-ROL-01, CI-AUTH-01) y `matriz-rol-endpoint.md`; CS-SEG-01 a 03 en `calificaciones.spec.ts`, `pagos.spec.ts` y `tramites.spec.ts` | Cumple en pruebas. ZAP de acceso cruzado en 12.2 |
+| Gestión de sesiones | 8.5 Autenticación segura | A07 | `sesion_version` (CC-010) en `usuario.repository.ts`; CS-SEG-07 en `sesiones.spec.ts`; cookie `httpOnly` en `web/test/cookie-sesion.test.ts` | Cumple |
+| Cifrado en tránsito | 8.20 Seguridad de redes; 8.24 Uso de criptografía | A02 Fallas criptográficas | `infra/staging/app/nginx.conf.template` (`ssl_protocols TLSv1.2 TLSv1.3`, HSTS); testssl en `scripts/verificar-staging.sh` | Cumple en staging: TLS 1.2 y 1.3 ofrecidos, en la corrida 42966111975. No hay piloto |
+| Protección en reposo | 8.24 Uso de criptografía; 8.13 Respaldo de la información | A02 | `.env` fuera del repositorio; `infra/staging/db/` (solo el servidor de aplicación, SCRAM y TLS, sin superusuario por red); contraseñas con bcrypt | Parcial: la base no se cifra en reposo y no hay respaldo cifrado (13.2). Staging es efímero (CC-018) |
+| Bitácora | 8.15 Registro de eventos; 8.16 Actividades de seguimiento | A09 Fallas de registro y monitoreo | `api/src/bitacora/bitacora.service.ts`; disparador `fn_bitacora_inmutable` (migración `20261023001700_restricciones`); `cs-seg-06-calificacion.sql`, `-plantel`, `-pago` y `-constancia`; `seguridad.spec.ts` (R-22) | Cumple: 0 filas sin asiento en Great Expectations. Inmutabilidad reejecutada el 10-nov. Monitoreo y alertas: 13.x |
+| Gestión de secretos | 5.17 Información de autenticación; 8.12 Prevención de fuga de datos | A07 (credenciales en el código) | `scripts/gitleaks-historial.sh` en la etapa 2; `.gitleaksignore`; staging genera sus secretos en cada corrida (`scripts/staging.sh`, CC-018); rotación en `respuesta-a-incidentes.md` | Cumple: Gitleaks sin hallazgos (`[]`). La rotación no se ha ensayado (13.x) |
+| Vulnerabilidades | 8.8 Gestión de vulnerabilidades técnicas; 8.28 Codificación segura; 8.29 Pruebas de seguridad | A06 Componentes vulnerables; A03 Inyección | `package-lock.json`; `.github/dependabot.yml`; npm audit, Trivy y ZAP en `ci.yml`; lista blanca en `api/src/gateway/validacion.ts`; Prisma parametriza (CS-SEG-05); `revision-cs-seg-08.md` | Cumple: 0 altas o críticas en npm audit y Trivy; ZAP sin alertas altas |
+| Datos personales | 5.34 Privacidad y protección de datos personales; 8.11 Enmascaramiento de datos; 8.33 Información de prueba | A01 Control de acceso roto | CS-SEG-03 en expediente, pagos y trámites; `sin-datos-reales.sql` en cada despliegue; `reportes.spec.ts` ("el reporte no expone matriculas ni nombres de alumnos") | Parcial: aviso de privacidad, ARCO e inventario en 12.6 |
+| Respuesta a incidentes | 5.24 Planificación de la gestión de incidentes; 5.26 Respuesta a incidentes | A09 | `docs/gobierno/respuesta-a-incidentes.md` | Documentado, sin ensayo (12.6 y 13.x) |
+
+**OWASP Top 10 2021 que la Tabla 38 no nombra:**
+
+| Riesgo de OWASP | ISO/IEC 27001:2022, Anexo A | Evidencia en el repositorio | Estado |
+|---|---|---|---|
+| A04 Diseño inseguro | 8.25 Ciclo de vida de desarrollo seguro; 8.27 Arquitectura y principios de ingeniería seguros | Este archivo; `amfe-inscripcion.md`; `amfe-pagos.md` | Parcial: el AMFE de pagos llegó después del código y esta tabla no tiene pagos, trámites ni reportes (NC-017) |
+| A05 Configuración de seguridad incorrecta | 8.9 Gestión de la configuración | `web/next.config.ts` (CSP con `frame-ancestors 'none'`, `nosniff`); filtro global de errores en `api/src/gateway/errores.filter.ts` | Parcial: la CSP admite `'unsafe-inline'`; nonce en 12.2 |
+| A08 Fallas de integridad de software y datos | 8.32 Gestión de cambios | `cosign sign` en `scripts/publicar-imagenes.sh`; `cosign verify` en `ci.yml` (etapa 7) y `staging.yml`; hash SHA-256 del documento emitido (`tramites.spec.ts`) | Cumple. La firma de `v0.4.0` se verifica en 11.4 |
+| A10 Falsificación de peticiones del lado del servidor | 8.20 Seguridad de redes | La API no hace peticiones salientes: sin `fetch`, `axios` ni `HttpService` en `api/src` desde CC-020 | No aplica |
+
+La revisión es del autor (NC-012). Ningún auditor independiente ha verificado estos controles (NC-013).
