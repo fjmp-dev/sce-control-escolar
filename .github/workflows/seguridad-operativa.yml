@@ -24,7 +24,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       SALIDA: reportes/seguridad-operativa
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Accesos al repositorio y a los ambientes de GitHub
         run: |
           mkdir -p "$SALIDA"
