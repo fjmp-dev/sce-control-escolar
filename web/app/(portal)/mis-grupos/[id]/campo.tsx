@@ -13,7 +13,7 @@ export function CampoDeCalificacion({
   const invalido = campos?.includes(nombre) ?? false;
   const escrito = valores?.[nombre];
   return (
-    <div className="campo">
+    <div className="campo academico-calificacion">
       <label htmlFor={id}>{etiqueta}</label>
       {invalido && (
         <p id={`${id}-error`} className="error-campo">

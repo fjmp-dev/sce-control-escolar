@@ -1,10 +1,11 @@
 import { Aviso } from '@/componentes/aviso';
-import { Casillas, Formulario } from '@/componentes/formulario';
+import { Formulario } from '@/componentes/formulario';
 import { BotonImprimir } from '@/componentes/imprimir';
-import { Comprobante, EstadoDeInscripcion, ListaDeInscripciones, opcionesDeOferta } from '@/componentes/inscripcion';
+import { Comprobante, EstadoDeInscripcion, ListaDeInscripciones } from '@/componentes/inscripcion';
 import { enviarCarga } from '@/lib/acciones';
 import { consultar, ErrorApi } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
+import { OfertaDeGrupos } from './oferta';
 
 export const metadata = { title: 'Inscripción' };
 
@@ -58,12 +59,15 @@ export default async function PaginaInscripcion() {
       {actual && confirmada && (
         <>
           <Comprobante inscripcion={actual} />
-          <BotonImprimir />
+          <p className="no-imprimir">
+            <BotonImprimir />
+          </p>
         </>
       )}
+      {/* Fig. 4: el comprobante se imprime sin el formulario ni sus instrucciones. */}
       {abierto && publicada && (
-        <>
-          <h2>{confirmada ? 'Ajustar tu carga' : 'Arma tu carga'}</h2>
+        <section aria-labelledby="titulo-carga" className="inscripcion-carga no-imprimir">
+          <h2 id="titulo-carga">{confirmada ? 'Ajustar tu carga' : 'Arma tu carga'}</h2>
           <p>
             {confirmada
               ? 'Mientras el periodo esté abierto puedes dar de alta o de baja grupos. La carga nueva se valida otra vez; si no pasa, conservas la que tienes.'
@@ -79,15 +83,13 @@ export default async function PaginaInscripcion() {
             ) : (
               <input type="hidden" name="periodoClave" value={abierto.clave} />
             )}
-            <Casillas
-              nombre="grupos"
-              etiqueta={`Oferta de ${abierto.clave}`}
-              correccion="Elige al menos un grupo, solo uno por materia."
-              opciones={opcionesDeOferta(oferta)}
+            <OfertaDeGrupos
+              periodo={abierto.clave}
+              oferta={oferta}
               marcadas={actual?.grupos.map((g) => String(g.id)) ?? []}
             />
           </Formulario>
-        </>
+        </section>
       )}
       {anteriores.length > 0 && (
         <>

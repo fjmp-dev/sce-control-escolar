@@ -123,6 +123,18 @@ describe('Accesibilidad', () => {
     cy.location('hash').should('eq', '#contenido');
   });
 
+  it('teclado: en celular, al elegir un enlace del menú el foco pasa al contenido', () => {
+    cy.viewport(390, 844);
+    cy.iniciar('alumno@sce.test');
+    cy.visit('/');
+    cy.contains('button', 'Menú').click();
+    cy.contains('nav a', 'Mi horario').focus();
+    cy.press('Enter');
+    cy.location('pathname').should('eq', '/mi-horario');
+    cy.contains('button', 'Menú').should('have.attr', 'aria-expanded', 'false');
+    cy.focused().should('have.id', 'contenido');
+  });
+
   for (const [ancho, alto] of RESOLUCIONES) {
     it(`Tabla 50 y 28.1: sin desborde y con objetivos de al menos 24 px en ${ancho}x${alto}`, () => {
       cy.viewport(ancho, alto);
@@ -146,6 +158,15 @@ describe('Accesibilidad', () => {
         });
         cy.get('main button, main table, main p').first().should('be.visible');
       }
+      if (ancho <= 768) {
+        // En celular y con zoom el menú va tras el botón: abierto también pasa por axe y por la medida de 44 px.
+        cy.contains('button', 'Menú').click();
+        cy.revisarAxe(`menu-abierto-${ancho}x${alto}`);
+        cy.get('.navegacion-boton, .navegacion a').each(($control) => {
+          const { width, height } = $control[0].getBoundingClientRect();
+          expect(Math.min(width, height), `objetivo del menú: ${$control.text()}`).to.be.at.least(44);
+        });
+      }
       cy.visit('/usuarios');
       cy.screenshot(`usuarios-${ancho}x${alto}`, { capture: 'fullPage' });
       cy.contains('button', 'Cerrar sesión').click();
@@ -156,6 +177,11 @@ describe('Accesibilidad', () => {
         cy.document().then((documento) => {
           const raiz = documento.documentElement;
           expect(raiz.scrollWidth, `desborde horizontal en ${pagina}`).to.be.at.most(raiz.clientWidth);
+          // Los enlaces sueltos (volver, exportar) y los de una celda son objetivos de 44 px (--objetivo).
+          for (const enlace of documento.querySelectorAll<HTMLElement>('main a.boton, .tabla td > a')) {
+            const { width, height } = enlace.getBoundingClientRect();
+            expect(Math.min(width, height), `enlace en ${pagina}: ${enlace.textContent}`).to.be.at.least(44);
+          }
         });
       }
       cy.screenshot(`expediente-${ancho}x${alto}`, { capture: 'fullPage' });

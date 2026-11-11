@@ -89,9 +89,11 @@ Etiqueta `v0.1.0`; requisitos RF-008, RNF-SEG-001, RNF-SEG-002 y RNF-MAN-001, en
 
 ## 9. Lo que falta antes de firmar
 
+> **Nota del 10 de noviembre de 2026 (retoma, `plan-de-sistema.md`, 6.2):** lo que este apartado asigna a SJOM pasa a FJMP (NC-012). Los PR de la fase ya se fusionaron en `develop` el 10 de noviembre, sin revisión ni aprobación (NC-001 y NC-012). El cierre de versión es una etiqueta retroactiva sobre `develop`, sin `release/0.x.0` ni fusión a `main` (NC-015). El apartado se reescribe al firmar el acta, en el sub-batch 11.3.
+
 | # | Qué | Responsable |
 |---|---|---|
-| 1 | Aceptar la invitación al repositorio | SJOM |
+| 1 | ~~Aceptar la invitación al repositorio~~: aceptada el 10 de noviembre de 2026, con permiso _write_. SJOM no revisó ni aprobó ningún entregable (NC-012) | SJOM |
 | 2 | Firmar el acta de la fase 0 (NC-002) | SJOM |
 | 3 | Aprobar CC-001 a CC-015 con fecha y responsable | SJOM |
 | 4 | Revisar y fusionar a `develop`, en orden, los PR #30, #55, #56, #57 y el del Batch 3 | SJOM |

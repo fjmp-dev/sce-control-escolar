@@ -86,6 +86,8 @@ Matriz revisada: `docs/calidad/matriz-riesgos.md`. RK-05 queda mitigado también
 
 ## 9. Lo que falta antes de firmar
 
+> **Nota del 10 de noviembre de 2026 (retoma, `plan-de-sistema.md`, 6.2):** lo que este apartado asigna a SJOM pasa a FJMP (NC-012). Los PR de la fase ya se fusionaron en `develop` el 10 de noviembre, sin revisión ni aprobación (NC-001 y NC-012). El cierre de versión es una etiqueta retroactiva sobre `develop`, sin `release/0.x.0` ni fusión a `main` (NC-015). El apartado se reescribe al firmar el acta, en el sub-batch 11.3.
+
 | # | Qué | Responsable |
 |---|---|---|
 | 1 | Firmar ACT-F1-001 y ACT-F2-001 y cerrar las fases 1 y 2 (NC-009, NC-010) | SJOM |

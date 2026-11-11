@@ -36,7 +36,7 @@ export default async function PaginaCorrecciones({
   return (
     <>
       <h1>Correcciones de calificaciones</h1>
-      <p>
+      <p className="entrada">
         Mientras el periodo está en curso, el profesor del grupo corrige en su captura. Después del cierre, la
         corrección la autoriza coordinación, con el motivo y el documento que la respalda.
       </p>

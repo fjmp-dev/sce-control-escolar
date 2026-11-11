@@ -19,12 +19,12 @@ El manual no incluía calendario con fechas, y esa ausencia es uno de los puntos
 | 1 | Núcleo institucional | 1, 2 y 3 | 5 al 7 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
 | 2 | Expediente e inscripción | 4, 5 y 6 | 7 al 8 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
 | 3 | Académico: horarios, calificaciones e historial | 7 y 8 | 10 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
-| 4 | Pagos simulados, trámites y reportes | 9 y 10 | 10 al 13 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
-| 5 | Piloto de una facultad | — | Fuera del alcance del proyecto escolar (cambio del 10 de noviembre, apartado 6) | — | — |
+| 4 | Pagos simulados, trámites y reportes | 9, 10 y 11 (cierre, sub-batches 11.0 a 11.4) | 10 al 20 de noviembre de 2026; release `v0.4.0` | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 5 | Piloto de una facultad | Solo el sub-batch 14.2 (`plan-de-sistema.md`, 6.2) | Sin facultad ni semestre: se prepara y no se ejecuta | — | 11 de diciembre de 2026 (acta "preparada, no ejecutada") |
 
-**Estabilización** es el tramo final, después de construir. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación y se firman las actas. Como la construcción terminó antes de lo previsto, las fases 1 a 4 comparten la estabilización de los sprints S4 y S5.
+**Estabilización** es el tramo final, después de construir. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación y se firman las actas. Como la construcción terminó antes de lo previsto, las fases 1 a 4 comparten la estabilización de los sprints S4 y S5. Desde la retoma del 10 de noviembre (`plan-de-sistema.md`, 6.2), S4 y S5 también construyen los batches 12 y 13 y el sub-batch 14.1: calidad transversal, operación ensayada y documentación sobre las fases 1 a 4, con el candidato `v1.0.0-rc.N` (13.6) y la liberación `v1.0.0` sin piloto (14.1), a más tardar el 11 de diciembre de 2026. No abren fase. Lo que toca código de producto entra con su CC aprobado antes del PR.
 
-Las fechas de cierre son **límite**: cada fase se cierra con acta de fecha real. Las fases 2, 3 y 4 empezaron sin el acta firmada de la anterior (NC-009 y NC-010); las actas se firman en la estabilización.
+Las fechas de cierre son **límite**: cada fase se cierra con acta de fecha real. Las fases 2, 3 y 4 empezaron sin el acta firmada de la anterior (NC-009, NC-010 y NC-011); las actas se firman en el sub-batch 11.3, antes de `v0.4.0`.
 
 ---
 
@@ -35,10 +35,12 @@ Las fechas de cierre son **límite**: cada fase se cierra con acta de fecha real
 | S1 | 15 al 19 de octubre (corto) | SJOM | FJMP | Cerrar la fase 0 y los faltantes de gobierno antes de que termine la etapa documental de la auditoría |
 | S2 | 20 de octubre al 30 de octubre | FJMP | SJOM | Correcciones al manual y plan de pruebas, antes de la verificación en campo |
 | S3 | 2 al 13 de noviembre | SJOM | FJMP | Atender la auditoría en campo y construir las fases 1 a 4 (batches 0 a 10) |
-| S4 | 16 al 27 de noviembre | FJMP | SJOM | Revisar y aprobar los PR, pruebas de aceptación y manual v3.0 (27 de noviembre; antes v2.1) |
-| S5 | 30 de noviembre al 11 de diciembre | SJOM | FJMP | Firmar las actas de las fases 1 a 4, fusionar, etiquetar y entregar |
+| S4 | 16 al 27 de noviembre | FJMP | FJMP (NC-012) | Terminar los sub-batches 11.x y `v0.4.0` (20 de noviembre), batch 12 (calidad transversal) y manual v3.0 (27 de noviembre) |
+| S5 | 30 de noviembre al 11 de diciembre | FJMP (NC-012) | FJMP | Batches 13 y 14: candidato `v1.0.0-rc.N`, liberación `v1.0.0` sin piloto, fase 5 preparada y entrega |
 
 S1 es corto a propósito: son los cinco días que quedan antes de que cierre la etapa 1 de la auditoría.
+
+Desde el 10 de noviembre de 2026, FJMP acepta y produce en todos los sprints (`roles-y-raci.md`, apartado 6; NC-012). Las columnas de S1 a S3 conservan lo planeado; lo que ocurrió está en cada acta de sprint.
 
 ---
 
@@ -125,7 +127,8 @@ Motivo escrito, conforme al apartado 5.
 | 5 nov 2026 | Elementos P1 #7 a #15 pasan al sprint S4, con el manual v2.1 a más tardar el 27 de noviembre de 2026 | Vencieron el 30 de octubre sin reprogramación (NC-004). El sprint S2 priorizó el arranque técnico |
 | 5 nov 2026 | La columna «Acepta» del apartado 2 cede ante la regla por entregable | Si FJMP produce el entregable de un sprint par, lo acepta SJOM. Ver `roles-y-raci.md`, apartado 2 |
 | 10 nov 2026 | Calendario del apartado 1 con las fechas reales de construcción; las fases 1 a 4 cierran a más tardar el 11 de diciembre de 2026 | Los batches 0 a 8 se construyeron del 5 al 10 de noviembre, antes de las fechas estimadas de 2027 |
-| 10 nov 2026 | FJMP sigue sin SJOM: aprueba y fusiona sus propios pull requests y firma el manual y las actas. La protección de `develop` y `main` deja de exigir aprobación de otra persona y sigue exigiendo CI en verde | SJOM no aceptó la invitación ni revisó entregables. Es una desviación de separación de funciones, declarada en `roles-y-raci.md`, apartado 6 |
+| 10 nov 2026 | FJMP sigue sin SJOM: aprueba y fusiona sus propios pull requests y firma el manual y las actas. La protección de `develop` y `main` deja de exigir aprobación de otra persona y sigue exigiendo CI en verde | SJOM aceptó la invitación ese día (permiso _write_), pero no revisó ni aprobó ningún entregable. Es una desviación de separación de funciones, declarada en `roles-y-raci.md`, apartado 6 |
 | 10 nov 2026 | El manual se emite como **v3.0**, no v2.1: incluye las correcciones #7 a #14 y el cambio de alcance (`manual-v3.0.md`) | La sección 1.3 del manual sube el número mayor cuando cambia el alcance, y la compactación lo cambió. Decisión de FJMP |
 | 10 nov 2026 | Los batches 9 a 14 se compactan en dos: 9, pagos simulados y trámites; 10, reportes y revisión final. Sin Mercado Pago real, piloto, monitoreo, pruebas de carga ni usabilidad con participantes | Es un proyecto escolar: basta con que el sistema funcione bien de punta a punta. Ver `plan-de-sistema.md`, apartado 6.1 |
+| 10 nov 2026 | **Retoma** de los batches 11 a 14 "al máximo" (`plan-de-sistema.md`, 6.2): sub-batches 11.0 a 14.2. Sigue el pago simulado (CC-020). Versiones: `v0.4.0` al cerrar la fase 4 y `v1.0.0-rc.N` → `v1.0.0` al final; se revoca la decisión de etiquetar `v1.0.0` de inmediato. Vuelven las actas, los CC y una NC por cada cosa que no se cumpla. Calendario: 11.x antes del 20 de noviembre, batch 12 en S4, batches 13 y 14 en S5 | Decisión de FJMP: hacer todo lo factible en local y en CI, y preparar y declarar lo que requiere personas o a la institución. La compactación (6.1) dejaba sin verificar requisitos y secciones del manual que se pueden verificar sin piloto |
 

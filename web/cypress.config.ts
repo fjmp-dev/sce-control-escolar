@@ -11,5 +11,15 @@ export default defineConfig({
     viewportWidth: 1366,
     viewportHeight: 768,
     retries: 0,
+    // Electron sin pantalla abre en 1280x720 y recorta las capturas de 1366 y 1920 (Tabla 50).
+    setupNodeEvents(on) {
+      on('before:browser:launch', (navegador, opciones) => {
+        if (navegador.name === 'electron') {
+          opciones.preferences.width = 1920;
+          opciones.preferences.height = 1080;
+        }
+        return opciones;
+      });
+    },
   },
 });

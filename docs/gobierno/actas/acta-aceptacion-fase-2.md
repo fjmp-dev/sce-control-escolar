@@ -91,9 +91,11 @@ QA verifica que lo desplegado en staging corresponde a la etiqueta.
 
 ## 9. Lo que falta antes de firmar
 
+> **Nota del 10 de noviembre de 2026 (retoma, `plan-de-sistema.md`, 6.2):** lo que este apartado asigna a SJOM pasa a FJMP (NC-012). Los PR de la fase ya se fusionaron en `develop` el 10 de noviembre, sin revisión ni aprobación (NC-001 y NC-012). El cierre de versión es una etiqueta retroactiva sobre `develop`, sin `release/0.x.0` ni fusión a `main` (NC-015). El apartado se reescribe al firmar el acta, en el sub-batch 11.3.
+
 | # | Qué | Responsable |
 |---|---|---|
-| 1 | Aceptar la invitación al repositorio, reenviada el 10 de noviembre; vence el 17 | SJOM |
+| 1 | ~~Aceptar la invitación al repositorio, reenviada el 10 de noviembre~~: aceptada ese mismo día, con permiso _write_. SJOM no revisó ni aprobó ningún entregable (NC-012) | SJOM |
 | 2 | Firmar ACT-F1-001 y cerrar la fase 1 (NC-009) | SJOM |
 | 3 | Aprobar CC-013, CC-016 y CC-017, CC-005 para staging y CC-018 (staging efímero) | SJOM |
 | 4 | Ratificar D-5, D-6, D-10, D-14 y D-15 | PO |

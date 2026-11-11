@@ -35,7 +35,7 @@ export default async function PaginaMisGrupos() {
                     </Link>
                   ),
                 },
-                { titulo: 'Inscritos', celda: (g) => `${g.ocupacion} de ${g.cupo}` },
+                { titulo: 'Inscritos', celda: (g) => `${g.ocupacion} de ${g.cupo}`, numerica: true },
               ]}
             />
             <h3>Horario</h3>

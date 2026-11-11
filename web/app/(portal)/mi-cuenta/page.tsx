@@ -13,21 +13,23 @@ export default async function PaginaMiCuenta() {
   return (
     <>
       <h1>Mi cuenta</h1>
-      {cuenta.saldo > 0 && (
-        <>
-          <h2>Pagar</h2>
-          <Formulario accion={iniciarPago} envio="Ir a pagar">
-            <Campo
-              nombre="importe"
-              etiqueta="Importe a pagar, en pesos"
-              tipo="number"
-              ayuda={`Hasta ${pesos(cuenta.saldo)}. Puedes pagar una parte.`}
-              correccion={`Escribe un importe mayor que cero y de hasta ${pesos(cuenta.saldo)}.`}
-            />
-          </Formulario>
-        </>
-      )}
-      <EstadoDeCuenta cuenta={cuenta} enlace={(id) => `/mi-cuenta/pagos/${id}`} />
+      <p className="entrada">Tu saldo, tus movimientos y tus pagos en línea.</p>
+      <EstadoDeCuenta cuenta={cuenta} enlace={(id) => `/mi-cuenta/pagos/${id}`}>
+        {cuenta.saldo > 0 && (
+          <>
+            <h2>Pagar</h2>
+            <Formulario accion={iniciarPago} envio="Ir a pagar">
+              <Campo
+                nombre="importe"
+                etiqueta="Importe a pagar, en pesos"
+                tipo="number"
+                ayuda={`Hasta ${pesos(cuenta.saldo)}. Puedes pagar una parte.`}
+                correccion={`Escribe un importe mayor que cero y de hasta ${pesos(cuenta.saldo)}.`}
+              />
+            </Formulario>
+          </>
+        )}
+      </EstadoDeCuenta>
     </>
   );
 }
