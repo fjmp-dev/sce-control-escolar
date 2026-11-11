@@ -2,7 +2,7 @@
 # Staging efimero (Tabla 30, CC-018): dos "servidores" en una red de Docker con direcciones fijas, como la red privada de
 # la Fig. 9, con certificado autofirmado y secretos generados en cada corrida, que no se guardan en ningun lado (20.2).
 # Despliega, corre el humo del Anexo D y prueba lo que la base debe rechazar: otra direccion, conexion sin TLS, TLS 1.1
-# y el superusuario por red (Tabla 38, CC-005). Al terminar se destruye.
+# y el superusuario por red (Tabla 38, CC-005). Termina con la calidad de datos (scripts/calidad-datos.sh) y se destruye.
 # - Etapa 7: en cada pull request e integracion, con las imagenes de la corrida.
 # - Etapa 8 (.github/workflows/staging.yml): con las imagenes firmadas de una etiqueta SemVer, por digest.
 # Uso: [ETIQUETA=vX.Y.Z-rc.N] scripts/staging.sh [imagen-api] [imagen-portal]   (por omision, las de docker compose build)
@@ -96,4 +96,10 @@ echo "pgAudit: DDL registrado" | tee -a "$REPORTES/rechazos.txt"
 
 CURL_CA_BUNDLE="$BASE/app/certificados/live/localhost/fullchain.pem" NEWMAN_OPCIONES=--insecure \
   scripts/verificar-staging.sh https://localhost
+
+# CD-DAT y Tabla 16 sobre lo que dejaron las migraciones, los datos sinteticos y el humo: desde una direccion del rango
+# del servidor de aplicacion, por TLS y con la cuenta de la aplicacion, como entra la API.
+RED_DATOS="--network $RED --ip $SUBRED.23" \
+  URL_DATOS="postgresql+psycopg2://sce_app:$CLAVE_APP@$DB_IP:5432/sce?sslmode=require" \
+  scripts/calidad-datos.sh "$REPORTES/calidad-datos"
 echo "Staging $ETIQUETA: ok"

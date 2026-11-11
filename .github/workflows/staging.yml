@@ -66,7 +66,7 @@ jobs:
             docker buildx imagetools create --tag "$ref:$ETIQUETA" "$ref@$digest"
             echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
           done
-      - name: Staging con la topologia de la Fig. 9, despliegue y humo del Anexo D (puerta 2 de la sec. 20.1)
+      - name: Staging con la topologia de la Fig. 9, despliegue, humo del Anexo D (puerta 2 de la sec. 20.1) y calidad de datos
         run: scripts/staging.sh "$IMAGEN_API" "$IMAGEN_PORTAL"
       - name: Registro del despliegue (31.2)
         if: always()

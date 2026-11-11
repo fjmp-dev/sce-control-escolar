@@ -65,7 +65,15 @@ async function alumno(
       estatus: opciones.estatus ?? 'activo',
       usuarioId: cuenta.id,
       historial: { create: {} },
-      cuenta: { create: { saldo: opciones.saldo ?? 0 } },
+      // El adeudo con su cargo, para que el saldo cuadre con los movimientos (CD-DAT-03), como en crearAlumno.
+      cuenta: {
+        create: opciones.saldo
+          ? {
+              saldo: opciones.saldo,
+              movimientos: { create: { concepto: 'Cargo de prueba', importe: opciones.saldo, tipo: 'cargo' } },
+            }
+          : {},
+      },
     },
   });
   for (const [i, { materia, valores }] of (opciones.acreditadas ?? []).entries()) {

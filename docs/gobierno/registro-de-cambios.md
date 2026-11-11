@@ -1,7 +1,7 @@
 # Registro de cambios — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 16 (gestión de cambios) y 12.4 (control de cambios a requisitos).
-**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 10 de noviembre de 2026 (sub-batch 11.0).
+**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batch 12.1).
 
 Cada cambio tiene un issue en GitHub con la etiqueta `cambio`, con la solicitud, el análisis de impacto y la aprobación con fecha y responsable. Desde CC-007, la solicitud también está versionada en `docs/gobierno/cambios/`. Este archivo es el índice que se versiona junto con el código, para que el auditor lo encuentre sin entrar al tablero.
 
@@ -23,7 +23,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-008 | [#33](https://github.com/fjmp-dev/sce-control-escolar/issues/33) | `documento.contenido`, contenido inmutable del documento | Mayor o Must | PO y QA | Batch 9 | Implementado en el Batch 9 (migración `20261110140000_tramites`) y fusionado en `develop` el 10 de noviembre de 2026; **sigue pendiente de aprobación** (NC-008). Figuras ya actualizadas |
 | CC-009 | [#34](https://github.com/fjmp-dev/sce-control-escolar/issues/34) | `tramite.motivo_rechazo` | Mayor o Must | PO y QA | Batch 9 | Implementado en el Batch 9 (migración `20261110140000_tramites`) y fusionado en `develop` el 10 de noviembre de 2026; **sigue pendiente de aprobación** (NC-008). Figuras ya actualizadas |
 | CC-010 | [#35](https://github.com/fjmp-dev/sce-control-escolar/issues/35) | `usuario.sesion_version`, revocación de sesión | Mayor o Must | PO, QA y Seguridad | Batch 2 | Implementado en el Batch 2; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras ya actualizadas |
-| CC-011 | [#36](https://github.com/fjmp-dev/sce-control-escolar/issues/36) | `pago.fecha_confirmacion` | Mayor o Must | PO y QA | Sub-batch 12.1 | Aprobado por FJMP el 10 de noviembre de 2026. Sin implementar: la migración llega en 12.1. Figuras ya actualizadas |
+| CC-011 | [#36](https://github.com/fjmp-dev/sce-control-escolar/issues/36) | `pago.fecha_confirmacion` | Mayor o Must | PO y QA | Sub-batch 12.1 | Aprobado por FJMP el 10 de noviembre de 2026; implementado después, en el sub-batch 12.1 (migración `20261110160000_fecha_confirmacion`). Figuras ya actualizadas |
 | CC-012 | [#37](https://github.com/fjmp-dev/sce-control-escolar/issues/37) | `periodo.oferta_publicada_en`, publicar oferta | Normal | PO y QA | Batches 5 y 7 | Implementado en el Batch 7 (migración `20261110120000_oferta_publicada`); aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras ya actualizadas |
 | CC-013 | [#38](https://github.com/fjmp-dev/sce-control-escolar/issues/38) | Persistir el rechazo de la inscripción | Mayor o Must | PO y QA | Batch 5 | Implementado en el Batch 5; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras ya actualizadas |
 | CC-014 | [#39](https://github.com/fjmp-dev/sce-control-escolar/issues/39) | Dependencias en las Figuras 2 y 9 | Documental | PO y QA | Batch 0 | Figuras actualizadas y ampliadas en los batches 2, 4 y 7; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008) |
@@ -53,6 +53,8 @@ Estos cambios se integran al manual en la versión 3.0 (issue [#15](https://gith
 **Implementación del 10 de noviembre de 2026 (Batch 8, [#48](https://github.com/fjmp-dev/sce-control-escolar/issues/48)):** calificaciones e historial (RF-004 y RF-005), sin cambios al modelo de datos. CC-019 añade `Periodo.iniciarCurso()` a la Fig. 3 y, en la Fig. 7, "Iniciar el curso" y el cierre en la calle de coordinación (X-09, X-25). Reglas provisionales nuevas: D-16 (cierre con parciales completos) y D-17 (corrección posterior al cierre). **El código de CC-019, Mayor, no se fusiona sin su aprobación.** El seed pasa a un calendario al 10 de noviembre de 2026: 2026A cerrado, 2026B en curso y 2027A abierto.
 
 **Retoma del 10 de noviembre de 2026 (sub-batch 11.0, `plan-de-sistema.md`, 6.2):** FJMP aprueba CC-010 a CC-019 y CC-020. CC-020 registra el cambio de proveedor de pagos que la compactación decidió sin CC: de Mercado Pago a pasarela simulada (sección 33). CC-001 a CC-009 siguen pendientes de aprobación.
+
+**Implementación del 11 de noviembre de 2026 (sub-batch 12.1, [#75](https://github.com/fjmp-dev/sce-control-escolar/issues/75)):** CC-011 se implementa con la migración `20261110160000_fecha_confirmacion`, una columna opcional que `PagosService.simular()` llena con la hora de la base antes de escribir el abono. La migración da a los pagos aplicados que ya existían la fecha de su abono. Con ella se miden CD-DAT-06 y, sin cambios al modelo, CD-DAT-03 (`api/prisma/verificacion/`). El campo no se expone en la API.
 
 **Desviaciones registradas:**
 
