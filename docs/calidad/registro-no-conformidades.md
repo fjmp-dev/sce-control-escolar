@@ -1,7 +1,7 @@
 # Registro de no conformidades y acciones correctivas — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 40 (clasificación en la Tabla 61; ciclo en la 40.2).
-**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batch 13.6: seguimiento de NC-014 a NC-018, y NC-019 y NC-020, de la autoauditoría "Antes del piloto").
+**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batch 13.6: seguimiento de NC-014 a NC-018, y NC-019 a NC-021, de la autoauditoría "Antes del piloto").
 
 Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001 y al contrastar el repositorio contra el manual completo. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
 
@@ -31,8 +31,9 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-016 | Menor | Issues de batch sin puntos de historia: la densidad de defectos no se pudo calcular al cerrar las fases 1 a 3 | AU-39, AU-43 | FJMP | Antes del primer commit del Batch 14 (#77) | Reabierta el 11 de noviembre de 2026: la acción preventiva no fue eficaz (#75 y #76 sin puntos antes de su primer commit) | No aplica: Menor |
 | NC-017 | Menor | Análisis de riesgos de la fase 4 fuera de tiempo: AMFE de pagos hecho después de construir y STRIDE sin pagos, caja, trámites ni reportes | AU-37 | FJMP | Sub-batch 12.2 | Corregida en 12.2 (`stride.md` v1.7 y MJ-006 en la plantilla de PR); pendiente de verificación: desde entonces ningún PR toca dinero, cupos ni calificaciones | No aplica: Menor |
 | NC-018 | Menor | Sin conciliación de pagos (CD-DAT-03) ni medición del reflejo (CD-DAT-06) al cierre de la fase 4 | AU-24, AU-39 | FJMP | Sub-batch 12.1 | Acción eficaz según la autoverificación (NC-012) del 11 de noviembre de 2026; la cierra el auditor | No aplica: Menor |
-| NC-019 | Mayor | Criterio 7 de liberación (36.1) incumplido: no hay credenciales de pago del piloto, porque la pasarela es simulada | AU-24, AU-33 | FJMP | 11 de diciembre de 2026 (solicitud a la institución) | Abierta con plan | FJMP (PO), 11 de noviembre de 2026 |
-| NC-020 | Mayor | RNF-USU-002 y RNF-USU-001 (Must) sin la evaluación con personas: ni revisión con lector de pantalla (CO-ACC-03) ni SUS | AU-18, AU-32 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026 |
+| NC-019 | Mayor | Criterio 7 de liberación (36.1) incumplido: no hay credenciales de pago del piloto, porque la pasarela es simulada | AU-24, AU-33 | FJMP | 11 de diciembre de 2026 (solicitud a la institución) | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
+| NC-020 | Mayor | RNF-USU-002 y RNF-USU-001 (Must) sin la evaluación con personas: ni revisión con lector de pantalla (CO-ACC-03) ni SUS | AU-18, AU-32 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
+| NC-021 | Mayor | `v1.0.0` va al piloto de ensayo con la puerta 4 incumplida: el acta de la fase 4 no está firmada | AU-07, AU-33 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
 
 **Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
 
@@ -346,7 +347,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** pedir a la institución el convenio con una pasarela y sus credenciales, a más tardar el 11 de diciembre de 2026. Con ellas: un CC que reemplace la pasarela simulada, CI-PAG-01 contra el sandbox y la verificación de las credenciales del piloto en la etapa 8. Responsable: FJMP.
 - **Acción preventiva:** ningún usuario real entra a un piloto mientras esta NC siga abierta. El acta de liberación de una versión con usuarios reales debe traer el criterio 7 en "Cumple".
 - **Verificación de eficacia:** el auditor revisa el criterio 7 en el acta de la primera versión con usuarios reales.
-- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. Que acepte quien produce es parte de NC-012.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
 
 ## NC-020 — Accesibilidad y usabilidad Must sin la evaluación con personas
 
@@ -370,4 +371,22 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
   - Las sesiones se hacen cuando haya participantes. Hasta entonces, la fila sigue "Cumple en parte".
 - **Acción preventiva:** el acta de liberación de una versión con usuarios reales trae la fila de usabilidad del Anexo A con SUS medido. Sin eso no se libera.
 - **Verificación de eficacia:** el auditor revisa el acta firmada de CO-ACC-03 y el informe SUS del Anexo G.
-- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. Que acepte quien produce es parte de NC-012.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
+
+## NC-021 — Liberación al piloto de ensayo con la puerta 4 incumplida
+
+- **Fuente:** autoauditoría "Antes del piloto" (`auditoria-antes-del-piloto.md`, hallazgo H-04), 11 de noviembre de 2026.
+- **Descripción:** la puerta 4 de 20.1 y el criterio 5 de 36.1 piden el "acta de aceptación de la fase firmada por Product Owner y QA". ACT-F4-001 está lista para firma desde el 10 de noviembre de 2026 y no está firmada. Antes de firmarla deben firmarse ACT-F0-001 a ACT-F3-001, que tampoco lo están. `v1.0.0` se despliega al piloto de ensayo sin esa firma.
+- **Severidad:** Mayor. Incumple una puerta de promoción (AU-33) y el criterio de actas por fase (AU-07).
+- **Evidencia:** `docs/gobierno/actas/acta-aceptacion-fase-4.md` ("Estado: lista para firma"); `acta-liberacion-v1.0.0.md`, puerta 4 y criterio 5.
+- **Causa (cinco porqués):**
+  1. ¿Por qué el acta no está firmada? Solo FJMP puede firmarla, y aún no lo ha hecho.
+  2. ¿Por qué? Las actas de las fases 0 a 4 se prepararon juntas el 10 de noviembre (11.3), y deben firmarse en orden.
+  3. ¿Por qué no se esperó la firma para liberar? FJMP autorizó el 11 de noviembre terminar el Batch 14 completo, y la firma no quedó como condición previa del despliegue.
+  4. ¿Por qué la etapa 8 no lo impidió? Comprueba que exista el acta de liberación y busca las puertas 1 y 2 por API. Una firma no se puede comprobar desde CI.
+  5. ¿Por qué? El repositorio no tiene un registro de firmas verificable, y con una sola persona nadie más lo exige (NC-012).
+- **Contención:** el piloto de ensayo no tiene usuarios ni datos. El acta de liberación registra la puerta 4 como "No cumple".
+- **Acción correctiva:** FJMP firma ACT-F0-001 a ACT-F4-001, en ese orden, a más tardar el 20 de noviembre de 2026. Después firma el acta de liberación.
+- **Acción preventiva:** una liberación con usuarios reales empieza solo con las actas de fase firmadas. Su acta de liberación cita la fecha de firma de cada una.
+- **Verificación de eficacia:** el auditor revisa las firmas y sus fechas.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
