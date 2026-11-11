@@ -81,7 +81,7 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Contratos de API | Postman y Newman | Newman 6 | Newman 6.1.3 | **En uso** en la etapa 4, contra Compose, con reporte HTML (`scripts/newman.sh`) |
 | Extremo a extremo | Cypress | 13 | Cypress 16 | **En uso** en la etapa 7, con video y capturas (`scripts/cypress.sh`) |
 | Unitarias de frontend | Vitest y React Testing Library | Vitest 1.x | Vitest 5, React Testing Library 16 | **En uso** en la etapa 3 |
-| Compatibilidad | Playwright | 1.4x | Vigente | Batch 12 |
+| Compatibilidad | Playwright | 1.4x | Playwright 1.65.0 | **En uso** en las etapas 7 y 8: CO-COM-01, matriz de la Tabla 50 (ver 4.6) |
 | Rendimiento | JMeter y k6 | 5.6 / 0.5x | Vigente | Batch 13, en staging; después en el servidor del piloto |
 | Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
@@ -104,8 +104,8 @@ Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de av
 | 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30); **Great Expectations** sobre la base de Compose después de Newman (Tabla 42) | Casos CI Must en verde y cero expectativas incumplidas | `cobertura-integracion`, `newman`, `calidad-datos` | Batch 1; Newman en el Batch 2; Great Expectations en el Batch 4 |
 | 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx y base intacta | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2 |
 | 6 Empaquetado | Imágenes `sce-api` y `sce-portal`, registradas en GHCR y firmadas con cosign, sin llaves (`scripts/publicar-imagenes.sh`). **Solo al integrar;** en un pull request se omite | Firma verificada | `imagenes` | Batch 3 |
-| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe y Lighthouse. Desde el Batch 6, también **staging efímero** con las mismas imágenes (`scripts/staging.sh`, CC-018). En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde | `despliegue-pruebas`: registro, video, capturas e informes | Batch 3 |
-| 8 Staging y piloto | Manual (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra. Arma staging efímero en el runner (CC-018), despliega por digest las imágenes firmadas por la etapa 6, corre el humo del Anexo D y lo destruye | Autorización de PO y QA: regla de revisores del ambiente `staging`, sin autoaprobación | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
+| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe, Lighthouse y, desde el Batch 12, **Playwright** (CO-COM-01, ver 4.6). Desde el Batch 6, también **staging efímero** con las mismas imágenes (`scripts/staging.sh`, CC-018). En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde; desde el Batch 12, también los proyectos Must de Playwright | `despliegue-pruebas`: registro, video, capturas, informes y matriz de compatibilidad | Batch 3 |
+| 8 Staging y piloto | Manual (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra. Arma staging efímero en el runner (CC-018), despliega por digest las imágenes firmadas por la etapa 6, corre el humo del Anexo D y, desde el Batch 12, la matriz de Playwright (4.6), y lo destruye | Autorización de PO y QA: regla de revisores del ambiente `staging`, sin autoaprobación | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
 
 Los artefactos caducan a los 90 días; al cerrar cada fase se copian al repositorio de evidencias (Tabla 62).
 
@@ -154,6 +154,60 @@ Staging es efímero (CC-018): `scripts/staging.sh` lo arma en el runner con la t
 - revisión de accesos.
 
 **Comprobado que fallan.** Con staging arriba, cada verificación nueva cayó con su propio mensaje ante un mutante: una cuenta `@gmail.com`, un rol con contraseña MD5, nginx sin HSTS y nginx con TLS 1.1. El de TLS 1.1 necesitó además un cifrado CBC, porque sin él OpenSSL no ofrece ese protocolo aunque se pida. Los rechazos de la base (otra dirección, sin TLS, TLS 1.1 y superusuario por red) son pruebas negativas del propio `staging.sh`.
+
+### 4.6 Compatibilidad (CO-COM-01)
+
+Matriz de la Tabla 50 (sección 27) con Playwright 1.65.0: proyectos en `web/playwright.config.ts` y specs en `web/playwright/`. No repite el e2e de Cypress, que prueba reglas y rechazos. Playwright recorre los flujos que la Tabla 50 pide en cada plataforma y resolución: con teclado en escritorio y con toques en móvil.
+
+**Dónde corre.**
+- **Etapa 7:** después de Cypress y Lighthouse, contra el ambiente de Compose (`http://localhost:3000`). Los reportes (HTML, JUnit, y trazas y capturas de los fallos) quedan en el artefacto `despliegue-pruebas`, carpeta `playwright/`. La matriz va en el registro del despliegue.
+- **Etapa 8** (`staging.yml`): contra el staging recién verificado (`https://localhost`, con certificado autofirmado), con la contraseña de la semilla de esa corrida, enmascarada. Los reportes y `matriz.md` quedan en `despliegue-staging-<etiqueta>`, carpeta `playwright/`. Una etiqueta anterior a la matriz se salta esos pasos.
+- **En local:** `npx playwright install` y `scripts/playwright.sh <url> [dir-de-reportes] [--project=...]`. Después, `scripts/matriz-compatibilidad.sh <junit.xml>...` arma la tabla navegador × resolución × resultado, con fecha y etiqueta.
+
+| Proyecto | Tabla 50 | Prioridad | Flujos | Navegador y viewport |
+|---|---|---|---|---|
+| `must-chrome-1366x768` | Chrome; 1366×768 | Must | Los cuatro | Chrome estable (canal `chrome`), 1366×768 |
+| `must-chrome-1920x1080` | Chrome; 1920×1080 | Must | Los cuatro | Chrome estable, 1920×1080 |
+| `must-iphone-webkit-390x844` | Safari en iOS; 390×844 | Must | Los cuatro | WebKit con el descriptor del iPhone 14 (móvil y táctil), 390×844 |
+| `must-android-chromium-390x844` | Chrome en Android; 390×844 | Must | Los cuatro | Chromium con el descriptor del Pixel 7, 390×844 |
+| `must-zoom200-chromium-1366x768` | Zoom al 200 % (28.1) | Must | Los cuatro | Chromium, 683×384 px CSS con `deviceScaleFactor` 2 |
+| `should-firefox-1366x768` | Firefox | Should | Sesión, consulta e inscripción | Firefox de Playwright, 1366×768 |
+| `should-edge-1366x768` | Edge | Should | Sesión, consulta e inscripción | Edge estable (canal `msedge`), 1366×768 |
+
+**Must y Should.** La prioridad es la de la Tabla 50. Los proyectos `must-*` bloquean la etapa. Los `should-*` corren con `continue-on-error`: si fallan, la falla queda en la matriz y en el reporte, pero la etapa sigue.
+
+**Flujos.**
+1. Sesión: ingreso, menú y cierre de los siete roles.
+2. Inscripción del alumno: oferta, revisar choques y enviar.
+3. Pago simulado: caja genera un cargo de 2026A; el alumno lo paga, lo aprueba en la pasarela y ve el recibo con saldo en cero.
+4. Consulta: horario y calificaciones.
+
+**Qué revisa cada pantalla** (`web/playwright/fixtures.ts`):
+- Ni la página ni sus tablas desbordan a lo ancho (`scrollWidth` ≤ `clientWidth`).
+- Los controles críticos se ven, se alcanzan con Tab y muestran el foco (28.1-1).
+- En móvil, todo objetivo táctil mide al menos 24×24 px (WCAG 2.2, 2.5.8). Los enlaces dentro de una frase quedan exentos.
+- axe-core 4.14, el mismo de Cypress, con WCAG 2.2 AA: cero incumplimientos serious o critical. El resultado va adjunto al reporte.
+
+**Datos.** Las specs corren en serie y toleran el estado previo:
+- La inscripción alterna entre dos cargas válidas, así que confirma la primera vez y ajusta las siguientes.
+- El pago crea su propio cargo de $10 y liquida el saldo completo.
+
+En la etapa 7, Playwright va después de Cypress, porque Cypress necesita la semilla intacta.
+
+**Sustituciones.**
+- **Safari de iOS y Chrome de Android:** WebKit y Chromium con descriptor (`plan-de-sistema.md`, "No factible y lo que queda preparado"). Los dispositivos reales se revisan a mano (12.4).
+- **Zoom al 200 %:** equivale a maquetar 1366×768 con la mitad de px CSS y dos px físicos por cada uno. `deviceScaleFactor` solo no basta, porque no cambia el ancho en px CSS ni las media queries.
+- **Edge:** canal `msedge`, que ya viene en `ubuntu-latest`. En macOS pide instalarlo con sudo, así que solo corre en CI.
+- **Chrome, "últimas dos versiones":** solo corre la actual. La anterior está pendiente.
+
+**Comprobado que fallan.** Con páginas alteradas a propósito, cada revisión cayó con su propio mensaje en Chrome, Android, iPhone y Firefox. Los mutantes fueron:
+- desborde de la página y de una tabla;
+- un control fuera del orden de tabulación;
+- foco sin contorno;
+- un botón de 16 px en móvil;
+- un botón sin nombre (axe).
+
+**Hallazgo.** En Firefox (Playwright 1.65, macOS), `axe.run` tumba el proceso de la página si antes se marcaron casillas y corrió una acción de servidor en el mismo documento. Sin axe no se reproduce. Por eso la spec de inscripción recarga la página antes de revisarla.
 
 ---
 
@@ -274,7 +328,7 @@ El orden lo fija `docs/gobierno/plan-de-sistema.md`. Cada caso sale de su batch 
 | 3 | 7 y 8 | CF-HOR-01 con Cypress, CF-CAL-01, CI-CAL-01, CD-DAT-02, CS-SEG-01 | 10 de noviembre de 2026 | 11 de diciembre de 2026 |
 | 4 | 9 y 10 | CF-PAG-01, CI-PAG-01 y CF-TRA-01 y 02 con pago simulado, CF-REP-01, CS-SEG-02, 03 y 06 en pagos y trámites | 10 al 13 de noviembre de 2026 | 11 de diciembre de 2026 |
 
-Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): Playwright, NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5.
+Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5.
 
 CI-PAG-01 sí corre, contra la pasarela simulada: Supertest en `api/test/integracion/pagos.spec.ts` y Newman en la carpeta Pagos, trámites y reportes. Desde el 10 de noviembre de 2026 cubre también dos intentos por el mismo adeudo (#69). La conexión con Mercado Pago no se prueba porque el pago sigue simulado.
 

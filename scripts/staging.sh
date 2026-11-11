@@ -17,7 +17,7 @@ DB_IP=$SUBRED.10
 BASE="$PWD/.staging" # bajo $HOME, que es lo que Colima monta; fuera de reportes/, que CI publica
 REPORTES=reportes/staging
 CLAVE_APP="$(openssl rand -hex 24)"
-CONTRASENA_SEMILLA="$(openssl rand -hex 16)"
+CONTRASENA_SEMILLA="${CONTRASENA_SEMILLA:-$(openssl rand -hex 16)}" # staging.yml la pasa para Playwright
 export CONTRASENA_SEMILLA
 
 falla() { echo "::error::$1" >&2; exit 1; }

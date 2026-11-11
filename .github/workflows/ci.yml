@@ -354,6 +354,20 @@ jobs:
       - name: Lighthouse (Tabla 42, 28.2)
         if: always()
         run: scripts/lighthouse.sh reportes/lighthouse
+      # CO-COM-01 (Tabla 50), después de Cypress, que espera las cuentas de la semilla sin tocar. Chrome y Edge estables
+      # ya vienen en ubuntu-latest (canales chrome y msedge); Playwright solo trae Chromium, Firefox y WebKit. Los
+      # reportes quedan en reportes/playwright, dentro del artefacto despliegue-pruebas.
+      - name: Navegadores de Playwright (Tabla 50)
+        if: always()
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: web
+      - name: Compatibilidad Must - Chrome 1366 y 1920, iPhone, Android y zoom 200 % (Tabla 50, CO-COM-01)
+        if: always()
+        run: scripts/playwright.sh http://localhost:3000 reportes/playwright/must --project='must-*'
+      - name: Compatibilidad Should - Firefox y Edge, no bloquea (Tabla 50, CO-COM-01)
+        if: always()
+        continue-on-error: true
+        run: scripts/playwright.sh http://localhost:3000 reportes/playwright/should --project='should-*'
       - name: Staging efimero con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit y humo del Anexo D (CC-018)
         run: scripts/staging.sh "${IMAGEN_API:-sce-api:local}" "${IMAGEN_PORTAL:-sce-portal:local}"
       - name: Registro del despliegue (31.2)
@@ -373,6 +387,8 @@ jobs:
             cat reportes-humo.txt 2>/dev/null || true
             echo
             cat reportes/lighthouse/resumen.md 2>/dev/null || true
+            echo
+            scripts/matriz-compatibilidad.sh reportes/playwright/*/junit.xml 2>/dev/null || true
           } | tee reportes/despliegue.md >> "$GITHUB_STEP_SUMMARY"
       - if: failure()
         run: docker compose logs

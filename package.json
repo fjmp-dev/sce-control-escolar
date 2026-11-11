@@ -10,7 +10,7 @@
   "lint-staged": {
     "*": "prettier --write --ignore-unknown",
     "api/{src,test}/**/*.ts": "api/node_modules/.bin/eslint --max-warnings 0",
-    "web/{app,lib,componentes,test,cypress}/**/*.{ts,tsx}": "web/node_modules/.bin/eslint --flag v10_config_lookup_from_file --no-warn-ignored --max-warnings 0"
+    "web/{app,lib,componentes,test,cypress,playwright}/**/*.{ts,tsx}": "web/node_modules/.bin/eslint --flag v10_config_lookup_from_file --no-warn-ignored --max-warnings 0"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

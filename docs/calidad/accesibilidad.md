@@ -35,7 +35,7 @@ El manual no fija puntaje mínimo de Lighthouse. El 90 es criterio del equipo. a
 | Plataforma | Estado |
 |---|---|
 | Resoluciones 1920×1080, 1366×768 y 390×844 | **Automatizado con Cypress:** sin desborde horizontal; las tablas se apilan en pantallas angostas |
-| Chrome, Firefox, Edge, Safari en iOS y Chrome en Android | **Pendiente, Batch 12:** Playwright sobre Chromium, Firefox y WebKit (sección 27). Cypress corre aquí sobre Electron |
+| Chrome, Firefox, Edge, Safari en iOS y Chrome en Android | **Automatizado con Playwright (CO-COM-01), etapas 7 y 8:** Chrome y Edge estables, Firefox, WebKit con descriptor de iPhone y Chromium con descriptor de Android, en las tres resoluciones y con zoom al 200 %. Por pantalla revisa desborde, teclado (28.1-1), objetivos táctiles de 24 px y axe. Proyectos y sustituciones en `plan-de-pruebas.md`, 4.6. Cypress corre aquí sobre Electron |
 
 ## 4. Registro de hallazgos
 
