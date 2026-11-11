@@ -12,6 +12,8 @@
 
 Es la primera candidata que pasa por las seis puertas de 20.1 antes de llegar al piloto de ensayo.
 
+**Commit:** el de la fusión del pull request que trae esta acta junto con la de rc.2 y la de liberación. `release/1.0.0` se cortó en `5385940`, pero su etapa 7 falló dos veces en Lighthouse con `NO_NAVSTART`, un error de traza que Lighthouse pide repetir. En `develop` el mismo commit pasó. La candidata va sobre el commit que reintenta la medición.
+
 ## 1. Condiciones previas
 
 | Condición | Resultado | Evidencia |

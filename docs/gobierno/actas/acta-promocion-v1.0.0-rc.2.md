@@ -4,7 +4,7 @@
 
 **Etiqueta:** `v1.0.0-rc.2` · **Rama:** `release/1.0.0` · **Ambiente:** staging efímero en GitHub Actions (CC-018) · **Fecha:** pendiente · **Responsable de DevOps:** FJMP
 
-**Qué se promueve:** el segundo candidato de `v1.0.0`. Sobre `v1.0.0-rc.1` agrega los resultados de su promoción, esta acta, el acta de liberación de `v1.0.0` y las corridas de rendimiento en paralelo. Si se promueve, `v1.0.0` se etiqueta sobre este mismo commit: la etapa 8 del piloto comprueba que el commit ya pasó staging (puerta 2, CC-022).
+**Qué se promueve:** el segundo candidato de `v1.0.0`. Sobre `v1.0.0-rc.1` solo agrega los resultados de su promoción. Si se promueve, `v1.0.0` se etiqueta sobre este mismo commit: la etapa 8 del piloto comprueba que el commit ya pasó staging (puerta 2, CC-022).
 
 ## 1. Condiciones previas
 
