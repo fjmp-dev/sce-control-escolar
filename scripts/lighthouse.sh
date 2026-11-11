@@ -34,7 +34,8 @@ medir() { # nombre ruta [token]
   [ -n "${3:-}" ] && cabeceras="{\"Cookie\":\"sce_sesion=$3\"}"
   npx --yes "lighthouse@$VERSION" "$PORTAL$2" --quiet --output=json --output=html \
     --output-path="$REPORTES/$1" --only-categories=accessibility,performance,best-practices \
-    --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" >/dev/null 2>&1
+    --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" >"$REPORTES/$1.log" 2>&1 \
+    || { tail -20 "$REPORTES/$1.log" >&2; echo "::error::Lighthouse fallo al medir $2" >&2; exit 1; }
   jq -e --arg ruta "$2" '(.finalDisplayedUrl | endswith($ruta)) and (.categories.accessibility.score != null)' \
     "$REPORTES/$1.report.json" >/dev/null || { echo "::error::Lighthouse no midió $2" >&2; exit 1; }
 }
