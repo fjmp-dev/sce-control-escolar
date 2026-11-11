@@ -1,7 +1,7 @@
 # Registro de no conformidades y acciones correctivas — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 40 (clasificación en la Tabla 61; ciclo en la 40.2).
-**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 10 de noviembre de 2026 (sub-batch 11.0).
+**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 10 de noviembre de 2026 (sub-batch 11.3: NC-016 a NC-018, de la autoauditoría del cierre de la fase 4).
 
 Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001 y al contrastar el repositorio contra el manual completo. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
 
@@ -28,6 +28,9 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-013 | Mayor | Auditorías internas de la Tabla 60 sin auditor independiente | AU-40 | FJMP | 11 de diciembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
 | NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Abierta con plan | No aplica: Menor |
 | NC-015 | Menor | Ramas y etiquetas fuera de la Tabla 31 y de 15.2: fases 1 a 3 sin `release/x.y.z` ni fusión a `main`, y correcciones en `feature/` | AU-09 | FJMP | No se corrige: se declara en cada acta | Abierta; desviación declarada | No aplica: Menor |
+| NC-016 | Menor | Issues de batch sin puntos de historia: la densidad de defectos no se pudo calcular al cerrar las fases 1 a 3 | AU-39, AU-43 | FJMP | Antes del sub-batch 12.1 | Corregida en 11.3, con estimación posterior a la construcción; falta la acción preventiva | No aplica: Menor |
+| NC-017 | Menor | Análisis de riesgos de la fase 4 fuera de tiempo: AMFE de pagos hecho después de construir y STRIDE sin pagos, caja, trámites ni reportes | AU-37 | FJMP | Sub-batch 12.2 | Abierta con plan. AMFE hecho en 11.3 | No aplica: Menor |
+| NC-018 | Menor | Sin conciliación de pagos (CD-DAT-03) ni medición del reflejo (CD-DAT-06) al cierre de la fase 4 | AU-24, AU-39 | FJMP | Sub-batch 12.1 | Abierta con plan | No aplica: Menor |
 
 **Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
 
@@ -256,3 +259,56 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** no se corrige. Se declara en las actas de las fases 1 a 3 (11.3) y en el acta de promoción de `v0.4.0` (11.4).
 - **Acción preventiva:** desde `v0.4.0`, cada versión sale de su `release/x.y.z` fusionada a `main`.
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que `v0.4.0` y `v1.0.0` salgan de su rama de release fusionada a `main`.
+
+## NC-016 — Issues de batch sin puntos de historia
+
+- **Fuente:** autoauditoría del cierre de la fase 4 (`auditoria-fase-4.md`, hallazgo H-01), 10 de noviembre de 2026.
+- **Descripción:** la Tabla 59 calcula la densidad de defectos como "defectos válidos entre puntos de historia entregados por fase". `.github/ISSUE_TEMPLATE/historia.yml` pide el campo "Puntos de historia" como su base. Los 12 issues de batch (#31 y #41 a #51) se abrieron sin puntos. Los informes de las fases 1 y 2 dijeron "Sin dato" y el de la fase 3 no dio la métrica, pero nadie abrió una NC. Los puntos se estimaron el 10 de noviembre de 2026, después de construir, y quien estimó ya conocía el tamaño real de cada PR.
+- **Severidad:** Menor. Incumple una práctica documentada (plantilla y Tabla 59), sin riesgo inmediato para el producto.
+- **Evidencia:** cuerpo de los issues antes del 10 de noviembre (`gh issue view <n> --json body`), sin la línea "Puntos de historia"; `informe-fase-1.md` e `informe-fase-2.md`, versión anterior a 11.3; `historia.yml`.
+- **Causa (cinco porqués):**
+  1. ¿Por qué no había densidad? Los issues no tenían puntos.
+  2. ¿Por qué? Los issues de batch salieron del plan de sistema ("Del plan de sistema"), no de la plantilla de historia.
+  3. ¿Por qué? Se trataron como paquetes de trabajo, no como historias.
+  4. ¿Por qué no se corrigió al verlo? Los informes lo declararon, pero un "Sin dato" no disparaba una NC.
+  5. ¿Por qué? No hubo revisor que exigiera la métrica (NC-012).
+- **Contención:** puntos estimados con criterio escrito (`informe-fase-4.md`, apartado 2) y marcados en cada issue como "estimado después de construir". La tendencia F1→F4 se declara no comparable.
+- **Acción correctiva:** hecha en 11.3.
+- **Acción preventiva:** #75, #76 y #77 llevan sus puntos antes del primer commit de su trabajo (MJ-005). Un "Sin dato" en el tablero abre una NC o una acción con fecha.
+- **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que #75 a #77 tengan la línea antes del primer commit de 12.1.
+
+## NC-017 — Análisis de riesgos de la fase 4 fuera de tiempo
+
+- **Fuente:** autoauditoría del cierre de la fase 4 (`auditoria-fase-4.md`, hallazgo H-02), 10 de noviembre de 2026.
+- **Descripción:** dos herramientas de la Tabla 37 no se aplicaron cuando el plan lo pedía.
+  - **AMFE de pagos:** `matriz-riesgos.md` (apartado 5) y `amfe-inscripcion.md` lo piden al inicio del Batch 9, antes del código. Se hizo el 10 de noviembre de 2026 en 11.3 (`amfe-pagos.md`). El cobro doble (#69, Crítica) lo encontró una revisión de código, no una prueba ni un análisis previo.
+  - **STRIDE:** `stride.md` se actualiza "en cada batch que agrega un componente: pagos (9), trámites (10) y reportes (11)". Su tabla no tiene esos componentes al cierre de la fase 4.
+- **Severidad:** Menor. Incumple una práctica documentada. El riesgo que se materializó (#69) ya está corregido (#71) y probado (CI-PAG-01).
+- **Evidencia:** `amfe-pagos.md` (fecha y advertencia); `stride.md` v1.6, sin filas de pagos, caja, trámites ni reportes; issue #69, apartado "Caso y ejecución que lo detectó" ("Revisión de código del inventario de la retoma (sub-batch 11.1)… No lo cubre ningún caso").
+- **Causa (cinco porqués):**
+  1. ¿Por qué #69 llegó a `develop`? Ninguna prueba aprobaba dos intentos por el mismo adeudo.
+  2. ¿Por qué? Nadie analizó los modos de fallo del pago antes del código.
+  3. ¿Por qué? El AMFE del inicio del Batch 9 no se hizo.
+  4. ¿Por qué? Los batches 9 a 11 se construyeron el 10 de noviembre de 2026, con el plan compactado (6.1), sin revisar los análisis de inicio de batch.
+  5. ¿Por qué no se notó? No hay lista de inicio de batch ni revisor (MJ-001, NC-012).
+- **Contención:** AMFE de pagos con el NPR del cobro doble antes y después (378 y 18), y con sus acciones fechadas.
+- **Acción correctiva:** STRIDE v1.7 con pagos, caja, trámites y reportes (sub-batch 12.2, como ya lo prevé el plan). Acciones del AMFE en 12.1.
+- **Acción preventiva:** el PR de un batch que toque dinero, cupos o calificaciones enlaza su AMFE y sus filas STRIDE; si no, no se fusiona (MJ-006).
+- **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), revisa el PR de 12.2.
+
+## NC-018 — Sin conciliación de pagos ni medición del reflejo al cierre de la fase 4
+
+- **Fuente:** autoauditoría del cierre de la fase 4 (`auditoria-fase-4.md`, hallazgo H-03), 10 de noviembre de 2026.
+- **Descripción:** AU-24 pide "conciliación diaria y reflejo en menos de un minuto" (CD-DAT-03 y CD-DAT-06). `matriz-trazabilidad.md` asigna ambos casos a los batches 9 y 14. Al 10 de noviembre no existen `cd-dat-03.sql` ni `cd-dat-06.sql`. CC-020 los replanteó como conciliación interna y los movió a 12.1, después del cierre de la fase. La métrica 8 de la Tabla 59 ("diferencias detectadas en la conciliación diaria") no se puede calcular.
+- **Severidad:** Menor. RF-006 tiene casos satisfactorios (CF-PAG-01 y CI-PAG-01); el pago es simulado y los datos sintéticos; el movimiento y el saldo se escriben en la misma transacción. **El auditor puede reclasificarla como Mayor:** CD-DAT-03 es un caso de RNF-DAT-001, que es Must.
+- **Evidencia:** `ls api/prisma/verificacion/` (sin `cd-dat-03.sql` ni `cd-dat-06.sql`); `matriz-trazabilidad.md`, filas CD-DAT-03 y 06; `cambios/CC-020.md`, fila AU-24; `plan-de-sistema.md`, 12.1.
+- **Causa (cinco porqués):**
+  1. ¿Por qué no hay conciliación? No existe la consulta.
+  2. ¿Por qué? Estaba pensada contra Mercado Pago, y con la pasarela simulada no hay proveedor contra quien conciliar.
+  3. ¿Por qué no se replanteó en el Batch 9? CC-020 llegó después del código (NC-008).
+  4. ¿Por qué quedó después del cierre? La retoma (6.2) puso antes el defecto #69 y las reglas Must.
+  5. ¿Por qué no bloqueó el cierre? La lista de QA del cierre no revisaba los CD-DAT de la fase.
+- **Contención:** `movimiento.pago_id` único, `movimiento()` con saldo y movimiento juntos, y la prueba del corte del día (`pagos.spec.ts`).
+- **Acción correctiva:** en 12.1, `cd-dat-03.sql` (saldo contra movimientos, pago contra abono y corte contra abonos del día UTC-6) y `cd-dat-06.sql` con CC-011, con Great Expectations que no pase en vacío y su prueba de detección. Responsable: FJMP.
+- **Acción preventiva:** la lista de QA del cierre de fase revisa que existan los CD-DAT de la fase (`informe-fase-4.md`, apartado 9).
+- **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), corre las dos consultas en la etapa 4 de la corrida de `release/1.0.0` y comprueba que detectan una diferencia sembrada.
