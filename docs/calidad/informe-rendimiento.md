@@ -42,7 +42,7 @@ gh workflow run rendimiento.yml --ref release/1.0.0 -f etiqueta=v1.0.0-rc.N -f c
 
 | Caso | Tipo (Tabla 47) | Herramienta | Perfil en `rendimiento.yml` |
 |---|---|---|---|
-| CR-REN-01 | Carga | JMeter 5.6.3 (`sce.jmx`) | 300 usuarios que llegan en 5 min y 15 min de meseta. Lectura intensiva: cada usuario entra una vez, inscribe o paga, y luego consulta oferta, inscripciones, calificaciones y cuenta, con 1 a 3 s de pausa. Lighthouse corre durante la meseta |
+| CR-REN-01 | Carga | JMeter 5.6.3 (`sce.jmx`) | 300 usuarios que llegan en 5 min y 15 min de meseta. Lectura intensiva: cada usuario entra una vez, inscribe o paga, y luego consulta oferta, inscripciones, calificaciones y cuenta, con 1 a 3 s de pausa. Lighthouse corre al terminar la carga, en el núcleo del generador (apartado 4.2) |
 | CR-REN-02 | Concurrencia | k6 1.6.0 (`cr-ren-02.js` y `cr-ren-02.sql`) | 300 alumnos envían su inscripción a la vez; 100 compiten por los 5 lugares de CARGA-5 |
 | CR-REN-03 | Estrés | JMeter | De 0 a 800 usuarios en 25 min, y 5 min con 800 |
 | CR-REN-04 | Pico | JMeter | 50 usuarios durante 5 min, de 50 a 400 en 1 min y 9 min con 400 |
@@ -81,7 +81,7 @@ Se llena en 13.6. Cada fila enlaza su corrida de Actions; el detalle es el `regi
 | CR-REN-04 | 1 | | | | | | | | | | Informativo; reacción: |
 | CR-REN-05 | 1 | | | | | | | | | | |
 
-**Lighthouse durante la meseta de CR-REN-01:** rendimiento percibido de las páginas Must (`lighthouse.txt` del artefacto).
+**Lighthouse al terminar CR-REN-01:** rendimiento percibido de las páginas Must (`lighthouse.txt` del artefacto).
 
 ### 4.2 Hallazgos
 
