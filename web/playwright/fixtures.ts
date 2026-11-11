@@ -1,4 +1,4 @@
-// CO-COM-01: lo que toda pantalla de un flujo Must cumple en cada combinación de la Tabla 50, con los criterios de 28.1.
+// CO-COM-01 y CO-ACC-02 (CC-021): lo que toda pantalla de un flujo Must cumple en cada combinación de la Tabla 50, con los criterios de 28.1.
 import { expect, test as base, type Locator, type Page } from '@playwright/test';
 import type { AxeResults } from 'axe-core';
 
@@ -11,6 +11,8 @@ export const CONTRASENA = process.env.CONTRASENA_SEMILLA ?? 'sce-dev-2026';
 const AXE = require.resolve('axe-core/axe.min.js');
 
 interface Revisiones {
+  /** 12.2: la CSP con nonce no bloquea nada del portal. Automática: cualquier violación en la consola falla la prueba. */
+  csp: void;
   /** Tabla 50: ni la página ni sus tablas desbordan a lo ancho (scrollWidth <= clientWidth). */
   sinDesborde: () => Promise<void>;
   /** 28.1-1: cada control crítico está visible, se alcanza con Tab y el foco se ve. */
@@ -27,6 +29,19 @@ interface Revisiones {
 
 // El segundo argumento de cada fixture se llama `entregar` y no `use`: eslint-plugin-react-hooks toma `use` por el hook.
 export const test = base.extend<Revisiones>({
+  csp: [
+    async ({ page }, entregar, testInfo) => {
+      const violaciones: string[] = [];
+      page.on('console', (m) => {
+        if (/Content[- ]Security[- ]Policy/i.test(m.text())) violaciones.push(m.text());
+      });
+      await entregar();
+      // En WebKit, la captura de una prueba fallida inyecta un estilo que la CSP rechaza: solo cuenta si la prueba pasó.
+      if (testInfo.status === testInfo.expectedStatus) expect(violaciones, '12.2: violaciones de la CSP').toEqual([]);
+    },
+    { auto: true },
+  ],
+
   sinDesborde: async ({ page }, entregar) => {
     await entregar(async () => {
       const desbordes = await page.evaluate(() => {
@@ -104,7 +119,7 @@ export const test = base.extend<Revisiones>({
 
   axe: async ({ page }, entregar, testInfo) => {
     await entregar(async (nombre) => {
-      await page.addScriptTag({ path: AXE }); // la CSP del portal admite scripts en línea (next.config.ts)
+      await page.addScriptTag({ path: AXE }); // lo inserta Playwright: la CSP con nonce (proxy.ts) no lo bloquea
       const resultado = await page.evaluate(() =>
         (window as unknown as { axe: { run: (contexto: Document, opciones: object) => Promise<AxeResults> } }).axe.run(
           document,

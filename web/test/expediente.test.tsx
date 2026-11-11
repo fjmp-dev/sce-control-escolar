@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { GET as historialCsvDe } from '@/app/(portal)/expedientes/[matricula]/historial.csv/route';
 import PaginaExpediente from '@/app/(portal)/expedientes/[matricula]/page';
 import PaginaExpedientes from '@/app/(portal)/expedientes/page';
 import PaginaMiExpediente from '@/app/(portal)/mi-expediente/page';
@@ -73,6 +74,21 @@ describe('Expedientes (control escolar)', () => {
     render(await PaginaExpedientes({ searchParams: Promise.resolve({}) }));
     expect(screen.getByRole('heading', { name: 'Expedientes recientes' })).toBeTruthy();
     expect(screen.getByText('Todavía no hay registros.')).toBeTruthy();
+  });
+
+  it('una busqueda que la API rechaza da un aviso y no un 500, y el CSV de una matricula invalida da 404 (ZAP)', async () => {
+    const larga = 'x'.repeat(101);
+    api({
+      [`/alumnos?buscar=${larga}`]: [400, { codigo: 'ENTRADA_INVALIDA', mensaje: 'Revisa estos campos: buscar.' }],
+      '/facultades': [200, FACULTADES],
+      '/alumnos/ZAP/calificaciones': [400, { codigo: 'ENTRADA_INVALIDA', mensaje: 'Revisa estos campos: matricula.' }],
+    });
+    render(await PaginaExpedientes({ searchParams: Promise.resolve({ buscar: larga }) }));
+    expect(screen.getByRole('alert').textContent).toContain('Escribe hasta 100 caracteres');
+    const csv = await historialCsvDe(new Request('http://localhost/'), {
+      params: Promise.resolve({ matricula: 'ZAP' }),
+    });
+    expect(csv.status).toBe(404);
   });
 
   it('la ficha muestra datos, historial y trayectoria, y no ofrece la facultad ni el estatus actuales', async () => {

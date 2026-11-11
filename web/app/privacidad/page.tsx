@@ -36,9 +36,7 @@ export default function PaginaPrivacidad() {
             <li>Darte acceso seguro y registrar quién hace cada operación.</li>
             <li>Elaborar estadísticas por facultad, sin nombres ni matrículas.</li>
           </ul>
-          <p>
-            Todas son necesarias para el servicio escolar. No usamos tus datos para publicidad ni para otros fines.
-          </p>
+          <p>Todas son necesarias para el servicio escolar. No usamos tus datos para publicidad ni para otros fines.</p>
         </section>
         <section>
           <h2>Tu consentimiento</h2>

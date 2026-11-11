@@ -1,4 +1,5 @@
 // Demostracion por rol en el ambiente de pruebas (11.3, Tabla 23: autenticacion de los seis roles) y CF-ROL-01 en el portal.
+// CO-ACC-01 (12.4): axe sobre el inicio de cada uno de los siete roles.
 const COMUNES = ['Inicio', 'Facultades', 'Planes de estudio', 'Materias', 'Periodos', 'Mi contraseña'];
 
 const CUENTAS = [
@@ -36,6 +37,7 @@ describe('Demostracion por rol', () => {
         .then((enlaces) => [...enlaces].map((a) => a.textContent))
         .should('deep.equal', ['Inicio', ...propios, ...COMUNES.slice(1)]);
       cy.screenshot(`rol-${cuenta}-inicio`);
+      cy.revisarAxe(`inicio-${cuenta.replace('.', '-')}`); // 28.2: la página de inicio de cada rol
 
       for (const pagina of ['/facultades', '/planes', '/materias', '/periodos']) {
         cy.visit(pagina);

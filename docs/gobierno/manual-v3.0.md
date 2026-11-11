@@ -32,6 +32,7 @@ El mismo día FJMP retomó los batches 11 a 14 (`plan-de-sistema.md`, 6.2). La r
 | 10-nov-2026 | Emisión: alcance acotado a las fases 0 a 4, pago simulado y sin piloto | Compactación (`plan-de-sistema.md`, 6.1); PR #66 |
 | 10-nov-2026 | Retoma: apartado 1, fila de las Tablas 23 y 25 en 2.1, apartados 2.2 y 2.3, apartado 2.4 nuevo, fila de la Tabla 55 en el apartado 3, nota de figuras del apartado 5 y apartado 9 | `plan-de-sistema.md`, 6.2; sub-batch 11.0 |
 | 10-nov-2026 | Apartado 5: fila "Datos personales" de la Tabla 38 y RK-11 a RK-14 en la Tabla 36. Apartado 6: D-18 | `plan-de-sistema.md`, 6.2; sub-batch 12.6 |
+| 11-nov-2026 | Apartado 4, corrección #11: 22 requisitos y casos `CO-*` de CC-021. Anexo A sustituido por `docs/calidad/anexo-a.md` | CC-021; sub-batch 12.5 |
 
 ---
 
@@ -119,7 +120,7 @@ La regla de la Tabla 54 no cambia: versionado semántico con etiqueta de Git `vX
 | #8 | Anexo A y Tabla 47 | CR-REN-01 carga; CR-REN-02 concurrencia; CR-REN-03 estrés; CR-REN-04 pico; CR-REN-05 resistencia. Escenarios y herramientas: `matriz-trazabilidad.md`, 3.5. Para la meta, la carga dura 15 minutos; "la primera hora" se describe como escenario (X-11). En esta versión no se ejecutan (apartado 2.2) |
 | #9 | 8.4 y 40.1 | Una sola escala. NC **Mayor** = prioridad **alta**; **Menor** = **media**; **Observación** = **baja**. Una NC mayor bloquea la aceptación de la fase y la promoción hasta que se cierra o hasta que el PO acepta por escrito su plan fechado, como ya dice la 40.1. El dictamen de la 8.4 se lee igual |
 | #10 | 13.6 y Tabla 29 | La Tabla 29 añade la entidad **`periodo`**: clave, fechas, estado y fecha de publicación de la oferta. Con ella son las 21 entidades de la 13.6 (CC-003, CC-012). Matrícula es clave primaria (X-10, CC-004) |
-| #11 | Tabla 27 | Pasa de 10 a 20 requisitos. La matriz completa es `matriz-trazabilidad.md`, sección 2 (CC-001). Se añaden los casos `CO-*` de operación (X-20): CO-FIA-01, CO-FIA-02, CO-MAN-01 y CO-FLE-01, con el prefijo `CO` en la Tabla 31 |
+| #11 | Tabla 27, sección 9 y Anexo A | Pasa de 10 a 22 requisitos: los 20 del catálogo (CC-001) más RNF-USU-002 y RNF-FLE-002 (CC-021). La matriz completa es `matriz-trazabilidad.md`, sección 2. Se añaden los casos `CO-*` de operación (X-20): CO-FIA-01, CO-FIA-02, CO-MAN-01 y CO-FLE-01; y, con CC-021, CO-ACC-01 a 03, CO-COM-01 y CO-MAN-02. El prefijo `CO` entra a la Tabla 31. El Anexo A (Tabla 63) es `docs/calidad/anexo-a.md`, con columnas de resultado, evidencia y estado y filas de Accesibilidad y Seguridad física |
 | #12 | RNF-FIA-002 | Debe decir: "…con pérdida máxima de datos menor a 24 horas **y tiempo de restauración menor a 4 horas**, demostrado al menos una vez por periodo". Es el RTO que ya fija la sección 34 |
 | #13 | 20.1 | Debe decir: "Prueba de rendimiento **en staging** sobre el tag candidato…". El rendimiento en el servidor del piloto se mide después de promover, como dice la 24.2 |
 | #14 | 4.1, Tabla 8 | Ver apartado 7 |

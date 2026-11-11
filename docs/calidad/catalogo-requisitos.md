@@ -1,7 +1,7 @@
 # Catálogo de requisitos — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 9 (tablas 18, 19 y 20).
-**Estado:** línea base de fase 0, con clasificación añadida el 5 de noviembre de 2026.
+**Estado:** línea base de fase 0, con clasificación añadida el 5 de noviembre de 2026. RNF-USU-002 y RNF-FLE-002 se añaden el 11 de noviembre de 2026 con CC-021 (sub-batch 12.5).
 **Convención de identificadores:** sección 9.1 del manual.
 
 La prioridad se expresa como **Must**, que bloquea la aceptación; **Should**, que exige plan de corrección antes de ampliar facultades; y **Could**, que se documenta como mejora.
@@ -54,6 +54,8 @@ La prioridad se expresa como **Must**, que bloquea la aceptación; **Should**, q
 | RNF-USU-001 | Must | Toda inscripción inválida termina en un estado explícito que indica la causa: adeudo, prerrequisito o choque de horario. | Caso CF-INS-02: los tres escenarios de rechazo muestran mensaje y estado distinguibles. |
 | RNF-MAN-001 | Must | Las reglas de prerrequisitos, adeudos, choques, promedio y créditos cuentan con pruebas automatizadas ejecutables en el pipeline antes del despliegue a piloto. | Reporte de cobertura con 100 % de reglas Must cubiertas y 80 % de cobertura en el dominio. |
 | RNF-FLE-001 | Should | La incorporación de una segunda facultad no requiere modificar el esquema de la base de datos ni duplicar catálogos institucionales. | Prueba de alta de una facultad adicional en staging sin migración estructural. |
+| RNF-USU-002 | Must | Los flujos críticos del portal (ingreso, inscripción, pago, consulta de horario y calificaciones, y trámites) cumplen WCAG 2.2 nivel AA en los criterios mínimos de la sección 28.1. *Añadido por CC-021.* | CO-ACC-01 a 03: axe y Lighthouse sin violaciones serias ni críticas, criterios 28.1 por plataforma y revisión manual firmada con lector de pantalla (28.2). |
+| RNF-FLE-002 | Must | Los flujos Must de la Tabla 50 funcionan en Chrome de escritorio, Safari en iOS y Chrome en Android, en 1366×768, 1920×1080 y 390×844, sin perder controles críticos ni desbordar tablas; Firefox y Edge son Should. *Añadido por CC-021.* | CO-COM-01: matriz de la Tabla 50 con Playwright, con fecha, etiqueta y resultado por combinación. |
 
 ---
 
@@ -62,9 +64,9 @@ La prioridad se expresa como **Must**, que bloquea la aceptación; **Should**, q
 | Concepto | Cantidad |
 |---|---|
 | Requisitos funcionales | 10 |
-| Requisitos no funcionales | 10 |
-| **Total** | **20** |
-| De prioridad Must | 17 |
+| Requisitos no funcionales | 12 (10 del manual y 2 de CC-021) |
+| **Total** | **22** |
+| De prioridad Must | 19 |
 | De prioridad Should | 3 (RF-009, RF-010, RNF-FLE-001) |
 
 > Ningún incremento de las fases 1 a 5 se acepta si queda abierto un requisito Must sin evidencia de prueba o con resultado fallido (manual, sección 9.4).
@@ -97,4 +99,6 @@ Sección 8.4 del manual: todo requisito se clasifica en al menos una subcaracter
 | RNF-USU-001 | Operabilidad, Autodescripción | Comprensibilidad | Alta |
 | RNF-MAN-001 | Capacidad de ser probado | — | Alta |
 | RNF-FLE-001 | Escalabilidad, Reusabilidad | — | Media |
+| RNF-USU-002 | Inclusividad, Operabilidad, Protección contra errores de usuario | Comprensibilidad | Alta |
+| RNF-FLE-002 | Adaptabilidad, Interoperabilidad | Accesibilidad | Alta |
 

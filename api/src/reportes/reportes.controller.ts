@@ -1,7 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PeriodoParam } from '../academico/grupos.controller';
-import { ApiErrores } from '../gateway/validacion';
+import { ApiErrores, PeriodoParam } from '../gateway/validacion';
 import { Roles } from '../identidad/autenticacion.guard';
 import { ReportesService } from './reportes.service';
 

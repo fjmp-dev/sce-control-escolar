@@ -1,21 +1,34 @@
 import Link from 'next/link';
+import { Aviso } from '@/componentes/aviso';
 import { Campo, Formulario, Selector } from '@/componentes/formulario';
 import { Insignia, tonoDeEstado } from '@/componentes/insignia';
 import { Tabla } from '@/componentes/tabla';
 import { altaExpediente } from '@/lib/acciones';
-import { consultar } from '@/lib/api';
+import { consultar, ErrorApi } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
 import { ETIQUETA_ESTATUS } from '@/lib/formato';
 import { CORRECCION_FECHA } from '@/lib/textos';
 
 export const metadata = { title: 'Expedientes' };
 
+/** Una búsqueda que la API rechaza (más de 100 caracteres o de control) es un aviso, no un error 500 (ZAP, 12.2). */
+async function buscarAlumnos(buscar: string) {
+  try {
+    return await consultar<Esquemas['AlumnoResumen'][]>(
+      `/alumnos${buscar ? `?buscar=${encodeURIComponent(buscar)}` : ''}`,
+    );
+  } catch (error) {
+    if (error instanceof ErrorApi && error.estado === 400) return undefined;
+    throw error;
+  }
+}
+
 export default async function PaginaExpedientes({
   searchParams,
 }: Readonly<{ searchParams: Promise<{ buscar?: string }> }>) {
   const buscar = ((await searchParams).buscar ?? '').trim();
   const [alumnos, facultades] = await Promise.all([
-    consultar<Esquemas['AlumnoResumen'][]>(`/alumnos${buscar ? `?buscar=${encodeURIComponent(buscar)}` : ''}`),
+    buscarAlumnos(buscar),
     consultar<Esquemas['FacultadRespuesta'][]>('/facultades'),
   ]);
   return (
@@ -31,9 +44,14 @@ export default async function PaginaExpedientes({
       </form>
       <h2>{buscar ? `Resultados para «${buscar}»` : 'Expedientes recientes'}</h2>
       <p className="ayuda">Se muestran hasta 50. Afina la búsqueda si no aparece el que buscas.</p>
+      {alumnos === undefined && (
+        <Aviso tipo="error">
+          Escribe hasta 100 caracteres, sin saltos de línea, para buscar por matrícula o nombre.
+        </Aviso>
+      )}
       <Tabla
         titulo="Expedientes"
-        filas={alumnos}
+        filas={alumnos ?? []}
         clave={(a) => a.matricula}
         columnas={[
           {

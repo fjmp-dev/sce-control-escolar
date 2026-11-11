@@ -41,7 +41,9 @@ export default async function PaginaIngresar({ searchParams }: { searchParams: P
           />
         </Formulario>
         <p className="ayuda">
-          <Link href="/privacidad">Aviso de privacidad</Link>
+          <Link href="/privacidad" className="enlace-suelto">
+            Aviso de privacidad
+          </Link>
         </p>
       </div>
     </main>

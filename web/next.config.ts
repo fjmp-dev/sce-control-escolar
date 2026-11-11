@@ -9,15 +9,13 @@ const configuracion: NextConfig = {
       {
         source: '/:ruta*',
         headers: [
-          // Next.js incrusta scripts de arranque: 'unsafe-inline' hasta adoptar nonces (STRIDE, Batch 12).
-          {
-            key: 'Content-Security-Policy',
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
-          },
+          // La CSP lleva un nonce por petición: la pone proxy.ts (12.2).
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'same-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          // Aislamiento entre orígenes (ZAP 90004, 12.2): otra ventana no se queda con esta, ni otro sitio usa sus recursos.
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
         ],
       },
     ];

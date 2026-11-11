@@ -13,10 +13,9 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { ApiErrores, Texto } from '../gateway/validacion';
+import { ApiErrores, PeriodoParam, Texto } from '../gateway/validacion';
 import { Actual, Roles } from '../identidad/autenticacion.guard';
 import { Autenticado } from '../identidad/autenticacion.service';
-import { PeriodoParam } from '../academico/grupos.controller';
 import { HistorialRespuesta, MatriculaParam } from './alumnos.controller';
 import { HistorialService } from './historial.service';
 
