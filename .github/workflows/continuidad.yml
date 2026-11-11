@@ -44,6 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: age y el respaldo de la corrida anterior
         run: |
+          sudo sed -i 's#http://azure.archive.ubuntu.com#http://archive.ubuntu.com#' /etc/apt/apt-mirrors.txt 2>/dev/null || true # el 11-nov-2026 el runner no resolvia el espejo de Azure
           sudo apt-get install -y -qq age >/dev/null
           corrida="$(gh run list -w continuidad.yml -s success -L 1 --json databaseId -q '.[0].databaseId')"
           if [ -n "$corrida" ] && gh run download "$corrida" -n respaldo -D "$ANTERIOR"; then
