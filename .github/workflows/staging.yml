@@ -149,7 +149,7 @@ jobs:
           CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA || env.CONTRASENA_SEMILLA }}
       # CO-COM-01 (Tabla 50) contra el staging recién verificado, con la contraseña de su semilla. Las etiquetas
       # anteriores a la matriz no traen web/playwright.config.ts y se saltan estos pasos.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
         with:
           node-version: 24
