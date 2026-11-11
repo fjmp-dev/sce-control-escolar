@@ -15,6 +15,7 @@ import PaginaUsuarios from '@/app/(portal)/usuarios/page';
 import PaginaIngresar from '@/app/ingresar/page';
 import LayoutRaiz from '@/app/layout';
 import PaginaNoEncontrada from '@/app/not-found';
+import PaginaPrivacidad from '@/app/privacidad/page';
 import { GET as salud } from '@/app/salud/route';
 import type { Rol } from '@/lib/contrato';
 
@@ -217,6 +218,23 @@ describe('Paginas sin datos', () => {
     cleanup();
     mostrar(PaginaNoEncontrada());
     expect(screen.getByRole('heading', { name: 'Esta página no existe' })).toBeTruthy();
+  });
+
+  it('ingresar enlaza el aviso de privacidad', async () => {
+    mostrar(await PaginaIngresar({ searchParams: Promise.resolve({}) }));
+    expect(screen.getByRole('link', { name: 'Aviso de privacidad' }).getAttribute('href')).toBe('/privacidad');
+  });
+
+  it('privacidad: aviso simplificado marcado como modelo, sin sesión ni llamadas a la API (12.6)', () => {
+    mostrar(PaginaPrivacidad());
+    screen.getByRole('heading', { level: 1, name: 'Aviso de privacidad simplificado' });
+    expect(screen.getByRole('status').textContent).toContain('Modelo no oficial');
+    for (const apartado of ['Quién trata tus datos', 'Para qué', 'Tu consentimiento', 'Transferencias', 'Tus derechos']) {
+      screen.getByRole('heading', { level: 2, name: apartado });
+    }
+    expect(screen.getAllByRole('listitem')).toHaveLength(7);
+    expect(screen.getByRole('link', { name: 'Ir a iniciar sesión' }).getAttribute('href')).toBe('/ingresar');
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('/salud responde sin detalle', async () => {
