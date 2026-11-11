@@ -13,7 +13,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { ApiErrores, Clave, Correo, Texto } from '../gateway/validacion';
+import { ApiErrores, Clave, ClaveDePeriodo, Correo, PeriodoParam, Texto } from '../gateway/validacion';
 import { Actual, Roles } from '../identidad/autenticacion.guard';
 import { Autenticado } from '../identidad/autenticacion.service';
 import { PeriodoRespuesta } from './catalogos.controller';
@@ -22,13 +22,6 @@ import { OfertaService } from './oferta.service';
 
 const CUPO_MAXIMO = 10_000; // cualquier valor mayor es un error de captura
 const SESIONES_MAXIMAS = 12; // dos por día, de lunes a sábado
-
-const ClaveDePeriodo = () =>
-  applyDecorators(
-    ApiProperty({ example: '2027A', pattern: String.raw`^\d{4}[AB]$` }),
-    IsString(),
-    Matches(/^\d{4}[AB]$/),
-  );
 
 const Hora = () =>
   applyDecorators(
@@ -42,10 +35,6 @@ export const MAXIMO_DE_GRUPOS = 15;
 
 export class OfertaDto {
   @ClaveDePeriodo() periodo!: string;
-}
-
-export class PeriodoParam {
-  @ClaveDePeriodo() clave!: string;
 }
 
 class HorarioDto {

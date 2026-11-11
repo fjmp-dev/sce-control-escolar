@@ -1,6 +1,7 @@
 @startuml fig01-casos-de-uso
 ' Figura 1. Diagrama de casos de uso del SCE, version 1 del piloto.
 ' Fuente: SCE-MC-001 v2.0, seccion 13.1. Roles: Tabla 5. Requisitos: Tabla 19.
+' CC-020: la pasarela es simulada (sin Mercado Pago); el aviso llega a POST /pagos/{id}/simulacion.
 left to right direction
 skinparam shadowing false
 skinparam packageStyle rectangle
@@ -12,7 +13,7 @@ actor "Coordinacion academica" as CA
 actor "Caja" as CJ
 actor "Direccion" as DI
 actor "Administrador del sistema" as AD <<rol de entrega>>
-actor "Pasarela de pago" as PP <<sistema externo>>
+actor "Pasarela de pago simulada" as PP <<CC-020>>
 
 rectangle "Sistema de Control Escolar Universitario (SCE)" {
 

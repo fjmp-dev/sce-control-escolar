@@ -1,0 +1,23 @@
+# Proxy inverso de la Fig. 9 como nodo propio (CC-022): nginx 1.28 termina TLS 1.2+ (Tabla 38) y enruta al portal y a
+# la API por la red de frontera, que crea el proyecto de aplicacion (infra/staging/app/). Es lo unico que publica
+# puertos. Lo levanta scripts/desplegar-staging.sh despues de la aplicacion. Variables en .env (plantilla: .env.example).
+services:
+  proxy:
+    image: nginx:1.28
+    container_name: sce-proxy
+    restart: unless-stopped
+    environment:
+      DOMINIO: ${DOMINIO:?}
+    ports: ['80:80', '443:443']
+    networks: [frontera]
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./certificados:/etc/letsencrypt:ro # live/<dominio>/fullchain.pem y privkey.pem
+      - ./acme:/var/www/acme:ro
+    logging:
+      options: { max-size: 50m, max-file: '10' }
+
+networks:
+  frontera:
+    external: true
+    name: sce-frontera

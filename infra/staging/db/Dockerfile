@@ -17,4 +17,9 @@ CMD ["postgres", \
   "-c", "ssl_cert_file=/var/lib/postgresql/tls/servidor.crt", \
   "-c", "ssl_key_file=/var/lib/postgresql/tls/servidor.key", \
   "-c", "password_encryption=scram-sha-256", \
-  "-c", "shared_preload_libraries=pgaudit"]
+  "-c", "shared_preload_libraries=pgaudit", \
+  "-c", "log_min_duration_statement=250", \
+  "-c", "log_parameter_max_length=0", \
+  "-c", "log_parameter_max_length_on_error=0"]
+# Consultas de mas de 250 ms al registro, para pgBadger (scripts/pgbadger.sh), sin los valores de sus parametros:
+# llevarian datos personales y hashes (CS-SEG-08). El limite de conexiones lo fija la API (connection_limit).

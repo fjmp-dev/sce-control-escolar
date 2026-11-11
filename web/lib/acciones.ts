@@ -20,6 +20,8 @@ function aEstado(error: unknown, valores?: EstadoDeFormulario['valores']): Estad
     return { error: 'No pudimos conectar con el servidor. Intenta de nuevo en unos minutos.', valores };
   }
   if (error.estado === 401 && error.codigo !== 'CREDENCIALES_INVALIDAS') redirect('/ingresar?motivo=sesion');
+  // WCAG 3.3.1 (HA-07): el rechazo por saldo también marca el campo, y conserva el mensaje de la API.
+  if (error.codigo === 'IMPORTE_MAYOR_AL_SALDO') return { error: error.message, campos: ['importe'], valores };
   const campos = error.campos;
   return { error: campos.length > 0 ? 'Revisa los campos marcados.' : error.message, campos, valores };
 }

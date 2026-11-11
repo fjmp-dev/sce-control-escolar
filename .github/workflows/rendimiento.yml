@@ -1,0 +1,168 @@
+# Rendimiento (sec. 24, Tablas 46 a 48; CR-REN-01 a 05). Corre sobre una etiqueta candidata ya promovida a staging: sus
+# imagenes firmadas (etapa 6, por digest) y su codigo, en un staging efimero con la topologia de la Fig. 9 y la pasarela
+# simulada (CC-020). No hay servidor de piloto (manual v3.0, 2.2): esta es la medicion "en staging con dimensionamiento
+# de referencia", declarado en cada registro:
+# - runner ubuntu-latest de 4 vCPU; servidor de aplicacion (API, portal y proxy) en los nucleos 0 y 1, servidor de base
+#   en el 2, y generador y monitoreo en el 3, con cpuset. La corrida es invalida si el generador pasa de 80 % de CPU.
+# Cada corrida mide un caso. CR-REN-01 y 02 se corren tres veces por candidato y se informa la mediana. Sin
+# concurrency: un grupo comun cancelaria las corridas en espera, y cada una ya tiene su runner
+# (docs/calidad/informe-rendimiento.md).
+# En un pull request que toca los guiones solo los revisa; eso tambien registra el workflow, que asi se puede despachar
+# sobre release/1.0.0 sin estar en main (gh workflow run rendimiento.yml --ref release/1.0.0 -f etiqueta=... -f caso=...).
+name: Rendimiento - CR-REN
+
+on:
+  pull_request:
+    paths: [infra/rendimiento/**, .github/workflows/rendimiento.yml, scripts/lighthouse.sh]
+  workflow_dispatch:
+    inputs:
+      etiqueta:
+        description: Etiqueta candidata ya promovida a staging (vX.Y.Z-rc.N)
+        required: true
+      caso:
+        description: Caso de la Tabla 47
+        type: choice
+        options: [CR-REN-01, CR-REN-02, CR-REN-03, CR-REN-04, CR-REN-05]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  guiones:
+    name: Guiones de rendimiento
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: sce.jmx, guiones de k6 y de metas
+        run: |
+          python3 -c 'import sys, xml.etree.ElementTree as E; E.parse(sys.argv[1])' infra/rendimiento/sce.jmx # sin apt: el espejo de Azure fallo el 11-nov-2026
+          bash -n infra/rendimiento/metas.sh infra/rendimiento/registro.sh scripts/lighthouse.sh
+          for g in humo cr-ren-02; do
+            docker run --rm -v "$PWD/infra/rendimiento:/r:ro" grafana/k6:1.6.0 inspect "/r/$g.js" >/dev/null
+          done
+
+  rendimiento:
+    name: ${{ inputs.caso }} sobre ${{ inputs.etiqueta }}
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest # cada corrida en su runner, con su staging: varias a la vez no se estorban
+    timeout-minutes: 330 # CR-REN-05 dura 4 h 5 min
+    env:
+      CASO: ${{ inputs.caso }}
+      ETIQUETA: ${{ inputs.etiqueta }}
+      SALIDA: reportes/rendimiento # no DIR: .staging/ambiente.env ya la define
+      JMETER: 5.6.3
+      JMETER_SHA512: 5978a1a35edb5a7d428e270564ff49d2b1b257a65e17a759d259a9283fc17093e522fe46f474a043864aea6910683486340706d745fcdf3db1505fd71e689083
+      K6: grafana/k6:1.6.0
+      CPUS_APP: '0|1'
+      CPUS_DB: '2'
+      CPUS_GENERADOR: '3'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.etiqueta }}
+      - name: Etiqueta candidata y dimensionamiento de referencia
+        run: |
+          [[ "$ETIQUETA" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[1-9][0-9]*$ ]] || { echo "::error::$ETIQUETA no es una etiqueta candidata"; exit 1; }
+          [ "$(nproc)" -ge 4 ] || { echo "::error::el runner tiene $(nproc) nucleos; el dimensionamiento de referencia pide 4"; exit 1; }
+          echo "DIMENSIONAMIENTO=runner ubuntu-latest de $(nproc) vCPU y $(free -g | awk '/^Mem/ {print $2}') GB; aplicacion (API, portal y proxy) en los nucleos ${CPUS_APP//|/ y }, base en el $CPUS_DB, generador y monitoreo en el $CPUS_GENERADOR (cpuset)" >> "$GITHUB_ENV"
+      - uses: sigstore/cosign-installer@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Imagenes de la etiqueta, firmadas por la etapa 6 (AU-12)
+        run: |
+          commit="$(git rev-parse HEAD)"
+          for nombre in api portal; do
+            ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}/sce-$nombre"
+            # La etiqueta SemVer en el registro prueba que la etapa 8 la promovio. Se despliega por el commit (sha-<12>),
+            # que es el manifiesto firmado: hasta rc.1, la etiqueta SemVer era un indice nuevo que lo envolvia, sin firma.
+            docker buildx imagetools inspect "$ref:$ETIQUETA" >/dev/null || { echo "::error::$ETIQUETA no paso por la etapa 8"; exit 1; }
+            digest="$(docker buildx imagetools inspect "$ref:sha-${commit:0:12}" --format '{{json .Manifest}}' | jq -er .digest)"
+            cosign verify "$ref@$digest" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/ci.yml@refs/heads/(develop|main|release/.+)$" >/dev/null
+            echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
+          done
+          CONTRASENA_SEMILLA="$(openssl rand -hex 16)"
+          echo "::add-mask::$CONTRASENA_SEMILLA"
+          echo "CONTRASENA_SEMILLA=$CONTRASENA_SEMILLA" >> "$GITHUB_ENV"
+      - name: Staging con la verificacion completa, y monitoreo (Tabla 57)
+        env:
+          CONSERVAR: 1
+        run: |
+          scripts/staging.sh "$IMAGEN_API" "$IMAGEN_PORTAL"
+          scripts/monitoreo.sh arriba
+      - name: Datos de carga (1 000 alumnos y grupo de 5 lugares) y cpuset
+        run: |
+          sql() { docker exec -i -u postgres sce-db psql -d sce -v ON_ERROR_STOP=1 -At "$@"; }
+          sql < infra/rendimiento/datos-carga.sql | tail -2
+          echo "GRUPO=$(sql -c "SELECT id FROM grupo WHERE clave = 'CARGA-A' AND periodo_clave = '2027A'")" >> "$GITHUB_ENV"
+          docker update --cpuset-cpus "${CPUS_APP//|/,}" sce-api sce-portal sce-proxy >/dev/null
+          docker update --cpuset-cpus "$CPUS_DB" sce-db >/dev/null
+          docker ps -q --filter label=com.docker.compose.project=sce-monitoreo | xargs docker update --cpuset-cpus "$CPUS_GENERADOR" >/dev/null
+          docker ps --format '{{.Names}}' | xargs docker inspect -f '{{.Name}} cpuset={{.HostConfig.CpusetCpus}}'
+          mkdir -p "$SALIDA" && chmod a+rwx "$SALIDA"
+      - name: JMeter (CR-REN-01, 03, 04 y 05), y Lighthouse al terminar CR-REN-01
+        if: inputs.caso != 'CR-REN-02'
+        run: |
+          case "$CASO" in
+            CR-REN-01) perfil='usuarios=300 rampa=300 duracion=1200'
+              texto='Carga: 300 usuarios que llegan en 5 min y 15 min de meseta; lectura intensiva' ;;
+            CR-REN-03) perfil='usuarios=800 rampa=1500 duracion=1800'
+              texto='Estres: de 0 a 800 usuarios en 25 min y 5 min con 800' ;;
+            CR-REN-04) perfil='usuarios=50 rampa=60 pico=350 retraso_pico=300 rampa_pico=60 duracion=900'
+              texto='Pico: 50 usuarios durante 5 min, de 50 a 400 en 1 min y 9 min con 400' ;;
+            CR-REN-05) perfil='usuarios=150 rampa=300 duracion=14700'
+              texto='Resistencia: 150 usuarios (la mitad de la carga) durante 4 h, tras 5 min de llegada' ;;
+          esac
+          curl -sfL -o "$RUNNER_TEMP/jmeter.tgz" "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-$JMETER.tgz"
+          echo "$JMETER_SHA512  $RUNNER_TEMP/jmeter.tgz" | sha512sum -c --quiet
+          tar xzf "$RUNNER_TEMP/jmeter.tgz" -C "$RUNNER_TEMP"
+          # shellcheck disable=SC2086 # el perfil son varias propiedades
+          (umask 077 && printf '%s\n' host=localhost puerto=443 protocolo=https ruta=/api "contrasena=$CONTRASENA_SEMILLA" \
+            "grupo=$GRUPO" $perfil > "$RUNNER_TEMP/jmeter.properties")
+          inicio="$(date +%s)"
+          taskset -c "$CPUS_GENERADOR" "$RUNNER_TEMP/apache-jmeter-$JMETER/bin/jmeter" -n -t infra/rendimiento/sce.jmx \
+            -q "$RUNNER_TEMP/jmeter.properties" -l "$SALIDA/resultados.jtl" -e -o "$SALIDA/informe-jmeter" -j "$SALIDA/jmeter.log"
+          printf '%s\n' "INICIO=$inicio" "FIN=$(date +%s)" "HERRAMIENTA=JMeter $JMETER" "PERFIL=$texto ($perfil)" >> "$GITHUB_ENV"
+          # Despues de la carga y fuera de la ventana de metas: con 4 nucleos no hay uno libre, y Chrome junto a JMeter
+          # satura el del generador (92 a 98 % en las tres corridas de rc.1, que quedaron invalidas) y se estorban entre si.
+          if [ "$CASO" = CR-REN-01 ]; then
+            (set -a && . .staging/ambiente.env && set +a \
+              && PORTAL=https://localhost API=https://localhost/api taskset -c "$CPUS_GENERADOR" scripts/lighthouse.sh "$SALIDA/lighthouse" \
+              > "$SALIDA/lighthouse.txt" 2>&1) || echo "::warning::Lighthouse al terminar la carga no midio o no paso su umbral (lighthouse.txt)"
+          fi
+      - name: k6 (CR-REN-02) y enviadas contra persistidas
+        if: inputs.caso == 'CR-REN-02'
+        run: |
+          inicio="$(date +%s)"
+          set +e
+          CONTRASENA="$CONTRASENA_SEMILLA" docker run --rm --network host --cpuset-cpus "$CPUS_GENERADOR" -e CONTRASENA \
+            -v "$PWD/infra/rendimiento:/r:ro" -v "$PWD/$SALIDA:/salida" "$K6" \
+            run -e URL=https://localhost/api --summary-export /salida/k6.json /r/cr-ren-02.js | tee "$SALIDA/k6.txt"
+          codigo="${PIPESTATUS[0]}"
+          set -e
+          docker exec -i -u postgres sce-db psql -d sce -v ON_ERROR_STOP=1 -v enviadas=300 -At \
+            < infra/rendimiento/cr-ren-02.sql > "$SALIDA/cr-ren-02.txt"
+          printf '%s\n' "INICIO=$inicio" "FIN=$(date +%s)" "K6_SALIDA=$codigo" "HERRAMIENTA=k6 ${K6#*:}" \
+            "PERFIL=Concurrencia: 300 alumnos envian su inscripcion a la vez; 100 por los 5 lugares de CARGA-5" >> "$GITHUB_ENV"
+      - name: Metas de la Tabla 46
+        run: infra/rendimiento/metas.sh "$CASO" "$SALIDA"
+      - name: pgBadger y calidad de datos despues de la carga
+        if: always()
+        run: |
+          scripts/pgbadger.sh "$SALIDA/pgbadger"
+          set -a && . .staging/ambiente.env && set +a
+          scripts/calidad-datos.sh "$SALIDA/calidad-datos"
+      - name: Registro de la corrida (Tabla 48)
+        if: always()
+        run: infra/rendimiento/registro.sh "$SALIDA"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rendimiento-${{ inputs.caso }}-${{ inputs.etiqueta }}-${{ github.run_id }}
+          path: reportes/
+          retention-days: 90

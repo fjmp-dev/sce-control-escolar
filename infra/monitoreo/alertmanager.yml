@@ -1,0 +1,20 @@
+# Destinatarios de la sec. 35: DevOps siempre; el Product Owner, el mismo dia, si afecta inscripcion o pagos. Las
+# direcciones son de prueba (sce.test): en un servidor real se cambian por las institucionales y smarthost por el de la
+# universidad. En staging el correo lo recibe mailpit (http://127.0.0.1:8025).
+global:
+  smtp_smarthost: correo:1025
+  smtp_from: alertas@sce.test
+  smtp_require_tls: false
+route:
+  receiver: devops
+  group_by: [alertname]
+  group_wait: 30s
+  repeat_interval: 4h
+  routes:
+    - matchers: ['area="inscripcion-y-pagos"']
+      receiver: devops-y-po
+receivers:
+  - name: devops
+    email_configs: [{ to: devops@sce.test, send_resolved: true }]
+  - name: devops-y-po
+    email_configs: [{ to: 'devops@sce.test, po@sce.test', send_resolved: true }]

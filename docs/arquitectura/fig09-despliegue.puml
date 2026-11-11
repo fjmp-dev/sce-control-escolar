@@ -1,19 +1,22 @@
 @startuml fig09-despliegue
 ' Figura 9. Diagrama de despliegue UML del ambiente piloto.
-' Fuente: SCE-MC-001 v2.0, seccion 13.7 y Tabla 30.
+' Fuente: SCE-MC-001 v2.0, seccion 13.7 y Tabla 30. Actualizada por CC-020 (pasarela
+' simulada dentro de sce-api, sin Mercado Pago) y CC-022 (piloto de ensayo efimero: los
+' tres nodos son servidores de Docker en un runner de GitHub Actions, con la red de
+' frontera del proxy separada de la red privada de aplicacion y base).
 skinparam shadowing false
 
 node "Navegador del usuario" as CLIENTE {
   artifact "Portal SCE\n(Next.js, build estatico + SSR)" as APP
 }
 
-node "Proxy inverso" as PROXY <<nginx>> {
+node "Proxy inverso (red de frontera)" as PROXY <<nginx>> {
   artifact "Terminacion TLS 1.2+\ny enrutamiento" as TLS
 }
 
 node "Servidor de aplicacion" as APPSRV {
   artifact "sce-portal\n(Next.js)" as NEXT
-  artifact "sce-api\n(NestJS)" as NEST
+  artifact "sce-api\n(NestJS, con la\npasarela simulada)" as NEST
   artifact "healthcheck /salud" as HC
 }
 
@@ -23,27 +26,32 @@ node "Servidor de base de datos" as DBSRV {
 }
 
 node "Monitoreo" as MON {
-  artifact "Metricas y percentil 95" as MET
-  artifact "Alertas de disponibilidad" as ALR
+  artifact "Prometheus y Grafana\n(percentil 95, 5xx y errores de negocio)" as MET
+  artifact "Alertas y sondeo externo\n(blackbox)" as ALR
 }
-
-cloud "Mercado Pago" as MP <<externo>>
 
 CLIENTE -down-> PROXY : HTTPS 443
 PROXY -down-> NEXT : HTTP 3000
 PROXY -down-> NEST : HTTP 3001
 NEXT -right-> NEST : HTTP 3001 (REST, servidor a servidor; CC-014)
 NEST -down-> PG : TCP 5432 (TLS)
-NEST -right-> MP : HTTPS (API y webhook)
-MP -left-> PROXY : HTTPS webhook
-PG -down-> BKP : pg_dump diario
+PG -down-> BKP : pg_dump diario cifrado (age)
 MON -left-> HC : sondeo periodico
-MON -down-> PG : metricas
+MON -left-> NEST : /metricas (solo red privada)
+MON -down-> PG : metricas (postgres-exporter)
 
 note right of DBSRV
   Servidor de aplicacion y servidor
   de base de datos separados.
   RPO menor a 24 h, RTO menor a 4 h.
+  La base solo acepta TLS desde el
+  rango del servidor de aplicacion.
+end note
+
+note right of PROXY
+  CC-022: piloto de ensayo efimero, sin
+  usuarios ni datos (tabla usuario vacia),
+  con secretos propios del ambiente piloto.
 end note
 
 note bottom of MON

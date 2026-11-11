@@ -1,0 +1,58 @@
+# ZAP completo (plan 12.2; Tablas 42 y 49): el portal con sesión de cada rol (zap-portal.sh, full scan), el acceso de un
+# alumno a lo de otro (zap-acceso-cruzado.sh, CS-SEG-03) y la API con los siete roles (zap.sh, CS-SEG-05). Lo que no cabe
+# en cada pull request: corre a mano, cada semana y con cada etiqueta. El tratamiento de cada alerta queda en
+# docs/calidad/informe-zap.md; los reportes, como artefacto.
+name: ZAP completo
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1' # lunes 03:00 en la Ciudad de México
+  push:
+    tags: ['v*'] # candidatas y versiones (plan 12.2)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zap-completo-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  zap:
+    name: ZAP completo - portal, acceso cruzado y API
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Levantar PostgreSQL 16, la API y el portal con datos sinteticos
+        run: docker compose up -d --build --wait --wait-timeout 300
+      - name: Humo - salud e inicio de sesion con los siete roles (Anexo D)
+        run: scripts/humo.sh
+      - name: OWASP ZAP - portal con la sesion de cada rol (full scan)
+        run: scripts/zap-portal.sh reportes/zap-portal
+      # La regla de DOM XSS opera el portal con cada rol (periodos, tramites, altas) y puede bloquear una cuenta: la API
+      # se escanea sobre una semilla nueva, en el mismo orden que la etapa 5 de ci.yml.
+      - name: Ambiente nuevo para la API
+        if: always()
+        run: |
+          docker compose down -v
+          docker compose up -d --wait --wait-timeout 300
+      - name: OWASP ZAP - CS-SEG-03, un alumno contra lo de otro
+        if: always()
+        run: scripts/zap-acceso-cruzado.sh reportes/zap-acceso-cruzado
+      - name: OWASP ZAP - CS-SEG-05, la API con los siete roles y calidad de datos despues
+        if: always()
+        run: scripts/zap.sh reportes/zap
+      - if: failure()
+        run: docker compose logs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-completo
+          path: |
+            reportes/zap-portal/
+            reportes/zap-acceso-cruzado/
+            reportes/zap/
+          if-no-files-found: ignore
+          retention-days: 90

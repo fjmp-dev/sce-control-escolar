@@ -1,7 +1,7 @@
 # Registro de no conformidades y acciones correctivas — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 40 (clasificación en la Tabla 61; ciclo en la 40.2).
-**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 10 de noviembre de 2026 (sub-batch 11.3: NC-016 a NC-018, de la autoauditoría del cierre de la fase 4).
+**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batch 13.6: seguimiento de NC-014 a NC-018, y NC-019 a NC-021, de la autoauditoría "Antes del piloto"; sub-batch 14.1: NC-022).
 
 Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001 y al contrastar el repositorio contra el manual completo. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
 
@@ -26,11 +26,15 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-011 | Mayor | Batch 9 (fase 4) iniciado sin el acta de la fase 3 firmada y sin registrar antes la decisión | AU-07 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
 | NC-012 | Mayor | Sin separación de funciones desde el 10 de noviembre: FJMP produce, aprueba, verifica y firma | AU-04, AU-11, AU-36 | FJMP | 11 de diciembre de 2026 | Abierta; no se cierra sin una segunda persona | FJMP (PO), 10 de noviembre de 2026 |
 | NC-013 | Mayor | Auditorías internas de la Tabla 60 sin auditor independiente | AU-40 | FJMP | 11 de diciembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
-| NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Abierta con plan | No aplica: Menor |
-| NC-015 | Menor | Ramas y etiquetas fuera de la Tabla 31 y de 15.2: fases 1 a 3 sin `release/x.y.z` ni fusión a `main`, y correcciones en `feature/` | AU-09 | FJMP | No se corrige: se declara en cada acta | Abierta; desviación declarada | No aplica: Menor |
-| NC-016 | Menor | Issues de batch sin puntos de historia: la densidad de defectos no se pudo calcular al cerrar las fases 1 a 3 | AU-39, AU-43 | FJMP | Antes del sub-batch 12.1 | Corregida en 11.3, con estimación posterior a la construcción; falta la acción preventiva | No aplica: Menor |
-| NC-017 | Menor | Análisis de riesgos de la fase 4 fuera de tiempo: AMFE de pagos hecho después de construir y STRIDE sin pagos, caja, trámites ni reportes | AU-37 | FJMP | Sub-batch 12.2 | Abierta con plan. AMFE hecho en 11.3 | No aplica: Menor |
-| NC-018 | Menor | Sin conciliación de pagos (CD-DAT-03) ni medición del reflejo (CD-DAT-06) al cierre de la fase 4 | AU-24, AU-39 | FJMP | Sub-batch 12.1 | Abierta con plan | No aplica: Menor |
+| NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Acción eficaz según la autoverificación (NC-012) del 11 de noviembre de 2026; la cierra el auditor | No aplica: Menor |
+| NC-015 | Menor | Ramas y etiquetas fuera de la Tabla 31 y de 15.2: fases 1 a 3 sin `release/x.y.z` ni fusión a `main`, y correcciones en `feature/` | AU-09 | FJMP | No se corrige: se declara en cada acta | Abierta; desviación declarada. `v0.4.0` y `v1.0.0` ya salen de su rama de release fusionada a `main` (14.1); quedan fuera de la Tabla 31 las fases 1 a 3 | No aplica: Menor |
+| NC-016 | Menor | Issues de batch sin puntos de historia: la densidad de defectos no se pudo calcular al cerrar las fases 1 a 3 | AU-39, AU-43 | FJMP | Antes del primer commit del Batch 14 (#77) | Reabierta el 11 de noviembre de 2026: la acción preventiva no fue eficaz (#75 y #76 sin puntos antes de su primer commit) | No aplica: Menor |
+| NC-017 | Menor | Análisis de riesgos de la fase 4 fuera de tiempo: AMFE de pagos hecho después de construir y STRIDE sin pagos, caja, trámites ni reportes | AU-37 | FJMP | Sub-batch 12.2 | Corregida en 12.2 (`stride.md` v1.7 y MJ-006 en la plantilla de PR); pendiente de verificación: desde entonces ningún PR toca dinero, cupos ni calificaciones | No aplica: Menor |
+| NC-018 | Menor | Sin conciliación de pagos (CD-DAT-03) ni medición del reflejo (CD-DAT-06) al cierre de la fase 4 | AU-24, AU-39 | FJMP | Sub-batch 12.1 | Acción eficaz según la autoverificación (NC-012) del 11 de noviembre de 2026; la cierra el auditor | No aplica: Menor |
+| NC-019 | Mayor | Criterio 7 de liberación (36.1) incumplido: no hay credenciales de pago del piloto, porque la pasarela es simulada | AU-24, AU-33 | FJMP | 11 de diciembre de 2026 (solicitud a la institución) | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
+| NC-020 | Mayor | RNF-USU-002 y RNF-USU-001 (Must) sin la evaluación con personas: ni revisión con lector de pantalla (CO-ACC-03) ni SUS | AU-18, AU-32 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
+| NC-021 | Mayor | `v1.0.0` va al piloto de ensayo con la puerta 4 incumplida: el acta de la fase 4 no está firmada | AU-07, AU-33 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
+| NC-022 | Menor | `v1.0.0` va al piloto de ensayo sin el ensayo de rollback en staging que pide la puerta 6; solo hay ensayo local | AU-33, AU-34 | FJMP | 20 de noviembre de 2026 | Abierta con plan | No aplica: Menor |
 
 **Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
 
@@ -246,6 +250,8 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** redibujar las figuras 1, 2, 3, 5, 9 y 10 con la pasarela simulada en el sub-batch 13.1, antes del corte de `release/1.0.0` (13.6). Responsable: FJMP.
 - **Acción preventiva:** el PR de un CC que cambia la arquitectura incluye sus figuras; si no, no se fusiona (regla 5).
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que ninguna figura de `release/1.0.0` muestre a Mercado Pago.
+- **Seguimiento del 11 de noviembre de 2026 (13.1, #76):** las figuras 1, 2, 3, 5, 9 y 10 se redibujaron con la pasarela simulada (CC-020) y el piloto de ensayo (CC-022), con sus PNG en `docs/arquitectura/render/`. `grep -l "Mercado" docs/arquitectura/*.puml` solo encuentra comentarios que dicen que ya no está. La verificación de eficacia queda para el corte de `release/1.0.0`.
+- **Verificación de eficacia, 11 de noviembre de 2026 (13.6; autoverificación, NC-012):** en `8e26059` (`v1.0.0-rc.1`), `git grep -n Mercado -- 'docs/arquitectura/*.puml'` da tres líneas (figuras 1, 5 y 9), las tres comentarios que dicen que la pasarela es simulada y que Mercado Pago ya no está. Ninguna figura dice checkout, webhook ni sandbox. La acción fue eficaz; la NC la cierra el auditor (`auditoria-antes-del-piloto.md`).
 
 ## NC-015 — Ramas y etiquetas fuera de la Tabla 31 y de la sección 15.2
 
@@ -259,6 +265,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** no se corrige. Se declara en las actas de las fases 1 a 3 (11.3) y en el acta de promoción de `v0.4.0` (11.4).
 - **Acción preventiva:** desde `v0.4.0`, cada versión sale de su `release/x.y.z` fusionada a `main`.
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que `v0.4.0` y `v1.0.0` salgan de su rama de release fusionada a `main`.
+- **Seguimiento, 11 de noviembre de 2026 (13.6):** `v0.4.0` está en `release/0.4.0`, que se fusionó a `main` con el PR #85 (`94bc323`). `v1.0.0` cae en `8e26059`, de `release/1.0.0`; su fusión a `main` es parte del Batch 14. Las correcciones de `release/1.0.0` siguen en ramas `feature/76-…`, no `fix/`: la desviación sigue declarada.
 
 ## NC-016 — Issues de batch sin puntos de historia
 
@@ -276,6 +283,13 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** hecha en 11.3.
 - **Acción preventiva:** #75, #76 y #77 llevan sus puntos antes del primer commit de su trabajo (MJ-005). Un "Sin dato" en el tablero abre una NC o una acción con fecha.
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que #75 a #77 tengan la línea antes del primer commit de 12.1.
+- **Seguimiento, 11 de noviembre de 2026 (13.6; autoverificación, NC-012): la acción preventiva no fue eficaz y la NC se reabre.**
+  - #75 (Batch 12, primer commit `01d20e8` del 10 de noviembre) y #76 (Batch 13, primer commit `c32a2e3` del 11 de noviembre) no tenían la línea "Puntos de historia" cuando empezó su trabajo. La falta se vio al preparar la auditoría "Antes del piloto".
+  - Se estimaron ese día con el criterio de `informe-fase-4.md` (apartado 2.1), después de construir, y así se marcan en cada issue: #75 = 21 (Playwright, accesibilidad, ZAP completo, Anexo A, matrices y Parte B en un solo issue) y #76 = 21 (piloto de ensayo, continuidad, monitoreo, seguridad operativa, rendimiento y candidato en un solo issue). Los dos debieron dividirse (MJ-007).
+  - #77 (Batch 14) se estimó en 8 antes de su primer commit: liberación con el primer despliegue al environment `piloto`, más el paquete documental de la fase 5.
+  - **Causa:** la acción preventiva dependía de que alguien se acordara. Nada la pedía en el flujo de trabajo, y no hubo revisor (NC-012).
+  - **Nueva acción preventiva:** la plantilla de PR pide marcar que el issue tiene sus puntos, estimados antes del primer commit (MJ-005). Un PR sin esa casilla no se fusiona.
+  - **Nueva verificación de eficacia:** el auditor, o FJMP como autoverificación, revisa los PR del Batch 14.
 
 ## NC-017 — Análisis de riesgos de la fase 4 fuera de tiempo
 
@@ -295,6 +309,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** STRIDE v1.7 con pagos, caja, trámites y reportes (sub-batch 12.2, como ya lo prevé el plan). Acciones del AMFE en 12.1.
 - **Acción preventiva:** el PR de un batch que toque dinero, cupos o calificaciones enlaza su AMFE y sus filas STRIDE; si no, no se fusiona (MJ-006).
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), revisa el PR de 12.2.
+- **Ejecución, 11 de noviembre de 2026 (sub-batch 12.2, PR del Batch 12):** `stride.md` v1.7 agrega pagos, caja, trámites y reportes, y cierra la fila A04 del apartado de controles. La plantilla de PR pide el modo del AMFE y la fila STRIDE de todo cambio que toque dinero, cupos o calificaciones (MJ-006). Queda la verificación de eficacia: el primer PR de esa clase después de este debe traer ambas referencias.
 
 ## NC-018 — Sin conciliación de pagos ni medición del reflejo al cierre de la fase 4
 
@@ -312,3 +327,85 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** en 12.1, `cd-dat-03.sql` (saldo contra movimientos, pago contra abono y corte contra abonos del día UTC-6) y `cd-dat-06.sql` con CC-011, con Great Expectations que no pase en vacío y su prueba de detección. Responsable: FJMP.
 - **Acción preventiva:** la lista de QA del cierre de fase revisa que existan los CD-DAT de la fase (`informe-fase-4.md`, apartado 9).
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), corre las dos consultas en la etapa 4 de la corrida de `release/1.0.0` y comprueba que detectan una diferencia sembrada.
+- **Verificación de eficacia, 11 de noviembre de 2026 (13.6; autoverificación, NC-012):** la corrida [43022020442](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43022020442) sobre `8e26059` (`v1.0.0-rc.1`) pasó la etapa 4.
+  - `api/test/integracion/datos.spec.ts` siembra diferencias y comprueba que se detectan. CD-DAT-03 encuentra un saldo que no cuadra, un pago aplicado sin abono, el abono de un pago rechazado y un corte del día que no cuadra. CD-DAT-06 encuentra un pago aplicado sin fecha de confirmación y un percentil 95 de 60 s, pero no uno de 59 s.
+  - Great Expectations corre las dos consultas sobre la base de integración: 33 de 33 expectativas en verde, CD-DAT-03 y CD-DAT-06 con 0 filas (`docs/evidencias/v1.0.0/reportes/calidad-datos.zip`, `resumen.json`).
+  - La acción fue eficaz; la NC la cierra el auditor. La métrica 8 de la Tabla 59 ya se puede calcular, pero con la pasarela simulada solo concilia el sistema contra sí mismo (NC-019).
+
+## NC-019 — Criterio 7 de liberación incumplido: sin credenciales de pago del piloto
+
+- **Fuente:** acta de liberación de `v1.0.0` (criterio 7 de 36.1) y autoauditoría "Antes del piloto" (`auditoria-antes-del-piloto.md`), 11 de noviembre de 2026.
+- **Descripción:** el criterio 7 de 36.1 pide "credenciales de pago del piloto configuradas y verificadas, distintas de las de sandbox". La pasarela es simulada (CC-020): no hay cuenta de pasarela, ni sandbox, ni credenciales que configurar. La etapa 8 verifica los secretos propios del piloto (JWT, semilla y CA), no los de una pasarela.
+- **Severidad:** Mayor. Incumple un criterio de liberación del manual que protege a RF-006, que es Must. Con usuarios reales, el piloto no podría cobrar.
+- **Evidencia:** `docs/gobierno/actas/acta-liberacion-v1.0.0.md`, criterio 7; `docs/gobierno/cambios/CC-020.md`; `.github/workflows/staging.yml`, paso "Secretos propios del piloto"; `matriz-riesgos.md`, RK-15.
+- **Causa (cinco porqués):**
+  1. ¿Por qué no hay credenciales de pago del piloto? No hay pasarela real.
+  2. ¿Por qué? CC-020 sustituyó a Mercado Pago por una pasarela simulada.
+  3. ¿Por qué? No hubo cuenta sandbox de Mercado Pago, prerrequisito del Batch 9 (`plan-de-sistema.md`, apartado 8).
+  4. ¿Por qué? El convenio con una pasarela lo firma la institución, y el proyecto no tiene una institución que lo firme.
+  5. ¿Por qué se libera de todos modos? `v1.0.0` va a un piloto de ensayo sin usuarios (CC-022), y el riesgo ya estaba aceptado (RK-15).
+- **Contención:** el piloto de ensayo corre con `SEMILLA=0` y sin usuarios. Nadie puede iniciar un pago ahí. Las notas de versión y el acta de liberación declaran que el pago es simulado.
+- **Acción correctiva:** pedir a la institución el convenio con una pasarela y sus credenciales, a más tardar el 11 de diciembre de 2026. Con ellas: un CC que reemplace la pasarela simulada, CI-PAG-01 contra el sandbox y la verificación de las credenciales del piloto en la etapa 8. Responsable: FJMP.
+- **Acción preventiva:** ningún usuario real entra a un piloto mientras esta NC siga abierta. El acta de liberación de una versión con usuarios reales debe traer el criterio 7 en "Cumple".
+- **Verificación de eficacia:** el auditor revisa el criterio 7 en el acta de la primera versión con usuarios reales.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
+
+## NC-020 — Accesibilidad y usabilidad Must sin la evaluación con personas
+
+- **Fuente:** autoauditoría "Antes del piloto" (`auditoria-antes-del-piloto.md`) y revisión del Anexo A (`anexo-a.md`), 11 de noviembre de 2026.
+- **Descripción:** dos criterios Must piden evaluar con personas, y ninguno se hizo.
+  - **RNF-USU-002** (CC-021) pide, con CO-ACC-03, una "revisión manual firmada con lector de pantalla (28.2)".
+  - **RNF-USU-001**, según la fila de capacidad de interacción del Anexo A, pide "SUS mayor o igual a 70" con sesiones de usabilidad (Anexo G). El plan las pone en staging, antes de promover, con cinco participantes por rol.
+  - Las pruebas automáticas pasan (axe y Lighthouse sin violaciones serias ni críticas, teclado en Playwright, CF-INS-02 en Cypress), pero no sustituyen la revisión con lector de pantalla ni el cuestionario.
+- **Severidad:** Mayor. Incumple el criterio de aceptación de dos requisitos Must, que la Tabla 61 clasifica así aunque los criterios automáticos se cumplan.
+- **Evidencia:** `catalogo-requisitos.md`, filas RNF-USU-001 y RNF-USU-002; `anexo-a.md`, filas de capacidad de interacción y accesibilidad ("SUS sin aplicar"); `docs/anexos/anexo-G-usabilidad-y-sus.md`; ausencia de hojas de observación y de un acta de revisión con lector de pantalla en `docs/evidencias/`.
+- **Causa (cinco porqués):**
+  1. ¿Por qué no hay SUS ni revisión con lector de pantalla? Necesitan personas: cinco participantes por rol y un revisor que use VoiceOver o NVDA.
+  2. ¿Por qué no se consiguieron? Desde el 10 de noviembre de 2026 el equipo es una sola persona (NC-012), y el proyecto no tiene usuarios de una facultad.
+  3. ¿Por qué FJMP no hizo al menos la revisión con VoiceOver? Se dejó para el final del Batch 13, junto con el SUS, y la promoción del candidato llegó primero.
+  4. ¿Por qué se promovió de todos modos? El plan pone la usabilidad "antes de promover", pero la etapa 8 no la exige como puerta.
+  5. ¿Por qué? Las puertas de 20.1 no nombran la usabilidad. Solo la piden 8.4 (Anexo A) y el plan.
+- **Contención:** el piloto de ensayo no tiene usuarios. El acta de liberación y el Anexo A declaran que faltan SUS y CO-ACC-03.
+- **Acción correctiva:**
+  - FJMP hace la revisión con VoiceOver de los flujos críticos (ingreso, inscripción, pago, horario y calificaciones, y trámites) con la hoja de CO-ACC-03, y la firma, a más tardar el 20 de noviembre de 2026.
+  - FJMP pide a la institución participantes para las sesiones SUS del Anexo G, también a más tardar el 20 de noviembre de 2026.
+  - Las sesiones se hacen cuando haya participantes. Hasta entonces, la fila sigue "Cumple en parte".
+- **Acción preventiva:** el acta de liberación de una versión con usuarios reales trae la fila de usabilidad del Anexo A con SUS medido. Sin eso no se libera.
+- **Verificación de eficacia:** el auditor revisa el acta firmada de CO-ACC-03 y el informe SUS del Anexo G.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
+
+## NC-021 — Liberación al piloto de ensayo con la puerta 4 incumplida
+
+- **Fuente:** autoauditoría "Antes del piloto" (`auditoria-antes-del-piloto.md`, hallazgo H-04), 11 de noviembre de 2026.
+- **Descripción:** la puerta 4 de 20.1 y el criterio 5 de 36.1 piden el "acta de aceptación de la fase firmada por Product Owner y QA". ACT-F4-001 está lista para firma desde el 10 de noviembre de 2026 y no está firmada. Antes de firmarla deben firmarse ACT-F0-001 a ACT-F3-001, que tampoco lo están. `v1.0.0` se despliega al piloto de ensayo sin esa firma.
+- **Severidad:** Mayor. Incumple una puerta de promoción (AU-33) y el criterio de actas por fase (AU-07).
+- **Evidencia:** `docs/gobierno/actas/acta-aceptacion-fase-4.md` ("Estado: lista para firma"); `acta-liberacion-v1.0.0.md`, puerta 4 y criterio 5.
+- **Causa (cinco porqués):**
+  1. ¿Por qué el acta no está firmada? Solo FJMP puede firmarla, y aún no lo ha hecho.
+  2. ¿Por qué? Las actas de las fases 0 a 4 se prepararon juntas el 10 de noviembre (11.3), y deben firmarse en orden.
+  3. ¿Por qué no se esperó la firma para liberar? FJMP autorizó el 11 de noviembre terminar el Batch 14 completo, y la firma no quedó como condición previa del despliegue.
+  4. ¿Por qué la etapa 8 no lo impidió? Comprueba que exista el acta de liberación y busca las puertas 1 y 2 por API. Una firma no se puede comprobar desde CI.
+  5. ¿Por qué? El repositorio no tiene un registro de firmas verificable, y con una sola persona nadie más lo exige (NC-012).
+- **Contención:** el piloto de ensayo no tiene usuarios ni datos. El acta de liberación registra la puerta 4 como "No cumple".
+- **Acción correctiva:** FJMP firma ACT-F0-001 a ACT-F4-001, en ese orden, a más tardar el 20 de noviembre de 2026. Después firma el acta de liberación.
+- **Acción preventiva:** una liberación con usuarios reales empieza solo con las actas de fase firmadas. Su acta de liberación cita la fecha de firma de cada una.
+- **Verificación de eficacia:** el auditor revisa las firmas y sus fechas.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
+
+## NC-022 — Rollback de `v1.0.0` sin ensayo en staging
+
+- **Fuente:** sub-batch 14.1, al liberar `v1.0.0`, 11 de noviembre de 2026.
+- **Descripción:** la puerta 6 de 20.1 pide "procedimiento de rollback probado". El plan era ensayarlo en la etapa 8, en staging, desplegando `v1.0.0-rc.2` y volviendo a `rc.1`. `rc.2` no se etiquetó y ese ensayo no se hizo. El rollback solo se ensayó en local, con las etiquetas `v9.9.9-rc.1` y `rc.2`: volvió en 25 s (`docs/evidencias/ensayos/2026-11-11-restauracion-y-rollback.md`). `v1.0.0` se despliega al piloto de ensayo con esa evidencia.
+- **Severidad:** Menor, por decisión del Product Owner. El procedimiento existe y funcionó en local; lo que falta es probarlo en el ambiente de la etapa 8. Si se aplica el criterio de NC-021 (una puerta incumplida es Mayor), sería Mayor. Queda a revisión de FJMP y del auditor.
+- **Evidencia:** `acta-promocion-v1.0.0-rc.2.md` ("no se ejecutó"); `auditoria-antes-del-piloto.md`, puerta 6; `acta-liberacion-v1.0.0.md`, puerta 6 y criterio 6.
+- **Causa (cinco porqués):**
+  1. ¿Por qué no hubo ensayo en staging? `rc.2` no se etiquetó.
+  2. ¿Por qué? El 11 de noviembre, hacia las 17:30 UTC, el Product Owner decidió liberar sin `rc.2` tras unas 4 h con el PR #106 bloqueado.
+  3. ¿Por qué estuvo bloqueado? La etapa 7 falló cinco veces: el DNS de los runners de GitHub no resolvía los espejos de Ubuntu al instalar los navegadores de Playwright. GitHub no reportó incidente.
+  4. ¿Por qué eso impide ensayar el rollback? El ensayo solo existe en la etapa 8 con una segunda candidata, y esa candidata debe pasar antes la etapa 7, que instala desde la red.
+  5. ¿Por qué depende de la red? No hay caché ni imagen propia con los navegadores y sus dependencias.
+- **Contención:** el piloto de ensayo no tiene usuarios ni datos. El procedimiento de rollback está escrito en `inventario-de-ambientes.md`, apartado 6, y se ensayó en local.
+- **Acción correctiva:** ensayar el rollback en la etapa 8 con la siguiente candidata, de ella a `v1.0.0`, a más tardar el 20 de noviembre de 2026 y antes de cualquier liberación con usuarios. Se registra en `docs/evidencias/ensayos/`.
+- **Acción preventiva:** `scripts/navegadores.sh` instala los navegadores con resolvedores públicos, tiempos de espera y reintento (PR #106). Queda pendiente guardar los navegadores en caché para no depender de la red.
+- **Verificación de eficacia:** el auditor revisa la corrida de la etapa 8 con el rollback y su tiempo.
+- **Registro:** lo registró el asistente de IA por instrucción de FJMP del 11 de noviembre de 2026 ("ya entreguemos el sistema"). FJMP lo confirma al firmar el acta de liberación.

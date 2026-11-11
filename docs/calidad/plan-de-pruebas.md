@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Código | PP-SCE-001 |
-| Versión | 1.9 — borrador para aceptación |
-| Fecha | 10 de noviembre de 2026, Batch 8 (v1.8: Batch 7; v1.7: Batch 6; v1.6: Batch 5; v1.5: Batch 4; v1.4: Batch 3; v1.3: Batch 2; v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
+| Versión | 2.0 — borrador para aceptación |
+| Fecha | 11 de noviembre de 2026, Batch 13 y sub-batches 12.2 y 12.5 (v1.9: Batch 8; v1.8: Batch 7; v1.7: Batch 6; v1.6: Batch 5; v1.5: Batch 4; v1.4: Batch 3; v1.3: Batch 2; v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
 | Manual de referencia | SCE-MC-001 v2.0, secciones 10, 19, 21 a 28 y Anexo H |
 | Norma | ISO/IEC/IEEE 29119-3:2021 (estructura del plan) y 29119-4:2021 (técnicas) |
 | Autor | FJMP |
@@ -65,6 +65,14 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 
 **Distribución objetivo:** 70 % unitarias, 20 % integración, 10 % extremo a extremo (Tabla 40). En la fase 1 casi todo es integración, porque lo que existe es la frontera API–base de datos.
 
+**Regla de conteo (sub-batch 12.1).** La forma se mide con dos conteos por nivel, y ninguno detiene el pipeline: `scripts/piramide.sh` los escribe en el resumen de la corrida de la etapa 7 y solo avisa si no hay 70 % o más de unitarias y 10 % o menos de extremo a extremo (la integración es el resto).
+
+- **Por caso:** cada prueba que corrió, aprobada o fallida; las omitidas y pendientes no cuentan. Sale del JSON de Jest (`--json`) y de Vitest, que suben con `cobertura-unitarias`, `cobertura-portal` y `cobertura-integracion`, y del JUnit de Cypress.
+- **Por archivo:** cada archivo de pruebas con al menos un caso. Compensa que un archivo de integración agrupa decenas de casos, mientras que un spec de Cypress recorre un flujo completo con pocos.
+- **Nivel por herramienta:** Jest en `api/test/unitarias/` y Vitest son unitarias; Jest con Supertest y Testcontainers en `api/test/integracion/`, integración; Cypress, extremo a extremo. Newman, ZAP, Great Expectations, axe y Lighthouse no cuentan: verifican contrato, seguridad, datos y accesibilidad, no son casos de la pirámide.
+
+Medición local del sub-batch 12.1: por caso, 37.9 % unitarias, 57.9 % integración y 4.2 % extremo a extremo (368, 563 y 41 casos); por archivo, 46.9 %, 30.6 % y 22.4 % (23, 15 y 11 archivos). Ninguno de los dos conteos cumple la forma: faltan unitarias.
+
 ---
 
 ## 4. Herramientas
@@ -77,19 +85,19 @@ El orden y la profundidad de la prueba siguen la matriz de riesgos (sección 17.
 | Secretos | Gitleaks | 8 | 8.30 | **En uso** en CI, sobre todas las ramas y todo el historial |
 | Secretos en el envío | Escaneo de secretos de GitHub con protección de envío | — | — | **Activo** |
 | Auditoría de base de datos | pgAudit | — | 16.1 (paquete `postgresql-16-pgaudit`) | **Activo en staging** (`infra/staging/db/`), con SCRAM y conexiones solo por TLS (CC-005). La etapa 7 lo ensaya en cada corrida y comprueba que registra el DDL de las migraciones. Compose de desarrollo no lo activa. `db/pgaudit.sql` solo había corrido en PostgreSQL 18: en la versión 16 del manual fallaba, y se corrigió |
-| Calidad de datos | Consultas SQL de verificación y Great Expectations | 0.18 | Great Expectations 1.24 | **En uso** en la etapa 4, con Data Docs en HTML (`scripts/calidad-datos.sh`): CD-DAT-01 y 04, completitud y formato del expediente, CS-SEG-06 en plantel, calificación, pago y constancia, y la tasa de conclusión de inscripción de la Tabla 59, con cero inscripciones sin estado |
+| Calidad de datos | Consultas SQL de verificación y Great Expectations | 0.18 | Great Expectations 1.24 | **En uso** en la etapa 4, con Data Docs en HTML (`scripts/calidad-datos.sh`): CD-DAT-01 y 04, completitud y formato del expediente, CS-SEG-06 en plantel, calificación, pago y constancia, y la tasa de conclusión de inscripción de la Tabla 59, con cero inscripciones sin estado. Desde el sub-batch 12.1, también CD-DAT-03 y 06, trámites y documentos, formatos de D-11 e importes, cada expectativa con su atributo de ISO/IEC 25012 (Tabla 16); y en cada staging, contra su base por TLS |
 | Contratos de API | Postman y Newman | Newman 6 | Newman 6.1.3 | **En uso** en la etapa 4, contra Compose, con reporte HTML (`scripts/newman.sh`) |
 | Extremo a extremo | Cypress | 13 | Cypress 16 | **En uso** en la etapa 7, con video y capturas (`scripts/cypress.sh`) |
 | Unitarias de frontend | Vitest y React Testing Library | Vitest 1.x | Vitest 5, React Testing Library 16 | **En uso** en la etapa 3 |
-| Compatibilidad | Playwright | 1.4x | Vigente | Batch 12 |
-| Rendimiento | JMeter y k6 | 5.6 / 0.5x | Vigente | Batch 13, en staging; después en el servidor del piloto |
-| Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
+| Compatibilidad | Playwright | 1.4x | Playwright 1.65.0 | **En uso** en las etapas 7 y 8: CO-COM-01, matriz de la Tabla 50 (ver 4.6) |
+| Rendimiento | JMeter y k6 | 5.6 / 0.5x | JMeter 5.6.3, k6 1.6.0; Prometheus, Grafana y pgBadger para los recursos | **En uso** desde el Batch 13: humo k6 con umbrales en las etapas 7 y 8 (`infra/rendimiento/humo.js`), y CR-REN-01 a 05 con `rendimiento.yml` sobre cada candidata, en staging con dimensionamiento de referencia (`informe-rendimiento.md`). Después, en el servidor del piloto |
+| Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10.14 en la API y 9.39 en el portal, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso.** En la API, además, las fronteras de la Fig. 2 con `no-restricted-imports` (CO-MAN-02, CC-021) |
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
-| Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
-| Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). En staging, escaneo pasivo del portal sobre HTTPS en cada despliegue (`scripts/verificar-staging.sh`); el activo se queda en la etapa 5, sobre el mismo digest |
+| Seguridad de imágenes | Trivy | 0.5x | `aquasecurity/trivy-action` 0.36.0 | **En uso** en CI: imagen y repositorio, ambos bloquean |
+| Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI: con los siete roles (`scripts/zap.sh`) y el acceso cruzado entre alumnos (`scripts/zap-acceso-cruzado.sh`). El escaneo completo del portal con cada rol (`scripts/zap-portal.sh`) corre a mano, cada semana y con cada etiqueta candidata (`zap-completo.yml`). Alertas y decisiones: `docs/calidad/informe-zap.md`. En staging, escaneo pasivo del portal sobre HTTPS en cada despliegue (`scripts/verificar-staging.sh`); el activo se queda en la etapa 5, sobre el mismo digest |
 | Cifrado en tránsito | testssl.sh | — | 3.2 | **En uso** en cada staging, de la etapa 7 y de la 8: ningún protocolo anterior a TLS 1.2 (Tabla 38) |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
-| Accesibilidad | axe y Lighthouse | 4 / 11 | axe-core 4.14, Lighthouse 13.6 | **En uso** en la etapa 7 (`docs/calidad/accesibilidad.md`). NVDA: Batch 12 |
+| Accesibilidad | axe y Lighthouse | 4 / 11 | axe-core 4.14, Lighthouse 13.6 | **En uso** en la etapa 7 (`docs/calidad/accesibilidad.md`): axe en el inicio de los siete roles y Lighthouse en 21 páginas desde 12.4, con revisión manual de WCAG 2.2 AA. NVDA, fuera de alcance; VoiceOver, pendiente (apartado 6 de ese documento) |
 | Casos y defectos | GitHub Issues | Integrado | — | **En uso** (etiquetas `defecto` y `sev-*`) |
 
 ### 4.1 Etapas del pipeline
@@ -99,13 +107,15 @@ Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de av
 | Etapa | Contenido | Criterio de avance | Reporte como artefacto | Desde |
 |---|---|---|---|---|
 | 1 Construcción | Compilación de TypeScript de NestJS y Next.js; los tipos del portal deben coincidir con el OpenAPI | Sin errores | Registro de la ejecución | Batch 1; Next.js en el Batch 3 |
-| 2 Análisis estático | ESLint en API y portal, Prettier, Commitlint y Gitleaks; cobertura de reglas Must con `scripts/reglas-must.sh` (Tabla 59, CO-MAN-01) | Cero errores y cero secretos; 100 % de reglas Must con su ID en el título de una prueba que corre | `gitleaks`, `reglas-must` | Batch 1; reglas Must en el sub-batch 11.2 |
+| 2 Análisis estático | ESLint en API y portal, Prettier, Commitlint y Gitleaks; cobertura de reglas Must con `scripts/reglas-must.sh` (Tabla 59, CO-MAN-01); fronteras de la Fig. 2 con `scripts/co-man-02.sh` (CO-MAN-02) | Cero errores y cero secretos; cada violación de prueba de CO-MAN-02 detectada; 100 % de reglas Must con su ID en el título de una prueba que corre | `gitleaks`, `reglas-must` | Batch 1; reglas Must en el sub-batch 11.2 |
 | 3 Pruebas unitarias | Jest y Vitest con cobertura | Al menos 80 % de líneas en `src/**/dominio/**`; Jest falla si no se alcanza | `cobertura-unitarias`, `cobertura-portal` | Batch 2; Vitest en el Batch 3 |
-| 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30); **Great Expectations** sobre la base de Compose después de Newman (Tabla 42) | Casos CI Must en verde y cero expectativas incumplidas | `cobertura-integracion`, `newman`, `calidad-datos` | Batch 1; Newman en el Batch 2; Great Expectations en el Batch 4 |
-| 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx y base intacta | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2 |
+| 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30); **Great Expectations** sobre la base de Compose después de Newman (Tabla 42), con CD-DAT-01 a 06 y la Tabla 16; muestreo de bitácora y revisión de accesos (`muestreo-bitacora.sql` y `accesos.sql`), como evidencia sin criterio | Casos CI Must en verde y cero expectativas incumplidas | `cobertura-integracion`, `newman`, `calidad-datos` (con el muestreo y los accesos) | Batch 1; Newman en el Batch 2; Great Expectations en el Batch 4; muestreo y accesos en el sub-batch 12.1 |
+| 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30): CS-SEG-03 y CS-SEG-05 | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx, ninguna operación que solo reciba 401 o 403, ningún 2xx de un alumno sobre lo de otro, y la calidad de datos completa en verde después del escaneo | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2; siete roles y acceso cruzado en el sub-batch 12.2 |
 | 6 Empaquetado | Imágenes `sce-api` y `sce-portal`, registradas en GHCR y firmadas con cosign, sin llaves (`scripts/publicar-imagenes.sh`). **Solo al integrar;** en un pull request se omite | Firma verificada | `imagenes` | Batch 3 |
-| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe y Lighthouse. Desde el Batch 6, también **staging efímero** con las mismas imágenes (`scripts/staging.sh`, CC-018). En un pull request, lo mismo con imágenes construidas ahí. **k6** con umbrales en el Batch 13 (Tabla 48) | Humo en verde | `despliegue-pruebas`: registro, video, capturas e informes | Batch 3 |
-| 8 Staging y piloto | Manual (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra. Arma staging efímero en el runner (CC-018), despliega por digest las imágenes firmadas por la etapa 6, corre el humo del Anexo D y lo destruye | Autorización de PO y QA: regla de revisores del ambiente `staging`, sin autoaprobación | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
+| 7 Despliegue a pruebas | Automático al fusionar en `develop`: verifica la firma, despliega las imágenes registradas sobre base efímera, y ejecuta humo, **Cypress**, axe, Lighthouse y, desde el Batch 12, **Playwright** (CO-COM-01, ver 4.6). Desde el Batch 6, también **staging efímero** con las mismas imágenes (`scripts/staging.sh`, CC-018), que desde el sub-batch 12.1 termina con Great Expectations sobre su base. En un pull request, lo mismo con imágenes construidas ahí. Desde el Batch 13, **k6** con los umbrales de la Tabla 46 (Tabla 48; `infra/rendimiento/humo.js`). Al final, la **pirámide** de la sección 3 en el resumen de la corrida, solo como aviso | Humo en verde; desde el Batch 12, también los proyectos Must de Playwright | `despliegue-pruebas`: registro, video, capturas, informes y matriz de compatibilidad | Batch 3 |
+| 8 Staging y piloto | Al empujar una etiqueta candidata `vX.Y.Z-rc.N` (desde 11.4) o a mano (`.github/workflows/staging.yml`): solo con etiqueta SemVer integrada en `develop`, `main` o `release/*`, y un acta que la nombra (`acta-promocion-<etiqueta>.md`). Arma staging efímero en el runner (CC-018), despliega por digest las imágenes firmadas por la etapa 6, corre el humo del Anexo D, la calidad de datos y, desde el Batch 12, la matriz de Playwright (4.6) y, desde el Batch 13, el humo k6 (solo lectura en el piloto), y lo destruye | Autorización del revisor del ambiente `staging`: hoy FJMP con autoaprobación (NC-012) | `despliegue-staging-<etiqueta>` | Batch 6; piloto en el Batch 14 |
+
+CR-REN-01 a 05 no son una etapa: `.github/workflows/rendimiento.yml` las corre a mano sobre una etiqueta candidata ya promovida, una corrida por caso, y `docs/calidad/informe-rendimiento.md` reúne los resultados (sec. 24).
 
 Los artefactos caducan a los 90 días; al cerrar cada fase se copian al repositorio de evidencias (Tabla 62).
 
@@ -141,7 +151,25 @@ Los artefactos caducan a los 90 días; al cerrar cada fase se copian al reposito
 
 **Newman.** `api/test/contratos/sce.postman_collection.json` tiene tres carpetas: CS-SEG-04 prueba sin token cada operación protegida; Contratos valida códigos y esquemas de respuesta; y Pagos, trámites y reportes recorre, con los roles del seed, cargos del periodo, beca, pago simulado, CI-PAG-01, recibo, corte del día, constancia hasta entregada y reporte de dirección, con esquemas JSON cerrados (`additionalProperties: false`). `openapi.spec.ts` falla si una operación protegida del contrato no está en la primera carpeta.
 
-**ZAP.** El escaneo usa una cuenta con los roles administrador y coordinación: con uno solo, los endpoints del otro responden 403 antes de validar la entrada, y esa validación quedaría sin probar. Se le quitan del OpenAPI el cierre de sesión y el cambio de contraseña, porque revocarían su propio token. Además de las alertas, `scripts/zap.sh` comprueba con los registros de la API que ZAP llegó autenticado, que no hubo ningún 5xx, que el token sigue vigente y que CD-DAT-01 y 04 siguen en cero filas.
+**ZAP en la API (CS-SEG-05; sub-batch 12.2).** `scripts/zap.sh` hace un escaneo activo por rol, con la cuenta de la semilla de cada uno de los siete, y a cada uno le deja en el OpenAPI solo las operaciones que `matriz-rol-endpoint.md` le permite. Así cada operación llega a su validación y a su regla de negocio, y no solo al 403. El profesor ataca la captura de uno de sus propios grupos. El cierre de sesión y el cambio de contraseña revocarían el token del escaneo: van al final, cada uno con su token, y con una cuenta desechable `zap-<época>@sce.test` que el administrador da de alta en cada corrida. Con los registros de la API, el script comprueba:
+- que ZAP llegó autenticado y que cada token sigue vigente al terminar su escaneo;
+- que ninguna operación del OpenAPI recibió solo 401 o 403;
+- que no hubo ningún 5xx;
+- que los registros no llevan contraseñas, tokens, hashes ni cadenas de conexión (CS-SEG-08).
+
+Después corre `scripts/calidad-datos.sh` completo: CD-DAT-01 a 06, la Tabla 16 y CS-SEG-06. El escaneo del administrador falla a propósito su confirmación de contraseña, así que **la cuenta del administrador queda bloqueada 15 minutos** (Tabla 38): todo lo que la necesite en el mismo ambiente corre antes.
+
+**ZAP de acceso cruzado (CS-SEG-03).** `scripts/zap-acceso-cruzado.sh` prepara datos del alumno A: un pago aplicado, uno pendiente y una constancia emitida. Luego escanea con el token del alumno B un OpenAPI reducido a las 17 operaciones que llevan un identificador de A en la ruta: su matrícula, su cuenta, su inscripción, sus pagos, su trámite y su documento. Criterios:
+- B no recibe ningún 2xx;
+- cada operación recibió peticiones de B;
+- lo que A ve de sí mismo queda igual;
+- cero alertas altas.
+
+Para que ZAP llegue a la comprobación de dueño, los `number` del contrato pasan a `integer`, porque con 1.2 la validación respondería 400 antes.
+
+**ZAP en el portal.** `scripts/zap-portal.sh` hace un escaneo completo (spider, pasivo y activo, con la regla de DOM XSS) con la cookie `sce_sesion` de cada rol, y comprueba con los registros de la API que el portal la llamó con esa sesión y sin 5xx. Con el registro del portal comprueba que ningún rechazo de la API quedó sin manejar, que Next.js convertiría en un 500. El spider no envía formularios POST. La regla de DOM XSS sí, porque pulsa botones en un navegador, y a la acción de "Cerrar sesión" se le cambia el identificador para que la sesión siga viva. Dura unos 35 minutos con los siete roles, así que corre en `zap-completo.yml` y no en cada pull request.
+
+**CSP y CSRF en el portal.** Playwright falla si el navegador registra una violación de la CSP en cualquier página que visita (`fixtures.ts`). `sesion.spec.ts` comprueba que una acción de servidor con `Origin` ajeno no se ejecuta.
 
 ### 4.5 Staging
 
@@ -154,6 +182,61 @@ Staging es efímero (CC-018): `scripts/staging.sh` lo arma en el runner con la t
 - revisión de accesos.
 
 **Comprobado que fallan.** Con staging arriba, cada verificación nueva cayó con su propio mensaje ante un mutante: una cuenta `@gmail.com`, un rol con contraseña MD5, nginx sin HSTS y nginx con TLS 1.1. El de TLS 1.1 necesitó además un cifrado CBC, porque sin él OpenSSL no ofrece ese protocolo aunque se pida. Los rechazos de la base (otra dirección, sin TLS, TLS 1.1 y superusuario por red) son pruebas negativas del propio `staging.sh`.
+
+### 4.6 Compatibilidad (CO-COM-01)
+
+Matriz de la Tabla 50 (sección 27) con Playwright 1.65.0: proyectos en `web/playwright.config.ts` y specs en `web/playwright/`. No repite el e2e de Cypress, que prueba reglas y rechazos. Playwright recorre los flujos que la Tabla 50 pide en cada plataforma y resolución: con teclado en escritorio y con toques en móvil.
+
+**Dónde corre.**
+- **Etapa 7:** después de Cypress y Lighthouse, contra el ambiente de Compose (`http://localhost:3000`). Los reportes (HTML, JUnit, y trazas y capturas de los fallos) quedan en el artefacto `despliegue-pruebas`, carpeta `playwright/`. La matriz va en el registro del despliegue.
+- **Etapa 8** (`staging.yml`): contra el staging recién verificado (`https://localhost`, con certificado autofirmado), con la contraseña de la semilla de esa corrida, enmascarada. Los reportes y `matriz.md` quedan en `despliegue-staging-<etiqueta>`, carpeta `playwright/`. Una etiqueta anterior a la matriz se salta esos pasos.
+- **En local:** `npx playwright install` y `scripts/playwright.sh <url> [dir-de-reportes] [--project=...]`. Después, `scripts/matriz-compatibilidad.sh <junit.xml>...` arma la tabla navegador × resolución × resultado, con fecha y etiqueta.
+
+| Proyecto | Tabla 50 | Prioridad | Flujos | Navegador y viewport |
+|---|---|---|---|---|
+| `must-chrome-1366x768` | Chrome; 1366×768 | Must | Los cuatro | Chrome estable (canal `chrome`), 1366×768 |
+| `must-chrome-1920x1080` | Chrome; 1920×1080 | Must | Los cuatro | Chrome estable, 1920×1080 |
+| `must-iphone-webkit-390x844` | Safari en iOS; 390×844 | Must | Los cuatro | WebKit con el descriptor del iPhone 14 (móvil y táctil), 390×844 |
+| `must-android-chromium-390x844` | Chrome en Android; 390×844 | Must | Los cuatro | Chromium con el descriptor del Pixel 7, 390×844 |
+| `must-zoom200-chromium-1366x768` | Zoom al 200 % (28.1) | Must | Los cuatro | Chromium, 683×384 px CSS con `deviceScaleFactor` 2 |
+| `should-firefox-1366x768` | Firefox | Should | Sesión, consulta e inscripción | Firefox de Playwright, 1366×768 |
+| `should-edge-1366x768` | Edge | Should | Sesión, consulta e inscripción | Edge estable (canal `msedge`), 1366×768 |
+
+**Must y Should.** La prioridad es la de la Tabla 50. Los proyectos `must-*` bloquean la etapa. Los `should-*` corren con `continue-on-error`: si fallan, la falla queda en la matriz y en el reporte, pero la etapa sigue.
+
+**Flujos.**
+1. Sesión: ingreso, menú y cierre de los siete roles.
+2. Inscripción del alumno: oferta, revisar choques y enviar.
+3. Pago simulado: caja genera un cargo de 2026A; el alumno lo paga, lo aprueba en la pasarela y ve el recibo con saldo en cero.
+4. Consulta: horario y calificaciones.
+
+**Qué revisa cada pantalla** (`web/playwright/fixtures.ts`):
+- Ni la página ni sus tablas desbordan a lo ancho (`scrollWidth` ≤ `clientWidth`).
+- Los controles críticos se ven, se alcanzan con Tab y muestran el foco (28.1-1).
+- En móvil, todo objetivo táctil mide al menos 24×24 px (WCAG 2.2, 2.5.8). Los enlaces dentro de una frase quedan exentos.
+- axe-core 4.14, el mismo de Cypress, con WCAG 2.2 AA: cero incumplimientos serious o critical. El resultado va adjunto al reporte.
+- Desde el sub-batch 12.2, ninguna violación de la CSP con nonce en la consola. Solo se revisa si la prueba pasó, porque en WebKit la captura de una prueba fallida inyecta un estilo que la CSP rechaza.
+
+**Datos.** Las specs corren en serie y toleran el estado previo:
+- La inscripción alterna entre dos cargas válidas, así que confirma la primera vez y ajusta las siguientes.
+- El pago crea su propio cargo de $10 y liquida el saldo completo.
+
+En la etapa 7, Playwright va después de Cypress, porque Cypress necesita la semilla intacta.
+
+**Sustituciones.**
+- **Safari de iOS y Chrome de Android:** WebKit y Chromium con descriptor (`plan-de-sistema.md`, "No factible y lo que queda preparado"). Los dispositivos reales se revisan a mano (12.4).
+- **Zoom al 200 %:** equivale a maquetar 1366×768 con la mitad de px CSS y dos px físicos por cada uno. `deviceScaleFactor` solo no basta, porque no cambia el ancho en px CSS ni las media queries.
+- **Edge:** canal `msedge`, que ya viene en `ubuntu-latest`. En macOS pide instalarlo con sudo, así que solo corre en CI.
+- **Chrome, "últimas dos versiones":** solo corre la actual. La anterior está pendiente.
+
+**Comprobado que fallan.** Con páginas alteradas a propósito, cada revisión cayó con su propio mensaje en Chrome, Android, iPhone y Firefox. Los mutantes fueron:
+- desborde de la página y de una tabla;
+- un control fuera del orden de tabulación;
+- foco sin contorno;
+- un botón de 16 px en móvil;
+- un botón sin nombre (axe).
+
+**Hallazgo.** En Firefox (Playwright 1.65, macOS), `axe.run` tumba el proceso de la página si antes se marcaron casillas y corrió una acción de servidor en el mismo documento. Sin axe no se reproduce. Por eso la spec de inscripción recarga la página antes de revisarla.
 
 ---
 
@@ -188,7 +271,7 @@ Fuente: `api/test/integracion/`. Se ejecutan con `npm run test:integracion` en l
 | Interfaz Next.js y NestJS (Tabla 44) | RF-008 | Autenticación JWT en cookie `httpOnly`, cierre y revocación, renovación, códigos de error de negocio visibles, contrato por tipos generados | Transición de estados | **Automatizado con Cypress y en la etapa 1, en verde** |
 | CF-EXP-01 | RF-001 | Un solo expediente activo; tras el cambio de facultad, la consulta devuelve el mismo expediente con su historial, inscripciones y trayectoria | Transición de estados | **Automatizado con Jest y Supertest, en verde.** En el portal, también con Cypress |
 | CS-SEG-02 | RNF-SEG-001 | Caja no modifica el historial académico | Particiones de equivalencia | **Supertest, en verde,** sobre lo que existe: caja y dirección reciben 403 al cerrar el periodo y al corregir calificaciones, y ninguna ruta de caja escribe el historial. Desde el sub-batch 11.1 (#71), también en pagos: el kárdex y el historial no cambian tras los cargos, la beca, el pago y el corte (R-24) |
-| CS-SEG-03 | RNF-SEG-002 | El token de un alumno no accede al expediente de otro | Particiones de equivalencia | **Supertest, en verde:** el alumno solo llega a `/alumnos/actual`, y la matrícula sale de su sesión. Desde el Batch 5, también en la inscripción: un folio ajeno responde 404 sin cambiar nada y la petición no acepta matrícula; Newman lo repite. Desde el sub-batch 11.2, también el pago y el documento de otro alumno responden 404. Esas dos pruebas se llamaban CS-SEG-02 (NC-007). **Con ZAP, parcial:** el escaneo valida entradas, pero no prueba acceso cruzado entre cuentas; se completa en el Batch 12 |
+| CS-SEG-03 | RNF-SEG-002 | El token de un alumno no accede al expediente de otro | Particiones de equivalencia | **Supertest, en verde:** el alumno solo llega a `/alumnos/actual`, y la matrícula sale de su sesión. Desde el Batch 5, también en la inscripción: un folio ajeno responde 404 sin cambiar nada y la petición no acepta matrícula; Newman lo repite. Desde el sub-batch 11.2, también el pago y el documento de otro alumno responden 404. Esas dos pruebas se llamaban CS-SEG-02 (NC-007). **Con ZAP, desde el sub-batch 12.2:** `zap-acceso-cruzado.sh`, en la etapa 5, con cero respuestas 2xx de B en 1345 peticiones sobre lo de A y lo de A sin cambio (4.4) |
 | CS-SEG-06 en plantel | RNF-SEG-001 | Cada cambio de plantel deja asiento completo y coherente con la facultad actual | Basada en riesgo | **Consulta SQL, en verde,** también desde Great Expectations. Comprobado que detecta un asiento falso. No detecta un cambio hecho en la base sin pasar por la API: eso lo cubre pgAudit en el Batch 6 |
 | CF-INS-01 | RF-002 | Una inscripción con adeudo o prerrequisito faltante queda en estado explícito y no confirma la carga. También: el prerrequisito cuenta solo si se acreditó en un periodo cerrado, con el último intento y el redondeo de D-5 | Tabla de decisión y valores límite | **Cypress, en verde,** con video y capturas. En la API, con Supertest y Newman |
 | CF-INS-02 | RNF-USU-001 | Cada motivo de rechazo (prerrequisito, adeudo, choque y cupo) tiene estado y mensaje propios, con la corrección | Particiones de equivalencia | **Cypress, en verde,** los cuatro motivos. Vitest comprueba la etiqueta y la corrección de cada uno |
@@ -204,9 +287,11 @@ Fuente: `api/test/integracion/`. Se ejecutan con `npm run test:integracion` en l
 | CF-CAL-01 | RF-004 | El profesor captura solo en sus grupos; el alumno ve la calificación tras el commit | Particiones de equivalencia y transición de estados | **Cypress, en verde:** captura del parcial, consulta del alumno, grupo ajeno a sin permiso, cierre rechazado por D-16, cierre, kárdex, CSV y corrección. **Supertest:** un profesor ajeno recibe 403 aunque el folio no exista, para no revelar quién está inscrito |
 | CI-CAL-01 | RF-004 | La captura y la consulta leen el mismo registro después del commit | Basada en riesgo | **Supertest, en verde:** la consulta del alumno devuelve el parcial recién guardado |
 | CD-DAT-02 | RF-005, RNF-DAT-001 | Recálculo del historial sobre 30 expedientes, con 100 % de coincidencia | Basada en riesgo | **SQL independiente del dominio y Great Expectations, en verde:** 30 expedientes con reprobadas y recursadas; detecta un historial alterado. Una sola función de redondeo, con valores límite en Jest. El cierre espera a las capturas en curso: un mutante que lee antes de tomar el periodo cierra con parciales a medias, y la prueba lo detecta 3 de 3 veces |
-| CS-SEG-05 | RNF-SEG-002 | Una entrada malformada no corrompe la base ni expone trazas con secretos | Basada en riesgo | **Automatizado con ZAP, en verde.** Los casos concretos también están en `gateway.spec.ts` y, desde el sub-batch 11.2, en `oferta.spec.ts` (NC-007). Se completa en el Batch 12 |
+| CS-SEG-05 | RNF-SEG-002 | Una entrada malformada no corrompe la base ni expone trazas con secretos | Basada en riesgo | **Automatizado con ZAP, en verde.** Los casos concretos también están en `gateway.spec.ts` y, desde el sub-batch 11.2, en `oferta.spec.ts` (NC-007). **Completo desde el sub-batch 12.2:** los siete roles, las 60 operaciones más allá de 401 y 403, ningún 5xx y la calidad de datos completa en verde después (4.4) |
 | CS-SEG-06 | RNF-SEG-001 | Todo cambio de calificación, pago o constancia deja registro en bitácora | Basada en riesgo | **En calificación, consulta SQL y Great Expectations, en verde:** cada calificación tiene asiento de captura del profesor del grupo, y cada corrección lleva autor, valor anterior, motivo y evidencia (D-17). Comprobado que detecta una calificación sin asiento y una captura firmada por otro. **En pago y constancia, desde el sub-batch 11.2, también con consulta SQL y Great Expectations** (`cs-seg-06-pago.sql`, `cs-seg-06-constancia.sql`). Todo pago aplicado o rechazado tiene un solo asiento del usuario técnico con su valor anterior, y cada paso del trámite sale del estado en que lo dejó el anterior, con su autor: la cuenta que el alumno tenía vinculada al solicitar o descargar, y una cuenta con el rol control_escolar al tomar, emitir o rechazar. Comprobado que detecta un pago y un trámite que cambiaron sin asiento, un pago con dos asientos, un asiento de pago firmado por una persona o sin su valor anterior, un paso saltado o con un valor anterior falso, una solicitud de otro alumno, una toma de caja, un asiento sin trámite y un documento sin emisión, y que no marca las solicitudes de antes de cambiar la cuenta del alumno |
-| CS-SEG-08 | RNF-SEG-002 | Sin secretos en el repositorio, en los registros ni en las respuestas de la API | Basada en riesgo | **Gitleaks y búsqueda en registros en cada corrida.** Revisión manual: primera pasada en `revision-cs-seg-08.md`, **falta la revisión de Seguridad** |
+| CD-DAT-03 | RF-006, RNF-DAT-001, RK-02 | Conciliación interna (CC-020): el saldo es la suma de los movimientos, cada pago aplicado tiene un solo abono de su alumno y su importe, ningún movimiento apunta a un pago no aplicado, y el corte de cada día (UTC-6) suma lo mismo que sus abonos | Basada en riesgo | **Consulta SQL y Great Expectations, en verde, desde el sub-batch 12.1** (`cd-dat-03.sql`, suite `conciliacion`). Cero filas tras los pagos de la API en `pagos.spec.ts` y tras Newman. Comprobado que detecta un saldo alterado, un pago aplicado sin abono, el abono de un pago rechazado y el corte descuadrado que dejan. El manual la pide diaria en piloto; aquí corre en cada pull request y en cada staging |
+| CD-DAT-06 | RF-006, RNF-DAT-001 | El percentil 95 de la demora entre la confirmación del pago (`pago.fecha_confirmacion`, CC-011) y su abono es menor a 60 s, y ningún pago aplicado queda sin fecha de confirmación | Valores límite | **Consulta SQL y Great Expectations, en verde, desde el sub-batch 12.1** (`cd-dat-06.sql`, suite `actualidad`). Con la pasarela simulada se cumple por construcción (`plan-de-sistema.md`, 6.2): la demora medida es de milisegundos. Comprobado que detecta un pago aplicado sin fecha y que marca la demora en 60 s y no en 59 s |
+| CS-SEG-08 | RNF-SEG-002 | Sin secretos en el repositorio, en los registros ni en las respuestas de la API | Basada en riesgo | **Gitleaks y búsqueda en registros en cada corrida.** Revisión manual en `revision-cs-seg-08.md`: v1 en el Batch 2 y v2 en el sub-batch 12.2, con pagos, trámites, reportes, el portal, staging y los artefactos. **Falta la revisión de Seguridad** |
 
 El catálogo completo de casos de todas las fases, con requisito y fase, está en `docs/calidad/matriz-trazabilidad.md`, sección 3.
 
@@ -216,7 +301,7 @@ El catálogo completo de casos de todas las fases, con requisito y fase, está e
 
 Rige la numeración del manual: la definición de cada caso CS-SEG es la de la **Tabla 49**, la misma que usa PA-SCE-001. La versión 1.0 de este plan adoptaba una numeración propia; fue un error, registrado como NC-007 y corregido en `docs/calidad/matriz-trazabilidad.md`, sección 4.
 
-Los casos que el manual no identifica se proponen en esa misma matriz: la correspondencia de CR-REN-01 a 05 con la Tabla 47 y la familia `CO-*`.
+Los casos que el manual no identifica se proponen en esa misma matriz: la correspondencia de CR-REN-01 a 05 con la Tabla 47 y la familia `CO-*`. La familia `CO-*` entra a la Tabla 31 con la corrección #11 del manual v3.0: CO-FIA-01 y 02, CO-MAN-01 y CO-FLE-01. CC-021 le suma CO-ACC-01 a 03, CO-COM-01 y CO-MAN-02. Las matrices por norma son `matriz-25010.md` y `matriz-25012.md`, y el Anexo A con resultado y estado es `anexo-a.md`.
 
 ---
 
@@ -272,9 +357,9 @@ El orden lo fija `docs/gobierno/plan-de-sistema.md`. Cada caso sale de su batch 
 | 1 | 1, 2 y 3 | CI-MIG-01 completo, Newman, ZAP, CS-SEG-04, 05, 07 y 08, CI-AUTH-01, Vitest, Cypress, axe, Lighthouse | 5 al 7 de noviembre de 2026 | 11 de diciembre de 2026 |
 | 2 | 4, 5 y 6 | CF-EXP-01, CF-INS-01 y 02, CI-API-01, CF-HOR-01 con Jest, CD-DAT-05, CS-SEG-02, 03 y 06, Great Expectations, ZAP en staging | 7 al 8 de noviembre de 2026 | 11 de diciembre de 2026 |
 | 3 | 7 y 8 | CF-HOR-01 con Cypress, CF-CAL-01, CI-CAL-01, CD-DAT-02, CS-SEG-01 | 10 de noviembre de 2026 | 11 de diciembre de 2026 |
-| 4 | 9 y 10 | CF-PAG-01, CI-PAG-01 y CF-TRA-01 y 02 con pago simulado, CF-REP-01, CS-SEG-02, 03 y 06 en pagos y trámites | 10 al 13 de noviembre de 2026 | 11 de diciembre de 2026 |
+| 4 | 9 y 10 | CF-PAG-01, CI-PAG-01 y CF-TRA-01 y 02 con pago simulado, CF-REP-01, CS-SEG-02, 03 y 06 en pagos y trámites, CD-DAT-03 y 06 (sub-batch 12.1) | 10 al 13 de noviembre de 2026 | 11 de diciembre de 2026 |
 
-Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): Playwright, NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5.
+Fuera de alcance desde el 10 de noviembre de 2026 (`plan-de-sistema.md`, apartado 6.1): NVDA, CR-REN-01 a 05, CO-FIA-01 y 02, CO-FLE-01, usabilidad con participantes y la fase 5. **La retoma (6.2) devolvió al alcance** CR-REN-01 a 05 (13.4; se corren sobre el candidato en 13.6), CO-FIA-02 (13.2), CO-FIA-01 (13.3) y CO-FLE-01 (13.5). Siguen fuera NVDA, que VoiceOver sustituye (manual v3.0), la usabilidad con participantes, que 13.5 deja preparada, y la fase 5.
 
 CI-PAG-01 sí corre, contra la pasarela simulada: Supertest en `api/test/integracion/pagos.spec.ts` y Newman en la carpeta Pagos, trámites y reportes. Desde el 10 de noviembre de 2026 cubre también dos intentos por el mismo adeudo (#69). La conexión con Mercado Pago no se prueba porque el pago sigue simulado.
 

@@ -8,10 +8,10 @@ El auditor no desarrolla ni opera el producto. Con un equipo de dos personas, **
 
 | Momento | Alcance | Criterios | Batch | Auditor | Fecha real |
 |---|---|---|---|---|---|
-| Cierre de fase 2 | Expediente e inscripción | SCE-MC-001 vigente, RF-001 a RF-002 y RNF-DAT-001 | 6 | | |
-| Cierre de fase 4 | Pagos, trámites y bitácora | RF-006, RF-007, RNF-SEG-001 y controles de ISO/IEC 27001:2022 | 11 | | |
-| Antes del piloto | Sistema completo y ambientes | Todas las secciones del manual, con énfasis en puertas de promoción y riesgos Alto | 13 | | |
-| Cierre del semestre piloto | Operación y resultados | Indicadores de la sección 7, métricas de la sección 38 y no conformidades abiertas | 14 | | |
+| Cierre de fase 2 | Expediente e inscripción | SCE-MC-001 vigente, RF-001 a RF-002 y RNF-DAT-001 | 6 | FJMP, autoauditoría (NC-013): `docs/calidad/auditoria-fase-2.md` | 10 de noviembre de 2026 |
+| Cierre de fase 4 | Pagos, trámites y bitácora | RF-006, RF-007, RNF-SEG-001 y controles de ISO/IEC 27001:2022 | 11 | FJMP, autoauditoría (NC-013): `docs/calidad/auditoria-fase-4.md` | 10 de noviembre de 2026 |
+| Antes del piloto | Sistema completo y ambientes | Todas las secciones del manual, con énfasis en puertas de promoción y riesgos Alto | 13 | FJMP, autoauditoría (NC-013): `docs/calidad/auditoria-antes-del-piloto.md` | 11 de noviembre de 2026 |
+| Cierre del semestre piloto | Operación y resultados | Indicadores de la sección 7, métricas de la sección 38 y no conformidades abiertas | 14 | Por designar, independiente | No se realiza sin piloto. Lista preparada: `docs/calidad/auditoria-cierre-semestre.md` |
 
 ## 2. Plan previo de cada auditoría
 

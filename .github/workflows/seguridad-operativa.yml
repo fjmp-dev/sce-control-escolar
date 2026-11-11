@@ -1,0 +1,92 @@
+# Seguridad operativa mensual (sec. 18, Tabla 38 y Tabla 57; PA-SCE-001 Parte B). Reune lo que Seguridad revisa cada
+# mes (docs/gobierno/revision-de-accesos.md): quien tiene acceso al repositorio y a los ambientes, los roles con LOGIN
+# de la base y el muestreo de la bitacora sobre un staging efimero con las imagenes del commit. Abre un issue con el
+# resultado para que Seguridad lo revise y lo cierre con su decision.
+name: Seguridad operativa - revision mensual de accesos
+
+on:
+  schedule:
+    - cron: '23 14 1 * *' # dia 1 de cada mes; GitHub solo programa el flujo de la rama principal
+  # Solo registra el flujo: GitHub no despacha un workflow que nunca corrio, y este aun no esta en main. Asi se lanza
+  # sobre release/1.0.0 (gh workflow run <archivo> --ref release/1.0.0). En el pull request el job se salta.
+  pull_request:
+    paths: [.github/workflows/seguridad-operativa.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+  issues: write
+  actions: read
+
+jobs:
+  revision:
+    name: Accesos, roles de la base y muestreo de bitacora
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SALIDA: reportes/seguridad-operativa
+    steps:
+      - uses: actions/checkout@v4
+      - name: Accesos al repositorio y a los ambientes de GitHub
+        run: |
+          mkdir -p "$SALIDA"
+          api="repos/$GITHUB_REPOSITORY"
+          consulta() { gh api "$1" -q "$2" 2>/dev/null || echo "(sin permiso del GITHUB_TOKEN: lo revisa FJMP con gh)"; }
+          {
+            echo "## Revision de accesos $(date -u +%Y-%m)"
+            echo "### Colaboradores y permiso"
+            consulta "$api/collaborators" '.[] | "- \(.login): \(.role_name)"'
+            echo "### Invitaciones pendientes"
+            consulta "$api/invitations" '.[] | "- \(.invitee.login): \(.permissions), vencida=\(.expired)"'
+            echo "### Ambientes y sus reglas"
+            consulta "$api/environments" '.environments[] | "- \(.name): \([.protection_rules[]? | if .reviewers then "revisores " + ([.reviewers[].reviewer.login] | join(",")) else .type end] | join("; "))"'
+            echo "### Llaves de despliegue"
+            consulta "$api/keys" '.[] | "- \(.title) (creada \(.created_at))"'
+            echo "### Proteccion de develop y main"
+            for rama in develop main; do
+              consulta "$api/branches/$rama/protection" "\"- $rama: checks \(.required_status_checks.contexts | length), admins incluidos \(.enforce_admins.enabled)\""
+            done
+          } | tee "$SALIDA/github.md"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Staging efimero con las imagenes del commit (incluye roles-login.sql y rechazos de la base)
+        env:
+          CONSERVAR: 1
+          ETIQUETA: seguridad-${{ github.run_number }}
+        run: |
+          ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}"
+          scripts/staging.sh "$ref/sce-api:sha-${GITHUB_SHA:0:12}" "$ref/sce-portal:sha-${GITHUB_SHA:0:12}" > "$SALIDA/staging.txt"
+          tail -5 "$SALIDA/staging.txt"
+      - name: Muestreo de bitacora y cuentas por rol (Tabla 57; AU-16)
+        run: |
+          db() { docker exec -i -u postgres sce-db psql -d sce -v ON_ERROR_STOP=1 "$@"; }
+          db -A -F ' | ' -P footer=off < api/prisma/verificacion/muestreo-bitacora.sql > "$SALIDA/muestreo-bitacora.txt"
+          db < api/prisma/verificacion/accesos.sql > "$SALIDA/accesos.txt"
+          {
+            echo "### Base de datos"
+            sed 's/^/- /' reportes/staging/rechazos.txt
+            echo "- Asientos de bitacora muestreados: $(($(wc -l < "$SALIDA/muestreo-bitacora.txt") - 1)) (artefacto)"
+            echo '```'; cat "$SALIDA/accesos.txt"; echo '```'
+          } | tee -a "$SALIDA/github.md"
+      - name: Issue para la revision de Seguridad
+        run: |
+          {
+            cat "$SALIDA/github.md"
+            echo
+            echo "Corrida: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID (artefacto seguridad-operativa)"
+            echo
+            echo "**Seguridad:** confirmar cada acceso, revisar el muestreo y cerrar con la decision (docs/gobierno/revision-de-accesos.md)."
+          } > issue.md
+          gh issue create --title "Revision de accesos $(date -u +%Y-%m)" --body-file issue.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seguridad-operativa
+          path: reportes/
+          retention-days: 90

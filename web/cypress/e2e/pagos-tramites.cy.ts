@@ -15,6 +15,38 @@ describe('Pagos simulados y tramites (RF-006, RF-007, RF-010)', () => {
     cy.contains('h1', 'Pasarela de pago');
   };
 
+  // CO-ACC-01 (28.1 y WCAG 3.3.1 y 3.3.3): antes de pagar, con el adeudo de 1850 intacto. Cada error marca el campo,
+  // une su corrección con aria-describedby, lleva el foco al aviso y conserva lo escrito.
+  it('CO-ACC-01: el importe vacío, negativo o mayor que el adeudo se marca en el campo, y pasa axe', () => {
+    cy.iniciar('alumno.dos@sce.test');
+    for (const [caso, importe] of [
+      ['vacio', ''],
+      ['negativo', '-5'],
+      ['mayor-que-el-adeudo', '99999'],
+    ]) {
+      cy.visit('/mi-cuenta');
+      if (importe) cy.campo('Importe a pagar, en pesos').type(importe);
+      cy.contains('button', 'Ir a pagar').click();
+      cy.get('.aviso-error').should('have.focus').and('contain', 'Error:');
+      cy.campo('Importe a pagar, en pesos')
+        .should('have.attr', 'aria-invalid', 'true')
+        .and('have.value', importe)
+        .invoke('attr', 'aria-describedby')
+        .then((ids) => {
+          const textos = String(ids)
+            .split(' ')
+            .map((id) => Cypress.$(`[id="${id}"]`).text());
+          expect(textos, 'ayuda y corrección').to.deep.equal([
+            'Hasta $1,850.00. Puedes pagar una parte.',
+            'Error: Escribe un importe mayor que cero y de hasta $1,850.00.',
+          ]);
+        });
+      cy.location('pathname').should('eq', '/mi-cuenta');
+      cy.revisarAxe(`alumno-pago-error-${caso}`);
+    }
+    cy.contains('.saldo', 'Adeudo: $1,850.00');
+  });
+
   it('CF-PAG-01 y CF-TRA-01: paga su adeudo, pide su no adeudo, lo descarga y caja lo ve en el corte', () => {
     cy.iniciar('alumno.dos@sce.test');
     cy.visit('/mi-cuenta');

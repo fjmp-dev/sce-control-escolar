@@ -1,7 +1,8 @@
 @startuml fig05-secuencia-pago
-' Figura 5. Diagrama de secuencia UML: pago en linea con control de
-' idempotencia (RF-006). Fuente: SCE-MC-001 v2.0, seccion 13.4.
-' Documenta el control que evita el cargo duplicado: riesgo RK-02.
+' Figura 5. Diagrama de secuencia UML: pago con control de idempotencia (RF-006).
+' Fuente: SCE-MC-001 v2.0, seccion 13.4. Actualizada por CC-020 (pasarela simulada, sin
+' Mercado Pago) y CC-011 (fecha_confirmacion). Documenta el control que evita el cargo
+' duplicado: riesgo RK-02, defecto #69 corregido en #71.
 skinparam shadowing false
 autonumber
 
@@ -11,70 +12,63 @@ participant "Gateway de API" as GW
 participant "Dominio de pagos" as DPAG
 participant "Servicio de bitacora" as BIT
 database "PostgreSQL" as DB
-participant "Mercado Pago" as MP <<externo>>
+participant "Pasarela simulada\n(CC-020)" as PS
 
 AL -> UI : consulta estado de cuenta
-UI -> GW : GET /cuenta/{matricula}
-GW -> DPAG : obtener saldo y movimientos
+UI -> GW : GET /alumnos/actual/cuenta
+GW -> DPAG : estadoDeCuenta(matricula)
 DPAG -> DB : SELECT cuenta_alumno, movimiento
-DB --> DPAG : saldo y cargos
+DB --> DPAG : saldo y movimientos
 DPAG --> UI : estado de cuenta
 
-AL -> UI : elige pagar
-UI -> GW : POST /pagos/intento
-GW -> DPAG : crearIntentoDePago(movimiento)
-DPAG -> DB : INSERT pago (estado = pendiente,\nclave_idempotencia UNIQUE)
-DPAG -> MP : crear preferencia de pago
-MP --> DPAG : url de checkout
-DPAG --> UI : redirigir a la pasarela
-UI --> AL : checkout de Mercado Pago
+AL -> UI : elige pagar un importe
+UI -> GW : POST /pagos
+GW -> DPAG : iniciarPago(matricula, importe)
+DPAG -> DB : INSERT pago (estado = pendiente,\nreferencia y clave_idempotencia UNIQUE)
+DPAG --> UI : pago pendiente
+UI --> AL : pantalla de la pasarela simulada
 
-AL -> MP : realiza el pago
+AL -> PS : aprueba o rechaza
+PS -> GW : POST /pagos/{id}/simulacion (resultado)\n(puede llegar mas de una vez)
+GW -> DPAG : simular(matricula, id, resultado)
 
-== Confirmacion asincrona por webhook ==
-
-MP -> GW : POST /webhooks/pagos (evento)
-GW -> DPAG : procesarNotificacion(evento)
-DPAG -> DPAG : verificar firma del evento
-
-alt firma invalida
-  DPAG --> MP : 401 descartado
-  DPAG -> BIT : registrar intento con firma invalida
-else firma valida
-  DPAG -> DB : SELECT pago\nWHERE clave_idempotencia = evento.id
-
-  alt el evento ya fue aplicado (notificacion duplicada)
-    DB --> DPAG : pago ya en estado aplicado
-    DPAG -> BIT : registrar evento duplicado descartado
-    BIT -> DB : INSERT bitacora
-    DPAG --> MP : 200 OK (sin efecto)
-    note right of DPAG
-      RK-02: una segunda o tercera
-      notificacion del mismo evento
-      no genera un segundo movimiento.
-    end note
-  else primer evento para esa clave
-    DB --> DPAG : pago pendiente
-    group Transaccion atomica
-      DPAG -> DB : BEGIN
+group Transaccion atomica
+  DPAG -> DB : SELECT pago FOR UPDATE
+  alt pago ajeno o inexistente
+    DPAG --> GW : 404
+  else resultado = rechazado
+    DPAG -> DB : UPDATE pago SET estado = rechazado
+    DPAG -> BIT : pago_rechazado (usuario tecnico, R-21)
+  else resultado = aprobado
+    DPAG -> DB : SELECT cuenta_alumno FOR UPDATE
+    alt el pago ya estaba aplicado (aviso duplicado)
+      DPAG --> GW : 200, sin efecto
+      note right of DPAG
+        RK-02: un segundo aviso del mismo
+        pago no genera otro movimiento.
+      end note
+    else el importe ya no cabe en el saldo (#69)
+      DPAG -> DB : UPDATE pago SET estado = rechazado
+      DPAG -> BIT : pago_rechazado (valor anterior)
+      DPAG --> GW : 409 PAGO_NO_APLICABLE, despues del COMMIT
+    else primer aviso y cabe en el saldo
       DPAG -> DB : UPDATE pago SET estado = aplicado
-      DPAG -> DB : INSERT movimiento (un solo movimiento neto)
+      DPAG -> DB : UPDATE pago SET fecha_confirmacion =\nclock_timestamp() (CC-011)
+      DPAG -> DB : INSERT movimiento (un solo abono)
       DPAG -> DB : UPDATE cuenta_alumno SET saldo
-      DPAG -> BIT : registrar pago aplicado
+      DPAG -> BIT : pago_aplicado (usuario tecnico, CC-015)
       BIT -> DB : INSERT bitacora (autor, accion,\nvalor_anterior, fecha)
-      DPAG -> DB : COMMIT
     end
-    DPAG --> MP : 200 OK
   end
 end
 
-GW -> UI : notificar actualizacion
-UI --> AL : pago reflejado en el estado de cuenta
+GW --> UI : estado del pago
+UI --> AL : pago reflejado y recibo (GET /pagos/{id})
 
 note over DPAG, DB
-  RF-006: el pago se refleja una sola vez
-  y sin depender de comprobante en papel.
-  Conciliacion diaria segun la seccion 17.
+  RF-006: el pago se refleja una sola vez y sin comprobante en papel.
+  CD-DAT-03 concilia saldo, pagos, abonos y corte; CD-DAT-06 mide
+  movimiento.fecha - fecha_confirmacion (p95 < 60 s).
 end note
 
 @enduml

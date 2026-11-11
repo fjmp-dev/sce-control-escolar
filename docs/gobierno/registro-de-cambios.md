@@ -1,7 +1,7 @@
 # Registro de cambios — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 16 (gestión de cambios) y 12.4 (control de cambios a requisitos).
-**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 10 de noviembre de 2026 (sub-batch 11.0).
+**Vigente desde:** 22 de octubre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batches 12.5 y 13.1).
 
 Cada cambio tiene un issue en GitHub con la etiqueta `cambio`, con la solicitud, el análisis de impacto y la aprobación con fecha y responsable. Desde CC-007, la solicitud también está versionada en `docs/gobierno/cambios/`. Este archivo es el índice que se versiona junto con el código, para que el auditor lo encuentre sin entrar al tablero.
 
@@ -23,7 +23,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-008 | [#33](https://github.com/fjmp-dev/sce-control-escolar/issues/33) | `documento.contenido`, contenido inmutable del documento | Mayor o Must | PO y QA | Batch 9 | Implementado en el Batch 9 (migración `20261110140000_tramites`) y fusionado en `develop` el 10 de noviembre de 2026; **sigue pendiente de aprobación** (NC-008). Figuras ya actualizadas |
 | CC-009 | [#34](https://github.com/fjmp-dev/sce-control-escolar/issues/34) | `tramite.motivo_rechazo` | Mayor o Must | PO y QA | Batch 9 | Implementado en el Batch 9 (migración `20261110140000_tramites`) y fusionado en `develop` el 10 de noviembre de 2026; **sigue pendiente de aprobación** (NC-008). Figuras ya actualizadas |
 | CC-010 | [#35](https://github.com/fjmp-dev/sce-control-escolar/issues/35) | `usuario.sesion_version`, revocación de sesión | Mayor o Must | PO, QA y Seguridad | Batch 2 | Implementado en el Batch 2; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras ya actualizadas |
-| CC-011 | [#36](https://github.com/fjmp-dev/sce-control-escolar/issues/36) | `pago.fecha_confirmacion` | Mayor o Must | PO y QA | Sub-batch 12.1 | Aprobado por FJMP el 10 de noviembre de 2026. Sin implementar: la migración llega en 12.1. Figuras ya actualizadas |
+| CC-011 | [#36](https://github.com/fjmp-dev/sce-control-escolar/issues/36) | `pago.fecha_confirmacion` | Mayor o Must | PO y QA | Sub-batch 12.1 | Aprobado por FJMP el 10 de noviembre de 2026; implementado después, en el sub-batch 12.1 (migración `20261110160000_fecha_confirmacion`). Figuras ya actualizadas |
 | CC-012 | [#37](https://github.com/fjmp-dev/sce-control-escolar/issues/37) | `periodo.oferta_publicada_en`, publicar oferta | Normal | PO y QA | Batches 5 y 7 | Implementado en el Batch 7 (migración `20261110120000_oferta_publicada`); aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras ya actualizadas |
 | CC-013 | [#38](https://github.com/fjmp-dev/sce-control-escolar/issues/38) | Persistir el rechazo de la inscripción | Mayor o Must | PO y QA | Batch 5 | Implementado en el Batch 5; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras ya actualizadas |
 | CC-014 | [#39](https://github.com/fjmp-dev/sce-control-escolar/issues/39) | Dependencias en las Figuras 2 y 9 | Documental | PO y QA | Batch 0 | Figuras actualizadas y ampliadas en los batches 2, 4 y 7; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008) |
@@ -32,9 +32,11 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-017 | Sin issue: `cambios/CC-017.md` | Operaciones de la Fig. 6 en la clase `Inscripcion` de la Fig. 3 | Documental | PO y QA | Batch 5 | Figura actualizada; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008) |
 | CC-018 | Sin issue: `cambios/CC-018.md` | Staging efímero en GitHub Actions, sin servidores rentados; túnel gratuito solo cuando haga falta URL pública | Normal | PO y QA | Batch 6 | Implementado en el Batch 6; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008) |
 | CC-019 | Sin issue: `cambios/CC-019.md` | Inicio del curso del periodo, de abierto a en curso (X-25); cierre en la calle de coordinación (X-09) | Mayor o Must | PO y QA | Batch 8 | Implementado en el Batch 8; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras 3 y 7 ya actualizadas |
-| CC-020 | Sin issue: `cambios/CC-020.md` | Cambio de proveedor crítico: de Mercado Pago a pasarela simulada (Tabla 55); acota el alcance de RF-006 | Mayor o Must | PO, QA y Seguridad | Batch 9; pruebas en 11.1 y figuras en 13.1 | Implementado en el Batch 9; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras 1, 2, 3, 5, 9 y 10 pendientes (13.1) |
+| CC-020 | Sin issue: `cambios/CC-020.md` | Cambio de proveedor crítico: de Mercado Pago a pasarela simulada (Tabla 55); acota el alcance de RF-006 | Mayor o Must | PO, QA y Seguridad | Batch 9; pruebas en 11.1 y figuras en 13.1 | Implementado en el Batch 9; aprobado por FJMP el 10 de noviembre de 2026, después de fusionarse (NC-008). Figuras 1, 2, 3, 5, 9 y 10 redibujadas en 13.1 (NC-014) |
+| CC-021 | [#84](https://github.com/fjmp-dev/sce-control-escolar/issues/84), `cambios/CC-021.md` | Requisitos RNF-USU-002 (accesibilidad, sección 28) y RNF-FLE-002 (compatibilidad, Tabla 50); casos CO-ACC-01 a 03, CO-COM-01 y CO-MAN-02 | Mayor o Must | PO y QA | Batch 12 (12.3 a 12.5) | Aprobado por FJMP el 11 de noviembre de 2026. Los casos de 12.3 y 12.4 ya corrían (NC-008); CO-MAN-02 se aprobó antes de su pull request |
+| CC-022 | [#81](https://github.com/fjmp-dev/sce-control-escolar/issues/81) y `cambios/CC-022.md` | Piloto de ensayo efímero en GitHub Actions: `vX.Y.Z` va al environment `piloto` con puertas 1 y 2 por API, secretos y CA propios y sin datos (Tabla 30, Fig. 9 y 10, Tabla 6) | Mayor o Must | PO, QA y Seguridad | 13.1 | Aprobado por FJMP el 11 de noviembre de 2026, antes de abrir el pull request; implementado en 13.1 |
 
-Estos cambios se integran al manual en la versión 3.0 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15), `manual-v3.0.md`). CC-001 a CC-019 no modifican por sí mismos un requisito RF o RNF, la política de calidad ni el alcance. CC-020 sí acota el alcance de RF-006: es el cambio de alcance de la compactación del 10 de noviembre de 2026, que impone el número mayor.
+Estos cambios se integran al manual en la versión 3.0 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15), `manual-v3.0.md`). CC-001 a CC-019 no modifican por sí mismos un requisito RF o RNF, la política de calidad ni el alcance. CC-020 sí acota el alcance de RF-006: es el cambio de alcance de la compactación del 10 de noviembre de 2026, que impone el número mayor. CC-021 añade dos requisitos Must, RNF-USU-002 y RNF-FLE-002, a obligaciones que el manual ya tenía (secciones 27 y 28); no cambia el alcance ni agrega funciones.
 
 **Enmiendas del 5 de noviembre de 2026:** CC-002 pasa a la numeración de la Tabla 49 (`cambios/CC-002-enmienda.md`). CC-006 se amplía con Next.js 16 y React 19, y retira la sustitución de Testcontainers y PostgreSQL 18 local (`cambios/CC-006-enmienda.md`). El retiro se implementó en el Batch 1 ([#41](https://github.com/fjmp-dev/sce-control-escolar/issues/41)): las pruebas usan Testcontainers y Compose usa PostgreSQL 16. Versiones adoptadas: `plan-de-pruebas.md`, sección 4.
 
@@ -54,11 +56,13 @@ Estos cambios se integran al manual en la versión 3.0 (issue [#15](https://gith
 
 **Retoma del 10 de noviembre de 2026 (sub-batch 11.0, `plan-de-sistema.md`, 6.2):** FJMP aprueba CC-010 a CC-019 y CC-020. CC-020 registra el cambio de proveedor de pagos que la compactación decidió sin CC: de Mercado Pago a pasarela simulada (sección 33). CC-001 a CC-009 siguen pendientes de aprobación.
 
+**Implementación del 11 de noviembre de 2026 (sub-batch 12.1, [#75](https://github.com/fjmp-dev/sce-control-escolar/issues/75)):** CC-011 se implementa con la migración `20261110160000_fecha_confirmacion`, una columna opcional que `PagosService.simular()` llena con la hora de la base antes de escribir el abono. La migración da a los pagos aplicados que ya existían la fecha de su abono. Con ella se miden CD-DAT-06 y, sin cambios al modelo, CD-DAT-03 (`api/prisma/verificacion/`). El campo no se expone en la API.
+
 **Desviaciones registradas:**
 
 - CC-001 a CC-006 se implementaron antes de aprobarse (NC-008).
 - El 10 de noviembre de 2026, el PR #30 (`1d2b48d`) fusionó en `develop` el código y las figuras de CC-007 a CC-010 y CC-012 a CC-019, y el código de CC-020, sin aprobación previa. CC-007, CC-008, CC-009, CC-010, CC-013, CC-015, CC-019 y CC-020 son Mayor, así que se incumplió la regla 5 del plan. Las aprobaciones de CC-010 y CC-012 a CC-020 son posteriores a la fusión; CC-011 se aprobó antes de implementarse. CC-007 a CC-009 siguen sin aprobar (ampliación de NC-008).
-- Las figuras de CC-020 se redibujan en 13.1, después de fusionar su código (Tabla 54 y regla 5; NC-014).
+- Las figuras de CC-020 se redibujan en 13.1, después de fusionar su código (Tabla 54 y regla 5; NC-014). Hecho el 11 de noviembre de 2026, junto con CC-022.
 - CC-016 a CC-020 no tienen issue con la etiqueta `cambio`: la solicitud solo está en `docs/gobierno/cambios/`. Los issues se abren en 11.3 (NC-008).
 - Desde el 10 de noviembre de 2026, quien aprueba es el mismo que solicita: FJMP ocupa todos los roles (`roles-y-raci.md`, apartado 6; NC-012).
 
@@ -90,3 +94,5 @@ Se llena al aprobar cada cambio. Quien aprueba no es quien solicitó el cambio (
 | CC-018 | Aprobado | FJMP | FJMP | No aplica | 10 de noviembre de 2026 |
 | CC-019 | Aprobado | FJMP | FJMP | No aplica | 10 de noviembre de 2026 |
 | CC-020 | Aprobado | FJMP | FJMP | FJMP | 10 de noviembre de 2026 |
+| CC-021 | Aprobado | FJMP | FJMP | No aplica | 11 de noviembre de 2026 |
+| CC-022 | Aprobado | FJMP | FJMP | FJMP | 11 de noviembre de 2026 |

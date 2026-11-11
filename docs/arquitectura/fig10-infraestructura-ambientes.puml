@@ -1,13 +1,14 @@
 @startuml fig10-infraestructura-ambientes
 ' Figura 10. Infraestructura de ambientes y flujo de integracion y
 ' despliegue continuos. Fuente: SCE-MC-001 v2.0, seccion 13.7 (Tabla 30)
-' y seccion 20.1 (puertas de promocion).
+' y seccion 20.1 (puertas de promocion). Actualizada por CC-018 (staging efimero),
+' CC-020 (pasarela simulada) y CC-022 (piloto de ensayo efimero).
 skinparam shadowing false
 
 rectangle "Desarrollo" as DEV #EEF2F6 {
   card "Docker Compose local\nNext.js + NestJS + PostgreSQL" as D1
   card "Datos sinteticos" as D2
-  card "Mercado Pago sandbox" as D3
+  card "Pasarela simulada (CC-020)" as D3
 }
 
 rectangle "Pruebas / integracion" as CI #EEF2F6 {
@@ -18,12 +19,13 @@ rectangle "Pruebas / integracion" as CI #EEF2F6 {
 }
 
 rectangle "Staging" as STG #EEF2F6 {
-  card "Mismo tag candidato que ira a piloto" as S1
-  card "Datos anonimizados" as S2
-  card "HTTPS, humo y pruebas de carga" as S3
+  card "Efimero en GitHub Actions (CC-018)\nmismo digest que ira a piloto" as S1
+  card "Datos sinteticos (RK-09)" as S2
+  card "HTTPS, humo del Anexo D,\nPlaywright y pruebas de carga" as S3
 }
 
-rectangle "Piloto" as PIL #EAF0F6 {
+rectangle "Piloto de ensayo (CC-022)" as PIL #EAF0F6 {
+  card "Efimero, sin usuarios ni datos;\nsecretos propios del ambiente piloto" as P0
   card "App y base de datos separadas" as P1
   card "HTTPS con proxy inverso" as P2
   card "Respaldo diario cifrado" as P3

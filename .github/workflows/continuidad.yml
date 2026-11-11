@@ -1,0 +1,134 @@
+# Continuidad (20.2, Tabla 56; CO-FIA-02): la operacion recurrente del ambiente, ensayada cada 12 horas en un staging
+# efimero (CC-018, CC-022). Cada corrida levanta el ambiente con las imagenes del commit, restaura el respaldo de la
+# corrida anterior (RTO, conteos y CD-DAT), genera actividad con Newman, respalda cifrado con age y mide el RPO contra el
+# respaldo anterior. El respaldo pasa a la siguiente corrida como artefacto; los domingos, ademas, a la release
+# "respaldos" como copia fuera del sitio, con la retencion de la matriz-retencion.md. Sin AGE_IDENTIDAD (llave privada,
+# docs/gobierno/cifrado-y-claves.md) respalda pero no puede restaurar, y lo avisa.
+name: Continuidad - respaldo y restauracion
+
+on:
+  schedule:
+    - cron: '17 */12 * * *' # GitHub solo programa el flujo de la rama principal
+  # Solo registra el flujo: GitHub no despacha un workflow que nunca corrio, y este aun no esta en main. Asi se lanza
+  # sobre release/1.0.0 (gh workflow run <archivo> --ref release/1.0.0). En el pull request el job se salta.
+  pull_request:
+    paths: [.github/workflows/continuidad.yml]
+  workflow_dispatch:
+    inputs:
+      fuera_del_sitio:
+        description: Copiar tambien el respaldo a la release "respaldos"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # release "respaldos"
+  actions: read # respaldo de la corrida anterior
+  packages: read
+
+concurrency:
+  group: continuidad
+  cancel-in-progress: false
+
+jobs:
+  continuidad:
+    name: Respaldo, restauracion y RPO (CO-FIA-02)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      AGE_IDENTIDAD: ${{ secrets.AGE_IDENTIDAD }}
+      ANTERIOR: anterior
+      RESPALDOS: respaldos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: age y el respaldo de la corrida anterior
+        run: |
+          sudo sed -i 's#http://azure.archive.ubuntu.com#http://archive.ubuntu.com#' /etc/apt/apt-mirrors.txt 2>/dev/null || true # el 11-nov-2026 el runner no resolvia el espejo de Azure
+          sudo apt-get install -y -qq age >/dev/null
+          corrida="$(gh run list -w continuidad.yml -s success -L 1 --json databaseId -q '.[0].databaseId')"
+          if [ -n "$corrida" ] && gh run download "$corrida" -n respaldo -D "$ANTERIOR"; then
+            ls -l "$ANTERIOR"
+          else
+            echo "::warning::no hay respaldo anterior: esta corrida empieza la cadena"
+          fi
+          # La contrasena de la semilla viaja cifrada con el respaldo: la base restaurada tiene esos hashes.
+          if [ -f "$ANTERIOR/contrasena-semilla.age" ] && [ -n "$AGE_IDENTIDAD" ]; then
+            CONTRASENA_SEMILLA="$(age -d -i <(printf '%s\n' "$AGE_IDENTIDAD") "$ANTERIOR/contrasena-semilla.age")"
+          else
+            CONTRASENA_SEMILLA="$(openssl rand -hex 16)"
+          fi
+          echo "::add-mask::$CONTRASENA_SEMILLA"
+          echo "CONTRASENA_SEMILLA=$CONTRASENA_SEMILLA" >> "$GITHUB_ENV"
+      - name: Ambiente con las imagenes del commit (etapa 6)
+        env:
+          CONSERVAR: 1
+          ETIQUETA: continuidad-${{ github.run_number }}
+        run: |
+          ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}"
+          scripts/staging.sh "$ref/sce-api:sha-${GITHUB_SHA:0:12}" "$ref/sce-portal:sha-${GITHUB_SHA:0:12}"
+      - name: Restauracion cronometrada del respaldo anterior (RTO menor a 4 h)
+        run: |
+          respaldo="$(ls "$ANTERIOR"/sce-*.dump.age 2>/dev/null | tail -1)"
+          if [ -z "$respaldo" ]; then
+            echo "- Restauracion: sin respaldo anterior" > reportes/staging/restauracion.md
+          elif [ -z "$AGE_IDENTIDAD" ]; then
+            echo "::warning::falta el secreto AGE_IDENTIDAD: no se puede restaurar (inventario-de-ambientes.md, apartado 4)"
+            echo "- Restauracion: pendiente, falta AGE_IDENTIDAD" > reportes/staging/restauracion.md
+          else
+            scripts/restauracion.sh "$respaldo"
+          fi
+      - name: Actividad sobre la base restaurada (Newman)
+        run: NEWMAN_OPCIONES=--insecure scripts/newman.sh https://localhost/api reportes/staging/newman-actividad
+      - name: Respaldo cifrado y RPO (menor a 24 h)
+        run: |
+          mkdir -p "$RESPALDOS" && cp "$ANTERIOR/inventario.csv" "$RESPALDOS/" 2>/dev/null || true # el inventario sigue la cadena
+          scripts/respaldo.sh "$RESPALDOS" sce-api sce-portal sce-proxy
+          printf '%s' "$CONTRASENA_SEMILLA" | age -r "$(cat infra/respaldos/destinatario.txt)" -o "$RESPALDOS/contrasena-semilla.age"
+          previo="$(ls "$ANTERIOR"/sce-*.dump.age 2>/dev/null | tail -1)"
+          {
+            echo "### Respaldo y RPO (CO-FIA-02)"
+            tail -1 "$RESPALDOS/inventario.csv" | awk -F, '{print "- Respaldo: " $2 ", " $3 " bytes, " $6 " filas, sha256 " substr($4, 1, 16)}'
+            if [ -n "$previo" ]; then
+              t="$(basename "$previo" | sed -E 's/^sce-([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})Z.*/\1-\2-\3T\4:\5:\6Z/')"
+              rpo=$(( ($(date -u +%s) - $(date -u -d "$t" +%s)) / 3600 ))
+              echo "- RPO: $rpo h desde el respaldo anterior ($t; meta: menos de 24 h)"
+              [ "$rpo" -lt 24 ] || echo "::error::RPO de $rpo h"
+            else
+              echo "- RPO: primera corrida de la cadena"
+            fi
+            cat reportes/staging/restauracion.md
+          } | tee -a "$GITHUB_STEP_SUMMARY" > reportes/staging/continuidad.md
+          ! grep -q '::error::RPO' reportes/staging/continuidad.md
+      - name: Calidad de datos despues de la actividad (CD-DAT)
+        run: |
+          set -a && . .staging/ambiente.env && set +a
+          scripts/calidad-datos.sh reportes/staging/calidad-datos-continuidad
+      - uses: actions/upload-artifact@v4
+        with:
+          name: respaldo
+          path: respaldos/
+          retention-days: 35
+      - name: Copia fuera del sitio, los domingos (release "respaldos"; retencion de la Tabla 62)
+        if: inputs.fuera_del_sitio || github.event_name == 'schedule'
+        run: |
+          [ "$GITHUB_EVENT_NAME" != schedule ] || { [ "$(date -u +%u)" = 7 ] && [ "$(date -u +%H)" -lt 12 ]; } || exit 0
+          gh release view respaldos >/dev/null 2>&1 || gh release create respaldos --prerelease --title "Respaldos cifrados (age)" \
+            --notes "Copia fuera del sitio de los respaldos de continuidad (CO-FIA-02). Cifrados con age; la llave no esta en GitHub."
+          gh release upload respaldos "$RESPALDOS"/sce-*.age "$RESPALDOS/inventario.csv" --clobber
+          # Retencion: semestre en curso mas uno anterior (matriz-retencion.md), un ano.
+          limite="$(date -u -d '-365 days' +%Y%m%d)"
+          gh release view respaldos --json assets -q '.assets[].name' | while read -r a; do
+            [[ "$a" =~ ^sce-([0-9]{8})T ]] && [ "${BASH_REMATCH[1]}" -lt "$limite" ] && gh release delete-asset respaldos "$a" -y || true
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: continuidad-${{ github.run_number }}
+          path: reportes/staging/
+          retention-days: 90

@@ -1,0 +1,6 @@
+apiVersion: 1
+providers:
+  - name: sce
+    folder: SCE
+    type: file
+    options: { path: /var/lib/grafana/tableros }

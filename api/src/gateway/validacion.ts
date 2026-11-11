@@ -33,6 +33,19 @@ export const Clave = () =>
     Matches(/^[A-Za-z0-9][A-Za-z0-9-]*$/),
   );
 
+/** Clave de periodo: año y semestre, como `2027A` (D-11). */
+export const ClaveDePeriodo = () =>
+  applyDecorators(
+    ApiProperty({ example: '2027A', pattern: String.raw`^\d{4}[AB]$` }),
+    IsString(),
+    Matches(/^\d{4}[AB]$/),
+  );
+
+/** `/…/{clave}` de un periodo. Lo comparten académico, expediente y reportes, que no dependen entre sí (Fig. 2). */
+export class PeriodoParam {
+  @ClaveDePeriodo() clave!: string;
+}
+
 /** Matrícula: de 7 a 10 dígitos (D-11, provisional hasta ratificarla con el catálogo institucional). */
 export const Matricula = () =>
   applyDecorators(

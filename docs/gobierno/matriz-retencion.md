@@ -1,6 +1,6 @@
 # Matriz de retención documental — SCE
 
-**Fuente:** SCE-MC-001 v2.0, sección 42 (Tabla 62). **Vigente desde:** 5 de noviembre de 2026.
+**Fuente:** SCE-MC-001 v2.0, sección 42 (Tabla 62). **Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batches 13.2 y 13.3: respaldos cifrados, registros del piloto, métricas y revisión de accesos).
 
 Las columnas Documento, Responsable y Retención son las de la Tabla 62. La columna Ubicación precisa dónde se cumple en este proyecto.
 
@@ -13,9 +13,22 @@ Las columnas Documento, Responsable y Retención son las de la Tabla 62. La colu
 | Informes de prueba | QA | Dos años | GitHub Actions (90 días) y `docs/evidencias/` en cada cierre de fase |
 | Tickets y acciones correctivas | QA | Dos años | GitHub Issues y `docs/calidad/registro-no-conformidades.md` |
 | Informes de auditoría | Auditor | Tres años | Repositorio del auditor; las respuestas del auditado, en `docs/auditoria/` |
-| Registros y bitácora del piloto | DevOps | Semestre más uno | Almacenamiento con acceso restringido; se define en el Batch 13 |
-| Respaldos de base de datos | DevOps | Según objetivos de continuidad: semestre en curso más uno anterior (Tabla 56) | Respaldo cifrado; se define en el Batch 13 |
+| Registros y bitácora del piloto | DevOps | Semestre más uno | Registros de `sce-db` (pgAudit), `sce-api`, `sce-portal` y `sce-proxy`, cifrados con age junto a cada respaldo (`*.registros.gz.age`, `scripts/respaldo.sh`); misma ubicación y retención que los respaldos. Rotación local: 10 archivos de 50 MB por contenedor |
+| Respaldos de base de datos | DevOps | Según objetivos de continuidad: semestre en curso más uno anterior (Tabla 56) | Cifrados con age (`cifrado-y-claves.md`): artefacto `respaldo` de `continuidad.yml` (35 días) y release `respaldos` semanal fuera del sitio (un año). Detalle en `inventario-de-ambientes.md`, apartado 7 |
+| Métricas y alertas | DevOps | 40 días en Prometheus; la disponibilidad mensual, como los informes de prueba | Prometheus del nodo de aplicación (`infra/monitoreo/`). La tabla mensual de `scripts/disponibilidad.py` va al tablero de indicadores; los correos de alerta, al buzón de DevOps |
+| Revisión de accesos | Seguridad | Dos años, como los tickets | Issue mensual "Revisión de accesos AAAA-MM" de `seguridad-operativa.yml`, con su artefacto (90 días), y `docs/gobierno/revision-de-accesos.md` |
+
+**Expediente académico (fuera de la Tabla 62; D-18, por ratificar).** Son datos personales, no documentos del proyecto. El plazo real lo fija el catálogo de disposición documental de la universidad; mientras no se tenga, rige la propuesta de D-18 en `docs/calidad/reglas-de-negocio.md`. Hoy el SCE no borra nada.
+
+| Dato | Responsable | Retención propuesta (D-18) | Ubicación concreta |
+|---|---|---|---|
+| Expediente: alumno, historial, inscripciones y calificaciones | Control escolar | Todo, mientras el alumno esté activo. Tras la baja o el egreso, sin supresión: sustenta constancias, certificados y revalidaciones | Tablas `alumno`, `historial`, `inscripcion`, `inscripcion_grupo` y `calificacion` |
+| Trámites y documentos emitidos | Control escolar | Como el expediente | Tablas `tramite` y `documento` |
+| Estado de cuenta, movimientos y pagos | Caja | Cinco años desde el último movimiento | Tablas `cuenta_alumno`, `movimiento` y `pago` |
+| Cuentas de usuario | Administrador del sistema | Baja al egreso, a la baja del alumno o al fin de la relación laboral. La fila se conserva mientras la bitácora la referencie | Tablas `usuario` y `usuario_rol` |
+| Bitácora del SCE | Seguridad | Como el dato que respalda. La fila "Registros y bitácora del piloto" queda para los registros JSON y pgAudit | Tabla `bitacora`, inmutable |
+| Copias fuera del SCE: CSV, documentos e impresiones | Quien descarga | Fuera del control del SCE | Equipo de quien descarga (`docs/gobierno/datos-personales/inventario.md`) |
 
 **Revisión:** en cada cierre de fase, QA comprueba que la retención se cumpla.
 
-**Fuera de la Tabla 62:** la retención del expediente académico como tal no está definida en el manual. PA-SCE-001 lo señala en su Parte B y se atiende en el Batch 12.
+**Fuera de la Tabla 62:** la retención del expediente académico no está definida en el manual. PA-SCE-001 lo señala en su Parte B (AU-40). Se atiende con las filas de arriba y D-18, en el sub-batch 12.6 (10 de noviembre de 2026).

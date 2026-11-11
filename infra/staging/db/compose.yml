@@ -9,6 +9,7 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?} # el superusuario solo entra por el socket local (pg_hba.conf)
       SCE_APP_PASSWORD: ${SCE_APP_PASSWORD:?}
+      SCE_MONITOR_PASSWORD: ${SCE_MONITOR_PASSWORD:?}
       RED_APP: ${RED_APP:?}
       NOMBRE_DB: ${NOMBRE_DB:?}
     ports: ['${ESCUCHA:?}:5432:5432'] # solo en la interfaz privada: la base no se expone a internet
