@@ -1,7 +1,7 @@
 # Registro de no conformidades y acciones correctivas — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 40 (clasificación en la Tabla 61; ciclo en la 40.2).
-**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batch 13.6: seguimiento de NC-014 a NC-018, y NC-019 a NC-021, de la autoauditoría "Antes del piloto").
+**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 11 de noviembre de 2026 (sub-batch 13.6: seguimiento de NC-014 a NC-018, y NC-019 a NC-021, de la autoauditoría "Antes del piloto"; sub-batch 14.1: NC-022).
 
 Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001 y al contrastar el repositorio contra el manual completo. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
 
@@ -34,6 +34,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-019 | Mayor | Criterio 7 de liberación (36.1) incumplido: no hay credenciales de pago del piloto, porque la pasarela es simulada | AU-24, AU-33 | FJMP | 11 de diciembre de 2026 (solicitud a la institución) | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
 | NC-020 | Mayor | RNF-USU-002 y RNF-USU-001 (Must) sin la evaluación con personas: ni revisión con lector de pantalla (CO-ACC-03) ni SUS | AU-18, AU-32 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
 | NC-021 | Mayor | `v1.0.0` va al piloto de ensayo con la puerta 4 incumplida: el acta de la fase 4 no está firmada | AU-07, AU-33 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 11 de noviembre de 2026; la confirma al firmar el acta de liberación |
+| NC-022 | Menor | `v1.0.0` va al piloto de ensayo sin el ensayo de rollback en staging que pide la puerta 6; solo hay ensayo local | AU-33, AU-34 | FJMP | 20 de noviembre de 2026 | Abierta con plan | No aplica: Menor |
 
 **Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
 
@@ -390,3 +391,21 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción preventiva:** una liberación con usuarios reales empieza solo con las actas de fase firmadas. Su acta de liberación cita la fecha de firma de cada una.
 - **Verificación de eficacia:** el auditor revisa las firmas y sus fechas.
 - **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 11 de noviembre de 2026, solo para el piloto de ensayo sin usuarios. La registró el asistente de IA con la autorización que FJMP dio ese día para terminar el Batch 14; FJMP la confirma al firmar el acta de liberación. Que acepte quien produce es parte de NC-012.
+
+## NC-022 — Rollback de `v1.0.0` sin ensayo en staging
+
+- **Fuente:** sub-batch 14.1, al liberar `v1.0.0`, 11 de noviembre de 2026.
+- **Descripción:** la puerta 6 de 20.1 pide "procedimiento de rollback probado". El plan era ensayarlo en la etapa 8, en staging, desplegando `v1.0.0-rc.2` y volviendo a `rc.1`. `rc.2` no se etiquetó y ese ensayo no se hizo. El rollback solo se ensayó en local, con las etiquetas `v9.9.9-rc.1` y `rc.2`: volvió en 25 s (`docs/evidencias/ensayos/2026-11-11-restauracion-y-rollback.md`). `v1.0.0` se despliega al piloto de ensayo con esa evidencia.
+- **Severidad:** Menor, por decisión del Product Owner. El procedimiento existe y funcionó en local; lo que falta es probarlo en el ambiente de la etapa 8. Si se aplica el criterio de NC-021 (una puerta incumplida es Mayor), sería Mayor. Queda a revisión de FJMP y del auditor.
+- **Evidencia:** `acta-promocion-v1.0.0-rc.2.md` ("no se ejecutó"); `auditoria-antes-del-piloto.md`, puerta 6; `acta-liberacion-v1.0.0.md`, puerta 6 y criterio 6.
+- **Causa (cinco porqués):**
+  1. ¿Por qué no hubo ensayo en staging? `rc.2` no se etiquetó.
+  2. ¿Por qué? El 11 de noviembre, hacia las 17:30 UTC, el Product Owner decidió liberar sin `rc.2` tras unas 4 h con el PR #106 bloqueado.
+  3. ¿Por qué estuvo bloqueado? La etapa 7 falló cinco veces: el DNS de los runners de GitHub no resolvía los espejos de Ubuntu al instalar los navegadores de Playwright. GitHub no reportó incidente.
+  4. ¿Por qué eso impide ensayar el rollback? El ensayo solo existe en la etapa 8 con una segunda candidata, y esa candidata debe pasar antes la etapa 7, que instala desde la red.
+  5. ¿Por qué depende de la red? No hay caché ni imagen propia con los navegadores y sus dependencias.
+- **Contención:** el piloto de ensayo no tiene usuarios ni datos. El procedimiento de rollback está escrito en `inventario-de-ambientes.md`, apartado 6, y se ensayó en local.
+- **Acción correctiva:** ensayar el rollback en la etapa 8 con la siguiente candidata, de ella a `v1.0.0`, a más tardar el 20 de noviembre de 2026 y antes de cualquier liberación con usuarios. Se registra en `docs/evidencias/ensayos/`.
+- **Acción preventiva:** `scripts/navegadores.sh` instala los navegadores con resolvedores públicos, tiempos de espera y reintento (PR #106). Queda pendiente guardar los navegadores en caché para no depender de la red.
+- **Verificación de eficacia:** el auditor revisa la corrida de la etapa 8 con el rollback y su tiempo.
+- **Registro:** lo registró el asistente de IA por instrucción de FJMP del 11 de noviembre de 2026 ("ya entreguemos el sistema"). FJMP lo confirma al firmar el acta de liberación.
