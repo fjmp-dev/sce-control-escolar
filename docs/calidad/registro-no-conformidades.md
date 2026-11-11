@@ -29,7 +29,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Abierta con plan | No aplica: Menor |
 | NC-015 | Menor | Ramas y etiquetas fuera de la Tabla 31 y de 15.2: fases 1 a 3 sin `release/x.y.z` ni fusión a `main`, y correcciones en `feature/` | AU-09 | FJMP | No se corrige: se declara en cada acta | Abierta; desviación declarada | No aplica: Menor |
 | NC-016 | Menor | Issues de batch sin puntos de historia: la densidad de defectos no se pudo calcular al cerrar las fases 1 a 3 | AU-39, AU-43 | FJMP | Antes del sub-batch 12.1 | Corregida en 11.3, con estimación posterior a la construcción; falta la acción preventiva | No aplica: Menor |
-| NC-017 | Menor | Análisis de riesgos de la fase 4 fuera de tiempo: AMFE de pagos hecho después de construir y STRIDE sin pagos, caja, trámites ni reportes | AU-37 | FJMP | Sub-batch 12.2 | Abierta con plan. AMFE hecho en 11.3 | No aplica: Menor |
+| NC-017 | Menor | Análisis de riesgos de la fase 4 fuera de tiempo: AMFE de pagos hecho después de construir y STRIDE sin pagos, caja, trámites ni reportes | AU-37 | FJMP | Sub-batch 12.2 | Corregida en 12.2 (`stride.md` v1.7 y MJ-006 en la plantilla de PR); pendiente de verificación | No aplica: Menor |
 | NC-018 | Menor | Sin conciliación de pagos (CD-DAT-03) ni medición del reflejo (CD-DAT-06) al cierre de la fase 4 | AU-24, AU-39 | FJMP | Sub-batch 12.1 | Abierta con plan | No aplica: Menor |
 
 **Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
@@ -295,6 +295,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** STRIDE v1.7 con pagos, caja, trámites y reportes (sub-batch 12.2, como ya lo prevé el plan). Acciones del AMFE en 12.1.
 - **Acción preventiva:** el PR de un batch que toque dinero, cupos o calificaciones enlaza su AMFE y sus filas STRIDE; si no, no se fusiona (MJ-006).
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), revisa el PR de 12.2.
+- **Ejecución, 11 de noviembre de 2026 (sub-batch 12.2, PR del Batch 12):** `stride.md` v1.7 agrega pagos, caja, trámites y reportes, y cierra la fila A04 del apartado de controles. La plantilla de PR pide el modo del AMFE y la fila STRIDE de todo cambio que toque dinero, cupos o calificaciones (MJ-006). Queda la verificación de eficacia: el primer PR de esa clase después de este debe traer ambas referencias.
 
 ## NC-018 — Sin conciliación de pagos ni medición del reflejo al cierre de la fase 4
 

@@ -57,6 +57,14 @@ export class CuentaRepository {
     return this.prisma.cliente().pago.findUnique({ where: { id: BigInt(id) }, select: PAGO });
   }
 
+  /**
+   * CC-011: la hora en que la pasarela confirma el pago, con el reloj de la base. clock_timestamp() y no now(), que es
+   * la del inicio de la transacción; el abono, que va después, toma la suya (CD-DAT-06).
+   */
+  async confirmar(id: bigint) {
+    await this.prisma.cliente().$executeRaw`UPDATE pago SET fecha_confirmacion = clock_timestamp() WHERE id = ${id}`;
+  }
+
   cambiarEstado(id: bigint, estado: string) {
     return this.prisma.cliente().pago.update({ where: { id }, data: { estado }, select: PAGO });
   }

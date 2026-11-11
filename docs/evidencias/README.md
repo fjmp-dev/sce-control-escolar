@@ -12,6 +12,8 @@ docs/evidencias/
     corridas.md         Identificador de corrida, commit, etiqueta y resultado
     reportes/           Cobertura, Trivy, Newman, ZAP, axe, Lighthouse y demás
     capturas/           Video y capturas de Cypress que sustentan los casos
+  ensayos/              Actas de ensayos de mesa, con fecha en el nombre
+  seguridad/            Informes de ZAP y sus reportes, con fecha en el nombre (docs/calidad/informe-zap.md)
 ```
 
 ## Reglas

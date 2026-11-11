@@ -561,6 +561,13 @@ describe('Pagos simulados y tramites (RF-006, RF-007)', () => {
       error: 'No tienes adeudo.',
       valores: { importe: '10' },
     });
+    // WCAG 3.3.1 (HA-07): el rechazo por saldo marca el importe, para unir su corrección con aria-describedby.
+    responder(409, { codigo: 'IMPORTE_MAYOR_AL_SALDO', mensaje: 'El importe rebasa tu saldo.' });
+    expect(await iniciarPago({}, formulario({ importe: '99999' }))).toEqual({
+      error: 'El importe rebasa tu saldo.',
+      campos: ['importe'],
+      valores: { importe: '99999' },
+    });
     responder(409, { codigo: 'PAGO_NO_APLICABLE', mensaje: 'Ya no se aplica.', campos: [] });
     expect((await simularPago({}, formulario({ id: '7' }))).error).toBe('Ya no se aplica.');
     responder(400, { codigo: 'DATOS_INVALIDOS', mensaje: 'x', campos: ['importe'] });

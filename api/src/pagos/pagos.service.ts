@@ -160,6 +160,7 @@ export class PagosService {
             'adeudo, inicia otro pago por el saldo vigente.',
         );
       }
+      await this.cuentas.confirmar(fila.id); // CC-011: antes del abono, para que CD-DAT-06 mida la demora del reflejo
       await this.cuentas.movimiento({
         matricula,
         concepto: `Pago en línea ${fila.referencia}`,

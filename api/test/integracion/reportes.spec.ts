@@ -53,10 +53,16 @@ beforeAll(async () => {
     data: { facultadClave: 'RPT' },
   });
   await prisma.alumno.update({ where: { matricula: a4 }, data: { estatus: 'baja' } });
-  await prisma.cuentaAlumno.update({
-    where: { matricula: a1 },
-    data: { saldo: 400, movimientos: { create: { concepto: 'Pago', importe: 600, tipo: 'abono' } } },
-  });
+  // El abono de A1 entra por la pasarela simulada, como en producción: con su pago aplicado y su asiento (CD-DAT-03,
+  // CD-DAT-06 y CS-SEG-06 cuentan con eso en la base que comparten las pruebas).
+  const alumnoA1 = await entrar(app, `a${a1}@sce.test`);
+  const { id: pago } = (await http().post('/pagos').set('Authorization', alumnoA1).send({ importe: 600 }).expect(201))
+    .body;
+  await http()
+    .post(`/pagos/${pago}/simulacion`)
+    .set('Authorization', alumnoA1)
+    .send({ resultado: 'aprobado' })
+    .expect(200);
   await prisma.cuentaAlumno.update({
     where: { matricula: a2 },
     data: { saldo: 0, movimientos: { create: { concepto: 'Beca', importe: 500, tipo: 'beca' } } },

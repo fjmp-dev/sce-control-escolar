@@ -72,11 +72,45 @@ jobs:
             docker buildx imagetools create --tag "$ref:$ETIQUETA" "$ref@$digest"
             echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
           done
-      - name: Staging con la topologia de la Fig. 9, despliegue y humo del Anexo D (puerta 2 de la sec. 20.1)
+      - name: Contraseña de la semilla de esta corrida, enmascarada, para staging y Playwright (20.2)
+        run: |
+          CONTRASENA_SEMILLA="$(openssl rand -hex 16)"
+          echo "::add-mask::$CONTRASENA_SEMILLA"
+          echo "CONTRASENA_SEMILLA=$CONTRASENA_SEMILLA" >> "$GITHUB_ENV"
+      - name: Staging con la topologia de la Fig. 9, despliegue, humo del Anexo D (puerta 2 de la sec. 20.1) y calidad de datos
         run: scripts/staging.sh "$IMAGEN_API" "$IMAGEN_PORTAL"
+        env:
+          CONSERVAR: 1 # sigue arriba para la matriz de compatibilidad; el runner se descarta al terminar el job
+      # CO-COM-01 (Tabla 50) contra el staging recién verificado, con la contraseña de su semilla. Las etiquetas
+      # anteriores a la matriz no traen web/playwright.config.ts y se saltan estos pasos.
+      - uses: actions/setup-node@v4
+        if: hashFiles('web/playwright.config.ts') != ''
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Navegadores de Playwright (Tabla 50)
+        id: navegadores
+        if: hashFiles('web/playwright.config.ts') != ''
+        run: npm ci && npx playwright install --with-deps chromium firefox webkit
+        working-directory: web
+        env:
+          CYPRESS_INSTALL_BINARY: 0
+      - name: Compatibilidad Must - Chrome 1366 y 1920, iPhone, Android y zoom 200 % (Tabla 50, CO-COM-01)
+        if: steps.navegadores.outcome == 'success'
+        run: scripts/playwright.sh https://localhost reportes/staging/playwright/must --project='must-*'
+      - name: Compatibilidad Should - Firefox y Edge, no bloquea (Tabla 50, CO-COM-01)
+        if: ${{ !cancelled() && steps.navegadores.outcome == 'success' }}
+        continue-on-error: true
+        run: scripts/playwright.sh https://localhost reportes/staging/playwright/should --project='should-*'
       - name: Registro del despliegue (31.2)
         if: always()
-        run: cat reportes/staging/despliegue.md reportes/staging/rechazos.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+        run: |
+          cat reportes/staging/despliegue.md reportes/staging/rechazos.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          if [ -d reportes/staging/playwright ]; then
+            scripts/matriz-compatibilidad.sh reportes/staging/playwright/*/junit.xml 2>/dev/null \
+              | tee reportes/staging/playwright/matriz.md >> "$GITHUB_STEP_SUMMARY" || true
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:

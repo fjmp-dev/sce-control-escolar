@@ -1,9 +1,10 @@
 """Calidad de datos del expediente y la inscripcion con Great Expectations (Tabla 39, Tabla 42 y AU-22).
 
-Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01, 02, 04 y 05,
-ocupación de grupos, CS-SEG-06 en calificación, plantel, pago y constancia, y la tasa de conclusión de la Tabla 59) y con
-expectativas de unicidad, completitud y formato. Escribe Data Docs en HTML y un resumen en JSON.
-Falla si alguna expectativa no se cumple, si no evaluo nada o si la tabla alumno esta vacia (una tabla vacia lo aprueba todo).
+Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01 a 06, ocupación de
+grupos, CS-SEG-06 en calificación, plantel, pago y constancia, y la tasa de conclusión de la Tabla 59) y con expectativas
+de unicidad, completitud y formato de la Tabla 16, cada una con su atributo de ISO/IEC 25012. Escribe Data Docs en HTML y
+un resumen en JSON. Falla si alguna expectativa no se cumple, si no evaluó nada o si alumno, inscripción o los pagos
+aplicados están vacíos (una tabla vacía lo aprueba todo).
 Uso: python calidad-datos.py <url-postgres> <dir-de-consultas> <dir-de-salida>
 """
 
@@ -25,12 +26,24 @@ def consulta(archivo: str) -> str:
     return "\n".join(lineas).strip().rstrip(";")
 
 
+def iso(atributo: str, texto: str) -> dict:
+    """Descripción y meta con el atributo de ISO/IEC 25012 (Tabla 16) que verifica la expectativa."""
+    return {"description": f"{texto} (Tabla 16, {atributo})", "meta": {"iso25012": atributo}}
+
+
 def suite(nombre: str, tabla: str, expectativas: list) -> gx.ValidationDefinition:
-    lote = fuente.add_table_asset(tabla, table_name=tabla).add_batch_definition_whole_table(f"{tabla}-completa")
+    # tabla: el nombre de una tabla o una consulta que la acota, para que el mínimo de filas cuente solo esas.
+    activo = (
+        fuente.add_query_asset(nombre, query=tabla)
+        if tabla.startswith("SELECT")
+        else fuente.add_table_asset(nombre, table_name=tabla)
+    )
+    lote = activo.add_batch_definition_whole_table(f"{nombre}-completa")
     conjunto = contexto.suites.add(gx.ExpectationSuite(name=nombre, expectations=expectativas))
     return contexto.validation_definitions.add(gx.ValidationDefinition(name=nombre, data=lote, suite=conjunto))
 
 
+APLICADOS = "SELECT * FROM pago WHERE estado = 'aplicado'"
 validaciones = [
     suite(
         "expediente",
@@ -139,6 +152,93 @@ validaciones = [
         ],
     ),
     suite(
+        "conciliacion",
+        APLICADOS,
+        [
+            # Sin pagos aplicados, CD-DAT-03 pasaría en vacío.
+            gxe.ExpectTableRowCountToBeBetween(min_value=1, **iso("Completitud", "Hay pagos aplicados que conciliar")),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cd-dat-03.sql"),
+                **iso("Consistencia", "CD-DAT-03: saldo contra movimientos, pago contra abono y corte contra abonos"),
+            ),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=(
+                    "SELECT 'pago ' || id FROM pago WHERE importe <= 0 OR importe <> round(importe, 2) UNION ALL "
+                    "SELECT 'movimiento ' || id FROM movimiento WHERE importe <= 0 OR importe <> round(importe, 2)"
+                ),
+                **iso("Precisión", "Importes de pagos y movimientos mayores que cero y con dos decimales"),
+            ),
+        ],
+    ),
+    suite(
+        "actualidad",
+        APLICADOS,
+        [
+            gxe.ExpectTableRowCountToBeBetween(min_value=1, **iso("Completitud", "Hay pagos aplicados que medir")),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cd-dat-06.sql"),
+                **iso("Actualidad", "CD-DAT-06: el reflejo del pago tarda menos de 60 s en el 95 % de los casos"),
+            ),
+        ],
+    ),
+    suite(
+        "tramites",
+        "tramite",
+        [
+            gxe.ExpectColumnValuesToBeInSet(
+                column="tipo",
+                value_set=["constancia", "no_adeudo", "historial"],
+                **iso("Conformidad", "Tipo de trámite del catálogo de RF-007"),
+            ),
+            gxe.ExpectColumnValuesToBeInSet(
+                column="estado",
+                value_set=["recibida", "en_proceso", "lista", "entregada", "rechazada"],
+                **iso("Consistencia", "Estado del trámite de la Fig. 6"),
+            ),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=(
+                    "SELECT t.folio FROM tramite t LEFT JOIN documento d ON d.tramite_folio = t.folio "
+                    "WHERE (d.folio IS NOT NULL) <> (t.estado IN ('lista', 'entregada'))"
+                ),
+                **iso("Consistencia", "Solo el trámite listo o entregado tiene documento, y siempre lo tiene"),
+            ),
+        ],
+    ),
+    suite(
+        "documentos",
+        "documento",
+        [
+            gxe.ExpectColumnValuesToMatchRegex(
+                column="hash",
+                regex=r"^[0-9a-f]{64}$",
+                **iso("Conformidad", "El hash del documento es un SHA-256 en hexadecimal, de 64 caracteres"),
+            ),
+        ],
+    ),
+    # D-11, provisional hasta ratificarla con el catálogo institucional: los mismos patrones que valida la API.
+    suite(
+        "formato-materia",
+        "materia",
+        [
+            gxe.ExpectColumnValuesToMatchRegex(
+                column="clave",
+                regex=r"^[A-Za-z0-9][A-Za-z0-9-]*$",
+                **iso("Conformidad", "D-11: clave de materia alfanumérica con guion, como ISW-101"),
+            ),
+        ],
+    ),
+    suite(
+        "formato-periodo",
+        "periodo",
+        [
+            gxe.ExpectColumnValuesToMatchRegex(
+                column="clave",
+                regex=r"^[0-9]{4}[AB]$",
+                **iso("Conformidad", "D-11: periodo con año de cuatro dígitos más A o B, como 2027A"),
+            ),
+        ],
+    ),
+    suite(
         "bitacora-constancia",
         "tramite",
         [
@@ -163,6 +263,7 @@ for corrida in resultado.run_results.values():
                 "expectativa": config.type,
                 "columna": config.kwargs.get("column"),
                 "descripcion": config.description,
+                "iso25012": (config.meta or {}).get("iso25012"),
                 "exito": r.success,
                 "observado": r.result.get("observed_value", r.result.get("unexpected_count")),
             }

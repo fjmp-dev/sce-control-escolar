@@ -2,7 +2,9 @@
 // una sola vez aunque la pasarela repita o empalme el aviso (R-14), recibo solo del dueño o de caja, y corte del día.
 // CI-PAG-01 (#69): dos intentos por el mismo adeudo no dejan el saldo negativo. R-15: un fallo a mitad no confirma el
 // pago. R-21 y CS-SEG-06: cada cambio de un pago, también el rechazo de la pasarela, deja su asiento. R-23 y CS-SEG-03:
-// un alumno no ve ni paga el pago de otro. R-24: lo que hace caja no toca el historial académico.
+// un alumno no ve ni paga el pago de otro. R-24: lo que hace caja no toca el historial académico. CD-DAT-03 y CD-DAT-06
+// (CC-011): tras todo eso, el estado de cuenta concilia con los abonos y el corte, y cada pago aplicado tiene su fecha de
+// confirmación.
 import { readFileSync } from 'node:fs';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -25,7 +27,7 @@ const alumnoConAdeudo = async (adeudo: number) => {
 const pagar = (token: string, importe: number) => http().post('/pagos').set('Authorization', token).send({ importe });
 const simular = (token: string, id: number, resultado: string) =>
   http().post(`/pagos/${id}/simulacion`).set('Authorization', token).send({ resultado });
-const csSeg06 = () => prisma.$queryRawUnsafe(readFileSync('prisma/verificacion/cs-seg-06-pago.sql', 'utf8'));
+const verificacion = (caso: string) => prisma.$queryRawUnsafe(readFileSync(`prisma/verificacion/${caso}.sql`, 'utf8'));
 
 beforeAll(async () => {
   ({ app, prisma } = await crearApp());
@@ -121,6 +123,10 @@ describe('Pago simulado: se aplica una sola vez (R-14)', () => {
     expect(await saldo(matricula)).toBe(0);
     expect(await prisma.movimiento.count({ where: { pagoId: BigInt(id) } })).toBe(1);
     expect(await prisma.bitacora.count({ where: { entidad: `pago:${id}`, accion: 'pago_aplicado' } })).toBe(1);
+    // CC-011: la confirmación queda con la hora de la base, una sola vez; los avisos repetidos no la cambian.
+    const { fechaConfirmacion } = await prisma.pago.findUniqueOrThrow({ where: { id: BigInt(id) } });
+    expect(fechaConfirmacion).toEqual(expect.any(Date));
+    expect(new Date(aplicado.body.aplicadoEn).getTime() - fechaConfirmacion!.getTime()).toBeLessThan(60_000);
     const recibo = await http().get(`/pagos/${id}`).set('Authorization', token).expect(200);
     expect(recibo.body).toMatchObject({
       id,
@@ -157,7 +163,8 @@ describe('Pago simulado: se aplica una sola vez (R-14)', () => {
     );
     expect((await simular(token, id, 'aprobado').expect(409)).body.codigo).toBe('PAGO_NO_APLICABLE');
     expect(await saldo(matricula)).toBe(700);
-    expect(await csSeg06()).toEqual([]); // CS-SEG-06: todo pago cambiado por la API hasta aquí tiene su asiento
+    expect((await prisma.pago.findUniqueOrThrow({ where: { id: BigInt(id) } })).fechaConfirmacion).toBeNull();
+    expect(await verificacion('cs-seg-06-pago')).toEqual([]); // CS-SEG-06: todo pago cambiado por la API tiene su asiento
   });
 
   it('R-23 y CS-SEG-03: un pago ajeno no existe para otro alumno; caja si ve el recibo', async () => {
@@ -335,5 +342,10 @@ describe('Corte de caja', () => {
     expect(corte.body.total).toBeCloseTo(suma, 2);
     const otroDia = await http().get('/pagos?fecha=2001-01-01').set('Authorization', caja).expect(200);
     expect(otroDia.body).toEqual({ fecha: '2001-01-01', pagos: [], total: 0 });
+  });
+
+  it('CD-DAT-03 y CD-DAT-06: tras los pagos de la API, cero diferencias y cero pagos aplicados sin confirmación', async () => {
+    expect(await verificacion('cd-dat-03')).toEqual([]);
+    expect(await verificacion('cd-dat-06')).toEqual([]);
   });
 });

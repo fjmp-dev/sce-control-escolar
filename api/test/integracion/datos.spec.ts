@@ -5,6 +5,14 @@ import { USUARIO_TECNICO } from '../../src/bitacora/bitacora.service';
 
 const consulta = (caso: string) => readFileSync(`prisma/verificacion/${caso}.sql`, 'utf8');
 const prisma = new PrismaClient();
+/** Inyecta un caso en una transacción que se revierte: la base que comparten las pruebas no cambia. */
+const revertido = (caso: (tx: Prisma.TransactionClient) => Promise<void>) =>
+  expect(
+    prisma.$transaction(async (tx) => {
+      await caso(tx);
+      throw new Error('revertir');
+    }),
+  ).rejects.toThrow('revertir');
 
 afterAll(() => prisma.$disconnect());
 
@@ -76,13 +84,6 @@ describe('CD-DAT-05 completitud de la inscripcion y ocupacion de grupos (RF-002,
 describe('R-21 y CS-SEG-06 en pago y constancia: cada cambio con su asiento (Tabla 49, AU-16)', () => {
   // Cada caso se inyecta en una transacción que se revierte. El cero filas tras cambios reales está en pagos.spec y
   // tramites.spec: aquí, sobre el seed solo, no habría pagos ni trámites que revisar.
-  const revertido = (caso: (tx: Prisma.TransactionClient) => Promise<void>) =>
-    expect(
-      prisma.$transaction(async (tx) => {
-        await caso(tx);
-        throw new Error('revertir');
-      }),
-    ).rejects.toThrow('revertir');
   const cuenta = async (tx: Prisma.TransactionClient, correo: string) =>
     (await tx.usuario.findUniqueOrThrow({ where: { correo } })).id;
   const conCuenta = (tx: Prisma.TransactionClient) =>
@@ -274,6 +275,73 @@ describe('R-21 y CS-SEG-06 en pago y constancia: cada cambio con su asiento (Tab
           problema: 'solicitud o descarga de alguien que no era la cuenta del alumno',
         },
       ]);
+    });
+  });
+});
+
+describe('CD-DAT-03 y CD-DAT-06: conciliación y actualidad de los pagos (RF-006, RNF-DAT-001, CC-011)', () => {
+  // El cero filas tras pagos reales está en pagos.spec. Aquí cada consulta tiene que detectar lo que se le inyecta.
+  let n = 0;
+  const pago = (tx: Prisma.TransactionClient, matricula: string, estado: string, fechaConfirmacion?: Date) =>
+    tx.pago.create({
+      data: {
+        matricula,
+        referencia: 'REF-DATOS',
+        importe: 10,
+        claveIdempotencia: `cd-dat-${++n}`,
+        estado,
+        fechaConfirmacion,
+      },
+    });
+  const abono = (tx: Prisma.TransactionClient, matricula: string, pagoId?: bigint) =>
+    tx.movimiento.create({ data: { matricula, pagoId, concepto: 'Pago de la prueba', importe: 10, tipo: 'abono' } });
+
+  it('CD-DAT-03 detecta un saldo que no cuadra, un pago aplicado sin abono, un abono de un pago rechazado y el corte del día', async () => {
+    await revertido(async (tx) => {
+      const [a, b] = await tx.alumno.findMany({ where: { cuenta: { isNot: null } }, take: 2 });
+      await tx.cuentaAlumno.update({ where: { matricula: a.matricula }, data: { saldo: { increment: 5 } } });
+      const sinAbono = await pago(tx, a.matricula, 'aplicado', new Date());
+      const rechazado = await pago(tx, b.matricula, 'rechazado');
+      const deRechazado = await abono(tx, b.matricula, rechazado.id); // tampoco resta del saldo
+      const hoy = new Date(Date.now() - 6 * 3_600_000).toISOString().slice(0, 10); // UTC-6, como el corte
+
+      const problemas = await tx.$queryRawUnsafe(consulta('cd-dat-03'));
+      expect(problemas).toEqual(
+        expect.arrayContaining(
+          [
+            [`cuenta ${a.matricula}`, 'saldo distinto de la suma de sus movimientos'],
+            [`cuenta ${b.matricula}`, 'saldo distinto de la suma de sus movimientos'],
+            [`pago ${sinAbono.id}`, 'pago aplicado sin exactamente un abono de su alumno y su importe'],
+            [`movimiento ${deRechazado.id}`, 'movimiento de un pago rechazado'],
+            [`corte ${hoy}`, 'corte del día distinto de sus abonos'],
+          ].map(([objeto, problema]) => expect.objectContaining({ objeto, problema })),
+        ),
+      );
+    });
+  });
+
+  it('CD-DAT-06 detecta un pago aplicado sin fecha de confirmación y un percentil 95 de 60 s, pero no uno de 59 s', async () => {
+    await revertido(async (tx) => {
+      const { matricula } = await tx.alumno.findFirstOrThrow({ where: { cuenta: { isNot: null } } });
+      const sinFecha = await pago(tx, matricula, 'aplicado');
+      await abono(tx, matricula, sinFecha.id);
+      const conFecha = await pago(tx, matricula, 'aplicado', new Date());
+      await abono(tx, matricula, conFecha.id);
+      // Todos los pagos aplicados, con la misma demora: el percentil 95 es esa demora (valores límite).
+      const demora = (segundos: number) =>
+        tx.$executeRawUnsafe(
+          `UPDATE pago p SET fecha_confirmacion = m.fecha - make_interval(secs => ${segundos})
+             FROM movimiento m WHERE m.pago_id = p.id AND p.fecha_confirmacion IS NOT NULL`,
+        );
+      const p95 = { objeto: 'percentil 95', problema: 'demora del reflejo de 60 s o más' };
+      const sinConfirmacion = { objeto: `pago ${sinFecha.id}`, problema: 'pago aplicado sin fecha de confirmación' };
+
+      await demora(59);
+      const debajo = await tx.$queryRawUnsafe(consulta('cd-dat-06'));
+      expect(debajo).toContainEqual(expect.objectContaining(sinConfirmacion));
+      expect(debajo).not.toContainEqual(expect.objectContaining(p95));
+      await demora(60);
+      expect(await tx.$queryRawUnsafe(consulta('cd-dat-06'))).toContainEqual(expect.objectContaining(p95));
     });
   });
 });

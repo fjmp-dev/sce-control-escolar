@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { connection } from 'next/server';
 import type { ReactNode } from 'react';
 import './globals.css';
 
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
 
-export default function LayoutRaiz({ children }: { children: ReactNode }) {
+// La CSP lleva un nonce por petición (proxy.ts): una página prerenderizada no lo tendría y sus scripts no correrían.
+export default async function LayoutRaiz({ children }: { children: ReactNode }) {
+  await connection();
   return (
     <html lang="es-MX">
       <body>
