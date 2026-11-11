@@ -28,7 +28,9 @@ El sistema está completo en las fases 1 a 4 (alcance compactado el 10 de noviem
 - Reportes de dirección (RF-009, Batch 10): inscripción, avance académico y cobranza de un periodo por facultad y de toda la universidad, solo agregados, sin matrículas ni nombres, y sin acceso a la bitácora.
 - Staging efímero y sin costo con la topología de la Fig. 9 (`infra/staging/`, `scripts/staging.sh`, CC-018), armado en cada corrida y con cada etiqueta.
 
-Pendiente, sin código: que SJOM revise y apruebe los pull requests apilados, fusionarlos en orden a `develop`, emitir el manual v2.1, firmar las actas de fase y etiquetar. Ver `docs/gobierno/plan-de-trabajo.md`, apartado 1.
+Pendiente, sin código: que SJOM revise y apruebe los pull requests apilados, fusionarlos en orden a `develop`, que SJOM firme el manual v3.0 (`docs/gobierno/manual-v3.0.md`) y las actas de fase, y etiquetar. Ver `docs/gobierno/plan-de-trabajo.md`, apartado 1.
+
+**Para verlo funcionar:** doble clic en `abrir-sce.command` (macOS), o `docker compose up -d --build` y abrir http://localhost:3000. Cuentas de demostración y lista de entrega al auditor: [`ACCESO-Y-AUDITORIA.txt`](ACCESO-Y-AUDITORIA.txt).
 
 **Tablero y backlog:** [issues del repositorio](https://github.com/fjmp-dev/sce-control-escolar/issues), agrupados por sprint en [hitos](https://github.com/fjmp-dev/sce-control-escolar/milestones). Los issues #1 a #22 corresponden uno a uno con el backlog de `docs/gobierno/plan-de-trabajo.md`; los cambios al manual se registran con la etiqueta `cambio` (#23 a #28).
 
