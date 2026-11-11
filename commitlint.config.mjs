@@ -11,7 +11,11 @@ const ANTERIORES_A_LA_REGLA = [
 
 export default {
   extends: ['@commitlint/config-conventional'],
-  ignores: [(mensaje) => ANTERIORES_A_LA_REGLA.some((encabezado) => mensaje.startsWith(encabezado))],
+  // Los commits de fusión no son commits convencionales, sea cual sea su mensaje ("Merge #30: ...", "Merge pull request ...").
+  ignores: [
+    (mensaje) => mensaje.startsWith('Merge '),
+    (mensaje) => ANTERIORES_A_LA_REGLA.some((encabezado) => mensaje.startsWith(encabezado)),
+  ],
   plugins: [
     {
       rules: {
