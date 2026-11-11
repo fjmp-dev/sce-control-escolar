@@ -86,7 +86,7 @@ jobs:
         run: npm run lint && npx tsc -p cypress/tsconfig.json
       - name: Gitleaks sobre el historial completo (CS-SEG-08, AU-13)
         run: scripts/gitleaks-historial.sh gitleaks.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: gitleaks
@@ -96,7 +96,7 @@ jobs:
         run: scripts/reglas-must.sh reportes/reglas-must.json
       - name: Fronteras de la Fig. 2 en ESLint detectan cada violacion (Tabla 15, Modularidad; CO-MAN-02)
         run: scripts/co-man-02.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: reglas-must
@@ -131,14 +131,14 @@ jobs:
       - name: Calculo de disponibilidad mensual, con valores limite (CO-FIA-01)
         working-directory: .
         run: python3 -I scripts/disponibilidad.py --autoprueba
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: cobertura-unitarias
           path: api/coverage/unitarias/
           if-no-files-found: ignore
           retention-days: 90
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: cobertura-portal
@@ -185,20 +185,20 @@ jobs:
       - if: failure()
         working-directory: .
         run: docker compose logs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: cobertura-integracion
           path: api/coverage/integracion/
           retention-days: 90
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: newman
           path: reportes/newman/
           if-no-files-found: ignore
           retention-days: 90
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: calidad-datos
@@ -240,7 +240,7 @@ jobs:
       - name: Resumen de la puerta
         if: always()
         run: cat reportes/sonar/resumen.md >> "$GITHUB_STEP_SUMMARY" || true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: calidad
@@ -296,13 +296,13 @@ jobs:
       - name: OWASP ZAP - CS-SEG-05 con los siete roles, registros sin datos sensibles y calidad de datos (Tablas 30, 42 y 49; AU-20)
         if: always()
         run: scripts/zap.sh reportes/zap
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: trivy
           path: trivy-*.txt
           retention-days: 90
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: zap
@@ -335,7 +335,7 @@ jobs:
       - name: Construir, registrar y firmar sce-api y sce-portal (Tabla 53, AU-12)
         id: publicar
         run: scripts/publicar-imagenes.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: imagenes
           path: reportes/imagenes.md
@@ -447,7 +447,7 @@ jobs:
           } | tee reportes/despliegue.md >> "$GITHUB_STEP_SUMMARY"
       - if: failure()
         run: docker compose logs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: despliegue-pruebas
