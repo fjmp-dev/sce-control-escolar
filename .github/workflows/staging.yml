@@ -163,7 +163,9 @@ jobs:
         run: |
           # El 11-nov-2026 esta instalacion se colgo tres veces en el PR #106; en rc.1, apt bajo 114 MB del espejo de
           # Azure a 2 MB/s. Sin tiempo de espera, apt espera para siempre una conexion que no responde.
+          # Ese dia el runner tampoco resolvia azure.archive.ubuntu.com (15:43 y 16:18 UTC): se usa el archivo de Ubuntu.
           printf 'Acquire::http::Timeout "30";\nAcquire::https::Timeout "30";\nAcquire::Retries "3";\n' | sudo tee /etc/apt/apt.conf.d/99tiempos >/dev/null
+          sudo sed -i 's#http://azure.archive.ubuntu.com#http://archive.ubuntu.com#' /etc/apt/apt-mirrors.txt 2>/dev/null || true
           npm ci && npx playwright install --with-deps chromium firefox webkit
         working-directory: web
         env:
