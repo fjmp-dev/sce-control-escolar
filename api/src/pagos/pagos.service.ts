@@ -81,7 +81,7 @@ export class PagosService {
       if (!cuenta) throw new NotFoundException();
       await this.cuentas.bloquear(matricula);
       const { saldo } = (await this.cuentas.porMatricula(matricula))!;
-      if (importe > Number(saldo)) {
+      if (!new CuentaAlumno(Number(saldo)).admiteAbono(importe)) {
         throw new ErrorDeNegocio(
           'IMPORTE_MAYOR_AL_SALDO',
           `La beca rebasa el saldo de ${Number(saldo).toFixed(2)}. Reduce el importe.`,
@@ -104,7 +104,7 @@ export class PagosService {
     if (!cuenta) throw new NotFoundException();
     const saldo = Number(cuenta.saldo);
     if (saldo <= 0) throw new ErrorDeNegocio('SIN_ADEUDO', 'No tienes adeudo: no hay nada que pagar.');
-    if (importe > saldo) {
+    if (!new CuentaAlumno(saldo).admiteAbono(importe)) {
       throw new ErrorDeNegocio(
         'IMPORTE_MAYOR_AL_SALDO',
         `El importe rebasa tu saldo de ${saldo.toFixed(2)}. Reduce el importe.`,
@@ -117,10 +117,11 @@ export class PagosService {
 
   /**
    * Pasarela simulada: aprueba o rechaza el pago. Puede llegar varias veces; el pago se aplica una sola vez, con un
-   * movimiento, el saldo y la bitácora en la misma transacción (Fig. 5, R-14).
+   * movimiento, el saldo y la bitácora en la misma transacción (Fig. 5, R-14). El importe se compara con el saldo
+   * vigente, con la cuenta bloqueada: dos intentos por el mismo adeudo no dejan saldo a favor (#69, CI-PAG-01).
    */
   async simular(matricula: string, id: number, resultado: 'aprobado' | 'rechazado') {
-    return this.prisma.transaccion(async () => {
+    const salida = await this.prisma.transaccion(async () => {
       await this.cuentas.bloquearPago(id);
       const fila = await this.cuentas.pago(id);
       if (!fila || fila.matricula !== matricula) throw new NotFoundException(); // un pago ajeno no existe para quien pregunta
@@ -129,26 +130,46 @@ export class PagosService {
         pago.rechazar();
         return vista(await this.cuentas.cambiarEstado(fila.id, pago.estado));
       }
-      if (!pago.aplicarUnaVez()) return vista(fila);
+      // Primero el pago y luego la cuenta: ningún otro camino bloquea en orden inverso, y así no hay interbloqueo.
       await this.cuentas.bloquear(matricula);
-      const { saldo } = (await this.cuentas.porMatricula(matricula))!;
+      const saldo = Number((await this.cuentas.porMatricula(matricula))!.saldo);
+      const importe = Number(fila.importe);
+      // La aplicación y el rechazo los dispara la pasarela, no una persona: firma el usuario técnico (CC-015).
+      if (!pago.aprobar(new CuentaAlumno(saldo).admiteAbono(importe))) {
+        if (pago.estado !== 'rechazado') return vista(fila); // ya estaba aplicado
+        await this.cuentas.cambiarEstado(fila.id, pago.estado);
+        await this.bitacora.registrar({
+          autor: USUARIO_TECNICO,
+          accion: 'pago_rechazado',
+          entidad: `pago:${id}`,
+          valorAnterior: { estado: fila.estado, saldo },
+        });
+        return new ErrorDeNegocio(
+          'PAGO_NO_APLICABLE',
+          `El pago ${fila.referencia} por ${importe.toFixed(2)} rebasa tu saldo vigente de ${saldo.toFixed(2)}: ` +
+            'otro pago o una beca lo redujo. Se rechazó y no se cobró. Revisa tu estado de cuenta y, si queda ' +
+            'adeudo, inicia otro pago por el saldo vigente.',
+        );
+      }
       await this.cuentas.movimiento({
         matricula,
         concepto: `Pago en línea ${fila.referencia}`,
-        importe: Number(fila.importe),
+        importe,
         tipo: 'abono',
         pagoId: fila.id,
       });
       const aplicado = await this.cuentas.cambiarEstado(fila.id, pago.estado);
-      // La aplicación la dispara la pasarela, no una persona: firma el usuario técnico (CC-015).
       await this.bitacora.registrar({
         autor: USUARIO_TECNICO,
         accion: 'pago_aplicado',
         entidad: `pago:${id}`,
-        valorAnterior: { saldo: Number(saldo) },
+        valorAnterior: { saldo },
       });
       return vista(aplicado);
     });
+    // Se lanza después del COMMIT: dentro de la transacción revertiría el rechazo y su bitácora (como CC-013).
+    if (salida instanceof ErrorDeNegocio) throw salida;
+    return salida;
   }
 
   /** Recibo: solo de un pago aplicado. `matricula` limita al dueño; caja lo omite. */

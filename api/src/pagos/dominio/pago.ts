@@ -22,6 +22,16 @@ export class Pago {
     return true;
   }
 
+  /**
+   * La pasarela aprueba (#69). Si el importe ya no cabe en el saldo vigente, porque otro pago o una beca lo redujo,
+   * el pago pendiente se rechaza: la pasarela es nuestra y no se cobra. Si cabe, se aplica una sola vez.
+   */
+  aprobar(cabeEnElSaldo: boolean): boolean {
+    if (this.estado !== 'pendiente' || cabeEnElSaldo) return this.aplicarUnaVez();
+    this.rechazar();
+    return false;
+  }
+
   rechazar(): void {
     if (this.estado === 'rechazado') return;
     if (this.estado !== 'pendiente') {
