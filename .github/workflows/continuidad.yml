@@ -103,7 +103,7 @@ jobs:
         run: |
           set -a && . .staging/ambiente.env && set +a
           scripts/calidad-datos.sh reportes/staging/calidad-datos-continuidad
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: respaldo
           path: respaldos/
@@ -120,7 +120,7 @@ jobs:
           gh release view respaldos --json assets -q '.assets[].name' | while read -r a; do
             [[ "$a" =~ ^sce-([0-9]{8})T ]] && [ "${BASH_REMATCH[1]}" -lt "$limite" ] && gh release delete-asset respaldos "$a" -y || true
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: continuidad-${{ github.run_number }}

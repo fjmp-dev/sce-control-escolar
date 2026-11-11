@@ -188,7 +188,7 @@ jobs:
             scripts/matriz-compatibilidad.sh reportes/staging/playwright/*/junit.xml 2>/dev/null \
               | tee reportes/staging/playwright/matriz.md >> "$GITHUB_STEP_SUMMARY" || true
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: despliegue-${{ contains(inputs.etiqueta || github.ref_name, '-rc.') && 'staging' || 'piloto' }}-${{ inputs.etiqueta || github.ref_name }}
