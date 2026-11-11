@@ -45,11 +45,25 @@ async function main() {
     create: { clave: 'ISW-2024', facultadClave: 'CUTG', creditosTotales: 400, vigenteDesde: new Date('2024-08-01') },
   });
 
+  // Clave ISW-<semestre><nn>. Issue #73: más materias del plan, de primero a séptimo semestre (120 de 400 créditos).
   const materias = [
     ['ISW-101', 'Programación I', 8],
+    ['ISW-102', 'Cálculo diferencial', 8],
+    ['ISW-103', 'Matemáticas discretas', 6],
     ['ISW-201', 'Programación II', 8],
+    ['ISW-202', 'Álgebra lineal', 6],
+    ['ISW-203', 'Estructuras de datos', 8],
     ['ISW-301', 'Bases de datos', 8],
+    ['ISW-302', 'Probabilidad y estadística', 6],
+    ['ISW-303', 'Ingeniería de requisitos', 6],
+    ['ISW-401', 'Sistemas operativos', 8],
+    ['ISW-402', 'Desarrollo web', 6],
+    ['ISW-501', 'Redes de computadoras', 8],
+    ['ISW-502', 'Arquitectura de software', 6],
+    ['ISW-601', 'Pruebas de software', 6],
+    ['ISW-602', 'Seguridad informática', 6],
     ['ISW-701', 'Auditoría de sistemas', 6],
+    ['ISW-703', 'Gestión de proyectos de software', 6],
   ] as const;
   for (const [clave, nombre, creditos] of materias) {
     await prisma.materia.upsert({
@@ -58,9 +72,20 @@ async function main() {
       create: { clave, nombre, creditos, planClave: 'ISW-2024' },
     });
   }
+  // Cadenas cortas. Sin prerrequisito: ISW-102, ISW-103, ISW-202 e ISW-303; ISW-203 e ISW-402 piden Programación I,
+  // que 2420001 ya acreditó.
   for (const [materiaClave, requiereClave] of [
     ['ISW-201', 'ISW-101'],
     ['ISW-301', 'ISW-201'],
+    ['ISW-203', 'ISW-101'],
+    ['ISW-402', 'ISW-101'],
+    ['ISW-302', 'ISW-102'],
+    ['ISW-401', 'ISW-203'],
+    ['ISW-501', 'ISW-103'],
+    ['ISW-602', 'ISW-501'],
+    ['ISW-502', 'ISW-303'],
+    ['ISW-601', 'ISW-303'],
+    ['ISW-703', 'ISW-502'],
   ]) {
     await prisma.prerequisito.upsert({
       where: { materiaClave_requiereClave: { materiaClave, requiereClave } },
@@ -207,7 +232,33 @@ async function main() {
       ],
     ],
   ];
-  const DEL_PROFESOR_2 = new Set(['ISW-701-A', 'ISW-701-C']);
+  // Issue #73: un grupo de 2027A por materia nueva, salvo ISW-501, ISW-602 e ISW-703, sin traslape de aula ni de
+  // profesor (D-13). Los de primero y segundo semestre no chocan entre sí ni con ISW-201-A.
+  // [materia, días, inicio, fin, aula]
+  const NUEVOS: [string, number[], string, string, string][] = [
+    ['ISW-102', [1, 3], '11:00', '13:00', 'A1'],
+    ['ISW-103', [2, 4], '11:00', '13:00', 'A1'],
+    ['ISW-202', [1, 3], '13:00', '15:00', 'A1'],
+    ['ISW-203', [2, 4], '13:00', '15:00', 'A2'],
+    ['ISW-302', [1, 3], '11:00', '13:00', 'A2'],
+    ['ISW-303', [2, 4], '11:00', '13:00', 'A3'],
+    ['ISW-401', [1, 3], '15:00', '17:00', 'A3'],
+    ['ISW-402', [2, 4], '15:00', '17:00', 'A4'],
+    ['ISW-502', [1, 3], '13:00', '15:00', 'A3'],
+    ['ISW-601', [5], '11:00', '14:00', 'A4'],
+  ];
+  for (const [materia, dias, inicio, fin, aula] of NUEVOS) {
+    OFERTA.push(['2027A', `${materia}-A`, materia, 30, 0, dias.map((dia) => [dia, inicio, fin, aula])]);
+  }
+  const DEL_PROFESOR_2 = new Set([
+    'ISW-701-A',
+    'ISW-701-C',
+    'ISW-102-A',
+    'ISW-103-A',
+    'ISW-202-A',
+    'ISW-401-A',
+    'ISW-402-A',
+  ]);
   const grupos: Record<string, bigint> = {};
   for (const [periodoClave, clave, materiaClave, cupo, ocupacion, horarios] of OFERTA) {
     const profesorId = DEL_PROFESOR_2.has(clave) ? profesor2.id : profesor.id;
