@@ -22,7 +22,7 @@
 
 - **Calendario:** la fase abrió sin las actas de las fases 1 y 2 firmadas (NC-010).
 - **Reglas provisionales:** D-5, D-6, D-8, D-13, D-16 y D-17 las propone el equipo; el manual no fija cuántos parciales hay ni cómo se cierra con parciales faltantes.
-- **Cambios sin aprobar:** CC-019 es Mayor; su código no se fusiona hasta que se apruebe.
+- **Cambios sin aprobar:** CC-019 es Mayor; su código no se fusiona hasta que se apruebe. _(Corregido el 10 de noviembre de 2026: ese día el código se fusionó en `develop` con el PR #30, antes de aprobarse CC-019; NC-008.)_
 - **Corrección posterior al cierre:** el motivo y la evidencia quedan en la bitácora, junto al valor anterior, sin una entidad propia; una entidad nueva requeriría otro CC.
 
 ## 4. Lista de verificación de QA

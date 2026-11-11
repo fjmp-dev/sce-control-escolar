@@ -1,28 +1,37 @@
 # Registro de no conformidades y acciones correctivas — SCE
 
 **Documento de referencia:** SCE-MC-001 v2.0, sección 40 (clasificación en la Tabla 61; ciclo en la 40.2).
-**Vigente desde:** 5 de noviembre de 2026.
+**Vigente desde:** 5 de noviembre de 2026. **Actualizado:** 10 de noviembre de 2026 (sub-batch 11.0).
 
 Cada no conformidad (NC) tiene identificador, fuente, descripción, severidad, evidencia, causa, acción correctiva, acción preventiva, responsable, fecha, verificación y cierre. Las que se listan aquí las **detectó el propio equipo** al preparar la respuesta a la solicitud F-01-SCE-002 de la auditoría PA-SCE-001 y al contrastar el repositorio contra el manual completo. Se registran antes del informe preliminar para que ninguna quede abierta sin plan fechado (manual 8.4 y 40.1).
 
-La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que nunca es quien ejecutó la acción, o el equipo auditor.
+La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que nunca es quien ejecutó la acción, o el equipo auditor. **Desde el 10 de noviembre de 2026 no se cumple:** QA es FJMP, que también ejecuta las acciones. Su verificación se registra como autoverificación (NC-012) y se ofrece al equipo auditor.
 
 ---
 
 ## Resumen
 
-| ID | Severidad | Descripción breve | Criterio de auditoría | Responsable | Fecha comprometida | Estado |
-|---|---|---|---|---|---|---|
-| NC-001 | Mayor | Pull request #29 fusionado sin aprobación de otro integrante | AU-04, AU-11 | SJOM (revisión) · FJMP (acceso) | 17 de noviembre de 2026 | Abierta; invitación reenviada el 10 de noviembre |
-| NC-002 | Mayor | Fase 1 iniciada sin acta de aceptación de la fase 0 firmada | AU-07 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
-| NC-003 | Menor | Sin registro de aprobación de la versión 2.0 del manual | AU-01 | SJOM | 6 de noviembre de 2026 | Abierta con plan |
-| NC-004 | Menor | Elementos P1 del plan de trabajo (#7 a #15) vencidos sin reprogramación escrita | AU-02, AU-43 | FJMP | 27 de noviembre de 2026 | Abierta con plan |
-| NC-005 | Menor | Tablas de roles por sprint contradictorias entre documentos de gobierno | AU-04 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación |
-| NC-006 | Mayor | No existe el acta de levantamiento que la Tabla 23 exige para la fase 0 | AU-07, AU-43 | Ambos | 27 de noviembre de 2026, a confirmar por el equipo | Abierta con plan |
-| NC-007 | Menor | El catálogo de casos CS-SEG del repositorio divergió de la Tabla 49 del manual | AU-02, AU-05, AU-29 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación |
-| NC-008 | Menor | Cambios CC-001 a CC-006 implementados sin aprobación registrada | AU-06 | SJOM | 7 de noviembre de 2026 | Abierta con plan |
-| NC-009 | Mayor | Batch 4 (fase 2) iniciado sin el acta de la fase 1 firmada, por decisión de FJMP | AU-07 | FJMP · SJOM | Al firmar ACT-F1-001 | Abierta con plan |
-| NC-010 | Mayor | Batch 7 (fase 3) iniciado sin el acta de la fase 2 firmada, por decisión de FJMP | AU-07 | FJMP · SJOM | Al firmar ACT-F2-001 | Abierta con plan |
+| ID | Severidad | Descripción breve | Criterio de auditoría | Responsable | Fecha comprometida | Estado | Aceptación con plan fechado (Tabla 61) |
+|---|---|---|---|---|---|---|---|
+| NC-001 | Mayor | Pull request #29 fusionado sin aprobación de otro integrante | AU-04, AU-11 | FJMP (antes SJOM y FJMP) | 11 de diciembre de 2026 | Abierta. SJOM aceptó la invitación el 10 de noviembre, pero no revisó el #29 ni aprobó el #30 | FJMP (PO), 10 de noviembre de 2026 |
+| NC-002 | Mayor | Fase 1 iniciada sin acta de aceptación de la fase 0 firmada | AU-07 | FJMP (antes SJOM) | 20 de noviembre de 2026 | Abierta con plan; venció el 6 de noviembre | FJMP (PO), 10 de noviembre de 2026 |
+| NC-003 | Menor | Sin registro de aprobación de la versión 2.0 del manual | AU-01 | FJMP (antes SJOM) | 20 de noviembre de 2026 | Abierta con plan; venció el 6 de noviembre | No aplica: Menor |
+| NC-004 | Menor | Elementos P1 del plan de trabajo (#7 a #15) vencidos sin reprogramación escrita | AU-02, AU-43 | FJMP | 27 de noviembre de 2026 | Abierta con plan | No aplica: Menor |
+| NC-005 | Menor | Tablas de roles por sprint contradictorias entre documentos de gobierno | AU-04 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación | No aplica: Menor |
+| NC-006 | Mayor | No existe el acta de levantamiento que la Tabla 23 exige para la fase 0 | AU-07, AU-43 | FJMP (antes ambos) | 27 de noviembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
+| NC-007 | Menor | El catálogo de casos CS-SEG del repositorio divergió de la Tabla 49 del manual | AU-02, AU-05, AU-29 | FJMP | 5 de noviembre de 2026 | Corregida; pendiente de verificación | No aplica: Menor |
+| NC-008 | Mayor (antes Menor) | Cambios implementados y fusionados sin aprobación registrada: CC-001 a CC-006 y, desde el 10 de noviembre, CC-007 a CC-010 y CC-012 a CC-020 | AU-06 | FJMP (antes SJOM) | 20 de noviembre de 2026 | Abierta. CC-010 y CC-012 a CC-020 aprobados el 10 de noviembre, después de fusionarse; CC-011, antes de implementarse. Falta la firma del acta de cambios mayores. CC-001 a CC-009 sin decisión | FJMP (PO), 10 de noviembre de 2026 |
+| NC-009 | Mayor | Batch 4 (fase 2) iniciado sin el acta de la fase 1 firmada, por decisión de FJMP | AU-07 | FJMP (antes FJMP y SJOM) | 20 de noviembre de 2026 | Abierta; la contención no se cumplió | FJMP (PO), 10 de noviembre de 2026 |
+| NC-010 | Mayor | Batch 7 (fase 3) iniciado sin el acta de la fase 2 firmada, por decisión de FJMP | AU-07 | FJMP (antes FJMP y SJOM) | 20 de noviembre de 2026 | Abierta; la contención no se cumplió | FJMP (PO), 10 de noviembre de 2026 |
+| NC-011 | Mayor | Batch 9 (fase 4) iniciado sin el acta de la fase 3 firmada y sin registrar antes la decisión | AU-07 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
+| NC-012 | Mayor | Sin separación de funciones desde el 10 de noviembre: FJMP produce, aprueba, verifica y firma | AU-04, AU-11, AU-36 | FJMP | 11 de diciembre de 2026 | Abierta; no se cierra sin una segunda persona | FJMP (PO), 10 de noviembre de 2026 |
+| NC-013 | Mayor | Auditorías internas de la Tabla 60 sin auditor independiente | AU-40 | FJMP | 11 de diciembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
+| NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Abierta con plan | No aplica: Menor |
+| NC-015 | Menor | Ramas y etiquetas fuera de la Tabla 31 y de 15.2: fases 1 a 3 sin `release/x.y.z` ni fusión a `main`, y correcciones en `feature/` | AU-09 | FJMP | No se corrige: se declara en cada acta | Abierta; desviación declarada | No aplica: Menor |
+
+**Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
+
+**Reasignación del 10 de noviembre de 2026.** Las NC a cargo de SJOM (NC-001, NC-002, NC-003 y NC-008) o de ambos (NC-006, NC-009 y NC-010) pasan a FJMP, y también la verificación de NC-005. SJOM aceptó la invitación al repositorio ese día, pero no revisó ni aprobó ningún entregable, y FJMP decidió continuar sin él (`docs/gobierno/roles-y-raci.md`, apartado 6). Es una desviación: quien ejecuta la acción también la verifica (NC-012).
 
 ---
 
@@ -46,6 +55,11 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Verificación de eficacia:** QA del sprint S4 (FJMP) o el equipo auditor comprueban que el PR #29 tenga revisión registrada y que todos los PR posteriores al 7 de noviembre tengan aprobación de alguien distinto al autor.
 - **Seguimiento, 8 de noviembre de 2026:** la acción 1 venció sin cumplirse, y no podía cumplirse. La invitación del 23 de octubre caducó el 30 de octubre, porque GitHub vence las invitaciones a los 7 días; la API la reporta como `expired`. Nadie lo detectó en dos semanas porque el repositorio la seguía mostrando como pendiente. **Nueva acción:** FJMP reenvía la invitación y SJOM la acepta antes de que venza. Fecha: a confirmar por FJMP.
 - **Seguimiento, 10 de noviembre de 2026:** FJMP reenvió la invitación con permiso de escritura; la caducada se borró. La nueva vence el 17 de noviembre de 2026, que pasa a ser la fecha de la acción. Si vuelve a caducar, se reenvía el mismo día y se avisa a SJOM por otro medio.
+- **Seguimiento, 10 de noviembre de 2026, noche:** `samuel0rtiz` aceptó la invitación a las 20:24 (evento `MemberEvent` del 11 de noviembre a las 02:24 UTC) y es colaborador con permiso _write_. La acción 1 se cumplió cuatro días después de la fecha original (6 de noviembre) y antes de la fecha reprogramada (17 de noviembre). Las acciones 2 y 3 no se cumplieron: SJOM no revisó el #29, y el #30 se fusionó a las 21:21 sin su aprobación, igual que #55 a #66 y #68, todos con cero revisiones. La acción preventiva se retiró ese día: la protección de `develop` y `main` exige cero aprobaciones (`plan-de-trabajo.md`, apartado 6).
+  - **Responsable:** FJMP (reasignación).
+  - **Plan fechado:** (1) ofrecer la revisión a posteriori del #29 y de la pila #30 y #55 a #66 a un revisor externo al equipo (la profesora o el equipo de PA-SCE-001), con el paquete del sub-batch 11.3, a más tardar el 20 de noviembre de 2026. (2) Si nadie la hace antes del 11 de diciembre de 2026, la NC sigue abierta y se declara en el acta de liberación (sub-batch 14.1).
+  - **Verificación de eficacia (sustituye a la de arriba, que ya no se puede cumplir):** el revisor externo deja registrada su revisión del #29 y de la pila #30 y #55 a #66, y cada defecto que encuentre queda como issue. La aprobación de los PR posteriores por otra persona se sigue en NC-012. FJMP no puede verificar esta NC.
+  - **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
 
 ## NC-002 — Acta de la fase 0 sin firmar
 
@@ -57,6 +71,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** SJOM firma el acta como Product Owner y QA, ya con la evaluación de la Tabla 23 y la salvedad por NC-006. El acta conserva su fecha de cierre de fase y registra que la firma es extemporánea. Responsable: SJOM. Fecha: 6 de noviembre de 2026.
 - **Acción preventiva:** no se abre ninguna fase sin el acta de la anterior firmada. Se incorpora a la definición de terminado de la fase.
 - **Verificación de eficacia:** el equipo auditor revisa el acta firmada. Al cierre de la fase 1 se verifica que el acta exista antes del inicio de la fase 2.
+- **Seguimiento, 10 de noviembre de 2026:** la acción venció el 6 de noviembre sin cumplirse. **Responsable:** FJMP (reasignación). **Nueva acción:** FJMP firma ACT-F0-001 como Product Owner y QA, con la salvedad de NC-006 y la desviación de NC-012, antes que las actas de las fases 1 a 3 (sub-batch 11.3). **Fecha:** 20 de noviembre de 2026. **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
 
 ## NC-003 — Sin registro de aprobación del manual v2.0
 
@@ -67,6 +82,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** firmar `docs/gobierno/registro-aprobacion-manual-v2.0.md`. Responsable: SJOM, como Product Owner del sprint S3. Fecha: 6 de noviembre de 2026.
 - **Acción preventiva:** la versión 2.1 no se publica sin su registro de aprobación (issue #15).
 - **Verificación de eficacia:** QA del sprint S4 comprueba que el registro esté firmado y vinculado al issue #3.
+- **Seguimiento, 10 de noviembre de 2026:** la acción venció el 6 de noviembre sin cumplirse. **Responsable:** FJMP (reasignación). FJMP firma el registro como Product Owner, con la desviación de NC-012, en el sub-batch 11.3. **Fecha:** 20 de noviembre de 2026.
 
 ## NC-004 — Elementos P1 vencidos sin reprogramación
 
@@ -74,10 +90,10 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Descripción:** las correcciones al manual (#7 a #14) y la emisión de la versión 2.1 (#15) vencían el 30 de octubre de 2026. No se cumplieron, y tampoco se registró su nueva fecha con motivo escrito, como exige la sección 5 del plan de trabajo.
 - **Severidad:** Menor. Las correcciones ya están hechas en el repositorio (`docs/calidad/`, `registro-de-cambios.md`); falta llevarlas al manual.
 - **Causa:** el sprint S2 priorizó el arranque técnico de la fase 1 sobre las correcciones documentales.
-- **Acción correctiva:** reprogramar los elementos #7 a #15 al sprint S4 y emitir el manual v2.1 a más tardar el 27 de noviembre de 2026. Responsable: FJMP. Acepta: SJOM.
+- **Acción correctiva:** reprogramar los elementos #7 a #15 al sprint S4 y emitir el manual v2.1 a más tardar el 27 de noviembre de 2026. Responsable: FJMP. Acepta: SJOM (desde el 10 de noviembre de 2026, FJMP; NC-012).
 - **Acción preventiva:** si los elementos se recorren de nuevo, pasan a la matriz de riesgos, como indica la sección 5 del plan de trabajo.
 - **Verificación de eficacia:** el equipo auditor, en el seguimiento, revisa el manual v2.1 y su registro de aprobación.
-- **Seguimiento, 10 de noviembre de 2026:** el manual se emite como v3.0 en lugar de v2.1, porque el alcance cambió y la sección 1.3 lo exige así. Integra #7 a #14 y su registro de aprobación (`docs/gobierno/manual-v3.0.md`, apartado 9). Queda pendiente la firma de SJOM.
+- **Seguimiento, 10 de noviembre de 2026:** el manual se emite como v3.0 en lugar de v2.1, porque el alcance cambió y la sección 1.3 lo exige así. Integra #7 a #14 y su registro de aprobación (`docs/gobierno/manual-v3.0.md`, apartado 9). Queda pendiente la firma de SJOM. _(Corregido el 10 de noviembre de 2026: la firma pendiente es la de FJMP como autor, revisor y aprobador, con la desviación de NC-012.)_
 
 ## NC-005 — Tablas de roles contradictorias
 
@@ -86,6 +102,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Severidad:** Menor.
 - **Acción correctiva:** se alinearon los tres documentos con el plan de trabajo el 5 de noviembre de 2026. Responsable: FJMP.
 - **Verificación de eficacia:** QA del sprint (SJOM) revisa la corrección en el PR #30.
+- **Seguimiento, 10 de noviembre de 2026:** la verificación pasa a FJMP (reasignación). Es autoverificación (NC-012).
 
 ## NC-006 — Falta el acta de levantamiento de la fase 0
 
@@ -102,6 +119,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** si las entrevistas se hicieron, se documentan con fechas, participantes y notas reales; si no se hicieron, se realizan con control escolar, coordinación y caja de la facultad de referencia. **No se redacta un acta sobre entrevistas que no ocurrieron.** Responsable: FJMP y SJOM. Fecha: 27 de noviembre de 2026, a confirmar por el equipo.
 - **Acción preventiva:** la plantilla de acta (Anexo B) parte de la condición de la Tabla 23 para cada fase.
 - **Verificación de eficacia:** el equipo auditor revisa el acta de levantamiento. En cada cierre de fase, QA comprueba la condición de la Tabla 23.
+- **Seguimiento, 10 de noviembre de 2026:** **Responsable:** FJMP (antes ambos). Se confirma la fecha del 27 de noviembre de 2026. Si para entonces no hay acceso a control escolar, coordinación y caja de una facultad, no se redacta el acta, como dice la acción correctiva. En ese caso, la fase 0 queda aceptada con salvedad, y la NC sigue abierta y se declara en el acta de liberación (sub-batch 14.1). **Orden con NC-002:** ACT-F0-001 se firma antes, a más tardar el 20 de noviembre de 2026, con esta NC abierta como salvedad. Si el acta de levantamiento llega después, se anexa a ACT-F0-001 como adenda. **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
 
 ## NC-007 — Catálogo CS-SEG distinto de la Tabla 49
 
@@ -118,12 +136,19 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 
 - **Fuente:** revisión de `registro-de-cambios.md`, 5 de noviembre de 2026.
 - **Descripción:** CC-001 a CC-006 se implementaron y CC-003 a CC-006 entraron en el PR #29, pero su tabla de aprobaciones sigue vacía. La sección 16.2 pone la aprobación antes de la implementación, y CC-004 y CC-005 son de tipo Mayor.
-- **Severidad:** Menor. Es una práctica documentada, sin riesgo inmediato sobre datos; los cambios refuerzan controles.
+- **Severidad:** Menor. Es una práctica documentada, sin riesgo inmediato sobre datos; los cambios refuerzan controles. **Mayor desde el 10 de noviembre de 2026** (ver la reclasificación en el seguimiento).
 - **Evidencia:** `docs/gobierno/registro-de-cambios.md`; issues #23 a #28.
 - **Causa:** comparte causa con NC-001: el segundo integrante no tenía acceso para aprobar.
 - **Acción correctiva:** SJOM aprueba o rechaza cada cambio con fecha y responsable. Lo rechazado se revierte. Responsable: SJOM. Fecha: 7 de noviembre de 2026.
 - **Acción preventiva:** ningún código de un cambio Mayor se fusiona sin su CC aprobado (`plan-de-sistema.md`, regla 5).
 - **Verificación de eficacia:** el equipo auditor revisa el registro de aprobaciones.
+- **Seguimiento, 10 de noviembre de 2026:** la acción venció el 7 de noviembre sin cumplirse.
+  - **Ampliación:** el PR #30 (`1d2b48d`) fusionó en `develop` el código y las figuras de CC-007 a CC-010 y CC-012 a CC-019, y el código de CC-020, sin aprobación previa. Las figuras de CC-020 siguen pendientes (NC-014). CC-011 no está implementado. Ocho son Mayor (CC-007, CC-008, CC-009, CC-010, CC-013, CC-015, CC-019 y CC-020), así que también se incumplió la acción preventiva: la regla 5 del plan. CC-020 ni siquiera existía: la compactación cambió el proveedor de pagos sin CC.
+  - **Lo hecho:** FJMP aprobó ese mismo día CC-010 y CC-012 a CC-020, después de la fusión, y CC-011, antes de implementarse (`registro-de-cambios.md`). La decisión de los CC Mayor no está firmada: `acta-cambios-mayores-2026-11.md` sigue para firma. CC-001 a CC-009 siguen sin decisión. CC-016 a CC-020 no tienen issue con la etiqueta `cambio`, aunque la sección 16.2 pide ticket: la solicitud solo está en `docs/gobierno/cambios/`.
+  - **Reclasificación a Mayor:** cambios que tocan seguridad (CC-007, CC-010 y CC-015) y pagos (CC-020) se fusionaron sin la aprobación de Seguridad que exige la Tabla 34. Eso incumple un control de seguridad, el control de cambios (Tabla 61).
+  - **Responsable:** FJMP (reasignación).
+  - **Plan fechado:** a más tardar el 20 de noviembre de 2026 (sub-batch 11.3), FJMP aprueba o rechaza CC-001 a CC-009 con fecha, firma el acta de cambios mayores y abre los issues de CC-016 a CC-020. Lo rechazado se revierte. Desde la retoma, un CC Mayor se aprueba antes de abrir el PR que lo implementa (CC-021 en 12.5 y CC-022 en 13.1).
+  - **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
 
 ## NC-009 — Fase 2 iniciada sin el acta de la fase 1
 
@@ -131,11 +156,12 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Descripción:** el Batch 4 abre la fase 2 (expediente). La regla 4 de `plan-de-sistema.md` y la acción preventiva de NC-002 dicen que una fase no se abre sin el acta de la anterior firmada. ACT-F1-001 está en borrador y su apartado 9 lista lo que falta. FJMP decidió continuar el desarrollo para no detenerlo mientras el segundo integrante no tiene acceso al repositorio.
 - **Severidad:** Mayor. Repite la desviación de NC-002, ahora con la regla ya escrita.
 - **Evidencia:** PR del Batch 4, apilado sobre #58, y la decisión registrada en esta entrada.
-- **Causa:** la aceptación depende de una sola persona sin acceso (NC-001), y el calendario de la fase 1 cierra el 11 de diciembre de 2026.
+- **Causa:** la aceptación depende de una sola persona sin acceso (NC-001), y el calendario de la fase 1 cierra el 11 de diciembre de 2026. _(Corregido el 10 de noviembre de 2026: SJOM aceptó la invitación ese día y tiene permiso write, pero no revisó ni aprobó; NC-012.)_
 - **Contención:** el código de la fase 2 **no se fusiona** a `develop` antes de firmarse ACT-F1-001. Se mantiene la regla "ninguna fase cierra sin fusión".
 - **Acción correctiva:** firmar ACT-F1-001 y fusionar la fase 1 antes de revisar el Batch 4. Responsables: SJOM firma; FJMP prepara. Fecha: al firmarse ACT-F1-001.
 - **Acción preventiva:** si vuelve a ocurrir, la decisión se registra como esta, antes de empezar el batch.
 - **Verificación de eficacia:** QA comprueba que la fusión de la fase 2 ocurre después de la firma de ACT-F1-001.
+- **Seguimiento, 10 de noviembre de 2026:** la contención no se cumplió. El código de la fase 2 (#59, #60 y #61) se fusionó en `develop` el 10 de noviembre con el PR #30, sin ACT-F1-001 firmada. **Responsable:** FJMP (reasignación). **Plan fechado:** FJMP firma ACT-F1-001 en el sub-batch 11.3, con la desviación de NC-012. La etiqueta retroactiva `v0.1.0` (11.4) va después de esa firma. **Fecha:** 20 de noviembre de 2026. **Verificación de eficacia (sustituye a la de arriba, que ya no se puede cumplir):** la firma de ACT-F1-001 es anterior a la etiqueta `v0.1.0`. **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
 
 ## NC-010 — Fase 3 iniciada sin el acta de la fase 2
 
@@ -143,8 +169,90 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Descripción:** el Batch 7 abre la fase 3 (oferta y horarios, RF-003). La regla 4 de `plan-de-sistema.md` pide antes el acta de la fase 2 firmada. ACT-F2-001 está en borrador y su apartado 9 lista lo que falta; ACT-F1-001 tampoco está firmada (NC-009). FJMP decidió continuar el desarrollo.
 - **Severidad:** Mayor. Es la tercera vez que una fase se abre sin el acta de la anterior (NC-002, NC-009).
 - **Evidencia:** PR del Batch 7, apilado sobre #61, y la decisión registrada en esta entrada antes del primer commit del batch.
-- **Causa:** la misma de NC-009. Sin acceso de SJOM (NC-001) nadie puede aprobar, fusionar ni firmar, y el calendario sigue corriendo.
+- **Causa:** la misma de NC-009. Sin acceso de SJOM (NC-001) nadie puede aprobar, fusionar ni firmar, y el calendario sigue corriendo. _(Corregido el 10 de noviembre de 2026: SJOM aceptó la invitación ese día y tiene permiso write, pero no revisó ni aprobó; NC-012.)_
 - **Contención:** el código de la fase 3 **no se fusiona** a `develop` antes de firmarse ACT-F1-001 y ACT-F2-001, en ese orden. La pila de PR se revisa de abajo hacia arriba.
 - **Acción correctiva:** cerrar las fases 1 y 2 (firmas, fusiones, despliegue de `v0.2.0-rc.1` en staging y auditoría de la Tabla 60) antes de revisar el Batch 7. Responsables: SJOM firma; FJMP prepara. Fecha: al firmarse ACT-F2-001.
 - **Acción preventiva:** el Batch 9 abre la fase 4. No se empieza sin el acta de la fase 3 salvo una nueva decisión registrada como esta.
 - **Verificación de eficacia:** QA comprueba que la fusión de la fase 3 ocurre después de las firmas de ACT-F1-001 y ACT-F2-001.
+- **Seguimiento, 10 de noviembre de 2026:** la contención no se cumplió. El código de la fase 3 (#62 y #63) se fusionó en `develop` el 10 de noviembre con el PR #30, sin ACT-F1-001 ni ACT-F2-001 firmadas. La acción preventiva tampoco se cumplió: el Batch 9 se empezó sin registrar antes la decisión (NC-011). **Responsable:** FJMP (reasignación). **Plan fechado:** FJMP firma ACT-F2-001 en el sub-batch 11.3, después de ACT-F1-001, con la desviación de NC-012. La etiqueta retroactiva `v0.2.0` (11.4) va después de esa firma. **Fecha:** 20 de noviembre de 2026. **Verificación de eficacia (sustituye a la de arriba, que ya no se puede cumplir):** la firma de ACT-F2-001 es posterior a la de ACT-F1-001 y anterior a la etiqueta `v0.2.0`. **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
+
+## NC-011 — Fase 4 iniciada sin el acta de la fase 3
+
+- **Fuente:** autodeclaración extemporánea, 10 de noviembre de 2026 (sub-batch 11.0, `plan-de-sistema.md`, 6.2).
+- **Descripción:** el Batch 9 abrió la fase 4 (pagos y trámites: RF-006, RF-007 y RF-010) el 10 de noviembre de 2026. La regla 4 de `plan-de-sistema.md` dice que los batches que abren fase (4, 7, 9 y 14) esperan el acta firmada de la fase anterior. ACT-F3-001 está en borrador, y ACT-F1-001 y ACT-F2-001 tampoco están firmadas. Además, la acción preventiva de NC-010 pedía registrar la decisión antes de empezar el Batch 9, y no se registró.
+- **Severidad:** Mayor. Es la cuarta vez que una fase se abre sin el acta de la anterior (NC-002, NC-009 y NC-010).
+- **Evidencia:** PR #64 (Batch 9), abierto el 10 de noviembre a las 17:05 y fusionado en la pila; `docs/gobierno/actas/acta-aceptacion-fase-3.md` ("Fecha real de la decisión: pendiente"); `plan-de-sistema.md`, 6.1 ("sin papeleo nuevo: sin actas, CC ni NC adicionales").
+- **Causa (cinco porqués):**
+  1. ¿Por qué se abrió la fase sin acta? Porque FJMP decidió seguir construyendo.
+  2. ¿Por qué el acta no estaba firmada? Porque la firma esperaba a SJOM, que no participó.
+  3. ¿Por qué no se registró la NC antes de empezar? Porque la compactación de 6.1 suspendió el papeleo nuevo ese mismo día.
+  4. ¿Por qué la compactación pudo suspenderlo? Porque ninguna regla impedía que una decisión de alcance dejara sin efecto las acciones preventivas de NC abiertas.
+  5. Causa raíz: las acciones preventivas dependían de la disciplina de una sola persona, sin un control que las haga cumplir.
+- **Contención:** el código de la fase 4 ya está en `develop`, porque el PR #30 se fusionó el 10 de noviembre a las 21:21. No se etiqueta `v0.4.0` ni se fusiona a `main` antes de firmar ACT-F1-001 a ACT-F4-001, en orden.
+- **Acción correctiva:** FJMP firma ACT-F3-001 después de ACT-F1-001 y ACT-F2-001, con la desviación de NC-012 (sub-batch 11.3). **Responsable:** FJMP. **Fecha:** 20 de noviembre de 2026.
+- **Acción preventiva:** el acta de promoción de cada etiqueta (sub-batches 11.4 y 14.1) comprueba que el acta de la fase anterior esté firmada antes de etiquetar. Una decisión de alcance no deja sin efecto las acciones de una NC abierta; si lo pretende, se registra como NC.
+- **Verificación de eficacia:** el equipo auditor, o FJMP como autoverificación (NC-012), comprueba que las firmas de ACT-F1-001 a ACT-F3-001 sean anteriores a la etiqueta `v0.4.0`.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
+
+## NC-012 — Sin separación de funciones desde el 10 de noviembre de 2026
+
+- **Fuente:** decisión de FJMP del 10 de noviembre de 2026 (`docs/gobierno/roles-y-raci.md`, apartado 6) y verificación con `gh` del mismo día.
+- **Descripción:** desde el 10 de noviembre de 2026, FJMP produce, acepta, aprueba los CC, verifica sus propios defectos y NC, firma las actas y audita. Las garantías 1 a 4 de `roles-y-raci.md`, apartado 6, dejan de cumplirse, y también la regla 3 de `plan-de-sistema.md`. `samuel0rtiz` aceptó la invitación ese día a las 20:24 y tiene permiso _write_. Pero no revisó ni aprobó ninguno de los PR #30, #55 a #66 y #68, que se fusionaron entre las 20:38 y las 21:46. La protección de `develop` y `main` dejó de exigir la aprobación de otra persona. No existe ningún environment, y el `staging` que se crea en 11.4 tendrá a FJMP como revisor, con la autoaprobación permitida. Incumple las secciones 1.2, 10.4, 29.1 y 30.2 del manual.
+- **Severidad:** Mayor. Afecta un control de seguridad: la separación de funciones en cambios que tocan pagos, calificaciones y seguridad (sección 29), como NC-001.
+- **Evidencia:** `gh api repos/fjmp-dev/sce-control-escolar/collaborators` (`samuel0rtiz`, _write_); evento `MemberEvent` del 11 de noviembre a las 02:24 UTC; `gh search prs --reviewed-by samuel0rtiz`, sin resultados; `gh pr view` de #30, #55 a #66 y #68 (cero revisiones, fusionados por `fjmp-dev`); protección de ramas con cero aprobaciones.
+- **Causa:** en la práctica, el equipo es una sola persona. SJOM no participa, y FJMP decidió continuar sin él para terminar el semestre.
+- **Contención:**
+  - Los controles independientes que quedan son automáticos: CI en verde, puerta de calidad, Gitleaks, Trivy, Newman y la matriz rol × endpoint ejecutable.
+  - El asistente de IA está declarado en cada commit, pero no es independiente: es coautor.
+  - Cada acta, CC y PR cita esta NC.
+- **Acción correctiva:** no se puede cerrar sin una segunda persona. **Plan fechado:**
+  1. Ofrecer la revisión independiente de la pila y del cierre de la fase 4 a la profesora o al equipo de PA-SCE-001, con el paquete del sub-batch 11.3. Fecha: 20 de noviembre de 2026.
+  2. Si SJOM revisa o aprueba algo, se registra en el entregable y aquí.
+  3. En el sub-batch 13.3 se decide si `samuel0rtiz` conserva el permiso _write_ (revisión de accesos). Fecha: 11 de diciembre de 2026.
+  4. Si al 11 de diciembre de 2026 no hubo revisión independiente, la NC sigue abierta y se declara en el acta de liberación (sub-batch 14.1).
+- **Acción preventiva:** en un proyecto futuro, el acceso de cada integrante se comprueba al iniciar (MJ-001), y la protección de ramas no se relaja sin registrar antes la NC.
+- **Verificación de eficacia:** solo el equipo auditor o un revisor externo. FJMP no puede verificarla.
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026. Que acepte quien produce es parte de la misma desviación.
+
+## NC-013 — Auditorías internas sin auditor independiente
+
+- **Fuente:** contraste de la Tabla 60 y la sección 39.1 con el estado del proyecto, 10 de noviembre de 2026.
+- **Descripción:** la Tabla 60 programa auditorías internas en el cierre de la fase 2, el cierre de la fase 4, antes del piloto y al cierre del semestre piloto. La sección 39.1 pide un auditor que no desarrolle ni opere el producto. Al 10 de noviembre no hay auditor designado:
+  - La auditoría del cierre de la fase 2 no se hizo. Solo existe el índice de evidencia, que preparó el auditado (`docs/calidad/auditoria-fase-2-evidencia.md`). Se hace como autoauditoría en el sub-batch 11.3.
+  - Las del cierre de la fase 4 y "antes de la liberación" se harán como autoauditoría por reejecución (sub-batches 11.3 y 13.6), que no es independiente. El asistente de IA tampoco lo es.
+  - La del cierre del semestre no se realiza, porque no hay piloto (`plan-de-sistema.md`, 6.2).
+- **Severidad:** Mayor. La auditoría es condición de cierre de las fases 2 y 4 (Tabla 60), de la misma clase que NC-002. Sin ella, nadie independiente verifica los controles de seguridad de la fase 4 (RNF-SEG-001 e ISO/IEC 27001:2022).
+- **Evidencia:** `docs/calidad/auditoria-fase-2-evidencia.md` ("el auditor está por designar"); `plan-de-sistema.md`, apartado 8; `roles-y-raci.md`, apartado 5 ("Auditorías de la Tabla 60: pendiente de designar").
+- **Causa:** el plan dejó la designación a "la profesora o el equipo auditor", sin fecha ni solicitud registrada. Nadie la pidió.
+- **Acción correctiva:**
+  1. FJMP pide por escrito a la profesora o al equipo de PA-SCE-001 que audite el cierre de la fase 4, con el paquete del sub-batch 11.3. Fecha: 20 de noviembre de 2026.
+  2. Las auditorías del cierre de las fases 2 y 4 se hacen como autoauditoría por reejecución (Anexo F), marcadas como no independientes, en el sub-batch 11.3. Fecha: 20 de noviembre de 2026, antes de firmar ACT-F2-001 y ACT-F4-001 y de etiquetar `v0.4.0`. La solicitud de la acción 1 sigue en paralelo: si un auditor acepta antes del 11 de diciembre de 2026, audita esos cierres a posteriori y su informe se anexa a las actas.
+  3. La auditoría "antes de la liberación" sigue el mismo criterio en el sub-batch 13.6. Fecha: 11 de diciembre de 2026.
+- **Acción preventiva:** el auditor se designa al planear, con fecha, y la solicitud queda registrada.
+- **Verificación de eficacia:** el auditor que se designe. Si no hay ninguno, la NC sigue abierta y se declara en el acta de liberación (sub-batch 14.1).
+- **Aceptación (Tabla 61):** FJMP, como Product Owner, acepta este plan el 10 de noviembre de 2026.
+
+## NC-014 — Código de CC-020 fusionado sin actualizar antes las figuras
+
+- **Fuente:** revisión del sub-batch 11.0, 10 de noviembre de 2026.
+- **Descripción:** CC-020 cambia la arquitectura: quita a Mercado Pago como sistema externo. Su código entró en `develop` el 10 de noviembre con el PR #30 (Batch 9, PR #64). Las figuras 1, 2, 3, 5, 9 y 10 siguen mostrando el checkout, el webhook y el sandbox, y se redibujan en el sub-batch 13.1. La Tabla 54 dice que "un cambio arquitectónico Must exige actualizar el diagrama antes de fusionar", y la regla 5 de `plan-de-sistema.md` pide CC y figuras antes del código.
+- **Severidad:** Menor. Incumple una práctica documentada. No hay riesgo inmediato: las figuras describen un proveedor que el código ya no usa, y CC-020 documenta el cambio.
+- **Evidencia:** `docs/gobierno/cambios/CC-020.md` ("Faltan las figuras (13.1)"); `docs/gobierno/registro-de-cambios.md`, fila CC-020; `docs/arquitectura/*.puml`.
+- **Causa:** la compactación de 6.1 cambió el proveedor sin CC, y el CC llegó después del código (NC-008). Las figuras se agruparon con CC-022 para redibujarlas una sola vez.
+- **Contención:** el manual v3.0 (apartado 5 y Tabla 3) y las notas de `v0.4.0` (11.4) declaran que esas figuras todavía muestran Mercado Pago.
+- **Acción correctiva:** redibujar las figuras 1, 2, 3, 5, 9 y 10 con la pasarela simulada en el sub-batch 13.1, antes del corte de `release/1.0.0` (13.6). Responsable: FJMP.
+- **Acción preventiva:** el PR de un CC que cambia la arquitectura incluye sus figuras; si no, no se fusiona (regla 5).
+- **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que ninguna figura de `release/1.0.0` muestre a Mercado Pago.
+
+## NC-015 — Ramas y etiquetas fuera de la Tabla 31 y de la sección 15.2
+
+- **Fuente:** revisión del sub-batch 11.0, 10 de noviembre de 2026.
+- **Descripción:** la retoma (`plan-de-sistema.md`, 6.2) se aparta de dos convenciones:
+  - Las fases 1 a 3 se cierran con etiquetas retroactivas `v0.1.0` a `v0.3.0` sobre commits de `develop`, sin `release/x.y.z` ni fusión a `main`. La regla 8 del plan pide `release/x.y.z` fusionada a `main` en cada cierre de fase, y la sección 15.2 define `release/x.y.z` como la estabilización previa a la etiqueta. El apartado 9 de las actas de las fases 1 a 3 pide crear `release/0.x.0`.
+  - El defecto #69 y las correcciones de `release/1.0.0` van en ramas `feature/<issue>-<descripción>`. La Tabla 31 y la sección 15.2 prevén `fix/id` para corregir defectos.
+- **Severidad:** Menor. Incumple prácticas documentadas, sin riesgo inmediato: las etiquetas se anotan como retroactivas, `main` recibe las fases 1 a 4 juntas con `release/0.4.0`, y el issue de cada corrección lleva la etiqueta `defecto`.
+- **Evidencia:** `plan-de-sistema.md`, 6.2 (Sub-batches y Versiones); apartado 9 de `acta-aceptacion-fase-1.md`, `acta-aceptacion-fase-2.md` y `acta-aceptacion-fase-3.md`.
+- **Causa:** las fases 1 a 3 se integraron en `develop` hasta el 10 de noviembre, de golpe y sin actas (NC-009 a NC-011). Abrir ahora tres ramas de release sobre commits viejos no estabiliza nada.
+- **Acción correctiva:** no se corrige. Se declara en las actas de las fases 1 a 3 (11.3) y en el acta de promoción de `v0.4.0` (11.4).
+- **Acción preventiva:** desde `v0.4.0`, cada versión sale de su `release/x.y.z` fusionada a `main`.
+- **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que `v0.4.0` y `v1.0.0` salgan de su rama de release fusionada a `main`.
