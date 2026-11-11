@@ -33,6 +33,8 @@ Los roles **no son permanentes**. Se asignan por sprint y se invierten en el sig
 
 **Sprint vigente:** S3, del 2 al 13 de noviembre de 2026.
 
+> **Desde el 10 de noviembre de 2026, esta tabla y la regla por entregable no se aplican:** FJMP ocupa los seis roles (apartado 6, NC-012). `samuel0rtiz` aceptó la invitación al repositorio ese día y es colaborador con permiso _write_. Pero no revisó ni aprobó ningún entregable.
+
 > **Correcciones del 5 de noviembre de 2026.** La tabla tenía las columnas invertidas respecto al plan de trabajo y trataba el sprint S1 como excepción (NC-005). Se corrigió para que los tres documentos de gobierno digan lo mismo. Las desviaciones que ocurrieron en S2 se tratan en `docs/calidad/registro-no-conformidades.md`.
 
 ---
@@ -113,7 +115,7 @@ Esta limitación se declara de forma expresa ante el equipo auditor, en lugar de
 - Si se aprueba CC-007, FJMP suma Desarrollo y Administrador del sistema en sus sprints. Las acciones del administrador quedan en bitácora.
 - **FJMP trabaja con un asistente de IA (Claude Code)**. Se declara en cada commit con `Co-Authored-By`. El asistente no aprueba ni acepta nada, y FJMP rinde cuentas por el código que entrega.
 
-**Cambio del 10 de noviembre de 2026: el proyecto sigue sin SJOM.** SJOM no aceptó la invitación al repositorio ni revisó los entregables, y FJMP decidió continuar sin él. Desde esa fecha, FJMP produce y también aprueba: fusiona sus pull requests, firma el manual v3.0 y las actas, y verifica sus propios defectos. Por eso **las garantías 1 a 3 de arriba dejan de cumplirse**. No se presenta como separación de funciones: es una desviación de las secciones 1.2, 10.4 y 29 del manual, y se declara aquí ante el equipo auditor. Lo que queda como control independiente es automático: CI en verde, puerta de calidad, Gitleaks, Trivy, Newman y la matriz rol × endpoint ejecutable.
+**Cambio del 10 de noviembre de 2026: el proyecto sigue sin SJOM.** SJOM aceptó la invitación al repositorio ese día y es colaborador con permiso _write_. Pero no revisó ni aprobó ningún entregable, y FJMP decidió continuar sin él. _(Corregido el 10 de noviembre de 2026: este párrafo decía que SJOM no había aceptado la invitación, que solo dejaban de cumplirse las garantías 1 a 3 y que la desviación era de las secciones 1.2, 10.4 y 29.)_ Desde esa fecha, FJMP produce y también aprueba: fusiona sus pull requests, firma el manual v3.0 y las actas, y verifica sus propios defectos. Por eso **las garantías 1 a 4 de arriba dejan de cumplirse**: FJMP también ocupa ambas columnas en S4 y S5 (`plan-de-trabajo.md`, apartado 2), así que la asignación no se invierte. No se presenta como separación de funciones: es una desviación de las secciones 1.2, 10.4, 29.1 y 30.2 del manual, y se declara aquí ante el equipo auditor. Lo que queda como control independiente es automático: CI en verde, puerta de calidad, Gitleaks, Trivy, Newman y la matriz rol × endpoint ejecutable. La desviación queda registrada como NC-012 (separación de funciones) y NC-013 (auditor independiente) en `docs/calidad/registro-no-conformidades.md`, y cada acta la cita.
 
 ## 7. Aprobación
 

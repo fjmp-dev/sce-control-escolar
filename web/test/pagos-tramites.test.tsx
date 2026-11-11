@@ -80,7 +80,7 @@ describe('Mi cuenta y pasarela simulada (RF-006)', () => {
   it('con adeudo ofrece pagar y lleva de cada pago a su pasarela o su recibo', async () => {
     api({ '/alumnos/actual/cuenta': cuenta(1850) });
     render(await PaginaMiCuenta());
-    screen.getByText('Adeudo: $1,850.00');
+    expect(document.querySelector('.saldo')?.textContent).toBe('Adeudo: $1,850.00');
     screen.getByRole('button', { name: 'Ir a pagar' });
     within(screen.getByRole('table', { name: 'Movimientos de la cuenta' })).getByRole('cell', { name: 'Cargo' });
     expect(screen.getByRole('link', { name: 'Continuar el pago REF-1' }).getAttribute('href')).toBe(
@@ -126,7 +126,7 @@ describe('Caja (RF-006, Fig. 7)', () => {
     api(COMUNES);
     render(await PaginaCaja({ searchParams: parametros({ fecha: '2026-11-10' }) }));
     within(screen.getByRole('table', { name: 'Pagos aplicados el 2026-11-10' })).getByRole('cell', { name: 'REF-2' });
-    screen.getByText('Total del día: $500.00');
+    expect(screen.getByText('Total del día').closest('.saldo')?.textContent).toBe('Total del día$500.00');
     screen.getByRole('option', { name: '2027A (Abierto)' });
     expect(screen.queryByRole('button', { name: 'Registrar la beca' })).toBeNull();
   });
@@ -134,7 +134,7 @@ describe('Caja (RF-006, Fig. 7)', () => {
   it('el estado de cuenta de una matricula con adeudo ofrece la beca; una matricula que no existe lo explica', async () => {
     api({ ...COMUNES, '/alumnos/2420002/cuenta': cuenta(1850) });
     render(await PaginaCaja({ searchParams: parametros({ matricula: '2420002', fecha: '2026-11-10' }) }));
-    screen.getByText('Adeudo: $1,850.00');
+    expect(document.querySelector('.saldo')?.textContent).toBe('Adeudo: $1,850.00');
     screen.getByRole('button', { name: 'Registrar la beca' });
     cleanup();
 

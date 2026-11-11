@@ -1,5 +1,7 @@
+import { Fragment } from 'react';
 import type { Esquemas } from '@/lib/contrato';
 import { estadoDeInscripcion, horarioLegible, momentoLegible, RECHAZO } from '@/lib/formato';
+import { Insignia, tonoDeEstado } from './insignia';
 import { Columna, Tabla } from './tabla';
 
 type Inscripcion = Esquemas['InscripcionRespuesta'];
@@ -7,13 +9,18 @@ type Grupo = Esquemas['GrupoRespuesta'];
 
 const horarios = (grupo: Grupo) => grupo.horarios.map(horarioLegible).join('; ');
 
+/** 28.1: el estado va en texto; la insignia solo le da tono. */
+const Estado = ({ inscripcion: i }: Readonly<{ inscripcion: Inscripcion }>) => (
+  <Insignia tono={tonoDeEstado(i.estado)}>{estadoDeInscripcion(i.estado, i.motivoRechazo)}</Insignia>
+);
+
 /** RNF-USU-001: el estado se lee en texto y, si es un rechazo, dice qué corregir. */
 export function EstadoDeInscripcion({ inscripcion }: Readonly<{ inscripcion: Inscripcion }>) {
   const rechazo = inscripcion.motivoRechazo ? RECHAZO[inscripcion.motivoRechazo] : undefined;
   return (
-    <div className="estado-inscripcion">
+    <div className={`estado-inscripcion estado-inscripcion-${tonoDeEstado(inscripcion.estado)}`}>
       <p>
-        <strong>Estado:</strong> {estadoDeInscripcion(inscripcion.estado, inscripcion.motivoRechazo)}
+        <strong>Estado:</strong> <Estado inscripcion={inscripcion} />
       </p>
       {rechazo && (
         <p>
@@ -27,7 +34,7 @@ export function EstadoDeInscripcion({ inscripcion }: Readonly<{ inscripcion: Ins
 const COLUMNAS_DE_CARGA: Columna<Grupo>[] = [
   { titulo: 'Materia', celda: (g) => `${g.materiaClave} · ${g.materiaNombre}` },
   { titulo: 'Grupo', celda: (g) => g.clave },
-  { titulo: 'Créditos', celda: (g) => g.creditos },
+  { titulo: 'Créditos', celda: (g) => g.creditos, numerica: true },
   { titulo: 'Horario', celda: horarios },
 ];
 
@@ -35,7 +42,7 @@ const COLUMNAS_DE_CARGA: Columna<Grupo>[] = [
 export function Comprobante({ inscripcion }: Readonly<{ inscripcion: Inscripcion }>) {
   const creditos = inscripcion.grupos.reduce((total, g) => total + g.creditos, 0);
   return (
-    <section aria-labelledby="titulo-comprobante">
+    <section aria-labelledby="titulo-comprobante" className="tarjeta inscripcion-comprobante">
       <h2 id="titulo-comprobante">Comprobante de inscripción</h2>
       <dl className="datos">
         <dt>Folio</dt>
@@ -45,7 +52,9 @@ export function Comprobante({ inscripcion }: Readonly<{ inscripcion: Inscripcion
         <dt>Periodo</dt>
         <dd>{inscripcion.periodoClave}</dd>
         <dt>Estado</dt>
-        <dd>{estadoDeInscripcion(inscripcion.estado, inscripcion.motivoRechazo)}</dd>
+        <dd>
+          <Estado inscripcion={inscripcion} />
+        </dd>
         <dt>Fecha</dt>
         <dd>{momentoLegible(inscripcion.fecha)}</dd>
         <dt>Créditos</dt>
@@ -63,23 +72,23 @@ export function Comprobante({ inscripcion }: Readonly<{ inscripcion: Inscripcion
 
 const COLUMNAS: Columna<Inscripcion>[] = [
   { titulo: 'Periodo', celda: (i) => i.periodoClave },
-  { titulo: 'Folio', celda: (i) => i.folio },
-  { titulo: 'Estado', celda: (i) => estadoDeInscripcion(i.estado, i.motivoRechazo) },
-  { titulo: 'Fecha', celda: (i) => momentoLegible(i.fecha) },
-  { titulo: 'Carga', celda: (i) => i.grupos.map((g) => `${g.materiaClave} grupo ${g.clave}`).join(', ') },
+  { titulo: 'Folio', celda: (i) => <span className="folio">{i.folio}</span> },
+  { titulo: 'Estado', celda: (i) => <Estado inscripcion={i} /> },
+  { titulo: 'Fecha', celda: (i) => <span className="sin-corte">{momentoLegible(i.fecha)}</span> },
+  {
+    titulo: 'Carga',
+    celda: (i) =>
+      i.grupos.map((g, n) => (
+        <Fragment key={g.id}>
+          {n > 0 && ', '}
+          <span className="sin-corte">
+            {g.materiaClave} grupo {g.clave}
+          </span>
+        </Fragment>
+      )),
+  },
 ];
 
 export function ListaDeInscripciones({ inscripciones }: Readonly<{ inscripciones: Inscripcion[] }>) {
   return <Tabla titulo="Inscripciones" columnas={COLUMNAS} filas={inscripciones} clave={(i) => i.folio} />;
 }
-
-/** Cada grupo de la oferta como opción legible: materia, grupo, horario y lugares. */
-export const opcionesDeOferta = (oferta: Grupo[]) =>
-  oferta.map((g) => {
-    const lugares = g.cupo - g.ocupacion;
-    const disponibles = lugares > 0 ? `${lugares} lugares` : 'Sin lugares';
-    return {
-      valor: String(g.id),
-      etiqueta: `${g.materiaClave} ${g.materiaNombre}, grupo ${g.clave}: ${horarios(g)}. ${disponibles}`,
-    };
-  });

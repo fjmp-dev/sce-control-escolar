@@ -1,5 +1,6 @@
 import { Aviso } from '@/componentes/aviso';
 import { Campo, Formulario } from '@/componentes/formulario';
+import { Insignia, tonoDeEstado } from '@/componentes/insignia';
 import { Tabla } from '@/componentes/tabla';
 import { abrirPeriodo, cerrarPeriodo, iniciarCurso } from '@/lib/acciones';
 import { consultar, sesionActual } from '@/lib/api';
@@ -70,7 +71,12 @@ export default async function PaginaPeriodos({
           { titulo: 'Clave', celda: (p) => p.clave },
           { titulo: 'Inicio', celda: (p) => fechaLegible(p.fechaInicio) },
           { titulo: 'Fin', celda: (p) => fechaLegible(p.fechaFin) },
-          { titulo: 'Estado', celda: (p) => ETIQUETA_ESTADO_PERIODO[p.estado] ?? p.estado },
+          {
+            titulo: 'Estado',
+            celda: (p) => (
+              <Insignia tono={tonoDeEstado(p.estado)}>{ETIQUETA_ESTADO_PERIODO[p.estado] ?? p.estado}</Insignia>
+            ),
+          },
           {
             titulo: 'Oferta',
             celda: (p) =>

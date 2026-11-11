@@ -51,7 +51,7 @@ export const estadoDeInscripcion = (estado: string, motivo: string | null) =>
 export const DIAS_DE_LA_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 export const horarioLegible = (h: { dia: number; horaInicio: string; horaFin: string; aula: string }) =>
-  `${DIAS_DE_LA_SEMANA[h.dia - 1]} de ${h.horaInicio} a ${h.horaFin}, aula ${h.aula}`;
+  `${DIAS_DE_LA_SEMANA[h.dia - 1]} de ${h.horaInicio} a ${h.horaFin}, aula\u00a0${h.aula}`;
 
 const FECHA_Y_HORA = new Intl.DateTimeFormat('es-MX', {
   dateStyle: 'medium',
@@ -59,8 +59,9 @@ const FECHA_Y_HORA = new Intl.DateTimeFormat('es-MX', {
   timeZone: 'America/Mexico_City',
 });
 
-/** Un momento, no un día: se muestra en la hora del centro de México. */
-export const momentoLegible = (iso: string) => FECHA_Y_HORA.format(new Date(iso));
+/** Un momento, no un día: se muestra en la hora del centro de México. «p.m.» no se separa de su hora. */
+export const momentoLegible = (iso: string) =>
+  FECHA_Y_HORA.format(new Date(iso)).replace(/\s(?=[ap]\.\s?m\.)/, '\u00a0');
 
 const PESOS = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 export const pesos = (importe: number) => PESOS.format(importe);

@@ -1,10 +1,11 @@
 import Link from 'next/link';
+import { EstadoDeTramite, Momento } from '@/app/(portal)/tramites/piezas';
 import { Formulario, Selector } from '@/componentes/formulario';
 import { Tabla } from '@/componentes/tabla';
 import { solicitarTramite } from '@/lib/acciones';
 import { consultar } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
-import { ETIQUETA_TIPO_TRAMITE, estadoDeTramite, momentoLegible } from '@/lib/formato';
+import { ETIQUETA_TIPO_TRAMITE } from '@/lib/formato';
 
 export const metadata = { title: 'Mis trámites' };
 
@@ -16,6 +17,9 @@ export default async function PaginaMisTramites() {
   return (
     <>
       <h1>Mis trámites</h1>
+      <p className="entrada">
+        Pide tus constancias y tu historial, y sigue su estado. Cuando un documento esté listo, descárgalo aquí.
+      </p>
       <h2>Solicitar</h2>
       <Formulario accion={solicitarTramite} envio="Solicitar">
         <Selector
@@ -31,16 +35,20 @@ export default async function PaginaMisTramites() {
         filas={tramites}
         clave={(t) => t.folio}
         columnas={[
-          { titulo: 'Folio', celda: (t) => t.folio },
+          { titulo: 'Folio', celda: (t) => <span className="folio">{t.folio}</span> },
           { titulo: 'Documento', celda: (t) => ETIQUETA_TIPO_TRAMITE[t.tipo] ?? t.tipo },
-          { titulo: 'Estado', celda: estadoDeTramite },
-          { titulo: 'Solicitado', celda: (t) => momentoLegible(t.fechaSolicitud) },
-          { titulo: 'Último cambio', celda: (t) => momentoLegible(t.fechaActualizacion) },
+          { titulo: 'Estado', celda: (t) => <EstadoDeTramite tramite={t} /> },
+          { titulo: 'Solicitado', celda: (t) => <Momento iso={t.fechaSolicitud} /> },
+          { titulo: 'Último cambio', celda: (t) => <Momento iso={t.fechaActualizacion} /> },
           {
             titulo: 'Descarga',
             celda: (t) =>
               t.documentoFolio ? (
-                <Link href={`/mis-tramites/${encodeURIComponent(t.folio)}`} aria-label={`Descargar ${t.folio}`}>
+                <Link
+                  href={`/mis-tramites/${encodeURIComponent(t.folio)}`}
+                  aria-label={`Descargar ${t.folio}`}
+                  className="boton boton-secundario"
+                >
                   Descargar
                 </Link>
               ) : (

@@ -1,6 +1,6 @@
 # Fichas de proveedores — SCE
 
-**Fuente:** SCE-MC-001 v2.0, sección 33 (Tabla 55). **Actualizado:** 10 de noviembre de 2026 (CC-018).
+**Fuente:** SCE-MC-001 v2.0, sección 33 (Tabla 55). **Actualizado:** 10 de noviembre de 2026 (CC-018 y CC-020).
 
 Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un proveedor crítico es un cambio mayor y exige análisis de impacto.
 
@@ -10,8 +10,8 @@ Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un pro
 |---|---|
 | Uso | Repositorio, pull requests, issues, tablero y automatización con GitHub Actions. Desde CC-018, también **staging**: la etapa 8 lo arma en un runner, lo verifica y lo destruye |
 | Riesgo asociado | RK-07 |
-| Controles aplicados | Protección de `main` y de la rama de integración (pull request, checks de CI y una aprobación, también para administradores); secret scanning con push protection; Gitleaks en CI; gestor de secretos de Actions |
-| Acceso | `fjmp-dev` como propietario. La invitación a `samuel0rtiz` del 23 de octubre caducó sin aceptarse (GitHub las vence a los 7 días); se reenvió el 10 de noviembre y vence el 17 |
+| Controles aplicados | Protección de `main` y de `develop`: pull request y checks de CI de las etapas 1 a 5 y 7, también para administradores. Desde el 10 de noviembre de 2026 se exigen cero aprobaciones (NC-012); secret scanning con push protection; Gitleaks en CI; gestor de secretos de Actions |
+| Acceso | `fjmp-dev` como propietario. La invitación a `samuel0rtiz` del 23 de octubre caducó sin aceptarse (GitHub las vence a los 7 días). Se reenvió el 10 de noviembre y `samuel0rtiz` la aceptó ese mismo día: es colaborador con permiso _write_. No ha revisado ni aprobado ningún pull request (NC-012) |
 | Visibilidad | Repositorio público, con acceso de lectura para el equipo auditor |
 | Evaluación | Adecuado para desarrollo, pruebas y staging. Los runners de repositorios públicos tienen 4 CPU y 16 GB, sin costo. Los artefactos de Actions se conservan 90 días, menos que la Tabla 62: se atiende con `docs/evidencias/` |
 | Decisión | Aprobar, pendiente de firma del Product Owner |
@@ -29,7 +29,15 @@ Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un pro
 
 ## Mercado Pago
 
-**Pendiente.** Se llena antes del Batch 9. Controles exigidos por la Tabla 55: sandbox en ambientes no productivos, convenio y credenciales solo en piloto, idempotencia y conciliación diaria. Riesgos: RK-02 y RK-08.
+**No se contrata; pasarela simulada (CC-020, 10 de noviembre de 2026).** El alumno aprueba o rechaza el cobro en una pantalla de prueba y no se mueve dinero. No hay cuenta, credenciales, sandbox, convenio ni webhook.
+
+| Campo | Valor |
+|---|---|
+| Uso | Ninguno. Lo sustituye la pasarela simulada del módulo de pagos (`api/src/pagos/`) |
+| Riesgo asociado | RK-02 y RK-08, que se tratan sobre la pasarela simulada (CC-020) |
+| Controles de la Tabla 55 | **Sandbox, convenio y credenciales:** no aplican. **Idempotencia:** `Pago.aplicarUnaVez()` y una clave de idempotencia por intento. **Conciliación diaria:** el corte del día de caja (manual v3.0, Tabla 4) |
+| Costo | Ninguno |
+| Decisión | No se contrata. Un cobro real, en un piloto futuro, entra con un CC Mayor nuevo, y esta ficha se llena antes de usarlo |
 
 ## Proveedor de infraestructura para staging
 
@@ -39,7 +47,7 @@ Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un pro
 |---|---|
 | Uso | Staging (Tabla 30). El piloto lo aloja la institución (Batch 14) |
 | Riesgo asociado | RK-04 |
-| Controles de la Tabla 55 | **Inventario:** `inventario-de-ambientes.md`. **Respaldos:** previo a cada despliegue; cifrado y restauración se ensayan en el Batch 13. **HTTPS:** TLS 1.2+ comprobado en cada despliegue, con certificado autofirmado. **Responsables:** FJMP como DevOps; SJOM aprueba cada despliegue |
+| Controles de la Tabla 55 | **Inventario:** `inventario-de-ambientes.md`. **Respaldos:** previo a cada despliegue; cifrado y restauración se ensayan en el Batch 13. **HTTPS:** TLS 1.2+ comprobado en cada despliegue, con certificado autofirmado. **Responsables:** FJMP como DevOps; SJOM aprueba cada despliegue. _(Corregido el 10 de noviembre de 2026: SJOM no aprueba; desde ese día aprueba FJMP (NC-012). El environment `staging` aún no existe y se crea en 11.4.)_ |
 | Datos | Solo sintéticos (RK-09) |
 | Costo | Ninguno |
 
@@ -58,11 +66,11 @@ Los proveedores se evalúan antes de emplearse en el piloto. El cambio de un pro
 
 | Campo | Valor |
 |---|---|
-| Uso | URL pública temporal hacia el ambiente, solo mientras dura una prueba que la necesita: webhook de Mercado Pago en sandbox (Batch 9) y sesiones de usabilidad (Batch 13). CC-018 |
+| Uso | URL pública temporal hacia el ambiente, solo mientras dura una prueba que la necesita: sesiones de usabilidad, si hay participantes (6.2, 13.5). CC-018. Ya no hay webhook de Mercado Pago (CC-020) |
 | Riesgo asociado | Exponer un ambiente con datos sintéticos mientras el túnel está abierto |
-| Controles | Solo datos sintéticos; el túnel se cierra al terminar la prueba; toda ruta, salvo `/salud`, el inicio de sesión y el webhook firmado, pide sesión |
+| Controles | Solo datos sintéticos; el túnel se cierra al terminar la prueba; toda ruta, salvo `/salud` y el inicio de sesión, pide sesión |
 | Costo | Ninguno (`cloudflared` con túnel rápido o cuenta gratuita) |
-| Decisión | Se evalúa a fondo en el Batch 9, antes de usarlo |
+| Decisión | Se evalúa a fondo antes de usarlo. Sin participantes no se usa |
 
 ## Aprobación
 

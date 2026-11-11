@@ -5,9 +5,17 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import PaginaDeError from '@/app/error';
 import { Aviso } from '@/componentes/aviso';
 import { Campo, Casilla, Casillas, Formulario, Selector } from '@/componentes/formulario';
+import { Insignia, TONO_DE_ESTADO, tonoDeEstado } from '@/componentes/insignia';
 import { Navegacion } from '@/componentes/navegacion';
 import { Tabla } from '@/componentes/tabla';
 import type { EstadoDeFormulario } from '@/lib/estado';
+import {
+  ETIQUETA_ESTADO_INSCRIPCION,
+  ETIQUETA_ESTADO_PAGO,
+  ETIQUETA_ESTADO_PERIODO,
+  ETIQUETA_ESTADO_TRAMITE,
+  ETIQUETA_ESTATUS,
+} from '@/lib/formato';
 
 const ruta = vi.hoisted(() => ({ actual: '/' }));
 vi.mock('next/navigation', () => ({ usePathname: () => ruta.actual }));
@@ -153,9 +161,48 @@ describe('Tabla (Tabla 50)', () => {
 describe('Navegacion', () => {
   it('marca la pagina actual y siempre ofrece Inicio', () => {
     ruta.actual = '/materias';
-    render(<Navegacion enlaces={[{ ruta: '/materias', etiqueta: 'Materias', descripcion: '' }]} />);
+    render(<Navegacion enlaces={[{ ruta: '/materias', etiqueta: 'Materias', descripcion: '', grupo: 'Catálogos' }]} />);
     expect(screen.getByRole('link', { name: 'Materias' }).getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('link', { name: 'Inicio' }).getAttribute('aria-current')).toBeNull();
+    expect(screen.getByRole('list', { name: 'Catálogos' })).toBeTruthy();
+  });
+
+  it('en una subpagina marca su seccion, pero nunca Inicio', () => {
+    ruta.actual = '/materias/ISW-201';
+    render(<Navegacion enlaces={[{ ruta: '/materias', etiqueta: 'Materias', descripcion: '', grupo: 'Catálogos' }]} />);
+    expect(screen.getByRole('link', { name: 'Materias' }).getAttribute('aria-current')).toBe('true');
+    expect(screen.getByRole('link', { name: 'Inicio' }).getAttribute('aria-current')).toBeNull();
+  });
+
+  it('en celular el boton Menu abre y cierra la lista que controla', async () => {
+    ruta.actual = '/';
+    render(<Navegacion enlaces={[]} />);
+    const boton = screen.getByRole('button', { name: 'Menú' });
+    const lista = document.getElementById(boton.getAttribute('aria-controls') ?? '');
+    expect(boton.getAttribute('aria-expanded')).toBe('false');
+    expect(lista?.hasAttribute('data-abierto')).toBe(false);
+    await userEvent.click(boton);
+    expect(boton.getAttribute('aria-expanded')).toBe('true');
+    expect(lista?.hasAttribute('data-abierto')).toBe(true);
+    await userEvent.click(boton);
+    expect(boton.getAttribute('aria-expanded')).toBe('false');
+  });
+});
+
+describe('Insignia', () => {
+  it('muestra el texto y cada estado conocido tiene su tono', () => {
+    render(<Insignia tono={tonoDeEstado('confirmada')}>Confirmada</Insignia>);
+    expect(screen.getByText('Confirmada').className).toBe('insignia insignia-exito');
+    for (const mapa of [
+      ETIQUETA_ESTADO_INSCRIPCION,
+      ETIQUETA_ESTADO_TRAMITE,
+      ETIQUETA_ESTADO_PAGO,
+      ETIQUETA_ESTADO_PERIODO,
+      ETIQUETA_ESTATUS,
+    ]) {
+      for (const estado of Object.keys(mapa)) expect(Object.hasOwn(TONO_DE_ESTADO, estado), estado).toBe(true);
+    }
+    expect(tonoDeEstado('constructor')).toBe('neutro');
   });
 });
 
