@@ -38,4 +38,5 @@ export async function proxy(peticion: NextRequest) {
   }
 }
 
-export const config = { matcher: ['/((?!_next/static|ingresar|salud|icon.svg).*)'] };
+// Sin sesión: el ingreso, la salud, el aviso de privacidad (12.6) y los estáticos.
+export const config = { matcher: ['/((?!_next/static|ingresar|salud|privacidad|icon.svg).*)'] };

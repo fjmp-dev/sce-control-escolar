@@ -3,7 +3,7 @@
 **Documento de referencia:** SCE-MC-001 v2.0, sección 17 (tablas 35, 36 y 37).
 **Proceso:** ISO 31000:2018 — establecer el contexto, identificar, analizar, evaluar, tratar, monitorear y comunicar.
 **Alcance:** las amenazas que puedan impedir el piloto, corromper el expediente o incumplir requisitos Must.
-**Estado:** actualizada el 5 de noviembre de 2026. Revisión al cierre de cada fase y antes de la promoción a piloto.
+**Estado:** actualizada el 10 de noviembre de 2026, con RK-11 a RK-14 (sub-batch 12.6). Revisión al cierre de cada fase y antes de la promoción a piloto.
 
 ---
 
@@ -31,6 +31,10 @@
 | RK-08 | Indisponibilidad de la pasarela de pagos. | Medio | Transferir y mitigar: estado pendiente, reintentos controlados y acuerdo de servicio con el proveedor. | Desarrollo | **Diseñado.** Batch 9. |
 | RK-09 | Uso de datos personales reales en ambientes no productivos. | **Alto** | Mitigar: datos sintéticos o anonimizados y revisión previa a cada despliegue. | Seguridad | **Vigente sin exposición.** El seed solo tiene datos sintéticos y, desde el Batch 3, la imagen no lo ejecuta: solo lo pide `docker-compose.yml`. El seed amplía a diez expedientes, todos sintéticos, y Great Expectations valida el formato de matrícula. **Desde el Batch 6, cada despliegue a staging lo verifica:** `sin-datos-reales.sql` exige cero filas fuera de la convención sintética (dominio `.test`, nombres "Alumno" o "Alumna"), y el despliegue falla si no. Staging corre el seed con su propia contraseña. |
 | RK-10 | Ausencia de actas de aceptación por fase. | Medio | Mitigar: puerta de aceptación con Product Owner y QA antes de cerrar la fase. | QA | **Materializado.** El acta de fase 0 sigue sin firma (NC-002) y falta el acta de levantamiento (NC-006). Plan fechado en el registro de no conformidades. |
+| RK-11 | Vulneración de datos personales (acceso indebido con una cuenta legítima, copia de un respaldo o de una exportación) que no se detecta, no se acota o no se notifica a tiempo a los titulares y a la autoridad. Probabilidad media, impacto alto. | **Alto** | Mitigar: notificación de vulneraciones ensayada, bitácora, registros sin datos personales, respaldos cifrados y alerta por volumen de consultas. | Seguridad | **Nuevo el 10 de noviembre de 2026 (12.6). En mitigación.** `respuesta-a-incidentes.md` §4.1 y ensayo de mesa con acta (`docs/evidencias/ensayos/`). El ensayo mostró que una lectura indebida no se puede acotar, porque los registros guardan la plantilla de la ruta y la bitácora solo escrituras (H-1), y que nada alerta por volumen (H-2). Respaldos cifrados y cifrado en reposo en 13.2. STRIDE: Expediente I, Gateway I, Bitácora I y Persistencia I. |
+| RK-12 | Tratamiento de datos personales sin aviso de privacidad emitido, sin base de licitud documentada, sin vía para los derechos ARCO o con la ley aplicable mal identificada. Probabilidad baja, porque no hay datos reales; impacto alto. | Medio | Mitigar: modelos de aviso integral y simplificado, base de licitud por finalidad, ARCO, inventario y documento de seguridad; aviso simplificado público en `/privacidad`. La emisión es de la universidad. | Product Owner | **Nuevo el 10 de noviembre de 2026 (12.6). Mitigado en lo que toca al equipo.** Modelos en `docs/gobierno/datos-personales/`, marcados "no emitido por la institución". Sigue abierto: el aviso no está emitido, la ley estatal no está cotejada en la Gaceta y ARCO tiene brechas de rectificación (nombre, fecha de ingreso y cargo erróneo). No es una amenaza STRIDE: es cumplimiento. |
+| RK-13 | Conservación sin plazo: expediente, bitácora y respaldos guardados más de lo necesario, o una cancelación que no se puede cumplir porque nada se suprime y la bitácora es inmutable. Probabilidad media: hoy nada vence, porque se conserva mientras el alumno está activo; impacto medio. | Medio | Mitigar: plazos por dato en la matriz de retención (D-18) y seudonimización al vencer, con CC. | Product Owner | **Nuevo el 10 de noviembre de 2026 (12.6). Abierto.** D-18 por ratificar y filas nuevas en `matriz-retencion.md`. Sin código: el SCE no borra nada. STRIDE: Bitácora T, cuyos disparadores también impiden suprimir. |
+| RK-14 | Toma de una cuenta por contraseña débil, adivinada, robada o reutilizada, sobre todo la del administrador o la de control escolar, que ven datos de todos. Probabilidad media, impacto alto. | **Alto** | Mitigar: bcrypt, política de contraseñas, bloqueo por intentos, sesión corta y confirmación de contraseña para el administrador, revocación inmediata; segundo factor y límite por origen. | Seguridad | **Nuevo el 10 de noviembre de 2026 (12.6). En mitigación.** Contraseña de al menos 12 caracteres, con letras y números y sin la parte local del correo; bloqueo tras 5 fallos en 15 minutos; el administrador tiene token de 15 minutos y confirma su contraseña para operar sobre cuentas; la baja revoca al instante (CC-010). Queda: sin segundo factor; la contraseña inicial la asigna el administrador y nada obliga a cambiarla; no hay restablecimiento (H-5 del ensayo); control escolar y caja no son roles privilegiados; sin límite por origen hasta nginx (Batch 13). STRIDE: Identidad S y D, y sus decisiones abiertas. |
 
 > Los riesgos de nivel Alto que permanezcan abiertos bloquean el paso a piloto hasta que se verifique la mitigación o el Product Owner acepte formalmente el riesgo con un plan fechado (manual, sección 17.2).
 
@@ -40,9 +44,10 @@
 
 | Nivel | Cantidad | IDs |
 |---|---|---|
-| Alto | 6 | RK-01, RK-02, RK-03, RK-04, RK-07, RK-09 |
-| Medio | 4 | RK-05, RK-06, RK-08, RK-10 |
+| Alto | 8 | RK-01, RK-02, RK-03, RK-04, RK-07, RK-09, RK-11, RK-14 |
+| Medio | 6 | RK-05, RK-06, RK-08, RK-10, RK-12, RK-13 |
 | Bajo | 0 | — |
+| **Total** | **14** | RK-01 a RK-14 |
 
 ---
 
@@ -61,4 +66,4 @@
 
 ## 5. Revisión
 
-Esta matriz se revisa al cierre de cada fase y antes de la promoción a piloto (sección 17.1). Los análisis AMFE de inscripción y pagos se hacen al inicio de los batches 5 y 9, y el modelado STRIDE por componente empieza en el Batch 2. Los riesgos de privacidad y de autenticación que señala la Parte B de PA-SCE-001 se evalúan en el Batch 12.
+Esta matriz se revisa al cierre de cada fase y antes de la promoción a piloto (sección 17.1). Los análisis AMFE de inscripción y pagos se hacen al inicio de los batches 5 y 9, y el modelado STRIDE por componente empieza en el Batch 2. Los riesgos de privacidad y de autenticación que señala la Parte B de PA-SCE-001 (AU-37) se evaluaron en el sub-batch 12.6: son RK-11 a RK-14, cruzados con `stride.md`.

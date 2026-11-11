@@ -31,6 +31,7 @@ El mismo día FJMP retomó los batches 11 a 14 (`plan-de-sistema.md`, 6.2). La r
 |---|---|---|
 | 10-nov-2026 | Emisión: alcance acotado a las fases 0 a 4, pago simulado y sin piloto | Compactación (`plan-de-sistema.md`, 6.1); PR #66 |
 | 10-nov-2026 | Retoma: apartado 1, fila de las Tablas 23 y 25 en 2.1, apartados 2.2 y 2.3, apartado 2.4 nuevo, fila de la Tabla 55 en el apartado 3, nota de figuras del apartado 5 y apartado 9 | `plan-de-sistema.md`, 6.2; sub-batch 11.0 |
+| 10-nov-2026 | Apartado 5: fila "Datos personales" de la Tabla 38 y RK-11 a RK-14 en la Tabla 36. Apartado 6: D-18 | `plan-de-sistema.md`, 6.2; sub-batch 12.6 |
 
 ---
 
@@ -136,7 +137,11 @@ Resumen de lo que cambia en el texto del manual:
   - `documento.contenido` (CC-008) y `tramite.motivo_rechazo` (CC-009);
   - `usuario.sesion_version` (CC-010) y `pago.fecha_confirmacion` (CC-011);
   - integridad en las migraciones (CC-004).
-- **Seguridad (18, Tabla 38):** pgAudit y SCRAM en staging (CC-005); usuario técnico sin rol que firma operaciones automáticas y accesos fallidos (CC-015).
+- **Seguridad (18, Tabla 38):**
+  - pgAudit y SCRAM en staging (CC-005); usuario técnico sin rol que firma operaciones automáticas y accesos fallidos (CC-015).
+  - La fila "Datos personales" dice: "Minimización, datos reales solo en piloto y visibilidad estrictamente por rol; inventario de datos, aviso de privacidad, procedimiento ARCO y documento de seguridad". Están en `docs/gobierno/datos-personales/`. El aviso es un modelo hasta que la universidad lo emita.
+  - La fila "Respuesta a incidentes" añade la notificación de vulneraciones (`respuesta-a-incidentes.md`, §4.1).
+- **Riesgos (17, Tabla 36):** se agregan RK-11 a RK-14, de privacidad y autenticación (`docs/calidad/matriz-riesgos.md`).
 - **Inscripción (Fig. 3, 4 y 6):**
   - el rechazo se guarda con su motivo (CC-013, X-05);
   - hay cuatro motivos de rechazo, porque también cuenta el cupo (X-04);
@@ -157,7 +162,7 @@ Resumen de lo que cambia en el texto del manual:
   - X-08: las rutas de las figuras mandan; en lo demás, sustantivos en plural.
   - X-14: la oferta mínima en API va en la fase 2.
   - X-17: Usuario y Rol se relacionan muchos a muchos.
-- **Reglas de negocio D-5 a D-17** (`docs/calidad/reglas-de-negocio.md`): son las "reglas publicadas del periodo" que exige la Tabla 16. Rigen como provisionales mientras el PO no las ratifique con las reglas reales de la universidad.
+- **Reglas de negocio D-5 a D-18** (`docs/calidad/reglas-de-negocio.md`): son las "reglas publicadas del periodo" que exige la Tabla 16. Rigen como provisionales mientras el PO no las ratifique con las reglas reales de la universidad. D-18 fija la conservación del expediente, que la Tabla 62 no cubre.
 
 ---
 

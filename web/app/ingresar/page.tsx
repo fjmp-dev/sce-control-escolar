@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Aviso } from '@/componentes/aviso';
 import { Logotipo } from '@/componentes/icono';
 import { Campo, Formulario } from '@/componentes/formulario';
@@ -39,6 +40,9 @@ export default async function PaginaIngresar({ searchParams }: { searchParams: P
             correccion="Escribe tu contraseña."
           />
         </Formulario>
+        <p className="ayuda">
+          <Link href="/privacidad">Aviso de privacidad</Link>
+        </p>
       </div>
     </main>
   );

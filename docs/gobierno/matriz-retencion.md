@@ -16,6 +16,17 @@ Las columnas Documento, Responsable y Retención son las de la Tabla 62. La colu
 | Registros y bitácora del piloto | DevOps | Semestre más uno | Almacenamiento con acceso restringido; se define en el Batch 13 |
 | Respaldos de base de datos | DevOps | Según objetivos de continuidad: semestre en curso más uno anterior (Tabla 56) | Respaldo cifrado; se define en el Batch 13 |
 
+**Expediente académico (fuera de la Tabla 62; D-18, por ratificar).** Son datos personales, no documentos del proyecto. El plazo real lo fija el catálogo de disposición documental de la universidad; mientras no se tenga, rige la propuesta de D-18 en `docs/calidad/reglas-de-negocio.md`. Hoy el SCE no borra nada.
+
+| Dato | Responsable | Retención propuesta (D-18) | Ubicación concreta |
+|---|---|---|---|
+| Expediente: alumno, historial, inscripciones y calificaciones | Control escolar | Todo, mientras el alumno esté activo. Tras la baja o el egreso, sin supresión: sustenta constancias, certificados y revalidaciones | Tablas `alumno`, `historial`, `inscripcion`, `inscripcion_grupo` y `calificacion` |
+| Trámites y documentos emitidos | Control escolar | Como el expediente | Tablas `tramite` y `documento` |
+| Estado de cuenta, movimientos y pagos | Caja | Cinco años desde el último movimiento | Tablas `cuenta_alumno`, `movimiento` y `pago` |
+| Cuentas de usuario | Administrador del sistema | Baja al egreso, a la baja del alumno o al fin de la relación laboral. La fila se conserva mientras la bitácora la referencie | Tablas `usuario` y `usuario_rol` |
+| Bitácora del SCE | Seguridad | Como el dato que respalda. La fila "Registros y bitácora del piloto" queda para los registros JSON y pgAudit | Tabla `bitacora`, inmutable |
+| Copias fuera del SCE: CSV, documentos e impresiones | Quien descarga | Fuera del control del SCE | Equipo de quien descarga (`docs/gobierno/datos-personales/inventario.md`) |
+
 **Revisión:** en cada cierre de fase, QA comprueba que la retención se cumpla.
 
-**Fuera de la Tabla 62:** la retención del expediente académico como tal no está definida en el manual. PA-SCE-001 lo señala en su Parte B y se atiende en el Batch 12.
+**Fuera de la Tabla 62:** la retención del expediente académico no está definida en el manual. PA-SCE-001 lo señala en su Parte B (AU-40). Se atiende con las filas de arriba y D-18, en el sub-batch 12.6 (10 de noviembre de 2026).

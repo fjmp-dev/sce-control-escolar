@@ -12,6 +12,7 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscrip
 | Portal | T | Peticiones falsificadas desde otro sitio (CSRF) | `SameSite=Lax`, y Next.js compara el origen de cada acción de servidor | `autenticacion.cy.ts` comprueba el atributo. **La comparación de origen es de Next.js y no tiene prueba propia** | Se revisa con ZAP sobre el portal en el Batch 12 |
 | Portal | E | Entrar a una página de otro rol | La API autoriza cada lectura; el portal lleva a "sin permiso". Ocultar el menú es solo presentación | `demostracion-por-rol.cy.ts` | — |
 | Portal | S | Incrustar el portal en otro sitio (clickjacking) | `frame-ancestors 'none'` | Revisión de cabeceras | — |
+| Portal | I | La página pública `/privacidad` expone datos (12.6) | Es estática: no llama a la API ni lee la cookie. El proxy la deja pasar sin sesión, como `/ingresar` | `paginas.test.tsx`, `proxy.test.ts`, `privacidad.cy.ts` | — |
 | Imágenes | T | Desplegar una imagen alterada | Firma de cosign atada a este repositorio y este workflow; la etapa 7 la verifica antes de desplegar | Etapas 6 y 7 | La firma deja un registro público en Rekor, con repositorio y commit, sin datos personales |
 | Imágenes | I | Cuentas sintéticas con contraseña pública en piloto | La imagen no ejecuta el seed; solo lo pide `docker-compose.yml` | `api/Dockerfile`, `docker-compose.yml` | Hay que crear al primer administrador real sin seed (Batch 13) |
 | Identidad | S | Fuerza bruta de contraseñas | Bloqueo tras 5 fallos en 15 minutos, contado desde la bitácora; bcrypt | `sesiones.spec.ts` | Ver D de identidad |
@@ -65,3 +66,14 @@ Cubre lo que ya existe: portal, gateway, identidad y acceso, expediente, inscrip
 - **Segundo factor para el administrador.** PA-SCE-001, Parte B, pide "control adicional para roles privilegiados". Se implementó sesión corta y confirmación de contraseña, sin dependencia ni columna nueva. Un segundo factor (TOTP) sería más fuerte y requeriría un CC. Lo decide Seguridad.
 - **Recuperación de contraseña.** No existe: el manual no la pide. Hoy, quien olvida su contraseña depende de otra alta. El administrador conoce la contraseña inicial que asigna, y el usuario puede cambiarla, pero nada lo obliga. Exigir el cambio en el primer acceso requeriría una columna y un CC.
 - **Qué roles son privilegiados.** Solo `administrador`. Control escolar y caja manejan datos sensibles; Seguridad decide si se suman (una línea en `identidad/dominio/usuario.ts`).
+
+## Cruce con la matriz de riesgos: RK-11 a RK-14
+
+Sub-batch 12.6, 10 de noviembre de 2026. Son los riesgos de privacidad y autenticación de la Parte B de PA-SCE-001 (`matriz-riesgos.md`).
+
+| Riesgo | Filas de esta tabla que lo controlan | Lo que esta tabla no cubre |
+|---|---|---|
+| RK-11 Vulneración no detectada o no notificada | Expediente I (otro alumno, búsquedas); Gateway I (registros); Bitácora I (correos); Persistencia I | Una lectura indebida con una cuenta legítima no deja rastro de qué se leyó (ensayo de mesa, H-1). Los respaldos todavía no existen (13.2) |
+| RK-12 Sin aviso, licitud o ARCO | Ninguna: es cumplimiento, no amenaza | `docs/gobierno/datos-personales/` |
+| RK-13 Conservación sin plazo | Bitácora T: los disparadores que impiden alterarla también impiden suprimir | D-18, por ratificar |
+| RK-14 Toma de cuenta | Identidad S (fuerza bruta, descubrir cuentas, token robado o forjado, sesión de administrador); Identidad D (bloqueo a propósito); decisiones abiertas de arriba | La contraseña robada fuera del SCE, por ejemplo con un correo falso: solo la detendría un segundo factor |

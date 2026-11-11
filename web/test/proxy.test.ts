@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { describe, expect, it, vi } from 'vitest';
-import { proxy } from '@/proxy';
+import { config, proxy } from '@/proxy';
 
 const ahora = () => Math.floor(Date.now() / 1000);
 const jwt = (segundos: number) =>
@@ -10,6 +10,16 @@ const peticion = (token?: string) =>
 const siguio = (r: Response) => r.headers.get('x-middleware-next') === '1';
 
 describe('proxy (Tabla 38, renovacion controlada)', () => {
+  it('sin sesion solo pasan el ingreso, la salud, el aviso de privacidad y los estaticos', () => {
+    const pideSesion = new RegExp(`^${config.matcher[0]}$`);
+    for (const ruta of ['/ingresar', '/salud', '/privacidad', '/icon.svg', '/_next/static/chunks/a.js']) {
+      expect(pideSesion.test(ruta), ruta).toBe(false);
+    }
+    for (const ruta of ['/', '/facultades', '/mi-expediente', '/usuarios']) {
+      expect(pideSesion.test(ruta), ruta).toBe(true);
+    }
+  });
+
   it('sin cookie lleva a ingresar, sin motivo', async () => {
     const r = await proxy(peticion());
     expect(r.headers.get('location')).toBe('http://localhost:3000/ingresar');
