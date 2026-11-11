@@ -24,7 +24,7 @@ Este índice dice dónde está la evidencia, para que cualquier auditor elija su
 | Datos personales (AU-18) | Parte B | `docs/gobierno/datos-personales/`; `respuesta-a-incidentes.md`; `docs/evidencias/ensayos/` |
 | Modelo de calidad (AU-42) | Anexo A y matrices | `docs/calidad/anexo-a.md`; `matriz-25010.md`; `matriz-25012.md` |
 | Proveedores (AU-38) | Fichas | `docs/gobierno/fichas-de-proveedores.md` |
-| Gobierno (AU-01 a AU-07, AU-36, AU-40, AU-43) | Manual, roles, cambios, actas, defectos, auditoría y metodología | `docs/gobierno/manual-v3.0.md`; `roles-y-raci.md`; `registro-de-cambios.md`; `docs/gobierno/actas/`; issues con etiqueta `defecto` (#69 y #82); `docs/calidad/registro-no-conformidades.md`; `docs/gobierno/mejora-continua.md`; `plan-de-trabajo.md` |
+| Gobierno (AU-01 a AU-07, AU-36, AU-40, AU-43) | Manual, roles, cambios, actas, defectos, auditoría y metodología | `docs/gobierno/manual-v3.0.md`; `roles-y-raci.md`; `registro-de-cambios.md`; `docs/gobierno/actas/`; issues con etiqueta `defecto` (#69, #82 y #107); `docs/calidad/registro-no-conformidades.md`; `docs/gobierno/mejora-continua.md`; `plan-de-trabajo.md` |
 
 ## Corridas
 
@@ -36,7 +36,7 @@ Todas en `docs/evidencias/v1.0.0/corridas.md`, con los SHA-256 de los reportes c
 | Staging 43027397938 | `v1.0.0-rc.1` | Etapa 8: humo del Anexo D, Newman, CO-FLE-01, TLS, matriz Must y humo k6 |
 | Continuidad 43014009079 y 43014050248 | `5385940` (`release/1.0.0`) | Respaldo cifrado y su restauración en 20 s |
 | Seguridad operativa 43014013011 | `5385940` | Revisión de accesos y muestreo de 51 asientos de bitácora |
-| Rendimiento | `v1.0.0-rc.1` | CR-REN-01 a 05: `informe-rendimiento.md`, apartado 4.1 |
+| Rendimiento 43034376604, 43034382156, 43034388666 (CR-REN-01); 43027941665, 43027952315, 43027963171 (CR-REN-02); 43034639983 (03); 43034644974 (04); 43027876968 (05) | `v1.0.0-rc.1` | CR-REN-01 y 02 cumplen; 03 y 04 informativos; tabla, medianas y hallazgos en `informe-rendimiento.md`, apartado 4 |
 | Staging de rc.2 | `v1.0.0-rc.2` | Rollback a rc.1: `acta-promocion-v1.0.0-rc.2.md` |
 
 Cómo recalcular cada cifra: el resumen de cada artefacto (`resumen.json` de Great Expectations, `jest.json`, `newman.json`, `reglas-must.json`) y la regla de conteo de `plan-de-pruebas.md`, apartado 3.

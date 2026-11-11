@@ -48,11 +48,11 @@ CR-REN-01 a 05 corren después de la promoción con `rendimiento.yml`, sobre las
 
 | Caso | Resultado | Corrida |
 |---|---|---|
-| CR-REN-01, mediana de tres | Pendiente | |
-| CR-REN-02, mediana de tres | Pendiente | |
-| CR-REN-03 | Pendiente (informativo) | |
-| CR-REN-04 | Pendiente (informativo) | |
-| CR-REN-05 | Pendiente | |
+| CR-REN-01, mediana de tres | Cumple. p95 de 66 ms en inscripción, 44 ms en pago y 26 ms en la peor consulta. 0 % de 5xx. CPU de la aplicación al 46.5 % y de la base al 41.9 %; 2 conexiones activas | [43034376604](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034376604), [43034382156](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034382156), [43034388666](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034388666). Una primera tanda quedó inválida por el generador (`informe-rendimiento.md`, 4.2) |
+| CR-REN-02, mediana de tres | Cumple. p95 de 2 277 ms con 300 inscripciones a la vez. En las tres corridas, 5 confirmadas y 95 rechazadas por cupo, sin pérdida ni duplicación | [43027941665](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027941665), [43027952315](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027952315), [43027963171](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027963171) |
+| CR-REN-03 | Informativo. Quiebre por CPU de la aplicación (99.5 %), sin errores ni latencias fuera de meta hasta 800 usuarios. La saturación empieza entre 545 y 673 usuarios | [43034639983](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034639983) |
+| CR-REN-04 | Informativo. Sin quiebre: el p95 subió en el minuto del pico y volvió al siguiente | [43034644974](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43034644974) |
+| CR-REN-05 | En curso al escribir esto | [43027876968](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43027876968) |
 
 ## 4. Desviaciones declaradas
 

@@ -85,7 +85,7 @@ Resultados con la escala de PA-SCE-001. "CI" es la corrida 43022020442 sobre `8e
 
 | Criterio | Pregunta o verificación | Resultado | Evidencia encontrada |
 |---|---|---|---|
-| AU-31 | ¿p95 y concurrencia medidos fuera de la máquina de desarrollo? | Conforme, con observación OB-08 | Ver `informe-rendimiento.md`, apartado 4 |
+| AU-31 | ¿p95 y concurrencia medidos fuera de la máquina de desarrollo? | Conforme, con observación OB-08 | `informe-rendimiento.md`, apartado 4.1: corridas en el runner de GitHub Actions con la topología de la Fig. 9. CR-REN-01 cumple, con una mediana del p95 de 66 ms en inscripción, 44 ms en pago y 26 ms en consultas. CR-REN-02 cumple: 2 277 ms, sin pérdida ni duplicación |
 | AU-32 | ¿SUS, WCAG 2.2 AA y matriz de navegadores? | **NC mayor (H-02)** | Matriz de la Tabla 50: 7 de 7 combinaciones en verde. Lighthouse de accesibilidad en 100 en 21 páginas. axe sin violaciones serias ni críticas. **No hay SUS ni revisión con lector de pantalla (CO-ACC-03)** |
 | AU-33 | ¿Seis puertas de 20.1, inventario al día y rollback ensayado? | **NC mayor (H-01 y H-04)** | Ver el apartado 3.6 |
 | AU-34 | ¿Respaldo diario, restauración probada, RPO menor a 24 h y RTO menor a 4 h? | Conforme, con observación OB-02 | Restauración del respaldo anterior en 20 s, con conteos iguales (359 filas), CD-DAT y humo. RPO medido contra el respaldo anterior. Acta `2026-11-11-restauracion-y-rollback.md` |
@@ -103,7 +103,7 @@ Resultados con la escala de PA-SCE-001. "CI" es la corrida 43022020442 sobre `8e
 |---|---|---|---|
 | 1 | CI en verde sobre el tag candidato | Cumple | Corrida 43022020442: etapas 1 a 7 en verde, al primer intento |
 | 2 | Despliegue y humo en staging | Cumple | Corrida 43027397938 y `acta-promocion-v1.0.0-rc.1.md` |
-| 3 | Rendimiento dentro de las metas de RNF-REN | Ver el apartado 4 de `informe-rendimiento.md` | CR-REN-01 a 05 sobre `v1.0.0-rc.1`, en el runner (manual v3.0, 2.2) |
+| 3 | Rendimiento dentro de las metas de RNF-REN | CR-REN-01 y 02 cumplen; CR-REN-03 y 04 son informativos; CR-REN-05 está en curso (`informe-rendimiento.md`, apartado 4.1) | CR-REN-01 a 05 sobre `v1.0.0-rc.1`, en el runner (manual v3.0, 2.2) |
 | 4 | Acta de aceptación de la fase firmada por PO y QA | **No cumple (H-04)** | `acta-aceptacion-fase-4.md` (ACT-F4-001) está lista para firma, sin firmar. Antes deben firmarse ACT-F0-001 a ACT-F3-001 |
 | 5 | Riesgos Alto mitigados o aceptados por escrito | Cumple, con la aceptación de quien produce (NC-012) | AU-37 |
 | 6 | Inventario actualizado y rollback verificado | Ver `acta-promocion-v1.0.0-rc.2.md` | Rollback de rc.2 a rc.1 en la etapa 8; `inventario-de-ambientes.md`, apartado 8 |
@@ -125,7 +125,7 @@ El criterio 7 de 36.1 (credenciales de pago del piloto) no se cumple: es H-01.
 | OB-05 | Observación | AU-29 | `plan-de-pruebas.md`, apartado 6 | El apartado sigue con los casos de la fase 1 | MJ-008 |
 | OB-06 | Observación | AU-17 | `stride.md`, fila "Protección en reposo" | El volumen de la base no se cifra en reposo. La fila de STRIDE decía que no había respaldo cifrado, aunque desde 13.2 sí lo hay; se corrigió en esta auditoría (`stride.md` v1.8) | — |
 | OB-07 | Observación | AU-18 | `docs/gobierno/datos-personales/`; RK-12 | El aviso de privacidad, la base de licitud y el documento de seguridad son modelos. Los emite la institución | — |
-| OB-08 | Observación | AU-31 | `informe-rendimiento.md`, apartado 4.2 | Las herramientas de CR-REN se corrigieron durante la medición: Lighthouse saturaba el núcleo del generador y `metas.sh` contaba mal los usuarios. Lo medido es `v1.0.0-rc.1`; el flujo y los guiones vienen de ramas de corrección | — |
+| OB-08 | Observación | AU-31 | `informe-rendimiento.md`, apartado 4.2 | Las herramientas de CR-REN se corrigieron durante la medición: Lighthouse saturaba el núcleo del generador, y `metas.sh` contaba mal los usuarios y no veía la CPU en el punto de quiebre. Lo medido es `v1.0.0-rc.1`. El workflow vino de ramas de corrección, y los guiones, de la etiqueta. Por eso el arreglo de `metas.sh` no aplicó (`informe-rendimiento.md`, 4.2, hallazgo 2) | — |
 | OB-09 | Observación | AU-38 | `fichas-de-proveedores.md` | Las fichas están aprobadas "pendiente de firma del Product Owner". La de iCloud, que el plan prevé para las grabaciones de la Tabla 62, no existe: todavía no hay grabaciones | — |
 | OB-10 | Observación | AU-39 | `mejora-continua.md`, MJ-010 | No hay informe de liberación con la densidad separada de los fallos previos al PR. Pasa a `informe-cierre-piloto.md` (14.2) | MJ-010 |
 
