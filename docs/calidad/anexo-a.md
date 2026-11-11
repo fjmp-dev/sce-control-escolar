@@ -1,0 +1,28 @@
+# Anexo A — Matriz de calidad y criterios de evaluación (Tabla 63)
+
+**Fuente:** SCE-MC-001 v2.0, sección 43.1, Tabla 63; manual v3.0, apartado 2.2; CC-021. **Sub-batch:** 12.5, issue #75. **Versión:** 1.0, 11 de noviembre de 2026. **Responsable:** QA (hoy FJMP; NC-012).
+
+Es la Tabla 63 del manual con tres columnas nuevas: resultado, evidencia y estado. Tiene también dos filas que el manual no trae:
+
+- **Accesibilidad**, con RNF-USU-002 (CC-021).
+- **Seguridad física**, la novena característica de la Tabla 14. La Tabla 63 la omite.
+
+La fila de Compatibilidad suma RNF-FLE-002 y CO-COM-01 en lugar de "matriz de navegadores", que no tenía requisito ni caso.
+
+El detalle por subcaracterística está en `matriz-25010.md` y el de datos en `matriz-25012.md`. Los estados son los de esas matrices.
+
+| Característica | Requisitos | Casos de prueba | Herramienta | Criterio Must | Resultado al 11-nov-2026 | Evidencia | Estado |
+|---|---|---|---|---|---|---|---|
+| Adecuación funcional | RF-001 a RF-010 | CF-EXP, CF-INS, CF-HOR, CF-CAL, CF-PAG, CF-TRA, CF-ROL, CF-REP | Cypress y Jest | Casos en verde y sin defecto crítico | Todos los CF en verde en la etapa 7 de `develop` y en la del candidato `v0.4.0-rc.1`. Cero defectos críticos abiertos: #69, el único defecto registrado, era crítico y se cerró el 10 de noviembre de 2026 | `web/cypress/e2e/`, `api/test/`; `docs/evidencias/fase-4/` | Cumple con pasarela simulada |
+| Eficiencia de desempeño | RNF-REN-001 y 002 | CR-REN-01 a CR-REN-05 | JMeter y k6 | Percentil 95 dentro de la meta | Sin corrida. Lighthouse de rendimiento corre en 21 páginas; no sustituye a CR-REN | `scripts/lighthouse.sh` | Pendiente (13.4) |
+| Compatibilidad | RF-006, RNF-FLE-002 | CI-PAG-01, CO-COM-01 (matriz de la Tabla 50) | Newman y Playwright | Sin duplicidad de pago y flujos Must en verde | CI-PAG-01 en verde, con dos intentos por el mismo adeudo (#69). Matriz de la Tabla 50: combinaciones Must en verde en la etapa 7 | `pagos.spec.ts`, Newman; `scripts/matriz-compatibilidad.sh`, `compatibilidad-dispositivos.md` | Cumple con pasarela simulada |
+| Capacidad de interacción | RNF-USU-001 | CF-INS-02 y sesiones de usabilidad | Cypress y cuestionario SUS | Estados explícitos y SUS mayor o igual a 70 | CF-INS-02 en verde: cada rechazo con su estado y su corrección. SUS sin aplicar: no hay participantes | `inscripcion.cy.ts`; guion del Anexo G | Parcial. SUS: preparado, no ejecutado |
+| **Accesibilidad** (fila nueva, CC-021) | RNF-USU-002 | CO-ACC-01, CO-ACC-02, CO-ACC-03 | axe, Lighthouse, Playwright y revisión manual con VoiceOver | Cero violaciones serias o críticas de axe; Lighthouse de accesibilidad de al menos 90; criterios 28.1 por plataforma; revisión manual firmada | axe en verde en el inicio de los siete roles y en los errores de inscripción y pago. Lighthouse de accesibilidad en verde en 21 páginas. Criterios 28.1 en verde en la matriz de Playwright. Lista manual WCAG 2.2 AA hecha; VoiceOver pendiente | `accesibilidad.md`, `web/playwright/fixtures.ts` | Cumple lo automatizado. Pendiente CO-ACC-03 con VoiceOver |
+| Fiabilidad | RNF-FIA-001 y 002 | CO-FIA-01 (monitoreo) y CO-FIA-02 (prueba de restauración) | Grafana y pg_restore | Disponibilidad en meta y restauración satisfactoria | Sin corrida en esta rama | — | Pendiente (13.2 y 13.3) |
+| Seguridad | RNF-SEG-001 y 002 | CS-SEG-01 a CS-SEG-08 | OWASP ZAP, Supertest y Gitleaks | Roles y bitácora verificados, sin hallazgos altos | CS-SEG-01 a 08 en verde. ZAP sin alertas altas (`informe-zap.md`). Gitleaks sin secretos en todo el historial | `api/test/integracion/`, `informe-zap.md`, `revision-cs-seg-08.md` | Cumple. CS-SEG-08 espera la revisión manual de Seguridad |
+| Mantenibilidad | RNF-MAN-001 | Pipeline de pruebas; CO-MAN-01 y CO-MAN-02 | SonarQube, Jest y ESLint | Cobertura y puerta de calidad aprobadas | Puerta de SonarQube aprobada; dominio con al menos 80 % de líneas. CO-MAN-01: todas las reglas Must con prueba. CO-MAN-02: 8 de 8 violaciones de la Fig. 2 detectadas | Etapas 2, 3 y 5; `scripts/co-man-02.sh` | Cumple |
+| Flexibilidad | RNF-FLE-001 | Prueba de alta de facultad adicional (CO-FLE-01) | Prisma y Supertest | Sin migración estructural | Sin corrida en esta rama | — | Pendiente (13.5) |
+| Calidad de datos | RNF-DAT-001 | CD-DAT-01 a CD-DAT-06 | SQL y Great Expectations | Cero duplicados y conciliación correcta | Cero expectativas incumplidas en las etapas 4 y 5 y en staging. Cero duplicados. Conciliación interna correcta (CC-020) | `api/prisma/verificacion/`, `scripts/calidad-datos.py`, `matriz-25012.md` | Cumple con pasarela simulada |
+| **Seguridad física** (fila nueva; Tabla 14) | RF-002, RF-004, RF-006 | CI-PAG-01 y CI-API-01 (comportamiento seguro ante fallo); CF-CAL-01 y CF-INS-01 (restricción operacional); matriz de riesgos | Supertest, Cypress y revisión de la matriz | Ante un fallo, el estado queda pendiente y nunca confirmado; ninguna operación fuera del periodo o de la ventana; riesgos operativos registrados | Pasarela que falla: el pago queda pendiente. Cupo agotado: la inscripción revierte. Captura fuera de la ventana: rechazada | `pagos.spec.ts`, `inscripcion.spec.ts`, `calificaciones.cy.ts`, `matriz-riesgos.md` | Cumple |
+
+**Lectura.** Seis de las once filas cumplen, y tres de esas seis lo hacen con pasarela simulada. Capacidad de interacción y Accesibilidad cumplen solo en parte: les falta SUS y VoiceOver, que necesitan personas. Eficiencia, Fiabilidad y Flexibilidad se construyen en el Batch 13. Con eso, el Anexo A no está completo para la promoción a `v1.0.0` (sección 8.4-2 y `matriz-25010.md`, apartado 2).

@@ -90,6 +90,8 @@ jobs:
           retention-days: 90
       - name: Cobertura de reglas Must en los títulos de las pruebas, 100 % (Tabla 59, CO-MAN-01)
         run: scripts/reglas-must.sh reportes/reglas-must.json
+      - name: Fronteras de la Fig. 2 en ESLint detectan cada violacion (Tabla 15, Modularidad; CO-MAN-02)
+        run: scripts/co-man-02.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:

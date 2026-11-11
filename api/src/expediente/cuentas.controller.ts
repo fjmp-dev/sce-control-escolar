@@ -2,8 +2,7 @@ import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/com
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsNumber, IsString, Matches, Max, Min } from 'class-validator';
-import { PeriodoParam } from '../academico/grupos.controller';
-import { ApiErrores, Texto } from '../gateway/validacion';
+import { ApiErrores, PeriodoParam, Texto } from '../gateway/validacion';
 import { Actual, Roles } from '../identidad/autenticacion.guard';
 import { Autenticado } from '../identidad/autenticacion.service';
 import { PagosService } from '../pagos/pagos.service';

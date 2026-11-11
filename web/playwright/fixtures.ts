@@ -1,4 +1,4 @@
-// CO-COM-01: lo que toda pantalla de un flujo Must cumple en cada combinación de la Tabla 50, con los criterios de 28.1.
+// CO-COM-01 y CO-ACC-02 (CC-021): lo que toda pantalla de un flujo Must cumple en cada combinación de la Tabla 50, con los criterios de 28.1.
 import { expect, test as base, type Locator, type Page } from '@playwright/test';
 import type { AxeResults } from 'axe-core';
 

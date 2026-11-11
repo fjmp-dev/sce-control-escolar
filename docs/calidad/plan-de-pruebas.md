@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Código | PP-SCE-001 |
-| Versión | 1.9 — borrador para aceptación |
-| Fecha | 10 de noviembre de 2026, Batch 8 (v1.8: Batch 7; v1.7: Batch 6; v1.6: Batch 5; v1.5: Batch 4; v1.4: Batch 3; v1.3: Batch 2; v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
+| Versión | 2.0 — borrador para aceptación |
+| Fecha | 11 de noviembre de 2026, sub-batch 12.5 (v1.9: Batch 8; v1.8: Batch 7; v1.7: Batch 6; v1.6: Batch 5; v1.5: Batch 4; v1.4: Batch 3; v1.3: Batch 2; v1.2: Batch 1; v1.1: 5 de noviembre; v1.0: 22 de octubre de 2026) |
 | Manual de referencia | SCE-MC-001 v2.0, secciones 10, 19, 21 a 28 y Anexo H |
 | Norma | ISO/IEC/IEEE 29119-3:2021 (estructura del plan) y 29119-4:2021 (técnicas) |
 | Autor | FJMP |
@@ -91,9 +91,9 @@ Medición local del sub-batch 12.1: por caso, 37.9 % unitarias, 57.9 % integraci
 | Unitarias de frontend | Vitest y React Testing Library | Vitest 1.x | Vitest 5, React Testing Library 16 | **En uso** en la etapa 3 |
 | Compatibilidad | Playwright | 1.4x | Playwright 1.65.0 | **En uso** en las etapas 7 y 8: CO-COM-01, matriz de la Tabla 50 (ver 4.6) |
 | Rendimiento | JMeter y k6 | 5.6 / 0.5x | Vigente | Batch 13, en staging; después en el servidor del piloto |
-| Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso** |
+| Calidad de código | ESLint con plugin de TypeScript, Prettier, Husky, lint-staged y Commitlint | — | ESLint 10.14 en la API y 9.39 en el portal, Prettier 3, Husky 9, lint-staged 17, Commitlint 21 | **En uso.** En la API, además, las fronteras de la Fig. 2 con `no-restricted-imports` (CO-MAN-02, CC-021) |
 | Calidad de código | SonarQube Community | SonarQube 10 | Community Build 26.11, perfil "Sonar way comprehensive" | **En uso**, ver 4.2 |
-| Seguridad de imágenes | Trivy | 0.5x | Vigente | **En uso** en CI: imagen y repositorio, ambos bloquean |
+| Seguridad de imágenes | Trivy | 0.5x | `aquasecurity/trivy-action` 0.36.0 | **En uso** en CI: imagen y repositorio, ambos bloquean |
 | Seguridad de aplicación | OWASP ZAP | 2.15 | 2.17.0 | **En uso** en la etapa 5, contra Compose (Tabla 30), desde el OpenAPI (`scripts/zap.sh`). En staging, escaneo pasivo del portal sobre HTTPS en cada despliegue (`scripts/verificar-staging.sh`); el activo se queda en la etapa 5, sobre el mismo digest |
 | Cifrado en tránsito | testssl.sh | — | 3.2 | **En uso** en cada staging, de la etapa 7 y de la 8: ningún protocolo anterior a TLS 1.2 (Tabla 38) |
 | Dependencias | npm audit y Dependabot | Integrado | — | **En uso:** npm audit en CI; alertas activas y `.github/dependabot.yml` para npm, Docker y Actions |
@@ -107,7 +107,7 @@ Etapas de la Tabla 53, en `.github/workflows/ci.yml`. Cada una es criterio de av
 | Etapa | Contenido | Criterio de avance | Reporte como artefacto | Desde |
 |---|---|---|---|---|
 | 1 Construcción | Compilación de TypeScript de NestJS y Next.js; los tipos del portal deben coincidir con el OpenAPI | Sin errores | Registro de la ejecución | Batch 1; Next.js en el Batch 3 |
-| 2 Análisis estático | ESLint en API y portal, Prettier, Commitlint y Gitleaks; cobertura de reglas Must con `scripts/reglas-must.sh` (Tabla 59, CO-MAN-01) | Cero errores y cero secretos; 100 % de reglas Must con su ID en el título de una prueba que corre | `gitleaks`, `reglas-must` | Batch 1; reglas Must en el sub-batch 11.2 |
+| 2 Análisis estático | ESLint en API y portal, Prettier, Commitlint y Gitleaks; cobertura de reglas Must con `scripts/reglas-must.sh` (Tabla 59, CO-MAN-01); fronteras de la Fig. 2 con `scripts/co-man-02.sh` (CO-MAN-02) | Cero errores y cero secretos; cada violación de prueba de CO-MAN-02 detectada; 100 % de reglas Must con su ID en el título de una prueba que corre | `gitleaks`, `reglas-must` | Batch 1; reglas Must en el sub-batch 11.2 |
 | 3 Pruebas unitarias | Jest y Vitest con cobertura | Al menos 80 % de líneas en `src/**/dominio/**`; Jest falla si no se alcanza | `cobertura-unitarias`, `cobertura-portal` | Batch 2; Vitest en el Batch 3 |
 | 4 Pruebas de integración | Supertest y Testcontainers; **Newman** (Tabla 30); **Great Expectations** sobre la base de Compose después de Newman (Tabla 42), con CD-DAT-01 a 06 y la Tabla 16; muestreo de bitácora y revisión de accesos (`muestreo-bitacora.sql` y `accesos.sql`), como evidencia sin criterio | Casos CI Must en verde y cero expectativas incumplidas | `cobertura-integracion`, `newman`, `calidad-datos` (con el muestreo y los accesos) | Batch 1; Newman en el Batch 2; Great Expectations en el Batch 4; muestreo y accesos en el sub-batch 12.1 |
 | 5 Calidad y seguridad | SonarQube, npm audit y Trivy, con humo del ambiente Compose; **OWASP ZAP** (Tabla 30) | Puerta de calidad aprobada; cero alertas altas de ZAP, ningún 5xx y base intacta | `calidad`, `trivy`, `zap` | Batch 1; ZAP en el Batch 2 |
@@ -280,7 +280,7 @@ El catálogo completo de casos de todas las fases, con requisito y fase, está e
 
 Rige la numeración del manual: la definición de cada caso CS-SEG es la de la **Tabla 49**, la misma que usa PA-SCE-001. La versión 1.0 de este plan adoptaba una numeración propia; fue un error, registrado como NC-007 y corregido en `docs/calidad/matriz-trazabilidad.md`, sección 4.
 
-Los casos que el manual no identifica se proponen en esa misma matriz: la correspondencia de CR-REN-01 a 05 con la Tabla 47 y la familia `CO-*`.
+Los casos que el manual no identifica se proponen en esa misma matriz: la correspondencia de CR-REN-01 a 05 con la Tabla 47 y la familia `CO-*`. La familia `CO-*` entra a la Tabla 31 con la corrección #11 del manual v3.0: CO-FIA-01 y 02, CO-MAN-01 y CO-FLE-01. CC-021 le suma CO-ACC-01 a 03, CO-COM-01 y CO-MAN-02. Las matrices por norma son `matriz-25010.md` y `matriz-25012.md`, y el Anexo A con resultado y estado es `anexo-a.md`.
 
 ---
 
