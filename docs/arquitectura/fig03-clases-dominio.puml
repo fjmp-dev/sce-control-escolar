@@ -189,7 +189,8 @@ end note
 note bottom of Pago
   RF-006 y RK-02: la clave de
   idempotencia impide el cargo
-  duplicado ante doble webhook.
+  duplicado ante doble aviso de la
+  pasarela simulada (CC-020).
 end note
 
 note bottom of Inscripcion

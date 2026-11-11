@@ -26,7 +26,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 | NC-011 | Mayor | Batch 9 (fase 4) iniciado sin el acta de la fase 3 firmada y sin registrar antes la decisión | AU-07 | FJMP | 20 de noviembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
 | NC-012 | Mayor | Sin separación de funciones desde el 10 de noviembre: FJMP produce, aprueba, verifica y firma | AU-04, AU-11, AU-36 | FJMP | 11 de diciembre de 2026 | Abierta; no se cierra sin una segunda persona | FJMP (PO), 10 de noviembre de 2026 |
 | NC-013 | Mayor | Auditorías internas de la Tabla 60 sin auditor independiente | AU-40 | FJMP | 11 de diciembre de 2026 | Abierta con plan | FJMP (PO), 10 de noviembre de 2026 |
-| NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Abierta con plan | No aplica: Menor |
+| NC-014 | Menor | Código de CC-020 (cambio de arquitectura Must) fusionado sin actualizar antes las figuras | AU-06, AU-08 | FJMP | Sub-batch 13.1, antes del corte de `release/1.0.0` | Acción hecha en 13.1; eficacia se verifica al cortar `release/1.0.0` (13.6) | No aplica: Menor |
 | NC-015 | Menor | Ramas y etiquetas fuera de la Tabla 31 y de 15.2: fases 1 a 3 sin `release/x.y.z` ni fusión a `main`, y correcciones en `feature/` | AU-09 | FJMP | No se corrige: se declara en cada acta | Abierta; desviación declarada | No aplica: Menor |
 
 **Aceptación con plan fechado.** Según la Tabla 61, una NC Mayor bloquea la liberación hasta que se cierra o hasta que se acepta formalmente con plan fechado. La aceptación la da el Product Owner, que desde el 10 de noviembre de 2026 es FJMP, el mismo que ejecuta las acciones (NC-012). Aceptar no cierra la NC: la deja abierta con su plan. Si la fecha vence sin cumplirse, la NC vuelve a bloquear y se registra un seguimiento.
@@ -243,6 +243,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** redibujar las figuras 1, 2, 3, 5, 9 y 10 con la pasarela simulada en el sub-batch 13.1, antes del corte de `release/1.0.0` (13.6). Responsable: FJMP.
 - **Acción preventiva:** el PR de un CC que cambia la arquitectura incluye sus figuras; si no, no se fusiona (regla 5).
 - **Verificación de eficacia:** el auditor, o FJMP como autoverificación (NC-012), comprueba que ninguna figura de `release/1.0.0` muestre a Mercado Pago.
+- **Seguimiento del 11 de noviembre de 2026 (13.1, #76):** las figuras 1, 2, 3, 5, 9 y 10 se redibujaron con la pasarela simulada (CC-020) y el piloto de ensayo (CC-022), con sus PNG en `docs/arquitectura/render/`. `grep -l "Mercado" docs/arquitectura/*.puml` solo encuentra comentarios que dicen que ya no está. La verificación de eficacia queda para el corte de `release/1.0.0`.
 
 ## NC-015 — Ramas y etiquetas fuera de la Tabla 31 y de la sección 15.2
 

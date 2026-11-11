@@ -1,0 +1,37 @@
+{
+  "name": "Ramas release (15.2, Tabla 31)",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["refs/heads/release/**"], "exclude": [] } },
+  "rules": [
+    { "type": "deletion" },
+    { "type": "non_fast_forward" },
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 0,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": false,
+        "allowed_merge_methods": ["merge"]
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "required_status_checks": [
+          { "context": "1 Construcción" },
+          { "context": "2 Análisis estático" },
+          { "context": "3 Pruebas unitarias" },
+          { "context": "4 Pruebas de integración" },
+          { "context": "5 Calidad - SonarQube y npm audit" },
+          { "context": "5 Seguridad - Trivy y humo del ambiente" },
+          { "context": "7 Despliegue a pruebas" }
+        ]
+      }
+    }
+  ],
+  "bypass_actors": []
+}

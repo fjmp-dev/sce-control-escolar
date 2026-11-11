@@ -4,22 +4,24 @@
 # etiqueta, sin reconstruirlas: el mismo digest ira a piloto (Tabla 30). Staging es efimero (CC-018): se arma en este
 # runner con la topologia de la Fig. 9, se verifica y se destruye; la evidencia queda como artefacto. Procedimiento:
 # docs/gobierno/inventario-de-ambientes.md.
-name: 8 Despliegue a staging
+name: 8 Despliegue a staging y piloto de ensayo
 
-# 11.4: tambien corre al empujar una etiqueta candidata vX.Y.Z-rc.N. GitHub usa entonces el staging.yml del commit
-# etiquetado, asi que no necesita estar en main, y el acta se toma por convencion:
-# docs/gobierno/actas/acta-promocion-<etiqueta>.md. La etiqueta final vX.Y.Z va sobre el commit del candidato ya
-# promovido y no vuelve a desplegar.
+# Corre al empujar una etiqueta SemVer; GitHub usa el staging.yml del commit etiquetado, asi que no necesita estar en
+# main. El ambiente sale de la etiqueta (CC-022):
+# - vX.Y.Z-rc.N va a "staging", con docs/gobierno/actas/acta-promocion-<etiqueta>.md (11.4).
+# - vX.Y.Z va al "piloto de ensayo", con docs/gobierno/actas/acta-liberacion-<etiqueta>.md, solo si el mismo commit ya
+#   paso la puerta 1 (checks de CI en verde) y la 2 (etapa 8 en staging con una etiqueta candidata), que se consultan
+#   por API, y con los secretos y la CA del environment "piloto". Sin usuarios ni datos (SEMILLA=0).
 on:
   push:
-    tags: ['v*-rc.*']
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       etiqueta:
-        description: Etiqueta SemVer candidata (vX.Y.Z-rc.N o vX.Y.Z)
+        description: Etiqueta SemVer (vX.Y.Z-rc.N va a staging; vX.Y.Z, al piloto de ensayo)
         required: true
       acta:
-        description: Acta de promocion que nombra la etiqueta, en docs/gobierno/actas/ de la rama desde la que se lanza
+        description: Acta de promocion o de liberacion que nombra la etiqueta, en docs/gobierno/actas/
         required: true
 
 permissions:
@@ -31,15 +33,20 @@ concurrency:
 
 jobs:
   desplegar:
-    name: 8 Despliegue a staging
+    name: 8 Despliegue a ${{ contains(inputs.etiqueta || github.ref_name, '-rc.') && 'staging' || 'piloto de ensayo' }}
     runs-on: ubuntu-latest
-    environment: staging
+    environment: ${{ contains(inputs.etiqueta || github.ref_name, '-rc.') && 'staging' || 'piloto' }}
     permissions:
       contents: read
       packages: write # agrega la etiqueta SemVer a las imagenes ya firmadas
+      checks: read # puerta 1 del piloto
+      actions: read # puerta 2 del piloto
     env:
       ETIQUETA: ${{ inputs.etiqueta || github.ref_name }}
-      ACTA: ${{ inputs.acta || format('docs/gobierno/actas/acta-promocion-{0}.md', github.ref_name) }}
+      AMBIENTE: ${{ contains(inputs.etiqueta || github.ref_name, '-rc.') && 'staging' || 'piloto' }}
+      ACTA: >-
+        ${{ inputs.acta || format('docs/gobierno/actas/acta-{0}-{1}.md',
+        contains(github.ref_name, '-rc.') && 'promocion' || 'liberacion', github.ref_name) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -56,6 +63,45 @@ jobs:
             || { echo "::error::$ETIQUETA no esta integrada en develop, main ni release"; exit 1; }
           echo "COMMIT=$COMMIT" >> "$GITHUB_ENV"
           git checkout --quiet "$COMMIT" # infraestructura y scripts de la misma etiqueta que las imagenes
+      - name: Puertas 1 y 2 de 20.1 sobre el commit, por API (piloto, CC-022)
+        if: env.AMBIENTE == 'piloto'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [[ "$ACTA" == docs/gobierno/actas/acta-liberacion-* ]] || { echo "::error::el piloto pide el acta de liberacion"; exit 1; }
+          api="repos/$GITHUB_REPOSITORY"
+          # Puerta 1: las etapas 1 a 7 de CI en verde sobre este commit (las requeridas por la proteccion de ramas).
+          gh api --paginate "$api/commits/$COMMIT/check-runs?per_page=100" \
+            -q '.check_runs[] | select(.name | test("^[1-7] ")) | "\(.conclusion) \(.name)"' | sort -u > puerta1.txt
+          cat puerta1.txt
+          for etapa in 1 2 3 4 5 7; do grep -qE "^success $etapa " puerta1.txt || { echo "::error::puerta 1: la etapa $etapa no esta en verde"; exit 1; }; done
+          ! grep -vqE '^(success|skipped) ' puerta1.txt || { echo "::error::puerta 1: hay checks que no estan en verde"; exit 1; }
+          # Puerta 2: este mismo commit paso la etapa 8 en staging con una etiqueta candidata.
+          rc="$(gh api "$api/actions/workflows/staging.yml/runs?head_sha=$COMMIT&status=success&per_page=100" \
+            -q '[.workflow_runs[] | select(.head_branch | test("-rc\\.[0-9]+$"))][0] | "\(.head_branch) \(.html_url)"')"
+          [ -n "$rc" ] && [ "$rc" != "null null" ] || { echo "::error::puerta 2: el commit no paso staging con una etiqueta candidata"; exit 1; }
+          { echo "### Puertas 1 y 2 (20.1)"; echo "- Puerta 1: etapas 1 a 7 en verde sobre $COMMIT"; echo "- Puerta 2: staging con $rc"; } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Secretos propios del piloto, distintos de los publicos, por huella (20.2; 36.1, criterio 7)
+        if: env.AMBIENTE == 'piloto'
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA }}
+          CA_CRT: ${{ secrets.CA_CRT }}
+          CA_KEY: ${{ secrets.CA_KEY }}
+        run: |
+          [ "${#JWT_SECRET}" -ge 32 ] && [ "${#CONTRASENA_SEMILLA}" -ge 16 ] || { echo "::error::faltan secretos del piloto o son cortos"; exit 1; }
+          for s in "$JWT_SECRET" "$CONTRASENA_SEMILLA"; do
+            ! git grep -qF -e "$s" "$COMMIT" || { echo "::error::un secreto del piloto aparece en el repositorio"; exit 1; }
+          done
+          [ "$CONTRASENA_SEMILLA" != sce-dev-2026 ] || { echo "::error::la contrasena del piloto es la del README"; exit 1; }
+          openssl x509 -noout -subject <<< "$CA_CRT" >/dev/null && openssl pkey -noout <<< "$CA_KEY" 2>/dev/null \
+            || { echo "::error::la CA del piloto no es valida"; exit 1; }
+          huella() { printf '%s' "$1" | sha256sum | cut -c1-16; }
+          { echo "### Secretos del piloto (huella SHA-256, 16 caracteres)"
+            echo "- JWT_SECRET: $(huella "$JWT_SECRET")"
+            echo "- CONTRASENA_SEMILLA: $(huella "$CONTRASENA_SEMILLA")"
+            echo "- CA: $(openssl x509 -noout -fingerprint -sha256 <<< "$CA_CRT" | cut -d= -f2)"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: sigstore/cosign-installer@v3
       - uses: docker/login-action@v3
         with:
@@ -73,25 +119,31 @@ jobs:
             echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
           done
       - name: Contraseña de la semilla de esta corrida, enmascarada, para staging y Playwright (20.2)
+        if: env.AMBIENTE == 'staging'
         run: |
           CONTRASENA_SEMILLA="$(openssl rand -hex 16)"
           echo "::add-mask::$CONTRASENA_SEMILLA"
           echo "CONTRASENA_SEMILLA=$CONTRASENA_SEMILLA" >> "$GITHUB_ENV"
-      - name: Staging con la topologia de la Fig. 9, despliegue, humo del Anexo D (puerta 2 de la sec. 20.1) y calidad de datos
+      - name: Ambiente con la topologia de la Fig. 9, despliegue, humo del Anexo D (puerta 2 de la sec. 20.1) y calidad de datos
         run: scripts/staging.sh "$IMAGEN_API" "$IMAGEN_PORTAL"
         env:
           CONSERVAR: 1 # sigue arriba para la matriz de compatibilidad; el runner se descarta al terminar el job
+          # Solo existen en el environment "piloto"; en staging llegan vacios y staging.sh genera los suyos.
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CA_CRT: ${{ secrets.CA_CRT }}
+          CA_KEY: ${{ secrets.CA_KEY }}
+          CONTRASENA_SEMILLA: ${{ secrets.CONTRASENA_SEMILLA || env.CONTRASENA_SEMILLA }}
       # CO-COM-01 (Tabla 50) contra el staging recién verificado, con la contraseña de su semilla. Las etiquetas
       # anteriores a la matriz no traen web/playwright.config.ts y se saltan estos pasos.
       - uses: actions/setup-node@v4
-        if: hashFiles('web/playwright.config.ts') != ''
+        if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: web/package-lock.json
       - name: Navegadores de Playwright (Tabla 50)
         id: navegadores
-        if: hashFiles('web/playwright.config.ts') != ''
+        if: env.AMBIENTE == 'staging' && hashFiles('web/playwright.config.ts') != ''
         run: npm ci && npx playwright install --with-deps chromium firefox webkit
         working-directory: web
         env:
@@ -106,7 +158,8 @@ jobs:
       - name: Registro del despliegue (31.2)
         if: always()
         run: |
-          cat reportes/staging/despliegue.md reportes/staging/rechazos.txt >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          cat reportes/staging/despliegue.md reportes/staging/rechazos.txt reportes/staging/anexo-d.md \
+            >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
           if [ -d reportes/staging/playwright ]; then
             scripts/matriz-compatibilidad.sh reportes/staging/playwright/*/junit.xml 2>/dev/null \
               | tee reportes/staging/playwright/matriz.md >> "$GITHUB_STEP_SUMMARY" || true
@@ -114,6 +167,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: despliegue-staging-${{ inputs.etiqueta || github.ref_name }}
+          name: despliegue-${{ contains(inputs.etiqueta || github.ref_name, '-rc.') && 'staging' || 'piloto' }}-${{ inputs.etiqueta || github.ref_name }}
           path: reportes/staging/
           retention-days: 90
