@@ -49,6 +49,13 @@ sql < api/prisma/verificacion/sin-datos-reales.sql > "$REPORTES/sin-datos-reales
 echo "sin datos reales: ok" | tee -a "$REPORTES/humo.txt"
 { echo "rol|activas|inactivas"; sql < api/prisma/verificacion/accesos.sql; } | tee "$REPORTES/accesos.txt"
 
+# CO-FLE-01 (RNF-FLE-001): la carpeta de Newman dio de alta una segunda facultad solo con datos; aquí se comprueba en
+# la base que su cadena quedó completa (plan, materia, grupo, alumno e inscripción), sin migración de por medio.
+sql < api/prisma/verificacion/co-fle-01.sql | tee "$REPORTES/co-fle-01.txt"
+[ -s "$REPORTES/co-fle-01.txt" ] || falla "CO-FLE-01: no se dio de alta la segunda facultad"
+! grep -q '|f$' "$REPORTES/co-fle-01.txt" || falla "CO-FLE-01: hay una facultad incompleta"
+echo "CO-FLE-01 segunda facultad sin migración: ok" | tee -a "$REPORTES/humo.txt"
+
 # Base: SCRAM en todo rol con contrasena, conexiones de la aplicacion solo con TLS y pgAudit cargado (CC-005).
 sql > "$REPORTES/base.txt" <<'SQL'
 SELECT 'sin_scram=' || count(*) FROM pg_authid WHERE rolpassword IS NOT NULL AND rolpassword NOT LIKE 'SCRAM-SHA-256$%';

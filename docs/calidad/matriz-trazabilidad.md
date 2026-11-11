@@ -38,7 +38,7 @@ Las filas nuevas no inventan requisitos: toman el criterio de verificación que 
 | RNF-DAT-001 | Datos y expediente | CD-DAT-01 a CD-DAT-06 | 2 y 5 | 1, 4, 8, 12 y 14 | Tabla 27 y Anexo A |
 | RNF-USU-001 | Inscripción | CF-INS-02 | 2 | 5 | Añadida |
 | RNF-MAN-001 | Pipeline y dominio | CO-MAN-01 | 1 a 5 | 1 y cada módulo | Añadida |
-| RNF-FLE-001 | Catálogos institucionales | CO-FLE-01 | 5 | 11 y 13 | Añadida |
+| RNF-FLE-001 | Catálogos institucionales | CO-FLE-01 | 4 | 11 y 13 | Añadida. Pasa a la fase 4 en el Batch 13: la segunda facultad se da de alta solo con datos sobre lo que existe al cierre de la fase 4 |
 
 **Cobertura: 20 de 20 requisitos.** CS-SEG-07 (sesión) cubre el control de sesiones de la Tabla 38 y se traza a RF-008 y a RNF-SEG-001 mediante el Anexo A.
 
@@ -120,7 +120,7 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 | CO-FIA-01 | RNF-FIA-001 | Registro de healthchecks y cálculo mensual de disponibilidad frente a la meta. | 13 y 14 |
 | CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. | 13 y 14 |
 | CO-MAN-01 | RNF-MAN-001 | Reporte de cobertura del pipeline: 100 % de reglas Must y 80 % en el dominio. Desde el sub-batch 11.2, `scripts/reglas-must.sh` cuenta en la etapa 2 las reglas Must que tienen prueba con su ID en el título, publica el reporte `reglas-must` y falla por debajo de 100 %. | 1, 11 y cada módulo |
-| CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. | 11 y 13 |
+| CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. Supertest y Testcontainers (`flexibilidad.spec.ts`: huella del esquema y de las migraciones, y `prisma migrate diff --exit-code`), Newman (carpeta CO-FLE-01) y SQL en staging (`co-fle-01.sql`). La materia se liga a la facultad por su plan, como en la Fig. 8 (materia → plan de estudios → facultad) | 11 y 13 |
 
 ---
 
