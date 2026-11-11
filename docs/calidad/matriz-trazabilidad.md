@@ -82,7 +82,7 @@ La definición y la herramienta de cada caso son las del manual. El **Batch** es
 | CS-SEG-03 | El token de un alumno no accede al expediente de otro alumno. | OWASP ZAP y Supertest | 4 y siguientes |
 | CS-SEG-04 | Un endpoint Must sin token responde con código 401. | Newman | 2 y siguientes |
 | CS-SEG-05 | Una entrada malformada no corrompe la base ni expone trazas con secretos. | OWASP ZAP | 2 y 12 |
-| CS-SEG-06 | Todo cambio de calificación, pago o constancia deja registro en bitácora. | Consulta SQL de verificación | 4, 8, 9 y 10 |
+| CS-SEG-06 | Todo cambio de calificación, pago o constancia deja registro en bitácora. | Consulta SQL de verificación | 4, 8, 9, 10 y 11 |
 | CS-SEG-07 | La sesión expira en el tiempo configurado y el token revocado no se reutiliza. | Supertest | 2 |
 | CS-SEG-08 | No existen secretos en el repositorio, en los registros ni en las respuestas de la API. | Gitleaks y revisión manual | 1, 2 y 12 |
 
@@ -119,7 +119,7 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 |---|---|---|---|
 | CO-FIA-01 | RNF-FIA-001 | Registro de healthchecks y cálculo mensual de disponibilidad frente a la meta. | 13 y 14 |
 | CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. | 13 y 14 |
-| CO-MAN-01 | RNF-MAN-001 | Reporte de cobertura del pipeline: 100 % de reglas Must y 80 % en el dominio. | 1 y cada módulo |
+| CO-MAN-01 | RNF-MAN-001 | Reporte de cobertura del pipeline: 100 % de reglas Must y 80 % en el dominio. Desde el sub-batch 11.2, `scripts/reglas-must.sh` cuenta en la etapa 2 las reglas Must que tienen prueba con su ID en el título, publica el reporte `reglas-must` y falla por debajo de 100 %. | 1, 11 y cada módulo |
 | CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. | 11 y 13 |
 
 ---

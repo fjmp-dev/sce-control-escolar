@@ -52,6 +52,10 @@ export class TramitesRepository {
     return this.prisma.cliente().tramite.update({ where: { folio }, data: { estado, motivoRechazo }, select: TRAMITE });
   }
 
+  async tieneHistorial(matricula: string) {
+    return (await this.prisma.cliente().historial.count({ where: { matricula } })) > 0;
+  }
+
   crearDocumento(data: { folio: string; tramiteFolio: string; tipo: string; hash: string; contenido: string }) {
     return this.prisma.cliente().documento.create({ data, select: DOCUMENTO });
   }

@@ -22,7 +22,7 @@ beforeAll(async () => {
 
 afterAll(() => app.close());
 
-describe('CS-SEG-07: la sesion expira en el tiempo configurado', () => {
+describe('R-20 y CS-SEG-07: la sesion expira en el tiempo configurado', () => {
   it('los tokens duran lo configurado: 60 minutos, 15 si el rol es privilegiado', async () => {
     const normal = await iniciar(app, 'caja@sce.test');
     const admin = await iniciar(app, 'administrador@sce.test');
@@ -48,7 +48,7 @@ describe('CS-SEG-07: la sesion expira en el tiempo configurado', () => {
   });
 });
 
-describe('CS-SEG-07: el token revocado no se reutiliza', () => {
+describe('R-20 y CS-SEG-07: el token revocado no se reutiliza', () => {
   it('el cierre de sesion revoca el token; iniciar sesion de nuevo funciona', async () => {
     await crearCuenta(prisma, 'cierra@sce.test');
     const token = await entrar(app, 'cierra@sce.test');

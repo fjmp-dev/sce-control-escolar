@@ -1,7 +1,8 @@
 """Calidad de datos del expediente y la inscripcion con Great Expectations (Tabla 39, Tabla 42 y AU-22).
 
 Valida la base del ambiente con las consultas SQL versionadas de api/prisma/verificacion (CD-DAT-01, 02, 04 y 05,
-ocupacion de grupos y CS-SEG-06 en plantel) y con expectativas de unicidad, completitud y formato. Escribe Data Docs en HTML y un resumen en JSON.
+ocupación de grupos, CS-SEG-06 en calificación, plantel, pago y constancia, y la tasa de conclusión de la Tabla 59) y con
+expectativas de unicidad, completitud y formato. Escribe Data Docs en HTML y un resumen en JSON.
 Falla si alguna expectativa no se cumple, si no evaluo nada o si la tabla alumno esta vacia (una tabla vacia lo aprueba todo).
 Uso: python calidad-datos.py <url-postgres> <dir-de-consultas> <dir-de-salida>
 """
@@ -101,6 +102,10 @@ validaciones = [
                 ),
                 description="RNF-USU-001: toda inscripcion rechazada declara su motivo, y ninguna otra lo tiene",
             ),
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=f"SELECT * FROM ({consulta('tasa-conclusion.sql')}) AS t WHERE sin_estado > 0",
+                description="Tabla 59 y R-08: ninguna inscripción iniciada queda sin estado explícito",
+            ),
         ],
     ),
     suite(
@@ -120,6 +125,26 @@ validaciones = [
             gxe.UnexpectedRowsExpectation(
                 unexpected_rows_query=consulta("cs-seg-06-plantel.sql"),
                 description="CS-SEG-06: cambios de plantel con asiento completo y coherente",
+            )
+        ],
+    ),
+    suite(
+        "bitacora-pago",
+        "pago",
+        [
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cs-seg-06-pago.sql"),
+                description="CS-SEG-06: cada pago aplicado o rechazado con un solo asiento del usuario técnico",
+            )
+        ],
+    ),
+    suite(
+        "bitacora-constancia",
+        "tramite",
+        [
+            gxe.UnexpectedRowsExpectation(
+                unexpected_rows_query=consulta("cs-seg-06-constancia.sql"),
+                description="CS-SEG-06: cada paso de un trámite con su asiento, en cadena y con su autor",
             )
         ],
     ),

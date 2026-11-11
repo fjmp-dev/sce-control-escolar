@@ -9,6 +9,7 @@ import PaginaPago from '@/app/(portal)/mi-cuenta/pagos/[id]/page';
 import PaginaDocumento from '@/app/(portal)/mis-tramites/[folio]/page';
 import PaginaMisTramites from '@/app/(portal)/mis-tramites/page';
 import PaginaTramites from '@/app/(portal)/tramites/page';
+import { momentoLegible } from '@/lib/formato';
 
 vi.mock('next/headers', () => ({
   cookies: async () => ({ get: () => ({ value: 'tok' }), set: vi.fn(), delete: vi.fn() }),
@@ -143,17 +144,25 @@ describe('Caja (RF-006, Fig. 7)', () => {
 });
 
 describe('Tramites (RF-007, RF-010, Fig. 6)', () => {
-  it('el alumno ve el estado, el motivo del rechazo y la descarga cuando esta listo', async () => {
+  it('R-16: el alumno ve el estado con la fecha de solicitud y del último cambio, el motivo del rechazo y la descarga cuando esta listo', async () => {
+    const CAMBIO = '2026-11-12T18:30:00.000Z';
     api({
       '/alumnos/actual/tramites': [
         tramite('TRA-A', 'lista', { documentoFolio: 'DOC-A' }),
-        tramite('TRA-B', 'rechazada', { tipo: 'constancia', motivoRechazo: 'Faltan datos' }),
+        tramite('TRA-B', 'rechazada', {
+          tipo: 'constancia',
+          motivoRechazo: 'Faltan datos',
+          fechaActualizacion: CAMBIO,
+        }),
       ],
     });
     render(await PaginaMisTramites());
     screen.getByRole('button', { name: 'Solicitar' });
     expect(screen.getByRole('link', { name: 'Descargar TRA-A' }).getAttribute('href')).toBe('/mis-tramites/TRA-A');
-    within(screen.getByRole('row', { name: /TRA-B/ })).getByRole('cell', { name: 'Rechazada: Faltan datos' });
+    const rechazado = within(screen.getByRole('row', { name: /TRA-B/ }));
+    rechazado.getByRole('cell', { name: 'Rechazada: Faltan datos' });
+    expect(rechazado.getByRole('cell', { name: momentoLegible(FECHA) })).toBeTruthy();
+    expect(rechazado.getByRole('cell', { name: momentoLegible(CAMBIO) })).toBeTruthy();
   });
 
   it('el documento se muestra con su huella; uno que no esta listo no existe', async () => {

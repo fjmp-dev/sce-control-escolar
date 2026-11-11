@@ -111,7 +111,7 @@ describe('Catalogos institucionales: quien da de alta que (Tablas 5, 11 y 12; CC
   });
 });
 
-describe('RK-03 bitacora inmutable', () => {
+describe('R-22 y RK-03: bitacora inmutable', () => {
   it('la base rechaza UPDATE, DELETE y TRUNCATE sobre bitacora', async () => {
     // Sin filas, UPDATE y DELETE no disparan el trigger por fila y "pasarian": se inserta una primero.
     await prisma.bitacora.create({ data: { autor: USUARIO_TECNICO, accion: 'prueba_inmutable', entidad: 'bitacora' } });

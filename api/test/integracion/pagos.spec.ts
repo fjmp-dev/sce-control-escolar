@@ -1,7 +1,9 @@
 // RF-006 con pasarela simulada (Batch 9): cargos del periodo una sola vez, becas sin saldo a favor, pago que se aplica
 // una sola vez aunque la pasarela repita o empalme el aviso (R-14), recibo solo del dueño o de caja, y corte del día.
 // CI-PAG-01 (#69): dos intentos por el mismo adeudo no dejan el saldo negativo. R-15: un fallo a mitad no confirma el
-// pago. R-24: lo que hace caja no toca el historial académico.
+// pago. R-21 y CS-SEG-06: cada cambio de un pago, también el rechazo de la pasarela, deja su asiento. R-23 y CS-SEG-03:
+// un alumno no ve ni paga el pago de otro. R-24: lo que hace caja no toca el historial académico.
+import { readFileSync } from 'node:fs';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { BitacoraService, USUARIO_TECNICO } from '../../src/bitacora/bitacora.service';
@@ -23,6 +25,7 @@ const alumnoConAdeudo = async (adeudo: number) => {
 const pagar = (token: string, importe: number) => http().post('/pagos').set('Authorization', token).send({ importe });
 const simular = (token: string, id: number, resultado: string) =>
   http().post(`/pagos/${id}/simulacion`).set('Authorization', token).send({ resultado });
+const csSeg06 = () => prisma.$queryRawUnsafe(readFileSync('prisma/verificacion/cs-seg-06-pago.sql', 'utf8'));
 
 beforeAll(async () => {
   ({ app, prisma } = await crearApp());
@@ -136,18 +139,28 @@ describe('Pago simulado: se aplica una sola vez (R-14)', () => {
     expect(await saldo(matricula)).toBe(0);
   });
 
-  it('rechazado: el saldo no cambia, no hay recibo y ya no se aplica', async () => {
+  it('R-21: el rechazo de la pasarela deja un asiento del usuario técnico con el valor anterior; el saldo no cambia, no hay recibo y ya no se aplica', async () => {
     const { matricula, token } = await alumnoConAdeudo(700);
     const { id } = (await pagar(token, 300).expect(201)).body;
     expect((await simular(token, id, 'rechazado').expect(200)).body.estado).toBe('rechazado');
+    expect((await simular(token, id, 'rechazado').expect(200)).body.estado).toBe('rechazado'); // aviso repetido
+    expect(await prisma.bitacora.findMany({ where: { entidad: `pago:${id}` } })).toEqual([
+      expect.objectContaining({
+        autor: USUARIO_TECNICO,
+        accion: 'pago_rechazado',
+        valorAnterior: { estado: 'pendiente' },
+        fecha: expect.any(Date),
+      }),
+    ]);
     expect((await http().get(`/pagos/${id}`).set('Authorization', token).expect(409)).body.codigo).toBe(
       'PAGO_NO_APLICADO',
     );
     expect((await simular(token, id, 'aprobado').expect(409)).body.codigo).toBe('PAGO_NO_APLICABLE');
     expect(await saldo(matricula)).toBe(700);
+    expect(await csSeg06()).toEqual([]); // CS-SEG-06: todo pago cambiado por la API hasta aquí tiene su asiento
   });
 
-  it('CS-SEG-02: un pago ajeno no existe para otro alumno; caja si ve el recibo', async () => {
+  it('R-23 y CS-SEG-03: un pago ajeno no existe para otro alumno; caja si ve el recibo', async () => {
     const duenio = await alumnoConAdeudo(200);
     const otro = await alumnoConAdeudo(200);
     const { id } = (await pagar(duenio.token, 200).expect(201)).body;
@@ -238,6 +251,19 @@ describe('R-15: un fallo a mitad de la aplicación no confirma el pago', () => {
 
     expect((await simular(token, id, 'aprobado').expect(200)).body.estado).toBe('aplicado');
     expect(await saldo(matricula)).toBe(0);
+  });
+
+  it('R-15 y R-21: si la bitácora falla al rechazar, el pago sigue pendiente; el reintento lo rechaza con su asiento', async () => {
+    const { token } = await alumnoConAdeudo(410);
+    const { id } = (await pagar(token, 410).expect(201)).body;
+    const espia = jest.spyOn(app.get(BitacoraService), 'registrar').mockRejectedValueOnce(new Error('falla simulada'));
+    const caida = await simular(token, id, 'rechazado');
+    espia.mockRestore();
+    expect(caida.status).toBe(500);
+    expect((await prisma.pago.findUniqueOrThrow({ where: { id: BigInt(id) } })).estado).toBe('pendiente');
+
+    expect((await simular(token, id, 'rechazado').expect(200)).body.estado).toBe('rechazado');
+    expect(await prisma.bitacora.count({ where: { entidad: `pago:${id}`, accion: 'pago_rechazado' } })).toBe(1);
   });
 });
 
