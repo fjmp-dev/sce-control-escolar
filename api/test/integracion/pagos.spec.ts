@@ -1,7 +1,10 @@
 // RF-006 con pasarela simulada (Batch 9): cargos del periodo una sola vez, becas sin saldo a favor, pago que se aplica
 // una sola vez aunque la pasarela repita o empalme el aviso (R-14), recibo solo del dueño o de caja, y corte del día.
+// CI-PAG-01 (#69): dos intentos por el mismo adeudo no dejan el saldo negativo. R-15: un fallo a mitad no confirma el
+// pago. R-24: lo que hace caja no toca el historial académico.
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import { BitacoraService, USUARIO_TECNICO } from '../../src/bitacora/bitacora.service';
 import { PrismaService } from '../../src/persistencia/prisma.service';
 import { crearAlumno, crearApp, entrar } from './app';
 
@@ -100,7 +103,7 @@ describe('Pago simulado: se aplica una sola vez (R-14)', () => {
     expect((await pagar(conAdeudo.token, 500.01).expect(409)).body.codigo).toBe('IMPORTE_MAYOR_AL_SALDO');
   });
 
-  it('aprobado: un abono, saldo en cero, recibo y bitacora; el segundo aviso no hace nada', async () => {
+  it('CI-PAG-01 R-14: aprobado, un abono, saldo en cero, recibo y bitacora; el segundo aviso no hace nada', async () => {
     const { matricula, token } = await alumnoConAdeudo(1850);
     const intento = await pagar(token, 1850).expect(201);
     expect(intento.body).toMatchObject({ estado: 'pendiente', importe: 1850, aplicadoEn: null });
@@ -124,7 +127,7 @@ describe('Pago simulado: se aplica una sola vez (R-14)', () => {
     });
   });
 
-  it('avisos empalmados de la pasarela aplican el pago una sola vez', async () => {
+  it('CI-PAG-01 R-14: avisos empalmados de la pasarela aplican el pago una sola vez', async () => {
     const { matricula, token } = await alumnoConAdeudo(900);
     const { id } = (await pagar(token, 900).expect(201)).body;
     const respuestas = await Promise.all(Array.from({ length: 6 }, () => simular(token, id, 'aprobado')));
@@ -153,6 +156,144 @@ describe('Pago simulado: se aplica una sola vez (R-14)', () => {
     await simular(duenio.token, id, 'aprobado').expect(200);
     await http().get(`/pagos/${id}`).set('Authorization', otro.token).expect(404);
     await http().get(`/pagos/${id}`).set('Authorization', caja).expect(200);
+  });
+});
+
+describe('CI-PAG-01 (#69): dos intentos por el mismo adeudo', () => {
+  const abonos = (matricula: string) => prisma.movimiento.count({ where: { matricula, tipo: 'abono' } });
+  const estado = async (id: number) => (await prisma.pago.findUniqueOrThrow({ where: { id: BigInt(id) } })).estado;
+
+  it('CI-PAG-01 R-14: aprobados los dos, solo uno se aplica; el segundo responde 409 PAGO_NO_APLICABLE y queda rechazado', async () => {
+    const { matricula, token } = await alumnoConAdeudo(1850);
+    const primero = (await pagar(token, 1850).expect(201)).body.id;
+    const segundo = (await pagar(token, 1850).expect(201)).body.id;
+
+    expect((await simular(token, primero, 'aprobado').expect(200)).body.estado).toBe('aplicado');
+    const rechazo = await simular(token, segundo, 'aprobado');
+    expect(rechazo.status).toBe(409);
+    expect(rechazo.body).toEqual({
+      codigo: 'PAGO_NO_APLICABLE',
+      mensaje: expect.stringMatching(/rebasa tu saldo.*no se cobró/),
+    });
+
+    expect(await saldo(matricula)).toBe(0);
+    expect(await abonos(matricula)).toBe(1);
+    expect(await estado(segundo)).toBe('rechazado');
+    // R-21: el rechazo lo firma el usuario técnico (CC-015), con el estado y el saldo vigente de antes.
+    const asientos = await prisma.bitacora.findMany({
+      where: { entidad: `pago:${segundo}`, accion: 'pago_rechazado' },
+    });
+    expect(asientos).toEqual([
+      expect.objectContaining({ autor: USUARIO_TECNICO, valorAnterior: { estado: 'pendiente', saldo: 0 } }),
+    ]);
+    // Un aviso repetido del pago rechazado tampoco lo aplica, y no tiene recibo.
+    expect((await simular(token, segundo, 'aprobado').expect(409)).body.codigo).toBe('PAGO_NO_APLICABLE');
+    expect((await http().get(`/pagos/${segundo}`).set('Authorization', token).expect(409)).body.codigo).toBe(
+      'PAGO_NO_APLICADO',
+    );
+    expect(await saldo(matricula)).toBe(0);
+  });
+
+  it('CI-PAG-01 R-14: aprobados a la vez, uno se aplica y el otro se rechaza; el saldo no queda negativo', async () => {
+    const { matricula, token } = await alumnoConAdeudo(900);
+    const ids = [(await pagar(token, 900).expect(201)).body.id, (await pagar(token, 900).expect(201)).body.id];
+    const respuestas = await Promise.all(ids.map((id) => simular(token, id, 'aprobado')));
+    expect(respuestas.map((r) => r.status).sort()).toEqual([200, 409]);
+    expect(await saldo(matricula)).toBe(0);
+    expect(await abonos(matricula)).toBe(1);
+    expect((await Promise.all(ids.map(estado))).sort()).toEqual(['aplicado', 'rechazado']);
+  });
+
+  it('CI-PAG-01 R-14: un intento que la beca dejó por encima del saldo se rechaza; uno que cabe se aplica', async () => {
+    const { matricula, token } = await alumnoConAdeudo(1000);
+    const completo = (await pagar(token, 1000).expect(201)).body.id;
+    const parcial = (await pagar(token, 600).expect(201)).body.id;
+    await http()
+      .post(`/alumnos/${matricula}/becas`)
+      .set('Authorization', caja)
+      .send({ concepto: 'Beca', importe: 400 })
+      .expect(201);
+    expect((await simular(token, completo, 'aprobado').expect(409)).body.codigo).toBe('PAGO_NO_APLICABLE');
+    expect((await simular(token, parcial, 'aprobado').expect(200)).body.estado).toBe('aplicado');
+    expect(await saldo(matricula)).toBe(0);
+  });
+});
+
+describe('R-15: un fallo a mitad de la aplicación no confirma el pago', () => {
+  it('R-15: si la bitacora falla, el pago sigue pendiente, sin recibo ni abono y con el saldo intacto; el reintento lo aplica', async () => {
+    const { matricula, token } = await alumnoConAdeudo(640);
+    const { id } = (await pagar(token, 640).expect(201)).body;
+    const espia = jest.spyOn(app.get(BitacoraService), 'registrar').mockRejectedValueOnce(new Error('falla simulada'));
+    const caida = await simular(token, id, 'aprobado');
+    espia.mockRestore();
+    expect(caida.status).toBe(500);
+    expect(caida.body.codigo).toBe('ERROR_INTERNO');
+
+    expect((await prisma.pago.findUniqueOrThrow({ where: { id: BigInt(id) } })).estado).toBe('pendiente');
+    expect(await prisma.movimiento.count({ where: { pagoId: BigInt(id) } })).toBe(0);
+    expect(await saldo(matricula)).toBe(640);
+    expect((await http().get(`/pagos/${id}`).set('Authorization', token).expect(409)).body.codigo).toBe(
+      'PAGO_NO_APLICADO',
+    );
+
+    expect((await simular(token, id, 'aprobado').expect(200)).body.estado).toBe('aplicado');
+    expect(await saldo(matricula)).toBe(0);
+  });
+});
+
+describe('R-24 y CS-SEG-02: caja no modifica el historial académico', () => {
+  it('R-24: tras cargos del periodo, beca, pago y corte, el historial y las calificaciones del alumno no cambian', async () => {
+    const clave = '2602A';
+    await prisma.periodo.create({
+      data: { clave, fechaInicio: new Date('2602-01-10'), fechaFin: new Date('2602-06-10'), estado: 'abierto' },
+    });
+    const { matricula, correo } = await crearAlumno(prisma, nueva());
+    const profesor = await prisma.usuario.findUniqueOrThrow({ where: { correo: 'profesor@sce.test' } });
+    const grupo = await prisma.grupo.create({
+      data: {
+        clave: 'P-2',
+        materiaClave: 'ISW-101',
+        periodoClave: clave,
+        profesorId: profesor.id,
+        cupo: 30,
+        ocupacion: 1,
+      },
+    });
+    const folio = `INS-${clave}-${matricula}`;
+    await prisma.inscripcion.create({
+      data: { folio, matricula, periodoClave: clave, estado: 'confirmada', grupos: { create: { grupoId: grupo.id } } },
+    });
+    await prisma.calificacion.create({
+      data: { folio, grupoId: grupo.id, profesorId: profesor.id, periodoClave: clave, parcial: 1, valor: 9.5 },
+    });
+    await prisma.historial.update({ where: { matricula }, data: { promedio: 9.5, creditosAcumulados: 8, avance: 2 } });
+    const coordinacion = await entrar(app, 'coordinacion@sce.test');
+    const kardex = async () =>
+      (await http().get(`/alumnos/${matricula}/calificaciones`).set('Authorization', coordinacion).expect(200)).body;
+    const historial = () => prisma.historial.findUniqueOrThrow({ where: { matricula } });
+    const antes = { kardex: await kardex(), historial: await historial() };
+
+    const cuerpo = { concepto: `Inscripción ${clave}`, importe: 1850 };
+    await http().post(`/periodos/${clave}/cargos`).set('Authorization', caja).send(cuerpo).expect(200);
+    await http()
+      .post(`/alumnos/${matricula}/becas`)
+      .set('Authorization', caja)
+      .send({ concepto: 'Beca', importe: 350 })
+      .expect(201);
+    const token = await entrar(app, correo);
+    const { id } = (await pagar(token, 1500).expect(201)).body;
+    await simular(token, id, 'aprobado').expect(200);
+    await http().get(`/pagos/${id}`).set('Authorization', caja).expect(200);
+    const hoy = new Date(Date.now() - 6 * 3_600_000).toISOString().slice(0, 10);
+    await http().get(`/pagos?fecha=${hoy}`).set('Authorization', caja).expect(200);
+    const intento = await http()
+      .put(`/grupos/${grupo.id}/calificaciones`)
+      .set('Authorization', caja)
+      .send({ parcial: 1, calificaciones: [{ folio, valor: 5 }] });
+
+    expect(intento.status).toBe(403);
+    expect(await saldo(matricula)).toBe(0);
+    expect({ kardex: await kardex(), historial: await historial() }).toEqual(antes);
   });
 });
 
