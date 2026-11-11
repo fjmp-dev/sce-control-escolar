@@ -35,7 +35,7 @@ Las fechas de cierre son **límite**: cada fase se cierra con acta de fecha real
 | S1 | 15 al 19 de octubre (corto) | SJOM | FJMP | Cerrar la fase 0 y los faltantes de gobierno antes de que termine la etapa documental de la auditoría |
 | S2 | 20 de octubre al 30 de octubre | FJMP | SJOM | Correcciones al manual y plan de pruebas, antes de la verificación en campo |
 | S3 | 2 al 13 de noviembre | SJOM | FJMP | Atender la auditoría en campo y construir las fases 1 a 4 (batches 0 a 10) |
-| S4 | 16 al 27 de noviembre | FJMP | SJOM | Revisar y aprobar los PR, pruebas de aceptación y manual v2.1 (27 de noviembre) |
+| S4 | 16 al 27 de noviembre | FJMP | SJOM | Revisar y aprobar los PR, pruebas de aceptación y manual v3.0 (27 de noviembre; antes v2.1) |
 | S5 | 30 de noviembre al 11 de diciembre | SJOM | FJMP | Firmar las actas de las fases 1 a 4, fusionar, etiquetar y entregar |
 
 S1 es corto a propósito: son los cinco días que quedan antes de que cierre la etapa 1 de la auditoría.
@@ -125,5 +125,6 @@ Motivo escrito, conforme al apartado 5.
 | 5 nov 2026 | Elementos P1 #7 a #15 pasan al sprint S4, con el manual v2.1 a más tardar el 27 de noviembre de 2026 | Vencieron el 30 de octubre sin reprogramación (NC-004). El sprint S2 priorizó el arranque técnico |
 | 5 nov 2026 | La columna «Acepta» del apartado 2 cede ante la regla por entregable | Si FJMP produce el entregable de un sprint par, lo acepta SJOM. Ver `roles-y-raci.md`, apartado 2 |
 | 10 nov 2026 | Calendario del apartado 1 con las fechas reales de construcción; las fases 1 a 4 cierran a más tardar el 11 de diciembre de 2026 | Los batches 0 a 8 se construyeron del 5 al 10 de noviembre, antes de las fechas estimadas de 2027 |
+| 10 nov 2026 | El manual se emite como **v3.0**, no v2.1: incluye las correcciones #7 a #14 y el cambio de alcance (`manual-v3.0.md`) | La sección 1.3 del manual sube el número mayor cuando cambia el alcance, y la compactación lo cambió. Decisión de FJMP |
 | 10 nov 2026 | Los batches 9 a 14 se compactan en dos: 9, pagos simulados y trámites; 10, reportes y revisión final. Sin Mercado Pago real, piloto, monitoreo, pruebas de carga ni usabilidad con participantes | Es un proyecto escolar: basta con que el sistema funcione bien de punta a punta. Ver `plan-de-sistema.md`, apartado 6.1 |
 

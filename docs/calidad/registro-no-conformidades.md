@@ -77,6 +77,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Acción correctiva:** reprogramar los elementos #7 a #15 al sprint S4 y emitir el manual v2.1 a más tardar el 27 de noviembre de 2026. Responsable: FJMP. Acepta: SJOM.
 - **Acción preventiva:** si los elementos se recorren de nuevo, pasan a la matriz de riesgos, como indica la sección 5 del plan de trabajo.
 - **Verificación de eficacia:** el equipo auditor, en el seguimiento, revisa el manual v2.1 y su registro de aprobación.
+- **Seguimiento, 10 de noviembre de 2026:** el manual se emite como v3.0 en lugar de v2.1, porque el alcance cambió y la sección 1.3 lo exige así. Integra #7 a #14 y su registro de aprobación (`docs/gobierno/manual-v3.0.md`, apartado 9). Queda pendiente la firma de SJOM.
 
 ## NC-005 — Tablas de roles contradictorias
 

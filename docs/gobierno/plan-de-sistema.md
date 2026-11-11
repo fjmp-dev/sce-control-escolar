@@ -352,6 +352,7 @@ FJMP decidió que el pago sea **simulado**, sin Mercado Pago, y que el resto se 
 **AU:** 31 a 35, 39, 40. **Nota:** esto no termina con un PR; depende de una facultad real y un semestre completo.
 
 ### Trabajo paralelo A — Manual v2.1 (compromiso NC-004: 27 de noviembre de 2026)
+**10 de noviembre de 2026:** se emite como v3.0 por el cambio de alcance de 6.1 (`docs/gobierno/manual-v3.0.md`).
 Issues #7 a #15, lista de contradicciones de B0 y cambios D-1 a D-4: Tablas 2, 5, 7, 27, 29, 38 y 42; Figuras 1, 2, 3, 4, 8 y 9; secciones 8.4 y 40.1; RTO en RNF-FIA-002; ediciones de normas (NMX-I-059-NYCE y norma estatal). El `.docx` fuente es `Manual_de_Calidad.docx` (63 tablas y 10 figuras, del 16 de septiembre de 2026); `Documento de calidad (1).docx` es de otro equipo y no se usa. Lleva registro de aprobación.
 
 ### Trabajo paralelo B — Auditoría PA-SCE-001 (fechas de su sección 7)

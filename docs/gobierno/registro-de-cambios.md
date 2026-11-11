@@ -33,7 +33,7 @@ Ciclo (sección 16.2): solicitud → análisis de impacto → aprobación → im
 | CC-018 | Sin issue: `cambios/CC-018.md` | Staging efímero en GitHub Actions, sin servidores rentados; túnel gratuito solo cuando haga falta URL pública | Normal | PO y QA | Batch 6 | Implementado en el Batch 6; pendiente de aprobación |
 | CC-019 | Sin issue: `cambios/CC-019.md` | Inicio del curso del periodo, de abierto a en curso (X-25); cierre en la calle de coordinación (X-09) | Mayor o Must | PO y QA | Batch 8 | Implementado en el Batch 8; pendiente de aprobación. Figuras 3 y 7 ya actualizadas |
 
-Estos cambios se integran al manual en la versión 2.1 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15)). Ninguno modifica un requisito RF o RNF, la política de calidad ni el alcance de la primera versión.
+Estos cambios se integran al manual en la versión 3.0 (issue [#15](https://github.com/fjmp-dev/sce-control-escolar/issues/15), `manual-v3.0.md`). Ninguno modifica por sí mismo un requisito RF o RNF, la política de calidad ni el alcance. El número mayor lo impone la compactación del 10 de noviembre de 2026, que sí cambió el alcance.
 
 **Enmiendas del 5 de noviembre de 2026:** CC-002 pasa a la numeración de la Tabla 49 (`cambios/CC-002-enmienda.md`). CC-006 se amplía con Next.js 16 y React 19, y retira la sustitución de Testcontainers y PostgreSQL 18 local (`cambios/CC-006-enmienda.md`). El retiro se implementó en el Batch 1 ([#41](https://github.com/fjmp-dev/sce-control-escolar/issues/41)): las pruebas usan Testcontainers y Compose usa PostgreSQL 16. Versiones adoptadas: `plan-de-pruebas.md`, sección 4.
 
