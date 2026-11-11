@@ -128,7 +128,16 @@ export class PagosService {
       const pago = new Pago(fila.estado as EstadoPago);
       if (resultado === 'rechazado') {
         pago.rechazar();
-        return vista(await this.cuentas.cambiarEstado(fila.id, pago.estado));
+        if (pago.estado === fila.estado) return vista(fila); // aviso repetido: ya estaba rechazado
+        const rechazado = await this.cuentas.cambiarEstado(fila.id, pago.estado);
+        // R-21: el rechazo de la pasarela también deja asiento, firmado por el usuario técnico (CC-015).
+        await this.bitacora.registrar({
+          autor: USUARIO_TECNICO,
+          accion: 'pago_rechazado',
+          entidad: `pago:${id}`,
+          valorAnterior: { estado: fila.estado },
+        });
+        return vista(rechazado);
       }
       // Primero el pago y luego la cuenta: ningún otro camino bloquea en orden inverso, y así no hay interbloqueo.
       await this.cuentas.bloquear(matricula);

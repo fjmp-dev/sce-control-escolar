@@ -88,6 +88,14 @@ jobs:
           name: gitleaks
           path: gitleaks.json
           retention-days: 90
+      - name: Cobertura de reglas Must en los títulos de las pruebas, 100 % (Tabla 59, CO-MAN-01)
+        run: scripts/reglas-must.sh reportes/reglas-must.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reglas-must
+          path: reportes/reglas-must.json
+          retention-days: 90
 
   unitarias:
     name: 3 Pruebas unitarias
@@ -153,7 +161,7 @@ jobs:
       - name: Newman - contratos de API y CS-SEG-04 (Tablas 30, 42 y 49)
         working-directory: .
         run: scripts/newman.sh http://localhost:3001 reportes/newman
-      - name: Great Expectations - CD-DAT-01 y 04, expediente y CS-SEG-06 en plantel (Tablas 39 y 42; AU-22)
+      - name: Great Expectations - CD-DAT-01 y 04, expediente, CS-SEG-06 y tasa de conclusión (Tablas 39, 42 y 59; AU-22)
         working-directory: .
         run: scripts/calidad-datos.sh reportes/calidad-datos
       - if: failure()

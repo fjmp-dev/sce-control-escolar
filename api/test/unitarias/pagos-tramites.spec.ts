@@ -14,7 +14,7 @@ const codigo = (accion: () => unknown) => {
   return undefined;
 };
 
-describe('Pago.aplicarUnaVez', () => {
+describe('R-14: Pago.aplicarUnaVez', () => {
   it('pendiente se aplica una vez; el segundo aviso no hace nada', () => {
     const pago = new Pago('pendiente');
     expect(pago.aplicarUnaVez()).toBe(true);
@@ -67,7 +67,7 @@ describe('Pago.aprobar (#69, CI-PAG-01)', () => {
   });
 });
 
-describe('Tramite, Fig. 6', () => {
+describe('R-16: Tramite, Fig. 6', () => {
   const desde = (estado: EstadoTramite) => new Tramite(estado);
 
   it('recibida, en proceso, lista y entregada; la segunda descarga no cambia nada', () => {

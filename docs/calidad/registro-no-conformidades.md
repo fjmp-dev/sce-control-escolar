@@ -130,7 +130,7 @@ La verificación de eficacia la hace quien ocupe QA en el sprint de cierre, que 
 - **Causa:** se reconciliaron los rangos que el manual menciona sin tomar la Tabla 49 como definición de cada caso.
 - **Acción correctiva:** catálogo, plan de pruebas y nombres de pruebas alineados con la Tabla 49; CC-002 corregido; respuesta F-01 v1.2. Responsable: FJMP. Fecha: 5 de noviembre de 2026.
 - **Acción preventiva:** el catálogo cita la tabla del manual de la que sale cada caso.
-- **Verificación de eficacia:** QA revisa la corrección en el pull request del Batch 0.
+- **Verificación de eficacia:** QA revisa la corrección en el pull request del Batch 0. El 10 de noviembre de 2026 (sub-batch 11.2) aún quedaban tres pruebas con una etiqueta distinta de la Tabla 49. Dos, en `api/test/integracion/pagos.spec.ts` y `tramites.spec.ts`, se llamaban CS-SEG-02, pero verificaban que un alumno no ve el pago ni el documento de otro alumno, que es CS-SEG-03; se renombraron a CS-SEG-03 (R-23). La tercera, en `oferta.spec.ts`, se llamaba CS-SEG-03, pero verifica que una entrada fuera de rango o con campos de más da 400 sin tocar la base, que es CS-SEG-05; se renombró a CS-SEG-05, también en `stride.md`. La verificación sigue pendiente.
 
 ## NC-008 — Cambios implementados sin aprobación registrada
 

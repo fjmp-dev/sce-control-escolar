@@ -1,5 +1,7 @@
 // RF-007 y RF-010 (Batch 9): Fig. 6 de punta a punta, rechazo solo desde En proceso y con motivo visible, no adeudo y
 // historial solo cuando proceden, Entregada en la primera descarga del solicitante, y verificacion del hash.
+// R-21 y CS-SEG-06: cada paso deja autor, acción, valor anterior y fecha. R-23 y CS-SEG-03: el documento es del dueño.
+import { readFileSync } from 'node:fs';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { PrismaService } from '../../src/persistencia/prisma.service';
@@ -19,6 +21,9 @@ const solicitar = async (token: string, tipo: string) =>
 const paso = (folio: string, accion: 'proceso' | 'emision' | 'rechazo', cuerpo = {}) =>
   http().post(`/tramites/${folio}/${accion}`).set('Authorization', escolar).send(cuerpo);
 const estado = async (folio: string) => (await prisma.tramite.findUniqueOrThrow({ where: { folio } })).estado;
+const usuario = async (correo: string) => (await prisma.usuario.findUniqueOrThrow({ where: { correo } })).id;
+const asientos = (folio: string) =>
+  prisma.bitacora.findMany({ where: { entidad: `tramite:${folio}` }, orderBy: { id: 'asc' } });
 
 beforeAll(async () => {
   ({ app, prisma } = await crearApp());
@@ -28,12 +33,20 @@ beforeAll(async () => {
 afterAll(() => app.close());
 
 describe('CF-TRA-01: historial de punta a punta (Fig. 6)', () => {
-  it('recibida, en proceso, lista con folio y hash, y entregada en la primera descarga', async () => {
+  it('R-16 y R-21: recibida, en proceso, lista con folio y hash, y entregada en la primera descarga; cada paso con fecha y asiento', async () => {
     const token = await entrar(app, 'alumno@sce.test'); // 2420001: tiene 2026A cerrado en el seed
     const folio = await solicitar(token, 'historial');
     const propios = await http().get('/alumnos/actual/tramites').set('Authorization', token).expect(200);
     expect(propios.body).toEqual(
-      expect.arrayContaining([expect.objectContaining({ folio, estado: 'recibida', documentoFolio: null })]),
+      expect.arrayContaining([
+        expect.objectContaining({
+          folio,
+          estado: 'recibida',
+          documentoFolio: null,
+          fechaSolicitud: expect.any(String),
+          fechaActualizacion: expect.any(String),
+        }),
+      ]),
     );
     const cola = await http().get('/tramites?estado=recibida').set('Authorization', escolar).expect(200);
     expect(cola.body.map((t: { folio: string }) => t.folio)).toContain(folio);
@@ -49,12 +62,14 @@ describe('CF-TRA-01: historial de punta a punta (Fig. 6)', () => {
     expect(await estado(folio)).toBe('entregada');
     await http().get(`/tramites/${folio}/documento`).set('Authorization', token).expect(200);
 
-    const asientos = await prisma.bitacora.findMany({ where: { entidad: `tramite:${folio}` }, orderBy: { id: 'asc' } });
-    expect(asientos.map((a) => a.accion)).toEqual([
-      'solicitar_tramite',
-      'tomar_tramite',
-      'emitir_documento',
-      'entregar_documento',
+    const [alumnoId, escolarId] = [await usuario('alumno@sce.test'), await usuario('control.escolar@sce.test')];
+    const asiento = (accion: string, autor: string, valorAnterior: unknown) =>
+      expect.objectContaining({ accion, autor, valorAnterior, fecha: expect.any(Date) });
+    expect(await asientos(folio)).toEqual([
+      asiento('solicitar_tramite', alumnoId, null),
+      asiento('tomar_tramite', escolarId, { estado: 'recibida' }),
+      asiento('emitir_documento', escolarId, { estado: 'en_proceso' }),
+      asiento('entregar_documento', alumnoId, { estado: 'lista' }),
     ]);
   });
 });
@@ -77,7 +92,7 @@ describe('Verificacion del documento por control escolar', () => {
 });
 
 describe('CF-TRA-02: rechazo y reglas de emision', () => {
-  it('el rechazo solo sale de en proceso y el alumno ve el motivo', async () => {
+  it('R-16 y R-21: el rechazo solo sale de en proceso, el alumno ve el motivo y queda el asiento con su autor', async () => {
     const { token } = await alumno();
     const folio = await solicitar(token, 'constancia');
     const antes = await paso(folio, 'rechazo', { motivo: 'Datos incompletos' }).expect(409);
@@ -91,9 +106,29 @@ describe('CF-TRA-02: rechazo y reglas de emision', () => {
     ]);
     await http().get(`/tramites/${folio}/documento`).set('Authorization', token).expect(409);
     await paso(folio, 'emision').expect(409);
+    expect((await asientos(folio)).at(-1)).toMatchObject({
+      accion: 'rechazar_tramite',
+      autor: await usuario('control.escolar@sce.test'),
+      valorAnterior: { estado: 'en_proceso' },
+      fecha: expect.any(Date),
+    });
   });
 
-  it('no adeudo con adeudo e historial sin periodos cerrados no se emiten, y el tramite sigue en proceso', async () => {
+  it('R-17: no hay constancia sin historial; el expediente sin su historial no recibe documento y el trámite sigue en proceso', async () => {
+    const { matricula, token } = await alumno();
+    await prisma.historial.delete({ where: { matricula } });
+    try {
+      const constancia = await solicitar(token, 'constancia');
+      await paso(constancia, 'proceso').expect(200);
+      expect((await paso(constancia, 'emision').expect(409)).body.codigo).toBe('SIN_HISTORIAL');
+      expect(await estado(constancia)).toBe('en_proceso');
+      expect(await prisma.documento.count({ where: { tramiteFolio: constancia } })).toBe(0);
+    } finally {
+      await prisma.historial.create({ data: { matricula } }); // la base compartida vuelve a ser completa
+    }
+  });
+
+  it('el historial sin periodos cerrados no se emite, ni el no adeudo con adeudo; el tramite sigue en proceso', async () => {
     const conAdeudo = await alumno(1850);
     const noAdeudo = await solicitar(conAdeudo.token, 'no_adeudo');
     await paso(noAdeudo, 'proceso').expect(200);
@@ -108,7 +143,7 @@ describe('CF-TRA-02: rechazo y reglas de emision', () => {
     expect(await estado(historial)).toBe('en_proceso');
   });
 
-  it('CS-SEG-02: el documento de otro alumno no existe para quien pregunta', async () => {
+  it('R-23 y CS-SEG-03: el documento de otro alumno no existe para quien pregunta', async () => {
     const duenio = await alumno();
     const otro = await alumno();
     const folio = await solicitar(duenio.token, 'constancia');
@@ -117,5 +152,12 @@ describe('CF-TRA-02: rechazo y reglas de emision', () => {
     await http().get(`/tramites/${folio}/documento`).set('Authorization', otro.token).expect(404);
     expect(await estado(folio)).toBe('lista');
     await paso('TRA-NO-EXISTE', 'proceso').expect(404);
+  });
+});
+
+describe('R-21 y CS-SEG-06 en constancia: consulta SQL de verificación', () => {
+  it('cero filas tras los trámites que la API llevó por la Fig. 6', async () => {
+    const consulta = readFileSync('prisma/verificacion/cs-seg-06-constancia.sql', 'utf8');
+    expect(await prisma.$queryRawUnsafe(consulta)).toEqual([]);
   });
 });

@@ -120,7 +120,7 @@ beforeAll(async () => {
 afterAll(() => app.close());
 
 describe('CF-INS-01: con prerrequisito faltante o adeudo, la carga queda en estado explicito y no se confirma', () => {
-  it('prerrequisito faltante: 409 con estado y motivo, el rechazo queda guardado con su carga y en bitacora (CC-013)', async () => {
+  it('R-03 y R-08: prerrequisito faltante: 409 con estado y motivo, el rechazo queda guardado con su carga y en bitacora (CC-013)', async () => {
     const basica = await grupo([[1, '07:00', '09:00']]);
     const avanzada = await grupo([[2, '07:00', '09:00']]);
     await prisma.prerequisito.create({
@@ -174,7 +174,7 @@ describe('CF-INS-01: con prerrequisito faltante o adeudo, la carga queda en esta
     expect((await inscribir(enCurso.token, [avanzada.id]).expect(409)).body.motivo).toBe('prerrequisito');
   });
 
-  it('adeudo vigente (D-10): 409 por adeudo, con la correccion', async () => {
+  it('R-04: adeudo vigente (D-10): 409 por adeudo, con la correccion', async () => {
     const g = await grupo([[3, '07:00', '09:00']]);
     const a = await alumno({ saldo: 0.01 });
     const res = await inscribir(a.token, [g.id]).expect(409);
@@ -182,7 +182,7 @@ describe('CF-INS-01: con prerrequisito faltante o adeudo, la carga queda en esta
     expect(await ocupacion(g.id)).toBe(0);
   });
 
-  it('choque de horario: 409 por choque, que dice cuales grupos, que dia y a que hora', async () => {
+  it('R-05: choque de horario: 409 por choque, que dice cuales grupos, que dia y a que hora', async () => {
     const a1 = await grupo([[1, '07:00', '09:00']]);
     const b1 = await grupo([[1, '08:00', '10:00']]);
     const a = await alumno();
@@ -254,7 +254,7 @@ describe('CI-API-01: la inscripcion confirmada persiste la carga y deja traza; s
     expect((await inscribir(a.token, [g1.id]).expect(409)).body.codigo).toBe('TRANSICION_INVALIDA');
   });
 
-  it('si un grupo se queda sin cupo, revierte la reserva de los demas y termina rechazada por cupo', async () => {
+  it('R-06: si un grupo se queda sin cupo, revierte la reserva de los demas y termina rechazada por cupo', async () => {
     const libre = await grupo([[2, '07:00', '09:00']]);
     const lleno = await grupo([[4, '07:00', '09:00']], { cupo: 1 });
     await inscribir((await alumno()).token, [lleno.id]).expect(201);
@@ -376,7 +376,7 @@ describe('Reglas de la carga y del expediente', () => {
   });
 });
 
-describe('CS-SEG-03: un alumno no inscribe ni ajusta la carga de otro', () => {
+describe('R-23 y CS-SEG-03: un alumno no inscribe ni ajusta la carga de otro', () => {
   it('la matricula sale de la sesion; un folio ajeno responde 404 y no cambia nada', async () => {
     const g = await grupo([[3, '16:00', '17:00']]);
     const otro = await grupo([[4, '16:00', '17:00']]);
@@ -418,7 +418,7 @@ describe('D-14 (provisional): control escolar consulta las inscripciones de un a
   });
 });
 
-describe('Oferta y aviso de choque antes de enviar (CF-HOR-01)', () => {
+describe('R-05: oferta y aviso de choque antes de enviar (CF-HOR-01)', () => {
   it('la oferta del periodo trae cupo, ocupacion y horarios; la revision de choques no guarda nada', async () => {
     const a1 = await grupo([[6, '13:00', '15:00']]);
     const b1 = await grupo([[6, '14:00', '16:00']]);
