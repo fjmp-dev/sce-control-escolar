@@ -1,7 +1,7 @@
 # Informe de la fase 2 — Alumnos
 
 **Fuente:** SCE-MC-001 v2.0, secciones 7, 10, 11.3 y 38 (Tabla 59). **Criterio de auditoría:** AU-39.
-**Estado: borrador,** con datos al 8 de noviembre de 2026, en la rama del Batch 6. Se actualiza a la etiqueta `v0.2.0` antes de firmar ACT-F2-001.
+**Estado: borrador,** con datos al 8 de noviembre de 2026, en la rama del Batch 6. Se actualiza a la etiqueta `v0.2.0` antes de firmar ACT-F2-001. El 10 de noviembre de 2026 (11.3) se llenaron la densidad de defectos y las líneas del dominio.
 
 ## 1. Qué se entregó
 
@@ -11,9 +11,9 @@ Lo describen `docs/gobierno/notas-version/v0.2.0.md` y la condición de la Tabla
 
 | Métrica | Meta | Valor en la fase 2 | Fuente |
 |---|---|---|---|
-| Densidad de defectos | Tendencia decreciente entre fases | **Sin dato:** cero defectos registrados, y los issues no llevan puntos de historia | GitHub Issues |
+| Densidad de defectos | Tendencia decreciente entre fases | 0 defectos entre 29 puntos = 0. _(Actualizado el 10 de noviembre de 2026, sub-batch 11.3: puntos de historia estimados después de construir, NC-016; criterio en `informe-fase-4.md`, apartado 2.)_ | GitHub Issues: etiquetas `defecto` y `fase-2`; puntos en #44, #45 y #46 |
 | Defectos críticos abiertos | Cero en piloto | 0 | GitHub Issues, etiqueta `defecto` |
-| Cobertura de pruebas del dominio | Al menos 80 % | 100 % de líneas, con 99 pruebas unitarias | Artefacto `cobertura-unitarias`, corrida 42533743035 |
+| Cobertura de pruebas del dominio | Al menos 80 % | 100 % de líneas (171 de 171, en 8 archivos de `dominio/`), con 99 pruebas unitarias | Artefacto `cobertura-unitarias`, corrida 42533743035 |
 | Cobertura de reglas Must | 100 % antes del piloto | 13 de 24 completas, sin integrar | `reglas-de-negocio.md` |
 | Vulnerabilidades altas abiertas | Cero antes de cada promoción | 0 en npm audit y en Trivy | Artefactos `calidad` y `trivy` |
 | Inconsistencias de datos | Cero | 0 en CD-DAT-01, 04 y 05 y en la ocupación de grupos | Artefacto `calidad-datos` |
@@ -39,7 +39,7 @@ Desde la primera aceptación, un fallo se registra como issue `defecto` (30.2).
 
 ## 4. Lista de verificación de QA
 
-La llena QA con la corrida de la etiqueta, no el autor.
+La llena QA con la corrida de la etiqueta, no el autor. **Nota del 10 de noviembre de 2026 (11.3):** la etiqueta `v0.2.0` es retroactiva y se crea en 11.4 (NC-015). La lista consolidada de las fases 1 a 4, llenada por FJMP como QA (NC-012), está en `informe-fase-4.md`, apartado 9. La auditoría de cierre de esta fase está en `auditoria-fase-2.md`.
 
 | Verificación | Resultado | Evidencia |
 |---|---|---|

@@ -4,9 +4,9 @@
 **Objeto:** fase 2, Alumnos · release `v0.2.0`
 **Fecha real de la decisión:** pendiente; no se antedata
 **Etiqueta o commit:** pendiente (`v0.2.0-rc.N` en staging, luego `v0.2.0`)
-**Participantes:** Samuel Jezoar Ortiz Martínez (Product Owner y QA de este entregable); Francisco Javier Martínez Peñas (autor)
+**Participantes:** Francisco Javier Martínez Peñas (Product Owner, QA y autor; desviación, NC-012), con asistente de IA declarado. SJOM figuraba como Product Owner y QA; no revisó ningún entregable
 
-> **Estado: borrador preparado por el autor al terminar el Batch 6. No está lista para firma.** La evidencia técnica corresponde a las ramas de los PR #59, #60 y el del Batch 6, no a una etiqueta. La fase abrió sin el acta de la fase 1 firmada (NC-009). Antes de firmar debe cumplirse el apartado 9.
+> **Estado: borrador del autor al terminar el Batch 6, revisado el 10 de noviembre de 2026 (sub-batch 11.3).** La evidencia técnica corresponde a las ramas de los PR #59, #60 y #61, no a una etiqueta. La fase abrió sin el acta de la fase 1 firmada (NC-009). La firma FJMP como Product Owner y QA (NC-012), después de ACT-F1-001 y antes de ACT-F3-001. Antes de firmar debe cumplirse lo que el apartado 9 marca como previo.
 
 ---
 
@@ -85,24 +85,27 @@ QA verifica que lo desplegado en staging corresponde a la etiqueta.
 
 | Rol | Nombre | Firma | Fecha |
 |---|---|---|---|
-| Product Owner (rinde cuentas de la aceptación) | Samuel Jezoar Ortiz Martínez | | |
-| QA (declara si la evidencia es suficiente) | Samuel Jezoar Ortiz Martínez | | |
-| Autor del entregable (no decide) | Francisco Javier Martínez Peñas | | |
+| Acepta: Product Owner y QA (desviación, NC-012) | Francisco Javier Martínez Peñas | | |
+| Produjo | Francisco Javier Martínez Peñas | | |
+
+> SJOM no firma: no revisó ningún entregable de la fase. Se declara en lugar de dejar la fila vacía sin explicación. El asistente de IA es coautor y no firma.
 
 ## 9. Lo que falta antes de firmar
 
 > **Nota del 10 de noviembre de 2026 (retoma, `plan-de-sistema.md`, 6.2):** lo que este apartado asigna a SJOM pasa a FJMP (NC-012). Los PR de la fase ya se fusionaron en `develop` el 10 de noviembre, sin revisión ni aprobación (NC-001 y NC-012). El cierre de versión es una etiqueta retroactiva sobre `develop`, sin `release/0.x.0` ni fusión a `main` (NC-015). El apartado se reescribe al firmar el acta, en el sub-batch 11.3.
 
-| # | Qué | Responsable |
-|---|---|---|
-| 1 | ~~Aceptar la invitación al repositorio, reenviada el 10 de noviembre~~: aceptada ese mismo día, con permiso _write_. SJOM no revisó ni aprobó ningún entregable (NC-012) | SJOM |
-| 2 | Firmar ACT-F1-001 y cerrar la fase 1 (NC-009) | SJOM |
-| 3 | Aprobar CC-013, CC-016 y CC-017, CC-005 para staging y CC-018 (staging efímero) | SJOM |
-| 4 | Ratificar D-5, D-6, D-10, D-14 y D-15 | PO |
-| 5 | Fusionar a `develop`, en orden, #59, #60 y el del Batch 6 | SJOM |
-| 6 | Configurar la regla de revisores del ambiente `staging` (inventario, sección 3), etiquetar `v0.2.0-rc.1` y lanzar la etapa 8, que corre el humo del Anexo D. Sin servidores que montar (CC-018) | FJMP; aprueban PO y QA |
-| 7 | **Auditoría interna de cierre de fase 2** (Tabla 60), con auditor externo al equipo: alcance, expediente e inscripción; criterios, SCE-MC-001 vigente, RF-001, RF-002 y RNF-DAT-001. Índice de evidencia en `docs/calidad/auditoria-fase-2-evidencia.md` | Auditor por designar |
-| 8 | **Revisión programada del manual** (Tabla 1: "al cierre de la Fase 2"), con la lista de contradicciones y los CC aprobados | Ambos |
-| 9 | Crear `release/0.2.0`, fusionar a `main`, etiquetar `v0.2.0` y publicar las notas de versión | FJMP, autoriza SJOM |
-| 10 | Copiar reportes a `docs/evidencias/fase-2/` con su corrida y SHA-256 (Tabla 62) | FJMP |
-| 11 | Informe de fase con el tablero de la Tabla 59 actualizado a la etiqueta | QA |
+| # | Qué | Responsable | Estado al 10 de noviembre de 2026 |
+|---|---|---|---|
+| 1 | Aceptar la invitación al repositorio | SJOM | Hecho el 10 de noviembre, con permiso _write_. No revisó ni aprobó ningún entregable (NC-012) |
+| 2 | **Previo a la firma:** firmar ACT-F1-001 y cerrar la fase 1 (NC-009) | FJMP | Pendiente. Fecha comprometida: 20 de noviembre de 2026 |
+| 3 | Aprobar CC-013, CC-016, CC-017, CC-005 para staging y CC-018 | FJMP | CC-013, CC-016, CC-017 y CC-018, aprobados el 10 de noviembre, después de fusionarse (NC-008). **CC-005, sin decisión** |
+| 4 | Ratificar D-5, D-6, D-10, D-14 y D-15 | Product Owner (FJMP) | Pendiente; rigen como provisionales |
+| 5 | Fusionar a `develop`, en orden, #59, #60 y #61 | FJMP | Fusionados el 10 de noviembre, sin revisión (NC-001 y NC-012) |
+| 6 | Regla de revisores del ambiente `staging`, `v0.2.0-rc.1` y etapa 8 | FJMP | Cambia: el ambiente y la etapa 8 llegan en 11.4, solo con `v0.4.0-rc.1`. `v0.2.0` no tiene candidata. El humo corrió en el staging efímero de cada PR (CC-018) |
+| 7 | Auditoría interna de cierre de fase 2 (Tabla 60) | FJMP, autoauditoría (NC-013) | Hecha el 10 de noviembre por reejecución: `docs/calidad/auditoria-fase-2.md`. Falta pedir un auditor independiente (20 de noviembre de 2026) |
+| 8 | Revisión programada del manual (Tabla 1) | FJMP | Hecha tarde, como manual v3.0 del 10 de noviembre; sin firma |
+| 9 | **Previo a la firma:** etiqueta `v0.2.0` | FJMP | Cambia: retroactiva sobre `develop` en 11.4, sin `release/0.2.0` ni fusión a `main` (NC-015) |
+| 10 | Copiar reportes a `docs/evidencias/fase-2/` con su corrida y SHA-256 (Tabla 62) | FJMP | Pendiente; sin sub-batch en el plan |
+| 11 | Informe de fase con el tablero de la Tabla 59 actualizado a la etiqueta | FJMP como QA | Densidad y dominio actualizados en 11.3. Falta la lista de QA sobre la etiqueta (11.4) |
+
+**Orden de firma:** ACT-F0-001, ACT-F1-001, ACT-F2-001, ACT-F3-001 y ACT-F4-001, cada una con su fecha real. Antes de firmar esta acta: los puntos marcados como previos. Lo demás queda como condición si se acepta con condiciones.
