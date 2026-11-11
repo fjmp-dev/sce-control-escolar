@@ -42,10 +42,13 @@ group Validaciones obligatorias (orden fijo)
 end
 
 alt alguna validacion falla
-  DEXP -> BIT : registrar intento rechazado
-  BIT -> DB : insertar bitacora
+  group Transaccion del rechazo (CC-013)
+    DEXP -> DB : guardar inscripcion\n(estado = rechazada, motivo)
+    DEXP -> BIT : registrar intento rechazado
+    BIT -> DB : insertar bitacora
+  end
   DEXP --> GW : 409 estado = rechazada, motivo explicito
-  GW --> UI : motivo (adeudo | prerrequisito | choque)
+  GW --> UI : motivo (prerrequisito | adeudo | choque | cupo)
   UI --> AL : mensaje y estado distinguibles (RNF-USU-001)
 else todas las validaciones pasan
   group Transaccion atomica
@@ -65,7 +68,8 @@ end
 note over DEXP, DB
   Si el cupo se agota entre la validacion y
   el COMMIT, la transaccion revierte y la
-  inscripcion termina en estado rechazada.
+  inscripcion termina en estado rechazada,
+  con motivo = cupo.
 end note
 
 @enduml

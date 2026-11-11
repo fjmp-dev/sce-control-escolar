@@ -22,14 +22,20 @@ Los roles **no son permanentes**. Se asignan por sprint y se invierten en el sig
 
 | Rol (Tabla 11 del manual) | Sprint impar | Sprint par |
 |---|---|---|
-| Product Owner | FJMP | SJOM |
-| Desarrollo | SJOM | FJMP |
-| QA | FJMP | SJOM |
+| Product Owner | SJOM | FJMP |
+| Desarrollo | FJMP | SJOM |
+| QA | SJOM | FJMP |
 | Seguridad | Quien no escribió el código que se revisa | Quien no escribió el código que se revisa |
-| DevOps | SJOM | FJMP |
-| Administrador del sistema | SJOM | FJMP |
+| DevOps | FJMP | SJOM |
+| Administrador del sistema | FJMP | SJOM |
 
-**Sprint vigente:** S1, del 15 al 19 de octubre de 2026. Es sprint **impar**, pero por tratarse del sprint de cierre de la fase 0 —cuyo entregable completo lo produjo FJMP— la aceptación recae excepcionalmente en SJOM. A partir de S2 la tabla se aplica tal cual.
+**La regla prevalece por entregable** (vigente desde el 5 de noviembre de 2026). La tabla es la asignación por omisión y coincide con la columna «Acepta» de `plan-de-trabajo.md`, sección 2. Pero quien produce un entregable nunca lo acepta: **mientras FJMP produzca, SJOM ocupa Product Owner, QA y Seguridad para ese entregable y aprueba el pull request**, sin importar el sprint. Si SJOM produce una parte, la acepta FJMP.
+
+**Sprint vigente:** S3, del 2 al 13 de noviembre de 2026.
+
+> **Desde el 10 de noviembre de 2026, esta tabla y la regla por entregable no se aplican:** FJMP ocupa los seis roles (apartado 6, NC-012). `samuel0rtiz` aceptó la invitación al repositorio ese día y es colaborador con permiso _write_. Pero no revisó ni aprobó ningún entregable.
+
+> **Correcciones del 5 de noviembre de 2026.** La tabla tenía las columnas invertidas respecto al plan de trabajo y trataba el sprint S1 como excepción (NC-005). Se corrigió para que los tres documentos de gobierno digan lo mismo. Las desviaciones que ocurrieron en S2 se tratan en `docs/calidad/registro-no-conformidades.md`.
 
 ---
 
@@ -76,7 +82,21 @@ Se conserva la regla del manual: **ninguna actividad de aceptación o auditoría
 
 ---
 
-## 5. Limitación declarada
+## 5. Organigrama funcional
+
+Sección 5.2 del manual.
+
+| Nivel | Roles | Personas |
+|---|---|---|
+| 1 | Product Owner y Dirección de la facultad piloto | Según el apartado 2. Dirección: sin asignar |
+| 2 | Desarrollo, QA y Seguridad | Según el apartado 2 |
+| 3 | DevOps y Administrador del sistema | Según el apartado 2 |
+| 4 | Usuarios del piloto | Sin asignar: no hay facultad piloto |
+| Línea independiente | Auditor, que no reporta al equipo de desarrollo | PA-SCE-001: equipo Aerial Forge. Auditorías de la Tabla 60: pendiente de designar |
+
+---
+
+## 6. Limitación declarada
 
 Un equipo de dos personas no permite separación plena de funciones. En un sprint dado, la misma persona ocupa Product Owner y QA, que en una organización mayor serían distintas.
 
@@ -88,3 +108,19 @@ Lo que sí se garantiza, y es lo que exige el criterio de separación de funcion
 4. La asignación se invierte cada sprint, de modo que la concentración no es permanente.
 
 Esta limitación se declara de forma expresa ante el equipo auditor, en lugar de presentarse como una separación de funciones que el tamaño del equipo no permite.
+
+**También se declara:**
+
+- Una sola persona puede firmar como Product Owner, QA y Seguridad en un mismo entregable. El manual pide firma de PO y QA, y no exige que sean personas distintas; un documento anterior del equipo sí lo decía, y se corrigió.
+- Si se aprueba CC-007, FJMP suma Desarrollo y Administrador del sistema en sus sprints. Las acciones del administrador quedan en bitácora.
+- **FJMP trabaja con un asistente de IA (Claude Code)**. Se declara en cada commit con `Co-Authored-By`. El asistente no aprueba ni acepta nada, y FJMP rinde cuentas por el código que entrega.
+
+**Cambio del 10 de noviembre de 2026: el proyecto sigue sin SJOM.** SJOM aceptó la invitación al repositorio ese día y es colaborador con permiso _write_. Pero no revisó ni aprobó ningún entregable, y FJMP decidió continuar sin él. _(Corregido el 10 de noviembre de 2026: este párrafo decía que SJOM no había aceptado la invitación, que solo dejaban de cumplirse las garantías 1 a 3 y que la desviación era de las secciones 1.2, 10.4 y 29.)_ Desde esa fecha, FJMP produce y también aprueba: fusiona sus pull requests, firma el manual v3.0 y las actas, y verifica sus propios defectos. Por eso **las garantías 1 a 4 de arriba dejan de cumplirse**: FJMP también ocupa ambas columnas en S4 y S5 (`plan-de-trabajo.md`, apartado 2), así que la asignación no se invierte. No se presenta como separación de funciones: es una desviación de las secciones 1.2, 10.4, 29.1 y 30.2 del manual, y se declara aquí ante el equipo auditor. Lo que queda como control independiente es automático: CI en verde, puerta de calidad, Gitleaks, Trivy, Newman y la matriz rol × endpoint ejecutable. La desviación queda registrada como NC-012 (separación de funciones) y NC-013 (auditor independiente) en `docs/calidad/registro-no-conformidades.md`, y cada acta la cita.
+
+## 7. Aprobación
+
+Sección 5.3 del manual: organigrama funcional y RACI aprobados por el Product Owner.
+
+| Rol | Nombre | Decisión | Firma | Fecha |
+|---|---|---|---|---|
+| Product Owner | Samuel Jezoar Ortiz Martínez | | | |

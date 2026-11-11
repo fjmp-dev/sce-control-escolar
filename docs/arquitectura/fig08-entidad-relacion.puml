@@ -14,6 +14,7 @@ entity "usuario" as usuario {
   * correo : varchar <<unique>>
   * hash_contrasena : varchar
   * activo : boolean
+  * sesion_version : int
 }
 
 entity "rol" as rol {
@@ -75,6 +76,7 @@ entity "periodo" as periodo {
   * fecha_inicio : date
   * fecha_fin : date
   * estado : varchar
+  oferta_publicada_en : timestamptz
 }
 
 entity "grupo" as grupo {
@@ -163,6 +165,7 @@ entity "pago" as pago {
   * importe : numeric
   * estado : varchar
   * fecha : timestamptz
+  fecha_confirmacion : timestamptz
 }
 
 entity "tramite" as tramite {
@@ -171,6 +174,7 @@ entity "tramite" as tramite {
   * matricula : varchar <<FK>>
   * tipo : varchar
   * estado : varchar
+  motivo_rechazo : varchar
   * fecha_solicitud : timestamptz
   * fecha_actualizacion : timestamptz
 }
@@ -181,6 +185,7 @@ entity "documento" as documento {
   * tramite_folio : varchar <<FK,unique>>
   * tipo : varchar
   * hash : varchar
+  * contenido : jsonb
   * fecha_emision : timestamptz
 }
 
@@ -222,8 +227,8 @@ tramite ||--o| documento
 usuario ||--o{ bitacora
 
 note bottom of alumno
-  RF-001: indice unico parcial sobre
-  matricula con estatus = activo.
+  RF-001: matricula es clave primaria,
+  asi que hay un solo expediente (CC-004).
   El cambio de facultad no borra historial.
 end note
 

@@ -1,0 +1,4372 @@
+{
+  "info": {
+    "name": "SCE - contratos de API",
+    "description": "Contratos de API (Tabla 42) y CS-SEG-04 (Tabla 49). Ejecutar con scripts/newman.sh.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('sufijo')) pm.collectionVariables.set('sufijo', String(Date.now()).slice(-9));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "CS-SEG-04 Endpoint sin token responde 401",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+              "pm.test('responde 401', () => pm.response.to.have.status(401));",
+              "pm.test('error en el formato de la API, codigo NO_AUTENTICADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_AUTENTICADO'); });"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "GET /sesiones/actual",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /sesiones/actual/renovacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones/actual/renovacion",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual", "renovacion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "DELETE /sesiones/actual",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /usuarios/actual/contrasena",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/usuarios/actual/contrasena",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "actual", "contrasena"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /usuarios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /usuarios",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PATCH /usuarios/5ce00000-0000-4000-8000-00000000ffff",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base}}/usuarios/5ce00000-0000-4000-8000-00000000ffff",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "5ce00000-0000-4000-8000-00000000ffff"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /facultades",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /facultades",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /planes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /planes",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /materias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /materias",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /periodos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /materias/NO-EXISTE/prerrequisitos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias/NO-EXISTE/prerrequisitos",
+              "host": ["{{base}}"],
+              "path": ["materias", "NO-EXISTE", "prerrequisitos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "DELETE /materias/NO-EXISTE/prerrequisitos/NO-EXISTE",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/materias/NO-EXISTE/prerrequisitos/NO-EXISTE",
+              "host": ["{{base}}"],
+              "path": ["materias", "NO-EXISTE", "prerrequisitos", "NO-EXISTE"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /alumnos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/actual",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /alumnos/0000000/facultad",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/facultad",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "facultad"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /alumnos/0000000/estatus",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/estatus",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "estatus"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /alumnos/0000000/cuenta",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/cuenta",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "cuenta"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/actual/inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "inscripciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000/inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "inscripciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /grupos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /grupos/choques",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos/choques",
+              "host": ["{{base}}"],
+              "path": ["grupos", "choques"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /inscripciones",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /inscripciones/INS-FOLIO-AJENO/grupos",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/INS-FOLIO-AJENO/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "INS-FOLIO-AJENO", "grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /grupos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /periodos/NO-EXISTE/grupos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/grupos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/publicacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/publicacion",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "publicacion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /profesores/actual/grupos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/profesores/actual/grupos",
+              "host": ["{{base}}"],
+              "path": ["profesores", "actual", "grupos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/actual/calificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000/calificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "5ce00000-0000-4000-8000-00000000ffff", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/5ce00000-0000-4000-8000-00000000ffff/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "5ce00000-0000-4000-8000-00000000ffff", "calificaciones"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PUT /calificaciones/5ce00000-0000-4000-8000-00000000ffff/correccion",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/calificaciones/5ce00000-0000-4000-8000-00000000ffff/correccion",
+              "host": ["{{base}}"],
+              "path": ["calificaciones", "5ce00000-0000-4000-8000-00000000ffff", "correccion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/inicio",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/inicio",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "inicio"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/cierre",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/cierre",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "cierre"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /periodos/NO-EXISTE/reporte",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/reporte",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "reporte"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/actual/cuenta",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/cuenta",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "cuenta"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/0000000/cuenta",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/cuenta",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "cuenta"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /alumnos/0000000/becas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos/0000000/becas",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "0000000", "becas"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /periodos/NO-EXISTE/cargos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/NO-EXISTE/cargos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "NO-EXISTE", "cargos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /pagos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /pagos/5ce00000-0000-4000-8000-00000000ffff/simulacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos/5ce00000-0000-4000-8000-00000000ffff/simulacion",
+              "host": ["{{base}}"],
+              "path": ["pagos", "5ce00000-0000-4000-8000-00000000ffff", "simulacion"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /pagos/5ce00000-0000-4000-8000-00000000ffff",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos/5ce00000-0000-4000-8000-00000000ffff",
+              "host": ["{{base}}"],
+              "path": ["pagos", "5ce00000-0000-4000-8000-00000000ffff"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /pagos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites",
+              "host": ["{{base}}"],
+              "path": ["tramites"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /alumnos/actual/tramites",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/tramites",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "tramites"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /tramites",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/tramites",
+              "host": ["{{base}}"],
+              "path": ["tramites"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites/INS-FOLIO-AJENO/proceso",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/proceso",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "proceso"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites/INS-FOLIO-AJENO/emision",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/emision",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "emision"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "POST /tramites/INS-FOLIO-AJENO/rechazo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/rechazo",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "rechazo"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /tramites/INS-FOLIO-AJENO/documento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/tramites/INS-FOLIO-AJENO/documento",
+              "host": ["{{base}}"],
+              "path": ["tramites", "INS-FOLIO-AJENO", "documento"]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "GET /documentos/INS-FOLIO-AJENO",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/documentos/INS-FOLIO-AJENO",
+              "host": ["{{base}}"],
+              "path": ["documentos", "INS-FOLIO-AJENO"]
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contratos",
+      "item": [
+        {
+          "name": "Salud sin token",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/salud",
+              "host": ["{{base}}"],
+              "path": ["salud"]
+            },
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"estado\"], \"properties\": {\"estado\": {\"const\": \"ok\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Credenciales invalidas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"nadie.{{sufijo}}@sce.test\",\n  \"contrasena\": \"no-es-la-contrasena-1\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('error en el formato de la API, codigo CREDENCIALES_INVALIDAS', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('CREDENCIALES_INVALIDAS'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entrada malformada",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"esto no es un correo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });",
+                  "pm.test('dice que campos revisar', () => pm.expect(pm.response.json().campos).to.include.members(['correo', 'contrasena']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de administrador",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"administrador@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"expiraEn\"], \"properties\": {\"token\": {\"type\": \"string\"}, \"expiraEn\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('admin', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de coordinacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"coordinacion@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"expiraEn\"], \"properties\": {\"token\": {\"type\": \"string\"}, \"expiraEn\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('coordinacion', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion actual",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"correo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"roles\": {\"type\": \"array\"}}, \"additionalProperties\": false}));",
+                  "pm.test('rol administrador', () => pm.expect(pm.response.json().roles).to.eql(['administrador']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Renovacion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones/actual/renovacion",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual", "renovacion"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"token\", \"expiraEn\"], \"properties\": {\"token\": {\"type\": \"string\"}, \"expiraEn\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('admin', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar usuarios, sin hash",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"correo\", \"activo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"activo\": {\"type\": \"boolean\"}, \"roles\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar facultades",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"nombre\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de facultad",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"F{{sufijo}}\",\n  \"nombre\": \"Facultad de contrato\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"nombre\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Facultad duplicada",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/facultades",
+              "host": ["{{base}}"],
+              "path": ["facultades"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"F{{sufijo}}\",\n  \"nombre\": \"Facultad de contrato\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo YA_EXISTE', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('YA_EXISTE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar planes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"facultadClave\", \"creditosTotales\", \"vigenteDesde\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"creditosTotales\": {\"type\": \"integer\"}, \"vigenteDesde\": {\"type\": \"string\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de plan",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"P{{sufijo}}\",\n  \"facultadClave\": \"F{{sufijo}}\",\n  \"creditosTotales\": 300,\n  \"vigenteDesde\": \"2030-01-01\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"facultadClave\", \"creditosTotales\", \"vigenteDesde\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"creditosTotales\": {\"type\": \"integer\"}, \"vigenteDesde\": {\"type\": \"string\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Plan sin facultad",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/planes",
+              "host": ["{{base}}"],
+              "path": ["planes"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"Q{{sufijo}}\",\n  \"facultadClave\": \"NO-EXISTE\",\n  \"creditosTotales\": 300,\n  \"vigenteDesde\": \"2030-01-01\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo REFERENCIA_INEXISTENTE', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('REFERENCIA_INEXISTENTE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El administrador no da de alta materias",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"M{{sufijo}}\",\n  \"planClave\": \"P{{sufijo}}\",\n  \"nombre\": \"Materia\",\n  \"creditos\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de materia",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"M{{sufijo}}\",\n  \"planClave\": \"P{{sufijo}}\",\n  \"nombre\": \"Materia\",\n  \"creditos\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"planClave\", \"nombre\", \"creditos\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"planClave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"requiereDe\": {\"type\": \"array\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar materias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"planClave\", \"nombre\", \"creditos\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"planClave\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"requiereDe\": {\"type\": \"array\"}}, \"additionalProperties\": false}}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de una segunda materia",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias",
+              "host": ["{{base}}"],
+              "path": ["materias"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"N{{sufijo}}\",\n  \"planClave\": \"P{{sufijo}}\",\n  \"nombre\": \"Materia dos\",\n  \"creditos\": 4\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Agregar prerrequisito",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias/N{{sufijo}}/prerrequisitos",
+              "host": ["{{base}}"],
+              "path": ["materias", "N{{sufijo}}", "prerrequisitos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requiereClave\": \"M{{sufijo}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"materiaClave\", \"requiereClave\", \"obligatorio\"], \"properties\": {\"materiaClave\": {\"type\": \"string\"}, \"requiereClave\": {\"type\": \"string\"}, \"obligatorio\": {\"type\": \"boolean\"}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar prerrequisito circular",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/materias/M{{sufijo}}/prerrequisitos",
+              "host": ["{{base}}"],
+              "path": ["materias", "M{{sufijo}}", "prerrequisitos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requiereClave\": \"N{{sufijo}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo PRERREQUISITO_CIRCULAR', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('PRERREQUISITO_CIRCULAR'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quitar prerrequisito",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/materias/N{{sufijo}}/prerrequisitos/M{{sufijo}}",
+              "host": ["{{base}}"],
+              "path": ["materias", "N{{sufijo}}", "prerrequisitos", "M{{sufijo}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 204', () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quitar prerrequisito inexistente",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/materias/N{{sufijo}}/prerrequisitos/M{{sufijo}}",
+              "host": ["{{base}}"],
+              "path": ["materias", "N{{sufijo}}", "prerrequisitos", "M{{sufijo}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error en el formato de la API, codigo NO_ENCONTRADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_ENCONTRADO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar periodos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}}));",
+                  "const usadas = new Set(pm.response.json().map((p) => p.clave)); let anio = 9999; while (usadas.has(`${anio}A`)) anio -= 1;",
+                  "pm.collectionVariables.set('anioOferta', String(anio)); pm.collectionVariables.set('periodoOferta', `${anio}A`);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Periodo con rango invertido",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"2099A\",\n  \"fechaInicio\": \"2099-06-30\",\n  \"fechaFin\": \"2099-01-10\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo RANGO_INVERTIDO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('RANGO_INVERTIDO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Abrir periodo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos",
+              "host": ["{{base}}"],
+              "path": ["periodos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clave\": \"{{periodoOferta}}\",\n  \"fechaInicio\": \"{{anioOferta}}-01-10\",\n  \"fechaFin\": \"{{anioOferta}}-06-30\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}));",
+                  "pm.test('nace abierto y sin oferta publicada', () => pm.expect(pm.response.json()).to.include({ estado: 'abierto', ofertaPublicadaEn: null }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-003 definir grupo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"clave\": \"G-1\",\n  \"materiaClave\": \"ISW-101\",\n  \"profesor\": \"profesor@sce.test\",\n  \"cupo\": 30,\n  \"horarios\": [\n    {\n      \"dia\": 1,\n      \"horaInicio\": \"07:00\",\n      \"horaFin\": \"09:00\",\n      \"aula\": \"B1\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"profesor\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"profesor\": {\"type\": \"string\"}}}));",
+                  "pm.test('nace sin ocupacion', () => pm.expect(pm.response.json().ocupacion).to.eql(0));",
+                  "pm.collectionVariables.set('grupoOferta', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-13 aula ocupada a la misma hora",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"clave\": \"G-2\",\n  \"materiaClave\": \"ISW-101\",\n  \"profesor\": \"profesor2@sce.test\",\n  \"cupo\": 30,\n  \"horarios\": [\n    {\n      \"dia\": 1,\n      \"horaInicio\": \"07:00\",\n      \"horaFin\": \"09:00\",\n      \"aula\": \"b1\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo TRASLAPE_DE_AULA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('TRASLAPE_DE_AULA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-13 profesor ocupado a la misma hora",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"clave\": \"G-2\",\n  \"materiaClave\": \"ISW-101\",\n  \"profesor\": \"profesor@sce.test\",\n  \"cupo\": 30,\n  \"horarios\": [\n    {\n      \"dia\": 1,\n      \"horaInicio\": \"07:00\",\n      \"horaFin\": \"09:00\",\n      \"aula\": \"B2\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo TRASLAPE_DE_PROFESOR', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('TRASLAPE_DE_PROFESOR'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oferta completa para coordinacion",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"profesor\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"profesor\": {\"type\": \"string\"}}}}));",
+                  "pm.test('trae el grupo con su profesor', () => pm.expect(pm.response.json().map((g) => [g.id, g.profesor])).to.deep.include([pm.collectionVariables.get('grupoOferta'), 'profesor@sce.test']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar oferta",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/publicacion",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "publicacion"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}));",
+                  "pm.test('queda publicada', () => pm.expect(pm.response.json().ofertaPublicadaEn).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar la oferta otra vez",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/publicacion",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "publicacion"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo OFERTA_YA_PUBLICADA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('OFERTA_YA_PUBLICADA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirmacion equivocada",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"no-es-la-contrasena-1\",\n  \"correo\": \"u{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo REAUTENTICACION_FALLIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('REAUTENTICACION_FALLIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contrasena debil",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"u{{sufijo}}@sce.test\",\n  \"contrasena\": \"corta\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo CONTRASENA_DEBIL', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('CONTRASENA_DEBIL'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de usuario",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"u{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\",\n  \"roles\": [\n    \"profesor\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"correo\", \"activo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"activo\": {\"type\": \"boolean\"}, \"roles\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"additionalProperties\": false}));",
+                  "pm.collectionVariables.set('usuarioId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Baja de usuario",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base}}/usuarios/{{usuarioId}}",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "{{usuarioId}}"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"activo\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"correo\", \"activo\", \"roles\"], \"properties\": {\"id\": {\"type\": \"string\", \"format\": \"uuid\"}, \"correo\": {\"type\": \"string\"}, \"activo\": {\"type\": \"boolean\"}, \"roles\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"additionalProperties\": false}));",
+                  "pm.test('queda inactivo', () => pm.expect(pm.response.json().activo).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambio de contrasena sin datos",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/usuarios/actual/contrasena",
+              "host": ["{{base}}"],
+              "path": ["usuarios", "actual", "contrasena"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de control escolar",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"control.escolar@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('control', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de expediente",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matricula\": \"9{{sufijo}}\",\n  \"nombre\": \"Alumno de contrato\",\n  \"facultadClave\": \"CUTG\",\n  \"fechaIngreso\": \"2025-08-04\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"nombre\", \"facultadClave\", \"estatus\", \"facultadNombre\", \"fechaIngreso\", \"correo\", \"historial\", \"trayectoria\"], \"properties\": {\"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"estatus\": {\"enum\": [\"activo\", \"baja\", \"egresado\"]}, \"facultadNombre\": {\"type\": \"string\"}, \"fechaIngreso\": {\"type\": \"string\"}, \"correo\": {\"type\": [\"string\", \"null\"]}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"trayectoria\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"de\", \"a\", \"fecha\"], \"additionalProperties\": false, \"properties\": {\"de\": {\"type\": \"string\"}, \"a\": {\"type\": \"string\"}, \"fecha\": {\"type\": \"string\"}}}}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Expediente con matricula repetida",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matricula\": \"9{{sufijo}}\",\n  \"nombre\": \"Otro\",\n  \"facultadClave\": \"CUTG\",\n  \"fechaIngreso\": \"2025-08-04\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo YA_EXISTE', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('YA_EXISTE'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar expedientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos?buscar=9{{sufijo}}",
+              "host": ["{{base}}"],
+              "path": ["alumnos?buscar=9{{sufijo}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"matricula\", \"nombre\", \"facultadClave\", \"estatus\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"estatus\": {\"type\": \"string\"}}}}));",
+                  "pm.test('lo encuentra', () => pm.expect(pm.response.json()).to.have.length(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambio de plantel del mismo expediente",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/alumnos/9{{sufijo}}/facultad",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "9{{sufijo}}", "facultad"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"facultadClave\": \"FSD\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"nombre\", \"facultadClave\", \"estatus\", \"facultadNombre\", \"fechaIngreso\", \"correo\", \"historial\", \"trayectoria\"], \"properties\": {\"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"estatus\": {\"enum\": [\"activo\", \"baja\", \"egresado\"]}, \"facultadNombre\": {\"type\": \"string\"}, \"fechaIngreso\": {\"type\": \"string\"}, \"correo\": {\"type\": [\"string\", \"null\"]}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"trayectoria\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"de\", \"a\", \"fecha\"], \"additionalProperties\": false, \"properties\": {\"de\": {\"type\": \"string\"}, \"a\": {\"type\": \"string\"}, \"fecha\": {\"type\": \"string\"}}}}}, \"additionalProperties\": false}));",
+                  "pm.test('mismo expediente, otra facultad, con trayectoria', () => { const e = pm.response.json(); pm.expect(e.facultadClave).to.eql('FSD'); pm.expect(e.trayectoria).to.have.length(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Egreso",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/alumnos/9{{sufijo}}/estatus",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "9{{sufijo}}", "estatus"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estatus\": \"egresado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"nombre\", \"facultadClave\", \"estatus\", \"facultadNombre\", \"fechaIngreso\", \"correo\", \"historial\", \"trayectoria\"], \"properties\": {\"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"estatus\": {\"enum\": [\"activo\", \"baja\", \"egresado\"]}, \"facultadNombre\": {\"type\": \"string\"}, \"fechaIngreso\": {\"type\": \"string\"}, \"correo\": {\"type\": [\"string\", \"null\"]}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"trayectoria\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"de\", \"a\", \"fecha\"], \"additionalProperties\": false, \"properties\": {\"de\": {\"type\": \"string\"}, \"a\": {\"type\": \"string\"}, \"fecha\": {\"type\": \"string\"}}}}}, \"additionalProperties\": false}));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un egresado no cambia de plantel",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/alumnos/9{{sufijo}}/facultad",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "9{{sufijo}}", "facultad"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"facultadClave\": \"CUTG\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo EXPEDIENTE_NO_ACTIVO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('EXPEDIENTE_NO_ACTIVO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de alumno",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"alumno.dos@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('alumno', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mi expediente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"nombre\", \"facultadClave\", \"estatus\", \"facultadNombre\", \"fechaIngreso\", \"correo\", \"historial\", \"trayectoria\"], \"properties\": {\"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"facultadClave\": {\"type\": \"string\"}, \"estatus\": {\"enum\": [\"activo\", \"baja\", \"egresado\"]}, \"facultadNombre\": {\"type\": \"string\"}, \"fechaIngreso\": {\"type\": \"string\"}, \"correo\": {\"type\": [\"string\", \"null\"]}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"trayectoria\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"de\", \"a\", \"fecha\"], \"additionalProperties\": false, \"properties\": {\"de\": {\"type\": \"string\"}, \"a\": {\"type\": \"string\"}, \"fecha\": {\"type\": \"string\"}}}}}, \"additionalProperties\": false}));",
+                  "pm.test('es el suyo', () => pm.expect(pm.response.json().matricula).to.eql('2420002'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-03 el alumno no consulta otro expediente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/2420001",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "2420001"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Alta de cuenta de alumno",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/usuarios",
+              "host": ["{{base}}"],
+              "path": ["usuarios"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmacion\": \"{{contrasena}}\",\n  \"correo\": \"a{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\",\n  \"roles\": [\n    \"alumno\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Expediente con su cuenta",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos",
+              "host": ["{{base}}"],
+              "path": ["alumnos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"matricula\": \"8{{sufijo}}\",\n  \"nombre\": \"Alumno de inscripcion\",\n  \"facultadClave\": \"CUTG\",\n  \"fechaIngreso\": \"2025-08-04\",\n  \"correo\": \"a{{sufijo}}@sce.test\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 201', () => pm.response.to.have.status(201));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion del alumno que se inscribe",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"a{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('inscrito', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oferta del periodo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos?periodo=2027A",
+              "host": ["{{base}}"],
+              "path": ["grupos?periodo=2027A"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}));",
+                  "const porClave = Object.fromEntries(pm.response.json().map((g) => [g.clave, g.id]));",
+                  "for (const clave of ['ISW-201-A', 'ISW-701-A', 'ISW-701-B', 'ISW-702-A', 'ISW-702-B']) pm.collectionVariables.set(clave.toLowerCase().replaceAll('-', ''), porClave[clave]);",
+                  "pm.test('trae los grupos del seed', () => pm.expect(Object.keys(porClave)).to.include.members(['ISW-201-A', 'ISW-701-B']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-HOR-01 aviso de choque antes de enviar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/grupos/choques?grupos={{isw701a}}&grupos={{isw702b}}",
+              "host": ["{{base}}"],
+              "path": ["grupos", "choques?grupos={{isw701a}}&grupos={{isw702b}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"grupos\", \"dia\", \"desde\", \"hasta\", \"descripcion\"], \"additionalProperties\": false, \"properties\": {\"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"integer\"}, \"minItems\": 2, \"maxItems\": 2}, \"dia\": {\"type\": \"integer\"}, \"desde\": {\"type\": \"string\"}, \"hasta\": {\"type\": \"string\"}, \"descripcion\": {\"type\": \"string\"}}}}));",
+                  "pm.test('un choque, el lunes de 09:00 a 10:00', () => pm.expect(pm.response.json().map((c) => [c.dia, c.desde, c.hasta])).to.eql([[1, '09:00', '10:00']]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-01 rechazo por prerrequisito",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw201a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo prerrequisito, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'prerrequisito']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-02 rechazo por choque",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701a}}, {{isw702b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo choque, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'choque']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-02 rechazo por cupo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw702a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo cupo, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'cupo']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-API-01 inscripcion confirmada con folio y comprobante",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}));",
+                  "pm.test('confirmada, con su carga', () => { const r = pm.response.json(); pm.expect([r.estado, r.grupos.map((g) => g.clave)]).to.eql(['confirmada', ['ISW-701-B']]); });",
+                  "pm.collectionVariables.set('folio', pm.response.json().folio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Una segunda inscripcion en el periodo se rechaza",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo TRANSICION_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('TRANSICION_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajuste sin cupo conserva la carga",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/{{folio}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "{{folio}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupos\": [{{isw701b}}, {{isw702a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('AJUSTE_RECHAZADO: estado confirmada y motivo cupo, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['AJUSTE_RECHAZADO', 'confirmada', 'cupo']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajuste de la carga",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/{{folio}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "{{folio}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupos\": [{{isw701a}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}));",
+                  "pm.test('confirmada con el grupo nuevo', () => { const r = pm.response.json(); pm.expect([r.estado, r.grupos.map((g) => g.clave)]).to.eql(['confirmada', ['ISW-701-A']]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mis inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}}));",
+                  "pm.test('una sola inscripcion en el periodo', () => pm.expect(pm.response.json().map((i) => i.folio)).to.eql([pm.collectionVariables.get('folio')]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-INS-02 rechazo por adeudo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"2027A\",\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\", \"folio\", \"estado\", \"motivo\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"enum\": [\"INSCRIPCION_RECHAZADA\", \"AJUSTE_RECHAZADO\"]}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"folio\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\"]}}}));",
+                  "pm.test('INSCRIPCION_RECHAZADA: estado rechazada y motivo adeudo, con causa y correccion', () => { const r = pm.response.json(); pm.expect([r.codigo, r.estado, r.motivo]).to.eql(['INSCRIPCION_RECHAZADA', 'rechazada', 'adeudo']); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-03 el alumno no ajusta la carga de otro",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/inscripciones/{{folio}}/grupos",
+              "host": ["{{base}}"],
+              "path": ["inscripciones", "{{folio}}", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupos\": [{{isw701b}}]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error en el formato de la API, codigo NO_ENCONTRADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_ENCONTRADO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Control escolar consulta las inscripciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{control}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"periodoClave\", \"estado\", \"motivoRechazo\", \"fecha\", \"grupos\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estado\": {\"enum\": [\"borrador\", \"en_validacion\", \"rechazada\", \"confirmada\", \"ajustada\", \"cerrada\"]}, \"motivoRechazo\": {\"enum\": [\"prerrequisito\", \"adeudo\", \"choque\", \"cupo\", null]}, \"fecha\": {\"type\": \"string\"}, \"grupos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}}}}}}}));",
+                  "pm.test('ve la inscripcion confirmada', () => pm.expect(pm.response.json().map((i) => i.estado)).to.eql(['confirmada']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El alumno no consulta inscripciones por matricula",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alumno}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de profesor",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"profesor@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('profesor', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grupos del profesor",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/profesores/actual/grupos",
+              "host": ["{{base}}"],
+              "path": ["profesores", "actual", "grupos"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"cupo\", \"ocupacion\", \"horarios\", \"periodoClave\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"cupo\": {\"type\": \"integer\"}, \"ocupacion\": {\"type\": \"integer\"}, \"horarios\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"dia\", \"horaInicio\", \"horaFin\", \"aula\"], \"additionalProperties\": false, \"properties\": {\"dia\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 6}, \"horaInicio\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"horaFin\": {\"type\": \"string\", \"pattern\": \"^\\\\d\\\\d:\\\\d\\\\d$\"}, \"aula\": {\"type\": \"string\"}}}}, \"periodoClave\": {\"type\": \"string\"}}}}));",
+                  "pm.test('trae el grupo que coordinacion le asigno', () => pm.expect(pm.response.json().map((g) => g.id)).to.include(pm.collectionVariables.get('grupoOferta')));",
+                  "pm.test('no trae periodos cerrados', () => pm.expect(pm.response.json().map((g) => g.periodoClave)).to.not.include('2026A'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion del segundo profesor",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"profesor2@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('profesor2', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inscripcion en el periodo de la oferta",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/inscripciones",
+              "host": ["{{base}}"],
+              "path": ["inscripciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodoClave\": \"{{periodoOferta}}\",\n  \"grupos\": [\n    {{grupoOferta}}\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('folioOferta', pm.response.json().folio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CC-019 iniciar el curso",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/inicio",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "inicio"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"fechaInicio\", \"fechaFin\", \"estado\", \"ofertaPublicadaEn\"], \"properties\": {\"clave\": {\"type\": \"string\"}, \"fechaInicio\": {\"type\": \"string\"}, \"fechaFin\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"ofertaPublicadaEn\": {\"type\": [\"string\", \"null\"]}}, \"additionalProperties\": false}));",
+                  "pm.test('queda en curso', () => pm.expect(pm.response.json().estado).to.eql('en_curso'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-01 el alumno no captura",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 1,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 10\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo SIN_PERMISO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-004 captura del parcial 1",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 1,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 9.5\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"clave\", \"materiaClave\", \"materiaNombre\", \"periodoClave\", \"estadoPeriodo\", \"parciales\", \"alumnos\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"clave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\", \"enum\": [\"abierto\", \"en_curso\", \"cerrado\"]}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"integer\"}}, \"alumnos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"nombre\", \"calificaciones\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"nombre\": {\"type\": \"string\"}, \"calificaciones\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}}}}}}));",
+                  "const alumno = pm.response.json().alumnos.find((a) => a.folio === pm.collectionVariables.get('folioOferta'));",
+                  "pm.test('queda capturada', () => pm.expect(alumno.calificaciones.map((c) => c.valor)).to.eql([9.5]));",
+                  "pm.collectionVariables.set('calificacionOferta', alumno.calificaciones[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-CAL-01 el alumno consulta al momento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{inscrito}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"historial\", \"materias\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"materias\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"periodoClave\", \"estadoPeriodo\", \"grupoClave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"parciales\", \"final\", \"acreditada\", \"vigente\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\"}, \"grupoClave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}, \"final\": {\"type\": [\"number\", \"null\"]}, \"acreditada\": {\"type\": [\"boolean\", \"null\"]}, \"vigente\": {\"type\": [\"boolean\", \"null\"]}}}}}}));",
+                  "const materia = pm.response.json().materias.find((x) => x.periodoClave === pm.collectionVariables.get('periodoOferta'));",
+                  "pm.test('ve el parcial recien capturado, sin final', () => { pm.expect(materia.parciales.map((p) => p.valor)).to.eql([9.5]); pm.expect(materia.final).to.eql(null); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-CAL-01 otro profesor no captura",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor2}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 1,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 5\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('error en el formato de la API, codigo GRUPO_NO_ASIGNADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('GRUPO_NO_ASIGNADO'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-005 cierre del periodo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/{{periodoOferta}}/cierre",
+              "host": ["{{base}}"],
+              "path": ["periodos", "{{periodoOferta}}", "cierre"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"clave\", \"estado\", \"alumnos\"], \"additionalProperties\": false, \"properties\": {\"clave\": {\"type\": \"string\"}, \"estado\": {\"type\": \"string\", \"enum\": [\"cerrado\"]}, \"alumnos\": {\"type\": \"integer\"}}}));",
+                  "pm.test('cierra y recalcula a su alumno', () => pm.expect(pm.response.json()).to.include({ estado: 'cerrado', alumnos: 1 }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-6 captura fuera de ventana",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/grupos/{{grupoOferta}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["grupos", "{{grupoOferta}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{profesor}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parcial\": 2,\n  \"calificaciones\": [\n    {\n      \"folio\": \"{{folioOferta}}\",\n      \"valor\": 8\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error en el formato de la API, codigo FUERA_DE_VENTANA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('FUERA_DE_VENTANA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Kardex por matricula",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/calificaciones",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "calificaciones"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"historial\", \"materias\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"materias\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"periodoClave\", \"estadoPeriodo\", \"grupoClave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"parciales\", \"final\", \"acreditada\", \"vigente\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\"}, \"grupoClave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}, \"final\": {\"type\": [\"number\", \"null\"]}, \"acreditada\": {\"type\": [\"boolean\", \"null\"]}, \"vigente\": {\"type\": [\"boolean\", \"null\"]}}}}}}));",
+                  "const materia = pm.response.json().materias.find((x) => x.periodoClave === pm.collectionVariables.get('periodoOferta'));",
+                  "pm.test('final y acreditada tras el cierre', () => pm.expect(materia).to.include({ final: 9.5, acreditada: true, vigente: true }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-17 correccion sin evidencia",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/calificaciones/{{calificacionOferta}}/correccion",
+              "host": ["{{base}}"],
+              "path": ["calificaciones", "{{calificacionOferta}}", "correccion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valor\": 9,\n  \"motivo\": \"Error de captura\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error en el formato de la API, codigo ENTRADA_INVALIDA', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('ENTRADA_INVALIDA'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "D-17 correccion autorizada por coordinacion",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{base}}/calificaciones/{{calificacionOferta}}/correccion",
+              "host": ["{{base}}"],
+              "path": ["calificaciones", "{{calificacionOferta}}", "correccion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{coordinacion}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valor\": 9,\n  \"motivo\": \"Error de captura del profesor\",\n  \"evidencia\": \"Oficio sintetico de prueba\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"historial\", \"materias\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"historial\": {\"type\": \"object\", \"required\": [\"promedio\", \"creditosAcumulados\", \"avance\"], \"additionalProperties\": false, \"properties\": {\"promedio\": {\"type\": \"number\"}, \"creditosAcumulados\": {\"type\": \"integer\"}, \"avance\": {\"type\": \"number\"}}}, \"materias\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"periodoClave\", \"estadoPeriodo\", \"grupoClave\", \"materiaClave\", \"materiaNombre\", \"creditos\", \"parciales\", \"final\", \"acreditada\", \"vigente\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"estadoPeriodo\": {\"type\": \"string\"}, \"grupoClave\": {\"type\": \"string\"}, \"materiaClave\": {\"type\": \"string\"}, \"materiaNombre\": {\"type\": \"string\"}, \"creditos\": {\"type\": \"integer\"}, \"parciales\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"parcial\", \"valor\", \"fechaCaptura\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"parcial\": {\"type\": \"integer\", \"minimum\": 1, \"maximum\": 4}, \"valor\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"fechaCaptura\": {\"type\": \"string\"}}}}, \"final\": {\"type\": [\"number\", \"null\"]}, \"acreditada\": {\"type\": [\"boolean\", \"null\"]}, \"vigente\": {\"type\": [\"boolean\", \"null\"]}}}}}}));",
+                  "const materia = pm.response.json().materias.find((x) => x.periodoClave === pm.collectionVariables.get('periodoOferta'));",
+                  "pm.test('la final cambia', () => pm.expect(materia.final).to.eql(9));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cierre de sesion",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('responde 204', () => pm.response.to.have.status(204));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CS-SEG-07 el token revocado no se reutiliza",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/sesiones/actual",
+              "host": ["{{base}}"],
+              "path": ["sesiones", "actual"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ERROR = { type: 'object', required: ['codigo', 'mensaje'], properties: { codigo: { type: 'string' }, mensaje: { type: 'string' }, campos: { type: 'array', items: { type: 'string' } } }, additionalProperties: false };",
+                  "pm.test('responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('error en el formato de la API, codigo NO_AUTENTICADO', () => { pm.response.to.have.jsonSchema(ERROR); pm.expect(pm.response.json().codigo).to.eql('NO_AUTENTICADO'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pagos, trámites y reportes",
+      "description": "RF-006, RF-007, RF-009 y RF-010 con pago simulado. CI-PAG-01 (#69): la pasarela repite el aviso y el pago se aplica una sola vez; un segundo intento por el mismo adeudo se rechaza con 409 PAGO_NO_APLICABLE. Usa al alumno que se inscribe en la carpeta Contratos.",
+      "item": [
+        {
+          "name": "Sesion de caja",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"caja@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('caja', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de direccion",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"direccion@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('direccion', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion de control escolar para tramites",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"control.escolar@sce.test\",\n  \"contrasena\": \"{{contrasena}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('controlTramites', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sesion del alumno que paga",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/sesiones",
+              "host": ["{{base}}"],
+              "path": ["sesiones"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"a{{sufijo}}@sce.test\",\n  \"contrasena\": \"contrasena-larga-1\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('pagador', pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fig. 7 cargos del periodo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/2027A/cargos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "2027A", "cargos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{caja}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concepto\": \"Inscripción 2027A {{sufijo}}\",\n  \"importe\": 1850\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"periodoClave\", \"concepto\", \"generados\", \"yaExistian\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"concepto\": {\"type\": \"string\"}, \"generados\": {\"type\": \"integer\", \"minimum\": 0}, \"yaExistian\": {\"type\": \"integer\", \"minimum\": 0}}}));",
+                  "pm.test('un cargo a cada inscrito, el alumno que paga entre ellos', () => pm.expect(pm.response.json().generados).to.be.at.least(1));",
+                  "pm.collectionVariables.set('cargosGenerados', pm.response.json().generados);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fig. 7 repetir los cargos no los duplica",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/periodos/2027A/cargos",
+              "host": ["{{base}}"],
+              "path": ["periodos", "2027A", "cargos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{caja}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concepto\": \"Inscripción 2027A {{sufijo}}\",\n  \"importe\": 1850\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"periodoClave\", \"concepto\", \"generados\", \"yaExistian\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"concepto\": {\"type\": \"string\"}, \"generados\": {\"type\": \"integer\", \"minimum\": 0}, \"yaExistian\": {\"type\": \"integer\", \"minimum\": 0}}}));",
+                  "pm.test('ninguno nuevo; todos ya existian', () => pm.expect(pm.response.json()).to.include({ generados: 0, yaExistian: Number(pm.collectionVariables.get('cargosGenerados')) }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Beca de caja",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/alumnos/8{{sufijo}}/becas",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "8{{sufijo}}", "becas"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{caja}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concepto\": \"Beca {{sufijo}}\",\n  \"importe\": 350\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"saldo\", \"movimientos\", \"pagos\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"saldo\": {\"type\": \"number\"}, \"movimientos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"concepto\", \"importe\", \"tipo\", \"fecha\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"concepto\": {\"type\": \"string\"}, \"importe\": {\"type\": \"number\"}, \"tipo\": {\"enum\": [\"cargo\", \"abono\", \"ajuste\", \"beca\"]}, \"fecha\": {\"type\": \"string\"}}}}, \"pagos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}}}}));",
+                  "pm.test('abona la beca: 1850 de cargo menos 350', () => pm.expect(pm.response.json().saldo).to.eql(1500));",
+                  "pm.test('un cargo y una beca', () => pm.expect(pm.response.json().movimientos.map((m) => m.tipo).sort()).to.eql(['beca', 'cargo']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar pago por el adeudo completo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"importe\": 1500\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('queda pendiente y no se ha aplicado', () => pm.expect(pm.response.json()).to.include({ estado: 'pendiente', aplicadoEn: null }));",
+                  "pm.collectionVariables.set('pagoA', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar un segundo pago por el mismo adeudo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"importe\": 1500\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('queda pendiente y no se ha aplicado', () => pm.expect(pm.response.json()).to.include({ estado: 'pendiente', aplicadoEn: null }));",
+                  "pm.collectionVariables.set('pagoB', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar un pago que la pasarela rechaza",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos",
+              "host": ["{{base}}"],
+              "path": ["pagos"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"importe\": 100\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('queda pendiente y no se ha aplicado', () => pm.expect(pm.response.json()).to.include({ estado: 'pendiente', aplicadoEn: null }));",
+                  "pm.collectionVariables.set('pagoC', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazo de pasarela",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos/{{pagoC}}/simulacion",
+              "host": ["{{base}}"],
+              "path": ["pagos", "{{pagoC}}", "simulacion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resultado\": \"rechazado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('rechazado y sin aplicar', () => pm.expect(pm.response.json()).to.include({ estado: 'rechazado', aplicadoEn: null }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-PAG-01 la pasarela aprueba el pago",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos/{{pagoA}}/simulacion",
+              "host": ["{{base}}"],
+              "path": ["pagos", "{{pagoA}}", "simulacion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resultado\": \"aprobado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('aplicado', () => pm.expect(pm.response.json().estado).to.eql('aplicado'));",
+                  "pm.collectionVariables.set('aplicadoEn', pm.response.json().aplicadoEn);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-PAG-01 la pasarela repite el aviso",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos/{{pagoA}}/simulacion",
+              "host": ["{{base}}"],
+              "path": ["pagos", "{{pagoA}}", "simulacion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resultado\": \"aprobado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('sigue aplicado, con la misma fecha: no se aplica otra vez', () => pm.expect(pm.response.json()).to.include({ estado: 'aplicado', aplicadoEn: pm.collectionVariables.get('aplicadoEn') }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-PAG-01 el segundo intento ya no cabe en el saldo",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/pagos/{{pagoB}}/simulacion",
+              "host": ["{{base}}"],
+              "path": ["pagos", "{{pagoB}}", "simulacion"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resultado\": \"aprobado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"type\": \"string\"}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"campos\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}}));",
+                  "pm.test('PAGO_NO_APLICABLE, con causa y correccion', () => { const r = pm.response.json(); pm.expect(r.codigo).to.eql('PAGO_NO_APLICABLE'); pm.expect(r.mensaje).to.match(/rebasa tu saldo vigente.*no se cobró.*inicia otro pago/); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CI-PAG-01 estado de cuenta con un solo abono",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/cuenta",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "cuenta"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"matricula\", \"saldo\", \"movimientos\", \"pagos\"], \"additionalProperties\": false, \"properties\": {\"matricula\": {\"type\": \"string\"}, \"saldo\": {\"type\": \"number\"}, \"movimientos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"concepto\", \"importe\", \"tipo\", \"fecha\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"concepto\": {\"type\": \"string\"}, \"importe\": {\"type\": \"number\"}, \"tipo\": {\"enum\": [\"cargo\", \"abono\", \"ajuste\", \"beca\"]}, \"fecha\": {\"type\": \"string\"}}}}, \"pagos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}}}}));",
+                  "const cuenta = pm.response.json();",
+                  "const pago = (id) => cuenta.pagos.find((p) => p.id === Number(pm.collectionVariables.get(id)));",
+                  "pm.test('saldo en cero, nunca negativo', () => pm.expect(cuenta.saldo).to.eql(0));",
+                  "pm.test('un solo abono, el del pago aplicado', () => { const abonos = cuenta.movimientos.filter((m) => m.tipo === 'abono'); pm.expect(abonos.length).to.eql(1); pm.expect(abonos[0].concepto).to.include(pago('pagoA').referencia); });",
+                  "pm.test('el segundo intento y el de la pasarela quedan rechazados', () => pm.expect([pago('pagoA').estado, pago('pagoB').estado, pago('pagoC').estado]).to.eql(['aplicado', 'rechazado', 'rechazado']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recibo del pago aplicado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos/{{pagoA}}",
+              "host": ["{{base}}"],
+              "path": ["pagos", "{{pagoA}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('aplicado, del alumno que paga', () => pm.expect(pm.response.json()).to.include({ estado: 'aplicado', matricula: '8' + pm.collectionVariables.get('sufijo') }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El pago rechazado no tiene recibo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos/{{pagoB}}",
+              "host": ["{{base}}"],
+              "path": ["pagos", "{{pagoB}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{caja}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"type\": \"string\"}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"campos\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}}));",
+                  "pm.test('PAGO_NO_APLICADO', () => pm.expect(pm.response.json().codigo).to.eql('PAGO_NO_APLICADO'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Corte del dia",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/pagos?fecha={{hoy}}",
+              "host": ["{{base}}"],
+              "path": ["pagos"],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "{{hoy}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{caja}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// El dia de la Ciudad de Mexico (UTC-6), como el corte de la API.",
+                  "pm.collectionVariables.set('hoy', new Date(Date.now() - 6 * 3600000).toISOString().slice(0, 10));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"fecha\", \"pagos\", \"total\"], \"additionalProperties\": false, \"properties\": {\"fecha\": {\"type\": \"string\"}, \"pagos\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"id\", \"matricula\", \"referencia\", \"importe\", \"estado\", \"fecha\", \"aplicadoEn\"], \"additionalProperties\": false, \"properties\": {\"id\": {\"type\": \"integer\"}, \"matricula\": {\"type\": \"string\"}, \"referencia\": {\"type\": \"string\", \"pattern\": \"^REF-\"}, \"importe\": {\"type\": \"number\", \"exclusiveMinimum\": 0}, \"estado\": {\"enum\": [\"pendiente\", \"aplicado\", \"rechazado\", \"cancelado\"]}, \"fecha\": {\"type\": \"string\"}, \"aplicadoEn\": {\"type\": [\"string\", \"null\"]}}}}, \"total\": {\"type\": \"number\"}}}));",
+                  "const corte = pm.response.json();",
+                  "const ids = corte.pagos.map((p) => p.id);",
+                  "pm.test('incluye el pago aplicado y no los rechazados', () => { pm.expect(ids).to.include(Number(pm.collectionVariables.get('pagoA'))); pm.expect(ids).to.not.include(Number(pm.collectionVariables.get('pagoB'))); pm.expect(ids).to.not.include(Number(pm.collectionVariables.get('pagoC'))); });",
+                  "pm.test('el total es la suma de los pagos, en centavos', () => pm.expect(Math.round(corte.total * 100)).to.eql(corte.pagos.reduce((s, p) => s + Math.round(p.importe * 100), 0)));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-007 solicitar constancia",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites",
+              "host": ["{{base}}"],
+              "path": ["tramites"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"constancia\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 201', () => pm.response.to.have.status(201));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"tipo\", \"estado\", \"motivoRechazo\", \"fechaSolicitud\", \"fechaActualizacion\", \"documentoFolio\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\", \"pattern\": \"^TRA-\"}, \"matricula\": {\"type\": \"string\"}, \"tipo\": {\"enum\": [\"constancia\", \"no_adeudo\", \"historial\"]}, \"estado\": {\"enum\": [\"recibida\", \"en_proceso\", \"lista\", \"entregada\", \"rechazada\"]}, \"motivoRechazo\": {\"type\": [\"string\", \"null\"]}, \"fechaSolicitud\": {\"type\": \"string\"}, \"fechaActualizacion\": {\"type\": \"string\"}, \"documentoFolio\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('recibida, sin documento', () => pm.expect(pm.response.json()).to.include({ tipo: 'constancia', estado: 'recibida', documentoFolio: null }));",
+                  "pm.collectionVariables.set('tramite', pm.response.json().folio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fig. 6 control escolar toma el tramite",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/{{tramite}}/proceso",
+              "host": ["{{base}}"],
+              "path": ["tramites", "{{tramite}}", "proceso"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{controlTramites}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"tipo\", \"estado\", \"motivoRechazo\", \"fechaSolicitud\", \"fechaActualizacion\", \"documentoFolio\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\", \"pattern\": \"^TRA-\"}, \"matricula\": {\"type\": \"string\"}, \"tipo\": {\"enum\": [\"constancia\", \"no_adeudo\", \"historial\"]}, \"estado\": {\"enum\": [\"recibida\", \"en_proceso\", \"lista\", \"entregada\", \"rechazada\"]}, \"motivoRechazo\": {\"type\": [\"string\", \"null\"]}, \"fechaSolicitud\": {\"type\": \"string\"}, \"fechaActualizacion\": {\"type\": \"string\"}, \"documentoFolio\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('en proceso', () => pm.expect(pm.response.json().estado).to.eql('en_proceso'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-010 emitir la constancia",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base}}/tramites/{{tramite}}/emision",
+              "host": ["{{base}}"],
+              "path": ["tramites", "{{tramite}}", "emision"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{controlTramites}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"tipo\", \"estado\", \"motivoRechazo\", \"fechaSolicitud\", \"fechaActualizacion\", \"documentoFolio\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\", \"pattern\": \"^TRA-\"}, \"matricula\": {\"type\": \"string\"}, \"tipo\": {\"enum\": [\"constancia\", \"no_adeudo\", \"historial\"]}, \"estado\": {\"enum\": [\"recibida\", \"en_proceso\", \"lista\", \"entregada\", \"rechazada\"]}, \"motivoRechazo\": {\"type\": [\"string\", \"null\"]}, \"fechaSolicitud\": {\"type\": \"string\"}, \"fechaActualizacion\": {\"type\": \"string\"}, \"documentoFolio\": {\"type\": [\"string\", \"null\"]}}}));",
+                  "pm.test('lista, con folio de documento', () => { const r = pm.response.json(); pm.expect(r.estado).to.eql('lista'); pm.expect(r.documentoFolio).to.match(/^DOC-/); });",
+                  "pm.collectionVariables.set('documento', pm.response.json().documentoFolio);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fig. 6 la descarga entrega la constancia",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/tramites/{{tramite}}/documento",
+              "host": ["{{base}}"],
+              "path": ["tramites", "{{tramite}}", "documento"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"tramiteFolio\", \"tipo\", \"contenido\", \"hash\", \"fechaEmision\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\", \"pattern\": \"^DOC-\"}, \"tramiteFolio\": {\"type\": \"string\"}, \"tipo\": {\"enum\": [\"constancia\", \"no_adeudo\", \"historial\"]}, \"contenido\": {\"type\": \"string\", \"minLength\": 1}, \"hash\": {\"type\": \"string\", \"pattern\": \"^[0-9a-f]{64}$\"}, \"fechaEmision\": {\"type\": \"string\"}}}));",
+                  "pm.test('constancia del alumno que la pidio', () => { const r = pm.response.json(); pm.expect(r.folio).to.eql(pm.collectionVariables.get('documento')); pm.expect(r.contenido).to.include('CONSTANCIA DE ESTUDIOS'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mis tramites: la constancia esta entregada",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/alumnos/actual/tramites",
+              "host": ["{{base}}"],
+              "path": ["alumnos", "actual", "tramites"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pagador}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"array\", \"items\": {\"type\": \"object\", \"required\": [\"folio\", \"matricula\", \"tipo\", \"estado\", \"motivoRechazo\", \"fechaSolicitud\", \"fechaActualizacion\", \"documentoFolio\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\", \"pattern\": \"^TRA-\"}, \"matricula\": {\"type\": \"string\"}, \"tipo\": {\"enum\": [\"constancia\", \"no_adeudo\", \"historial\"]}, \"estado\": {\"enum\": [\"recibida\", \"en_proceso\", \"lista\", \"entregada\", \"rechazada\"]}, \"motivoRechazo\": {\"type\": [\"string\", \"null\"]}, \"fechaSolicitud\": {\"type\": \"string\"}, \"fechaActualizacion\": {\"type\": \"string\"}, \"documentoFolio\": {\"type\": [\"string\", \"null\"]}}}}));",
+                  "pm.test('entregada, con su documento', () => { const t = pm.response.json().find((x) => x.folio === pm.collectionVariables.get('tramite')); pm.expect(t).to.include({ estado: 'entregada', documentoFolio: pm.collectionVariables.get('documento') }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-010 control escolar verifica el documento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/documentos/{{documento}}",
+              "host": ["{{base}}"],
+              "path": ["documentos", "{{documento}}"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{controlTramites}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"folio\", \"tramiteFolio\", \"tipo\", \"contenido\", \"hash\", \"fechaEmision\", \"matricula\", \"valido\"], \"additionalProperties\": false, \"properties\": {\"folio\": {\"type\": \"string\", \"pattern\": \"^DOC-\"}, \"tramiteFolio\": {\"type\": \"string\"}, \"tipo\": {\"enum\": [\"constancia\", \"no_adeudo\", \"historial\"]}, \"contenido\": {\"type\": \"string\", \"minLength\": 1}, \"hash\": {\"type\": \"string\", \"pattern\": \"^[0-9a-f]{64}$\"}, \"fechaEmision\": {\"type\": \"string\"}, \"matricula\": {\"type\": \"string\"}, \"valido\": {\"type\": \"boolean\"}}}));",
+                  "pm.test('el hash coincide', () => pm.expect(pm.response.json().valido).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-009 reporte de direccion",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/2027A/reporte",
+              "host": ["{{base}}"],
+              "path": ["periodos", "2027A", "reporte"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{direccion}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"periodoClave\", \"generadoEn\", \"filas\"], \"additionalProperties\": false, \"properties\": {\"periodoClave\": {\"type\": \"string\"}, \"generadoEn\": {\"type\": \"string\"}, \"filas\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\", \"required\": [\"facultadClave\", \"facultadNombre\", \"alumnosActivos\", \"inscritos\", \"inscripcionPorcentaje\", \"promedioGeneral\", \"avancePromedio\", \"cargos\", \"pagado\", \"becas\", \"saldoPendiente\", \"alumnosConAdeudo\", \"cobranzaPorcentaje\"], \"additionalProperties\": false, \"properties\": {\"facultadClave\": {\"type\": [\"string\", \"null\"]}, \"facultadNombre\": {\"type\": \"string\"}, \"alumnosActivos\": {\"type\": \"integer\", \"minimum\": 0}, \"inscritos\": {\"type\": \"integer\", \"minimum\": 0}, \"inscripcionPorcentaje\": {\"type\": \"number\", \"minimum\": 0}, \"promedioGeneral\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 10}, \"avancePromedio\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 100}, \"cargos\": {\"type\": \"number\", \"minimum\": 0}, \"pagado\": {\"type\": \"number\", \"minimum\": 0}, \"becas\": {\"type\": \"number\", \"minimum\": 0}, \"saldoPendiente\": {\"type\": \"number\", \"minimum\": 0}, \"alumnosConAdeudo\": {\"type\": \"integer\", \"minimum\": 0}, \"cobranzaPorcentaje\": {\"type\": \"number\", \"minimum\": 0}}}}}}));",
+                  "const filas = pm.response.json().filas;",
+                  "const universidad = filas[filas.length - 1];",
+                  "pm.test('la ultima fila es la universidad', () => pm.expect(universidad).to.include({ facultadClave: null, facultadNombre: 'Universidad' }));",
+                  "pm.test('refleja los cargos, la beca y el pago aplicado de esta corrida', () => { pm.expect(universidad.cargos).to.be.at.least(1850); pm.expect(universidad.becas).to.be.at.least(350); pm.expect(universidad.pagado).to.be.at.least(1500); });",
+                  "pm.test('la universidad suma las facultades', () => pm.expect(Math.round(universidad.pagado * 100)).to.eql(filas.slice(0, -1).reduce((s, f) => s + Math.round(f.pagado * 100), 0)));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CF-ROL-01 caja no consulta el reporte de direccion",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base}}/periodos/2027A/reporte",
+              "host": ["{{base}}"],
+              "path": ["periodos", "2027A", "reporte"]
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{caja}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responde 403', () => pm.response.to.have.status(403));",
+                  "pm.test('cumple el contrato', () => pm.response.to.have.jsonSchema({\"type\": \"object\", \"required\": [\"codigo\", \"mensaje\"], \"additionalProperties\": false, \"properties\": {\"codigo\": {\"type\": \"string\"}, \"mensaje\": {\"type\": \"string\", \"minLength\": 20}, \"campos\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}}));",
+                  "pm.test('SIN_PERMISO', () => pm.expect(pm.response.json().codigo).to.eql('SIN_PERMISO'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

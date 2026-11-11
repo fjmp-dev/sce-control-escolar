@@ -47,6 +47,10 @@ endif
 |Caja|
 :Conciliar pagos del dia;
 
+|Coordinacion academica|
+:Iniciar el curso
+(termina la inscripcion, CC-019);
+
 |Profesor|
 repeat
   :Capturar calificaciones
@@ -58,8 +62,10 @@ repeat while (quedan parciales?) is (si)
 :Consultar calificaciones
 al momento de la captura;
 
+|Coordinacion academica|
+:Cerrar periodo (X-09);
+
 |Sistema|
-:Cerrar periodo;
 :Recalcular promedio, creditos
 y avance de carrera (RF-005);
 :Actualizar historial;

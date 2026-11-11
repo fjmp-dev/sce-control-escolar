@@ -11,6 +11,7 @@ actor "Control escolar" as CE
 actor "Coordinacion academica" as CA
 actor "Caja" as CJ
 actor "Direccion" as DI
+actor "Administrador del sistema" as AD <<rol de entrega>>
 actor "Pasarela de pago" as PP <<sistema externo>>
 
 rectangle "Sistema de Control Escolar Universitario (SCE)" {
@@ -32,6 +33,7 @@ rectangle "Sistema de Control Escolar Universitario (SCE)" {
   usecase "Consultar estado del tramite\n(RF-010)" as UC12
   usecase "Consultar reportes agregados\n(RF-009)" as UC13
   usecase "Administrar expediente\ny cambio de plantel" as UC14
+  usecase "Administrar usuarios y\ncatalogos institucionales" as UC15
   usecase "Registrar en bitacora" as UCB
   usecase "Autenticar y autorizar\npor rol (RF-008)" as UCA
 }
@@ -59,6 +61,9 @@ CJ --> UC09
 
 DI --> UC13
 
+' CC-007: Tablas 11 y 12. Rol tecnico de entrega; los seis roles de uso no cambian.
+AD --> UC15
+
 UC08 --> PP
 
 ' Inclusiones obligatorias (seccion 13.1): ninguna inscripcion se confirma
@@ -73,6 +78,7 @@ UC04 ..> UCB : <<include>>
 UC08 ..> UCB : <<include>>
 UC11 ..> UCB : <<include>>
 UC14 ..> UCB : <<include>>
+UC15 ..> UCB : <<include>>
 
 ' Toda operacion requiere autenticacion y autorizacion (RNF-SEG-001).
 UC01 ..> UCA : <<include>>
@@ -81,6 +87,7 @@ UC03 ..> UCA : <<include>>
 UC04 ..> UCA : <<include>>
 UC08 ..> UCA : <<include>>
 UC13 ..> UCA : <<include>>
+UC15 ..> UCA : <<include>>
 
 note bottom of UCB
   Bitacora inmutable: autor, accion,

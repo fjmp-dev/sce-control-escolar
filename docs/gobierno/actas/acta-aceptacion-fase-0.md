@@ -1,12 +1,13 @@
 # Acta de aceptación de fase — Fase 0
 
 **Proyecto:** Sistema de Control Escolar Universitario (SCE)
-**Manual de referencia:** SCE-MC-001 v2.0, secciones 10.3, 10.4 y 11.2
-**Fase:** 0 — Alcance validado
+**Manual de referencia:** SCE-MC-001 v2.0, secciones 10.3 (Tabla 23), 10.4 y 11.2
+**Fase:** 0 — Entender (alcance validado)
 **Periodo cubierto:** 1 de agosto de 2026 al 19 de octubre de 2026
 **Acta número:** ACT-F0-001
+**Versión del acta:** 1.1, 5 de noviembre de 2026
 
-> **Estado: borrador pendiente de firma.** Esta acta se cierra en la sesión del 19 de octubre de 2026. Las dos firmas deben corresponder a personas distintas, conforme a la sección 10.1 del manual.
+> **Estado: versión final para firma, con corrección del 5 de noviembre de 2026.** La versión anterior evaluaba la fase con criterios propios del equipo y los presentaba como los de la sección 10.3. Esta versión evalúa la condición mínima real de la Tabla 23 y deja constancia de lo que falta. La firma es **extemporánea**: se recaba después del 19 de octubre, y la fase 1 inició el 20 de octubre sin el acta firmada (NC-002). Las firmas llevan su fecha real, sin antedatar.
 
 ---
 
@@ -20,12 +21,12 @@ Según la Tabla 25 del manual, el entregable de la fase 0 es el **alcance valida
 
 | # | Entregable | Ubicación | Estado |
 |---|---|---|---|
-| 1 | Manual de calidad SCE-MC-001 v2.0, con alcance, política, objetivos, modelo de calidad y requisitos | Repositorio documental | Emitido el 16 de septiembre de 2026 |
+| 1 | Manual de calidad SCE-MC-001 v2.0, con alcance, política, objetivos, modelo de calidad y requisitos | Archivo PDF identificado por su SHA-256 en `docs/gobierno/registro-aprobacion-manual-v2.0.md` | Emitido el 16 de septiembre de 2026 |
 | 2 | Catálogo de los veinte requisitos funcionales y no funcionales | `docs/calidad/catalogo-requisitos.md` | Completo |
-| 3 | Matriz de trazabilidad de los veinte requisitos y catálogo de veintinueve casos de prueba | `docs/calidad/matriz-trazabilidad.md` | Completa |
+| 3 | Matriz de trazabilidad de los veinte requisitos y catálogo de casos de prueba | `docs/calidad/matriz-trazabilidad.md` | Completa |
 | 4 | Matriz de los diez riesgos con nivel, tratamiento, responsable y estado | `docs/calidad/matriz-riesgos.md` | Completa |
 | 5 | Diez diagramas de arquitectura en formato fuente, con render | `docs/arquitectura/` | Completos |
-| 6 | Modelo de datos de veintiuna entidades y restricciones de integridad | `docs/datos/` | Completo |
+| 6 | Modelo de datos de veintiuna entidades y restricciones de integridad | Al cierre, en `docs/datos/`; hoy en `api/prisma/` | Completo |
 | 7 | Metodología de trabajo y plan de trabajo con calendario por fases | `docs/gobierno/` | Completos |
 | 8 | Repositorio de código establecido | github.com/fjmp-dev/sce-control-escolar | Operativo |
 
@@ -33,7 +34,16 @@ Según la Tabla 25 del manual, el entregable de la fase 0 es el **alcance valida
 
 ## 3. Verificación de los criterios de aceptación de fase
 
-Criterios de la sección 10.3 del manual, aplicados a una fase cuyo entregable es documental.
+### 3.1 Condición mínima de la Tabla 23
+
+| Condición de la fase 0 | Resultado | Evidencia |
+|---|---|---|
+| Acta de levantamiento con control escolar, coordinación y caja | **No cumple** | No existe en el repositorio. Registrado como NC-006 |
+| Lista explícita de qué entra y qué no | Cumple | Manual, sección 3.2 |
+
+### 3.2 Criterios adicionales del equipo
+
+No son criterios del manual. Se conservan como evidencia complementaria de la fase.
 
 | Criterio | Resultado | Evidencia |
 |---|---|---|
@@ -42,17 +52,18 @@ Criterios de la sección 10.3 del manual, aplicados a una fase cuyo entregable e
 | Existe trazabilidad entre requisito, módulo, caso de prueba y fase | Cumple | Matriz de trazabilidad, veinte de veinte |
 | La arquitectura está descrita en vistas, conforme a ISO/IEC/IEEE 42010 | Cumple | Diez diagramas en `docs/arquitectura/` |
 | Los riesgos están identificados, evaluados y con tratamiento asignado | Cumple | Matriz de riesgos, diez riesgos |
-| No queda abierto ningún requisito Must sin criterio de prueba definido | Cumple | Catálogo de casos, veintinueve casos |
+| No queda abierto ningún requisito Must sin criterio de prueba definido | Cumple | Catálogo de casos |
 | Los riesgos de nivel Alto están mitigados o aceptados por escrito | **Cumple con salvedad** | Ver apartado 4 |
 
 ---
 
 ## 4. Salvedades y riesgos aceptados
 
-| Riesgo | Nivel | Situación al cierre | Decisión |
+| Asunto | Nivel | Situación | Decisión |
 |---|---|---|---|
-| RK-04 — Caída o lentitud durante la semana de inscripción | Alto | Abierto. No existe ambiente piloto donde medirlo; los casos CR-REN-01 a 05 están definidos pero no son ejecutables en esta fase. | **Aceptado con plan fechado.** Se verifica en la fase 5, conforme a la puerta 3 de la sección 20.1. |
-| RK-07 — Secretos expuestos en el repositorio o en registros | Alto | El repositorio existe desde el 14 de octubre de 2026. El escaneo de secretos queda configurado como elemento P0 del plan de trabajo. | **Mitigación comprometida al 19 de octubre de 2026.** |
+| NC-006 — Falta el acta de levantamiento de la Tabla 23 | No conformidad mayor | No hay registro en el repositorio de las entrevistas con control escolar, coordinación y caja | **Plan fechado:** 27 de noviembre de 2026, a confirmar por el equipo. Si las entrevistas se hicieron, se documentan con sus fechas y notas reales; si no, se realizan |
+| RK-04 — Caída o lentitud durante la semana de inscripción | Riesgo Alto | Abierto. No existe ambiente donde medirlo; los casos CR-REN-01 a 05 están definidos pero no son ejecutables en esta fase | **Aceptado con plan fechado.** Se verifica conforme a la puerta 3 de la sección 20.1 |
+| RK-07 — Secretos expuestos en el repositorio o en registros | Riesgo Alto | El repositorio existe desde el 14 de octubre de 2026 | **Mitigación comprometida al 19 de octubre de 2026.** Cumplida el 22 de octubre (pendiente 2 del apartado 6) |
 
 Los riesgos RK-01, RK-02, RK-03 y RK-09, también de nivel Alto, quedan en estado **diseñado**: su control está definido en el modelo de datos y en los diagramas, y se implementa en la fase que corresponda. No hay exposición, porque no existe sistema en operación.
 
@@ -60,7 +71,7 @@ Los riesgos RK-01, RK-02, RK-03 y RK-09, también de nivel Alto, quedan en estad
 
 ## 5. Elementos declarados como no aplicables a esta fase
 
-Conforme a la sección 3.3 del plan de auditoría PA-SCE-001, se declara que los siguientes elementos no existen porque su fase de origen no se ha alcanzado, y no por omisión:
+Conforme a la sección 3.3 del plan de auditoría PA-SCE-001, se declara que los siguientes elementos no existían al cierre de la fase porque su fase de origen no se había alcanzado, y no por omisión:
 
 - Pipeline de integración y despliegue continuos, y sus ejecuciones.
 - Ambientes de desarrollo compartido, pruebas, staging y piloto.
@@ -73,32 +84,47 @@ Conforme a la sección 3.3 del plan de auditoría PA-SCE-001, se declara que los
 
 ## 6. Pendientes que se trasladan a la fase 1
 
-| # | Pendiente | Fecha comprometida |
-|---|---|---|
-| 1 | Registro de aprobación de la versión 2.0 del manual, con fecha, versión y medio | 19 de octubre de 2026 |
-| 2 | Protección de la rama `main` y escaneo de secretos con protección de envío | 19 de octubre de 2026 |
-| 3 | Tablero de sprint operando en GitHub Projects | 19 de octubre de 2026 |
-| 4 | Manual en versión 2.1, con las correcciones de consistencia identificadas | 30 de octubre de 2026 |
-| 5 | Plan de pruebas conforme al Anexo H | 30 de octubre de 2026 |
+Situación de cada pendiente al 5 de noviembre de 2026, fecha en que se preparó la firma:
+
+| # | Pendiente | Fecha comprometida | Situación al 5 de noviembre de 2026 |
+|---|---|---|---|
+| 1 | Registro de aprobación de la versión 2.0 del manual, con fecha, versión y medio | 19 de octubre de 2026 | Vencido. Registro preparado para firma en `docs/gobierno/registro-aprobacion-manual-v2.0.md` (NC-003) |
+| 2 | Protección de la rama `main` y escaneo de secretos con protección de envío | 19 de octubre de 2026 | **Cumplido** el 22 de octubre (issue #4). Ramas protegidas, secret scanning con push protection y Gitleaks en CI |
+| 3 | Tablero de sprint operando en GitHub Projects | 19 de octubre de 2026 | **Cumplido** el 22 de octubre (issue #6) |
+| 4 | Manual en versión 2.1, con las correcciones de consistencia identificadas | 30 de octubre de 2026 | Vencido. Reprogramado al 27 de noviembre de 2026 (NC-004) |
+| 5 | Plan de pruebas conforme al Anexo H | 30 de octubre de 2026 | **Cumplido** el 22 de octubre (issue #16): `docs/calidad/plan-de-pruebas.md` |
+| 6 | Acta de levantamiento de la Tabla 23 | 27 de noviembre de 2026, a confirmar | Pendiente (NC-006) |
 
 ---
 
 ## 7. Dictamen de la fase
 
-**La fase 0 se acepta**, con las salvedades del apartado 4 y los pendientes del apartado 6, que quedan con responsable y fecha comprometida.
+**Dictamen propuesto: aceptación condicionada** (sección 10.4), porque falta el acta de levantamiento de la Tabla 23. La condición no es un requisito Must crítico y queda con plan fechado en NC-006, junto con las salvedades del apartado 4 y los pendientes del apartado 6.
 
-Se autoriza el inicio de la fase 1, Núcleo institucional, a partir del 20 de octubre de 2026.
+El dictamen lo decide el Product Owner al firmar.
+
+La fase 1, Núcleo institucional, inició el 20 de octubre de 2026 sin esta acta firmada. Esta firma no corrige ese hecho de forma retroactiva; la desviación queda en NC-002.
 
 ---
 
 ## 8. Firmas
 
-Conforme a la sección 10.1 del manual, sin acta firmada por quien ocupa Product Owner y por quien ocupa QA no hay aceptación auditable. Ambas firmas deben corresponder a personas distintas.
+Conforme a la sección 10 del manual, sin acta firmada por quien ocupa Product Owner y por quien ocupa QA no hay aceptación auditable, y desarrollo no acepta su propia entrega.
 
-| Rol en el sprint S1 | Nombre | Firma | Fecha |
-|---|---|---|---|
-| Product Owner | Samuel Jezoar Ortiz Martínez | | |
-| QA | Samuel Jezoar Ortiz Martínez | | |
-| Autor del entregable | Francisco Javier Martínez Peñas | | |
+| Rol para esta acta | Nombre | Decisión | Firma | Fecha |
+|---|---|---|---|---|
+| Product Owner | Samuel Jezoar Ortiz Martínez | | | |
+| QA | Samuel Jezoar Ortiz Martínez | | | |
+| Autor del entregable | Francisco Javier Martínez Peñas | No decide | | |
 
-> **Nota sobre las firmas.** En el sprint S1, conforme a la tabla de roles de `docs/gobierno/metodologia-de-trabajo.md`, SJOM ocupa Product Owner y QA, y FJMP es el autor. Que una sola persona ocupe los dos roles de aceptación es una limitación de un equipo de dos y debe quedar registrada como tal. Lo que sí se cumple, y es lo que verifica el criterio AU-04, es que **quien acepta no es quien produjo el entregable**. A partir del sprint S2 los roles se invierten.
+> **Nota sobre las firmas.** Una sola persona ocupa los dos roles de aceptación. Es una limitación de un equipo de dos, declarada en `docs/gobierno/roles-y-raci.md`, apartado 6. Lo que sí se cumple, y es lo que verifica el criterio AU-04, es que **quien acepta no es quien produjo el entregable**.
+
+---
+
+## 9. Control de versiones del acta
+
+| Versión | Fecha | Cambio |
+|---|---|---|
+| 1.0 | 19 de octubre de 2026 | Borrador pendiente de firma |
+| 1.0 con situación | 5 de noviembre de 2026 | Situación de pendientes y firma extemporánea |
+| 1.1 | 5 de noviembre de 2026 | Se evalúa la condición de la Tabla 23; salvedad por NC-006; dictamen propuesto de aceptación condicionada; se retira "personas distintas", que el manual no exige y que el acta no podía cumplir |
