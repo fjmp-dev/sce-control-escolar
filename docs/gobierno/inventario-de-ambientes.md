@@ -63,7 +63,7 @@ No hay servidores que dar de alta (CC-018 y CC-022). Lo que se configura una vez
 | Environment `staging` con revisor | Settings → Environments (sección 3) | 10 de noviembre de 2026 |
 | Environment `piloto` con revisor y política de etiquetas | `gh api -X PUT .../environments/piloto` (sección 3) | 11 de noviembre de 2026 |
 | Secretos del environment `piloto` | `bash scripts/alta-piloto.sh` | Pendiente: el clasificador de permisos del asistente bloquea escribir secretos; lo corre FJMP |
-| _Rulesets_ de `release/**` y `v*` | `infra/github/` | Pendiente: el clasificador de permisos del asistente bloquea cambiar la configuración del repositorio; los aplica FJMP. Se cortó `release/1.0.0` el 11 de noviembre de 2026 sin ellos, y sus cambios entran igual por pull request |
+| _Rulesets_ de `release/**` y `v*` | `infra/github/` | Aplicados por FJMP el 11 de noviembre de 2026, a las 05:38 (UTC-6): ramas `release/**` (id 27027338) y etiquetas `v*` (id 27027346), sin excepciones. El asistente no puede cambiar la configuración del repositorio. `release/1.0.0` se cortó minutos antes, en `5385940`, sin cambios directos |
 | Workflows programados: `continuidad.yml` (12 h), `seguridad-operativa.yml` (mensual) y el cron de `zap-completo.yml` | GitHub solo programa los workflows de la rama por defecto (`main`) | Desde que `release/1.0.0` se fusione a `main` (14.1). Mientras, se lanzan a mano o con su otro disparador |
 
 Si algún día hay servidores reales, `scripts/desplegar-staging.sh` ya admite `EN_APP`, `EN_DB` y `EN_PROXY` por SSH; su alta y su certificado se documentarían aquí.
