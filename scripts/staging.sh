@@ -7,8 +7,11 @@
 # - Etapa 8 (.github/workflows/staging.yml): con las imagenes firmadas de una etiqueta SemVer, por digest.
 # - Piloto de ensayo (CC-022): AMBIENTE=piloto, con los secretos y la CA del environment "piloto" de GitHub y sin datos
 #   (SEMILLA=0); en lugar del humo con usuarios comprueba que no hay usuarios ni datos.
+# - Rollback ensayado (20.2): con ETIQUETA_ANTERIOR, ANTERIOR_API y ANTERIOR_PORTAL despliega primero la etiqueta
+#   anterior, luego la nueva, vuelve a la anterior con scripts/rollback.sh y despliega otra vez la nueva.
 # Uso: [ETIQUETA=vX.Y.Z-rc.N] [AMBIENTE=piloto] scripts/staging.sh [imagen-api] [imagen-portal]
-#      (por omision, las imagenes de docker compose build). CONSERVAR=1 deja el ambiente arriba al terminar.
+#      (por omision, las imagenes de docker compose build). CONSERVAR=1 deja el ambiente arriba al terminar, y
+#      .staging/ambiente.env sirve a scripts/respaldo.sh, restauracion.sh y rollback.sh.
 #      JWT_SECRET, CONTRASENA_SEMILLA, CA_CRT y CA_KEY (PEM) se toman del entorno si vienen; si no, se generan.
 set -euo pipefail
 
@@ -82,10 +85,19 @@ networks: { privada: { external: true, name: $RED } }
 EOF
 
 export EN_DB="sh -c" EN_APP="env COMPOSE_FILE=compose.yml:red.yml sh -c" EN_PROXY="sh -c" DIR="$BASE/app"
-[[ "$IMAGEN_API" == */* ]] || export IMAGENES_LOCALES=1 # las de la corrida; las de un registro se descargan
 JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 32)}"
 export ETIQUETA="${ETIQUETA:-commit-$(git rev-parse --short=12 HEAD)}" DOMINIO=localhost IMAGEN_API IMAGEN_PORTAL JWT_SECRET
 export DATABASE_URL="postgresql://sce_app:$CLAVE_APP@$DB_IP:5432/sce?schema=public&sslmode=require&sslcert=/certs/db.crt&sslaccept=strict"
+export URL=https://localhost CURL_CA_BUNDLE="$CA_CONFIANZA"
+# Conexion al ambiente para respaldo, restauracion y rollback; queda en .staging, que no se publica.
+(umask 077 && for v in EN_DB EN_APP EN_PROXY DIR URL CURL_CA_BUNDLE; do printf '%s=%q\n' "$v" "${!v}"; done \
+  > "$BASE/ambiente.env")
+if [ -n "${ETIQUETA_ANTERIOR:-}" ]; then
+  ETIQUETA="$ETIQUETA_ANTERIOR" IMAGEN_API="${ANTERIOR_API:?}" IMAGEN_PORTAL="${ANTERIOR_PORTAL:?}" \
+    scripts/desplegar-staging.sh > "$BASE/despliegue-anterior.txt"
+  scripts/desplegar-staging.sh > "$BASE/despliegue-a-revertir.txt"
+  AMBIENTE_ENV="$BASE/ambiente.env" scripts/rollback.sh "$ETIQUETA_ANTERIOR" "$ANTERIOR_API" "$ANTERIOR_PORTAL"
+fi
 scripts/desplegar-staging.sh
 
 # Lo que la base debe rechazar, y la verificacion completa del certificado desde el rango permitido.
@@ -114,12 +126,13 @@ db_compose logs --no-log-prefix db > "$BASE/registro-db.txt"
 grep -q 'sce_app@sce .*AUDIT: SESSION,.*,DDL,' "$BASE/registro-db.txt" || falla "pgAudit no registro el DDL de las migraciones"
 echo "pgAudit: DDL registrado" | tee -a "$REPORTES/rechazos.txt"
 
-CURL_CA_BUNDLE="$CA_CONFIANZA" NEWMAN_OPCIONES=--insecure scripts/verificar-staging.sh https://localhost
+NEWMAN_OPCIONES=--insecure scripts/verificar-staging.sh "$URL"
 [ "$AMBIENTE" = piloto ] && { echo "Piloto de ensayo $ETIQUETA: ok"; exit 0; } # sin datos: no hay calidad que medir
 
 # CD-DAT y Tabla 16 sobre lo que dejaron las migraciones, los datos sinteticos y el humo: desde una direccion del rango
 # del servidor de aplicacion, por TLS y con la cuenta de la aplicacion, como entra la API.
-RED_DATOS="--network $RED --ip $SUBRED.23" \
-  URL_DATOS="postgresql+psycopg2://sce_app:$CLAVE_APP@$DB_IP:5432/sce?sslmode=require" \
-  scripts/calidad-datos.sh "$REPORTES/calidad-datos"
+export RED_DATOS="--network $RED --ip $SUBRED.23" \
+  URL_DATOS="postgresql+psycopg2://sce_app:$CLAVE_APP@$DB_IP:5432/sce?sslmode=require"
+(umask 077 && printf '%s=%q\n' RED_DATOS "$RED_DATOS" URL_DATOS "$URL_DATOS" >> "$BASE/ambiente.env")
+scripts/calidad-datos.sh "$REPORTES/calidad-datos"
 echo "Staging $ETIQUETA: ok"

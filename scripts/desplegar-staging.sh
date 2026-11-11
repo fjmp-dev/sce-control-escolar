@@ -11,7 +11,7 @@
 #   ETIQUETA, IMAGEN_API, IMAGEN_PORTAL, DOMINIO
 #   DATABASE_URL, JWT_SECRET, CONTRASENA_SEMILLA  secretos del ambiente (20.2)
 #   AMBIENTE       staging (por omision) o piloto; SEMILLA=0 despliega sin datos
-#   IMAGENES_LOCALES=1  imagenes construidas en la corrida: no las descarga
+#   Una imagen sin registro en el nombre (sce-api:local) es de la corrida y no se descarga.
 set -euo pipefail
 : "${EN_APP:?}" "${EN_DB:?}" "${DIR:?}" "${ETIQUETA:?}" "${IMAGEN_API:?}" "${IMAGEN_PORTAL:?}" "${DOMINIO:?}"
 : "${DATABASE_URL:?}" "${JWT_SECRET:?}" "${CONTRASENA_SEMILLA:?}"
@@ -26,7 +26,7 @@ db() { $EN_DB "$1"; }
 # 1. Archivos del ambiente, de la misma etiqueta que las imagenes, y .env solo legible por su dueno.
 tar -C infra/staging/app -c compose.yml | $EN_APP "mkdir -p '$DIR' && tar -x -C '$DIR'"
 tar -C infra/staging/proxy -c compose.yml nginx.conf.template | $EN_PROXY "mkdir -p '$DIR_PROXY' && tar -x -C '$DIR_PROXY'"
-printf '%s\n' "IMAGEN_API=$IMAGEN_API" "IMAGEN_PORTAL=$IMAGEN_PORTAL" "DOMINIO=$DOMINIO" \
+printf '%s\n' "ETIQUETA=$ETIQUETA" "IMAGEN_API=$IMAGEN_API" "IMAGEN_PORTAL=$IMAGEN_PORTAL" "DOMINIO=$DOMINIO" \
   "DATABASE_URL=$DATABASE_URL" "JWT_SECRET=$JWT_SECRET" "CONTRASENA_SEMILLA=$CONTRASENA_SEMILLA" "SEMILLA=$SEMILLA" \
   | app "umask 077 && cat > .env"
 echo "DOMINIO=$DOMINIO" | proxy "umask 077 && cat > .env"
@@ -41,7 +41,8 @@ db "docker exec -u postgres sce-db pg_dump -Fc -d sce -f /respaldos/$RESPALDO"
 
 # 3. Imagenes. 4. pgAudit antes de migrar, para que registre el DDL; migraciones y datos sinteticos; pgAudit otra vez,
 # sobre las tablas nuevas. 5. Arranque.
-[ "${IMAGENES_LOCALES:-}" = 1 ] || app "docker compose pull --quiet api web"
+[[ "$IMAGEN_API" != */* ]] || app "docker compose pull --quiet api"
+[[ "$IMAGEN_PORTAL" != */* ]] || app "docker compose pull --quiet web"
 proxy "docker compose pull --quiet proxy"
 pgaudit() { db "docker exec -i -u postgres sce-db psql -d sce -v ON_ERROR_STOP=1 -q" < db/pgaudit.sql; }
 pgaudit

@@ -118,7 +118,7 @@ La Tabla 20 fija el criterio de verificación de estos requisitos, pero no les a
 | Caso | Requisito | Qué verifica | Batch |
 |---|---|---|---|
 | CO-FIA-01 | RNF-FIA-001 | Registro de healthchecks y cálculo mensual de disponibilidad frente a la meta. | 13 y 14 |
-| CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. | 13 y 14 |
+| CO-FIA-02 | RNF-FIA-002 | Restauración cronometrada del expediente, con acta de fecha, etiqueta, base restaurada y resultado. Desde 13.2: `scripts/respaldo.sh` (age, conteos, prueba negativa), `scripts/restauracion.sh` (RTO, conteos y CD-DAT), `scripts/rollback.sh` (etapa 8 desde rc.2) y `continuidad.yml` cada 12 h (RPO). Acta: `docs/evidencias/ensayos/2026-11-11-restauracion-y-rollback.md` | 13 y 14 |
 | CO-MAN-01 | RNF-MAN-001 | Reporte de cobertura del pipeline: 100 % de reglas Must y 80 % en el dominio. Desde el sub-batch 11.2, `scripts/reglas-must.sh` cuenta en la etapa 2 las reglas Must que tienen prueba con su ID en el título, publica el reporte `reglas-must` y falla por debajo de 100 %. | 1, 11 y cada módulo |
 | CO-FLE-01 | RNF-FLE-001 | Alta de una facultad adicional en staging sin migración estructural. Supertest y Testcontainers (`flexibilidad.spec.ts`: huella del esquema y de las migraciones, y `prisma migrate diff --exit-code`), Newman (carpeta CO-FLE-01) y SQL en staging (`co-fle-01.sql`). La materia se liga a la facultad por su plan, como en la Fig. 8 (materia → plan de estudios → facultad) | 11 y 13 |
 

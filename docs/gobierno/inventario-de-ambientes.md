@@ -102,12 +102,41 @@ Si algún día hay servidores reales, `scripts/desplegar-staging.sh` ya admite `
 
 ## 6. Rollback (20.2)
 
-Staging no conserva estado entre corridas: volver a una etiqueta anterior es lanzar la etapa 8 con ella y un acta que la nombre. La sección 20.1 pide un rollback verificado antes de promover a piloto. En el Batch 13 se ensaya dentro de una corrida: desplegar una etiqueta, migrar con la siguiente, restaurar el respaldo previo con `pg_restore` y volver a la anterior, con el tiempo medido (RTO).
+Staging no conserva estado entre corridas. Desde `vX.Y.Z-rc.2`, la etapa 8 ensaya el rollback dentro de la misma corrida, y falla si no existe la candidata anterior (`staging.yml`):
 
-## 7. Respaldos
+1. Despliega la candidata anterior (`rc.N-1`), con sus imágenes firmadas por digest.
+2. Despliega la nueva. `desplegar-staging.sh` deja antes el respaldo `antes-de-<nueva>-<fecha>.dump`.
+3. `scripts/rollback.sh` detiene la API y el portal, restaura ese respaldo con `pg_restore`, despliega la anterior y corre el humo.
+4. Vuelve a desplegar la nueva y sigue la verificación completa.
 
-- **Antes de cada despliegue,** `pg_dump` en formato personalizado al volumen `respaldos` del servidor de base. El rollback del Batch 13 lo usa.
-- **Respaldo diario cifrado y restauración por periodo:** la Tabla 30 y la sección 20.2 los piden en piloto, que es persistente. En el Batch 13 se ensayan el cifrado y la restauración cronometrada.
+El tiempo del paso 3 es el RTO del rollback (meta: menos de 4 h). Queda en `reportes/staging/rollback.md` y en el resumen de la corrida.
+
+En un servidor real, el procedimiento es el mismo paso 3: `AMBIENTE_ENV` con `EN_DB`, `EN_APP`, `EN_PROXY`, `DIR` y `URL` del ambiente, y `scripts/rollback.sh <etiqueta-anterior> <imagen-api> <imagen-portal>`.
+
+## 7. Respaldos y restauración (20.2, Tabla 56; CO-FIA-02)
+
+| Qué | Cuándo | Dónde | Retención |
+|---|---|---|---|
+| `pg_dump` previo al despliegue, en claro | Antes de cada despliegue | Volumen `respaldos` del servidor de base | La del volumen; en staging, la corrida |
+| `scripts/respaldo.sh`: `pg_dump -Fc` cifrado con age, conteos por tabla y registros de los contenedores cifrados | Cada 12 h (`continuidad.yml`) | Artefacto `respaldo` de la corrida | 35 días |
+| Copia fuera del sitio | Los domingos, o a mano con `fuera_del_sitio` | Release `respaldos` del repositorio, solo archivos `.age` e `inventario.csv` | Un año: semestre en curso más uno anterior (`matriz-retencion.md`) |
+
+**`continuidad.yml` es la operación recurrente ensayada** (CC-022). Cada corrida hace lo siguiente:
+
+1. Levanta un staging efímero con las imágenes del commit.
+2. Restaura el respaldo de la corrida anterior con `scripts/restauracion.sh`. Mide el RTO, compara los conteos por tabla y corre CD-DAT.
+3. Genera actividad con Newman.
+4. Respalda de nuevo y mide el RPO contra el respaldo anterior (meta: menos de 24 h; con la programación, unas 12 h).
+
+La contraseña de la semilla viaja cifrada junto al respaldo, porque la base restaurada guarda sus hashes.
+
+**Pendiente de FJMP:** el secreto `AGE_IDENTIDAD` del repositorio. Sin él, el flujo respalda pero no restaura, y lo avisa. Se da de alta con:
+
+```
+gh secret set AGE_IDENTIDAD -R fjmp-dev/sce-control-escolar < ~/keys/sce-respaldos.agekey
+```
+
+Las claves y la prueba negativa están en `cifrado-y-claves.md`. Las contingencias de pasarela y ventanilla, en `contingencias.md`.
 
 ## 8. Registro de despliegues (31.2)
 

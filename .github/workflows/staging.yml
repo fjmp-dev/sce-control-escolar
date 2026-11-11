@@ -110,14 +110,28 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Imagenes del commit, firmadas por la etapa 6, con la etiqueta SemVer (Tabla 53, AU-12)
         run: |
-          for nombre in api portal; do
-            ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}/sce-$nombre"
-            digest="$(docker buildx imagetools inspect "$ref:sha-${COMMIT:0:12}" --format '{{json .Manifest}}' | jq -er .digest)"
+          imagen() { # nombre commit: referencia por digest, con la firma de la etapa 6 verificada
+            local ref="ghcr.io/${GITHUB_REPOSITORY_OWNER}/sce-$1" digest
+            digest="$(docker buildx imagetools inspect "$ref:sha-${2:0:12}" --format '{{json .Manifest}}' | jq -er .digest)"
             cosign verify "$ref@$digest" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
               --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/ci.yml@refs/heads/(develop|main|release/.+)$" >/dev/null
-            docker buildx imagetools create --tag "$ref:$ETIQUETA" "$ref@$digest"
-            echo "IMAGEN_${nombre^^}=$ref@$digest" >> "$GITHUB_ENV"
+            echo "$ref@$digest"
+          }
+          for nombre in api portal; do
+            ref="$(imagen "$nombre" "$COMMIT")"
+            docker buildx imagetools create --tag "${ref%@*}:$ETIQUETA" "$ref"
+            echo "IMAGEN_${nombre^^}=$ref" >> "$GITHUB_ENV"
           done
+          # Rollback ensayado (20.2): desde rc.2, staging.sh despliega la candidata anterior, esta, vuelve a la anterior
+          # con el respaldo previo y despliega esta otra vez.
+          if [[ "$ETIQUETA" =~ -rc\.([0-9]+)$ ]] && [ "${BASH_REMATCH[1]}" -ge 2 ]; then
+            anterior="${ETIQUETA%.*}.$((BASH_REMATCH[1] - 1))"
+            commit_anterior="$(git rev-parse --verify --quiet "refs/tags/$anterior^{commit}")" \
+              || { echo "::error::$ETIQUETA pide la candidata anterior $anterior para ensayar el rollback"; exit 1; }
+            api_anterior="$(imagen api "$commit_anterior")"
+            portal_anterior="$(imagen portal "$commit_anterior")"
+            printf '%s\n' "ETIQUETA_ANTERIOR=$anterior" "ANTERIOR_API=$api_anterior" "ANTERIOR_PORTAL=$portal_anterior" >> "$GITHUB_ENV"
+          fi
       - name: Contraseña de la semilla de esta corrida, enmascarada, para staging y Playwright (20.2)
         if: env.AMBIENTE == 'staging'
         run: |
@@ -158,7 +172,7 @@ jobs:
       - name: Registro del despliegue (31.2)
         if: always()
         run: |
-          cat reportes/staging/despliegue.md reportes/staging/rechazos.txt reportes/staging/anexo-d.md \
+          cat reportes/staging/despliegue.md reportes/staging/rollback.md reportes/staging/rechazos.txt reportes/staging/anexo-d.md \
             >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
           if [ -d reportes/staging/playwright ]; then
             scripts/matriz-compatibilidad.sh reportes/staging/playwright/*/junit.xml 2>/dev/null \
