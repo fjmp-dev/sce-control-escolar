@@ -388,6 +388,12 @@ jobs:
         if: always()
         continue-on-error: true
         run: scripts/playwright.sh http://localhost:3000 reportes/playwright/should --project='should-*'
+      - name: Humo de rendimiento con k6 y los umbrales de la Tabla 46 (Tabla 48; no sustituye a CR-REN)
+        if: always()
+        run: |
+          mkdir -p reportes/k6 && chmod a+rwx reportes/k6
+          docker run --rm --network host -v "$PWD/infra/rendimiento:/r:ro" -v "$PWD/reportes/k6:/salida" grafana/k6:1.6.0 \
+            run -q --summary-export /salida/humo.json /r/humo.js
       - uses: actions/download-artifact@v4
         if: always()
         with:

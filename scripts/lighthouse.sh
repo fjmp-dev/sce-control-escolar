@@ -3,18 +3,20 @@
 # Criterio del equipo, porque el manual no fija cifra: accesibilidad >= 90. Rendimiento y peso quedan como reporte.
 # Falla si Lighthouse no llego a medir la pagina autenticada. Requiere Chrome en el equipo (CHROME_PATH si no lo halla).
 # Uso: scripts/lighthouse.sh [dir-de-reportes]
+#      PORTAL, API y CONTRASENA_SEMILLA cambian el ambiente; rendimiento.yml lo corre contra staging (https://localhost,
+#      certificado autofirmado) durante la meseta de CR-REN-01 para medir el rendimiento percibido con carga.
 set -euo pipefail
 
 REPORTES="${1:-reportes/lighthouse}"
-PORTAL="http://localhost:3000"
-API="http://localhost:3001"
+PORTAL="${PORTAL:-http://localhost:3000}"
+API="${API:-http://localhost:3001}"
 VERSION="13.6.0"
 UMBRAL=90
 mkdir -p "$REPORTES"
 
 token() {
   curl -sf -X POST "$API/sesiones" -H 'Content-Type: application/json' \
-    -d "{\"correo\":\"$1\",\"contrasena\":\"sce-dev-2026\"}" | jq -er .token
+    -d "{\"correo\":\"$1\",\"contrasena\":\"${CONTRASENA_SEMILLA:-sce-dev-2026}\"}" | jq -er .token
 }
 
 medir() { # nombre ruta [token]
@@ -22,7 +24,7 @@ medir() { # nombre ruta [token]
   [ -n "${3:-}" ] && cabeceras="{\"Cookie\":\"sce_sesion=$3\"}"
   npx --yes "lighthouse@$VERSION" "$PORTAL$2" --quiet --output=json --output=html \
     --output-path="$REPORTES/$1" --only-categories=accessibility,performance,best-practices \
-    --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu" >/dev/null 2>&1
+    --extra-headers="$cabeceras" --chrome-flags="--headless=new --no-sandbox --disable-gpu --ignore-certificate-errors" >/dev/null 2>&1
   jq -e --arg ruta "$2" '(.finalDisplayedUrl | endswith($ruta)) and (.categories.accessibility.score != null)' \
     "$REPORTES/$1.report.json" >/dev/null || { echo "::error::Lighthouse no midio $2" >&2; exit 1; }
 }

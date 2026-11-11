@@ -169,6 +169,16 @@ jobs:
         if: ${{ !cancelled() && steps.navegadores.outcome == 'success' }}
         continue-on-error: true
         run: scripts/playwright.sh https://localhost reportes/staging/playwright/should --project='should-*'
+      # Humo de rendimiento con umbrales (Tabla 48). El piloto de ensayo no tiene usuarios (SEMILLA=0): ahi va SOLO_LECTURA.
+      - name: Humo de rendimiento con k6 y los umbrales de la Tabla 46
+        if: ${{ !cancelled() && hashFiles('infra/rendimiento/humo.js') != '' }}
+        env:
+          SOLO_LECTURA: ${{ env.AMBIENTE == 'piloto' && '1' || '0' }}
+        run: |
+          mkdir -p reportes/staging/k6 && chmod a+rwx reportes/staging/k6
+          CONTRASENA="${CONTRASENA_SEMILLA:-}" docker run --rm --network host -e SOLO_LECTURA -e CONTRASENA \
+            -v "$PWD/infra/rendimiento:/r:ro" -v "$PWD/reportes/staging/k6:/salida" grafana/k6:1.6.0 \
+            run -q -e API=https://localhost/api -e PORTAL=https://localhost --summary-export /salida/humo.json /r/humo.js
       - name: Registro del despliegue (31.2)
         if: always()
         run: |
