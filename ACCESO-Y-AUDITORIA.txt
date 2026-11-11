@@ -1,0 +1,109 @@
+SISTEMA DE CONTROL ESCOLAR (SCE): ACCESO, CUENTAS Y ENTREGA AL AUDITOR
+Actualizado: 10 de noviembre de 2026
+
+Todos los datos son sintéticos: ninguna cuenta corresponde a una persona real.
+
+
+1. CÓMO ABRIRLO
+----------------
+En Mac:
+  Doble clic en "abrir-sce.command" (en esta carpeta) o en "Abrir SCE" del Escritorio.
+  Enciende Docker si hace falta, levanta todo y abre el portal en el navegador.
+  La primera vez tarda varios minutos; después, segundos.
+
+En cualquier equipo (Windows, Linux o Mac):
+  1. Instalar Docker Desktop (https://www.docker.com/products/docker-desktop) y abrirlo.
+  2. En una terminal, dentro de esta carpeta:  docker compose up -d --build
+  3. Abrir en el navegador:  http://localhost:3000
+
+Apagar (conserva los datos):          docker compose stop
+Volver a los datos de demostración:   docker compose down -v
+                                      docker compose up -d --build
+
+
+2. DIRECCIONES
+--------------
+Portal (interfaz gráfica):   http://localhost:3000
+API:                         http://localhost:3001
+Salud de la API:             http://localhost:3001/salud
+Contrato de la API:          docs/api/openapi.json
+
+
+3. CUENTAS DE DEMOSTRACIÓN
+--------------------------
+Contraseña de TODAS las cuentas:  sce-dev-2026
+
+Rol                 Correo                       Qué puede hacer
+------------------  ---------------------------  ---------------------------------------------------------
+Administrador       administrador@sce.test       Altas de usuarios, facultades y planes de estudio
+Alumno              alumno@sce.test              Expediente, inscripción, horario, calificaciones, trámites
+Alumno con adeudo   alumno.dos@sce.test          Debe $1,850: puede pagarlo en "Mi cuenta"
+Profesor            profesor@sce.test            Sus grupos y captura de calificaciones
+Profesor 2          profesor2@sce.test           Otro profesor (no ve los grupos del primero)
+Control escolar     control.escolar@sce.test     Expedientes, inscripciones y cola de trámites
+Coordinación        coordinacion@sce.test        Materias, periodos, oferta y cierre del periodo
+Caja                caja@sce.test                Cargos del periodo, becas y corte del día
+Dirección           direccion@sce.test           Reportes por facultad y de la universidad
+
+Periodos del seed: 2026A cerrado, 2026B en curso y 2027A abierto.
+Si alguien cambia una contraseña o bloquea una cuenta, "volver a los datos de demostración"
+(apartado 1) lo deja todo como al inicio.
+
+
+4. RECORRIDO SUGERIDO
+---------------------
+a) alumno.dos: Mi cuenta > pagar $1,850 en la pasarela simulada (rechazar una vez y aprobar después) > recibo.
+b) alumno.dos: Mis trámites > pedir constancia de no adeudo.
+c) control.escolar: Trámites > tomar, emitir y verificar el folio. El alumno lo descarga.
+d) profesor: Mis grupos > capturar calificaciones. El alumno las ve al momento.
+e) coordinacion: Oferta (publicar) y Periodos (iniciar el curso y cerrar). direccion: Reportes.
+f) Seguridad: con la cuenta de alumno, abrir http://localhost:3000/reportes. El sistema responde "sin permiso".
+
+
+5. QUÉ HAY QUE ENTREGARLE AL AUDITOR
+------------------------------------
+Para que pueda auditar sin entrevistas adicionales (manual, sección 2.2):
+
+A. El sistema
+   - Acceso de lectura al repositorio github.com/fjmp-dev/sce-control-escolar, o un .zip de la versión entregada.
+   - Este archivo (cómo abrirlo y las cuentas).
+
+B. Manual de calidad
+   - Manual v2.0: Manual_de_Calidad_SCE-MC-001_v2.0.pdf, con su registro de aprobación firmado
+     (docs/gobierno/registro-aprobacion-manual-v2.0.md).
+   - Manual v3.0, firmado: docs/gobierno/manual-v3.0.md, que contiene los cambios respecto de la v2.0.
+
+C. Planeación y método
+   docs/gobierno/  plan-de-sistema.md, plan-de-trabajo.md, metodologia-de-trabajo.md, roles-y-raci.md
+   docs/calidad/   plan-de-pruebas.md
+
+D. Requisitos, diseño y trazabilidad
+   docs/calidad/   catalogo-requisitos.md, matriz-trazabilidad.md, reglas-de-negocio.md,
+                   matriz-rol-endpoint.md, contradicciones-manual-v2.0.md
+   docs/arquitectura/ (figuras 1 a 10) y docs/api/openapi.json
+
+E. Evidencia de pruebas
+   - La corrida de CI en verde de cada pull request, en la pestaña Actions de GitHub.
+   - Sus reportes: cobertura, Newman, Cypress con video y axe, ZAP, Trivy, Gitleaks y SonarQube.
+   - Copia de esos reportes, con SHA-256: docs/evidencias/fase-4/corridas.md y reportes/. Los artefactos
+     de GitHub caducan a los 90 días. El video de Cypress va adjunto a la release v1.0.0.
+
+F. Gobierno y control
+   docs/gobierno/  registro-de-cambios.md (CC-001 a CC-019, con aprobaciones), actas/ (fases 0 a 3 y sprints),
+                   notas-version/, inventario-de-ambientes.md, matriz-retencion.md
+   docs/calidad/   registro-no-conformidades.md, matriz-riesgos.md, stride.md, amfe-inscripcion.md,
+                   informe-fase-1.md a informe-fase-3.md
+   docs/auditoria/ respuesta-F-01-SCE-002.md
+
+G. Los pull requests #30 y #55 a #66, con su CI en verde.
+   AVISO: desde el 10 de noviembre de 2026 el proyecto sigue sin Samuel (SJOM). FJMP fusiona y firma
+   solo, así que no hay revisión independiente. Se declara en docs/gobierno/roles-y-raci.md, apartado 6.
+
+
+6. PENDIENTE ANTES DE ENTREGAR
+------------------------------
+- Fusionar en orden a develop: #30, luego #55, #56 y así hasta #66. Después, develop en main.
+- FJMP firma: manual v3.0 (apartado 9), registro de aprobación de la v2.0, actas de fase y aprobaciones de CC.
+- Confirmar en la Gaceta del Gobierno el nombre y la fecha de la ley estatal de datos personales
+  (manual v3.0, apartado 7).
+- Etiquetar v1.0.0 (notas: docs/gobierno/notas-version/v1.0.0.md).

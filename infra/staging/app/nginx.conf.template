@@ -1,0 +1,36 @@
+# Proxy inverso de la Fig. 9: termina TLS 1.2+ (Tabla 38) y enruta al portal y a la API.
+# La imagen de nginx sustituye ${DOMINIO}; las variables de nginx ($host y demas) quedan intactas.
+server_tokens off;
+
+server {
+    listen 80;
+    server_name ${DOMINIO};
+    location /.well-known/acme-challenge/ { root /var/www/acme; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${DOMINIO};
+
+    ssl_certificate     /etc/letsencrypt/live/${DOMINIO}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMINIO}/privkey.pem;
+    # Configuracion "intermedia" de Mozilla: TLS 1.2 y 1.3, solo cifrados con secreto perfecto hacia adelante.
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+    ssl_prefer_server_ciphers off;
+    ssl_session_tickets off;
+
+    add_header Strict-Transport-Security "max-age=63072000" always;
+    client_max_body_size 1m;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    # La API, para el humo, Newman y el webhook de Mercado Pago (Fig. 9, Batch 9). Salvo /salud y el inicio de
+    # sesion, toda ruta pide sesion (Tabla 38).
+    location /api/ { proxy_pass http://api:3001/; }
+    location / { proxy_pass http://web:3000; }
+}

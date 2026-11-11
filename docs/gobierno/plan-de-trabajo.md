@@ -3,9 +3,9 @@
 **Vigente desde:** 15 de octubre de 2026.
 **Equipo:** Francisco Javier Martínez Peñas (FJMP) · Samuel Jezoar Ortiz Martínez (SJOM).
 **Capacidad:** entre cinco y diez horas semanales entre ambos. Sprints de dos semanas.
-**Restricción dominante:** la auditoría PA-SCE-001 corre del 8 de octubre al 1 de diciembre de 2026. Su etapa documental cierra el 23 de octubre y su verificación en campo va del 2 al 10 de noviembre.
+**Restricción dominante:** la auditoría PA-SCE-001 v1.1. Según su sección 7, la verificación en campo fue del 3 al 5 de noviembre, el informe preliminar es el 6 y la réplica el 7.
 
-El semestre debe terminar con el proyecto completo. Este plan cubre lo inmediato: cerrar lo que hace falta y empezar a avanzar. El backlog de las fases 2 a 5 se detalla al cierre de cada fase, no ahora.
+El semestre debe terminar con el proyecto completo. Este plan fija el calendario y los sprints. **El orden de construcción por batches está en `plan-de-sistema.md`, aprobado por FJMP el 5 de noviembre de 2026**; ese documento también recoge los cambios a este plan (apartado 6).
 
 ---
 
@@ -13,16 +13,18 @@ El semestre debe terminar con el proyecto completo. Este plan cubre lo inmediato
 
 El manual no incluía calendario con fechas, y esa ausencia es uno de los puntos que la auditoría señaló. Este es el calendario propuesto, anclado a los hitos de la sección 39.1 del manual.
 
-| Fase | Entregable principal | Inicio | Cierre previsto |
-|---|---|---|---|
-| 0 | Alcance validado | 1 de agosto de 2026 | **19 de octubre de 2026** |
-| 1 | Núcleo institucional | 20 de octubre de 2026 | 11 de diciembre de 2026 |
-| 2 | Expediente e inscripción | 12 de enero de 2027 | 26 de febrero de 2027 |
-| 3 | Académico: horarios, calificaciones e historial | 1 de marzo de 2027 | 16 de abril de 2027 |
-| 4 | Pagos y trámites | 19 de abril de 2027 | 28 de mayo de 2027 |
-| 5 | Piloto de una facultad | 31 de mayo de 2027 | Cierre del semestre piloto |
+| Fase | Entregable principal | Batches | Construcción (fechas reales) | Estabilización | Cierre límite |
+|---|---|---|---|---|---|
+| 0 | Alcance validado | 0 | 1 de agosto al 19 de octubre de 2026 | 15 al 19 de octubre de 2026 | **19 de octubre de 2026** |
+| 1 | Núcleo institucional | 1, 2 y 3 | 5 al 7 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 2 | Expediente e inscripción | 4, 5 y 6 | 7 al 8 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 3 | Académico: horarios, calificaciones e historial | 7 y 8 | 10 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 4 | Pagos simulados, trámites y reportes | 9 y 10 | 10 al 13 de noviembre de 2026 | 16 de noviembre al 11 de diciembre de 2026 | 11 de diciembre de 2026 |
+| 5 | Piloto de una facultad | — | Fuera del alcance del proyecto escolar (cambio del 10 de noviembre, apartado 6) | — | — |
 
-Las fechas de las fases 2 a 5 son estimación a validar al cierre de la fase 1. Las de la fase 0 y 1 son firmes.
+**Estabilización** es el tramo final, después de construir. En ese tramo no entra funcionalidad nueva: solo se corrigen defectos, se ejecutan las pruebas de aceptación y se firman las actas. Como la construcción terminó antes de lo previsto, las fases 1 a 4 comparten la estabilización de los sprints S4 y S5.
+
+Las fechas de cierre son **límite**: cada fase se cierra con acta de fecha real. Las fases 2, 3 y 4 empezaron sin el acta firmada de la anterior (NC-009 y NC-010); las actas se firman en la estabilización.
 
 ---
 
@@ -32,9 +34,9 @@ Las fechas de las fases 2 a 5 son estimación a validar al cierre de la fase 1. 
 |---|---|---|---|---|
 | S1 | 15 al 19 de octubre (corto) | SJOM | FJMP | Cerrar la fase 0 y los faltantes de gobierno antes de que termine la etapa documental de la auditoría |
 | S2 | 20 de octubre al 30 de octubre | FJMP | SJOM | Correcciones al manual y plan de pruebas, antes de la verificación en campo |
-| S3 | 2 al 13 de noviembre | SJOM | FJMP | Atender la auditoría en campo y arrancar la fase 1 |
-| S4 | 16 al 27 de noviembre | FJMP | SJOM | Fase 1: núcleo institucional, primera mitad |
-| S5 | 30 de noviembre al 11 de diciembre | SJOM | FJMP | Fase 1: núcleo institucional, cierre |
+| S3 | 2 al 13 de noviembre | SJOM | FJMP | Atender la auditoría en campo y construir las fases 1 a 4 (batches 0 a 10) |
+| S4 | 16 al 27 de noviembre | FJMP | SJOM | Revisar y aprobar los PR, pruebas de aceptación y manual v3.0 (27 de noviembre; antes v2.1) |
+| S5 | 30 de noviembre al 11 de diciembre | SJOM | FJMP | Firmar las actas de las fases 1 a 4, fusionar, etiquetar y entregar |
 
 S1 es corto a propósito: son los cinco días que quedan antes de que cierre la etapa 1 de la auditoría.
 
@@ -93,12 +95,12 @@ Arranque real de la fase 1. Ya es desarrollo, no documentación.
 
 Para que el recorte sea una decisión y no un olvido:
 
-- **Fases 2 a 5.** Se planean al cierre de la fase 1, no antes.
-- **Ambientes de staging y piloto.** Corresponden a la fase 3; montarlos antes sería infraestructura sin nada que desplegar.
-- **Pruebas de carga y de seguridad ejecutadas.** Los casos ya están definidos; ejecutarlos exige sistema desplegado.
-- **Integración con Mercado Pago.** Fase 4.
+- **Piloto real.** Depende de una facultad, de la Dirección y de un semestre completo.
+- **Ambiente de piloto.** Se monta en el Batch 13. **Staging** se monta antes de cerrar la fase 2 (Batch 6), porque AU-08, AU-17 y AU-19 lo piden desde esa fase.
+- **Pruebas de carga.** Exigen staging (Batch 13). **OWASP ZAP** corre desde el Batch 2 en el ambiente de pruebas, como dice la Tabla 30.
+- **Integración con Mercado Pago.** Fase 4 (Batch 9).
 
-Todo lo anterior está declarado ante el equipo auditor como *No aplica por fase*, no omitido.
+Todo lo anterior está declarado ante el equipo auditor como *No aplica por fase*, no omitido (`docs/auditoria/respuesta-F-01-SCE-002.md`).
 
 ---
 
@@ -107,3 +109,23 @@ Todo lo anterior está declarado ante el equipo auditor como *No aplica por fase
 Este plan se revisa en la sesión de cierre de cada sprint. Los elementos cumplidos se marcan en el acta correspondiente; los que se recorren cambian de fecha con motivo escrito.
 
 Un elemento P0 o P1 que se recorra dos sprints seguidos se convierte en riesgo y pasa a `docs/calidad/matriz-riesgos.md`.
+
+---
+
+## 6. Cambios a este plan
+
+Motivo escrito, conforme al apartado 5.
+
+| Fecha | Cambio | Motivo |
+|---|---|---|
+| 5 nov 2026 | Se adopta `plan-de-sistema.md`: batches 0 a 14, por fases (Tablas 23, 25 y 27) | El equipo decidió construir el sistema completo, y al contrastar el repositorio con el manual completo se encontraron desviaciones |
+| 5 nov 2026 | Los batches pueden adelantar las fechas de fase | Las fechas de cierre pasan a ser límite; cada fase conserva su acta y sus condiciones |
+| 5 nov 2026 | Staging se adelanta de la fase 3 a antes de cerrar la fase 2 | PA-SCE-001 exige evidencia de staging desde la fase 2 |
+| 5 nov 2026 | OWASP ZAP se adelanta de la fase 3 al ambiente de pruebas, desde el Batch 2 | La Tabla 30 lo ubica en pruebas e integración |
+| 5 nov 2026 | Elementos P1 #7 a #15 pasan al sprint S4, con el manual v2.1 a más tardar el 27 de noviembre de 2026 | Vencieron el 30 de octubre sin reprogramación (NC-004). El sprint S2 priorizó el arranque técnico |
+| 5 nov 2026 | La columna «Acepta» del apartado 2 cede ante la regla por entregable | Si FJMP produce el entregable de un sprint par, lo acepta SJOM. Ver `roles-y-raci.md`, apartado 2 |
+| 10 nov 2026 | Calendario del apartado 1 con las fechas reales de construcción; las fases 1 a 4 cierran a más tardar el 11 de diciembre de 2026 | Los batches 0 a 8 se construyeron del 5 al 10 de noviembre, antes de las fechas estimadas de 2027 |
+| 10 nov 2026 | FJMP sigue sin SJOM: aprueba y fusiona sus propios pull requests y firma el manual y las actas. La protección de `develop` y `main` deja de exigir aprobación de otra persona y sigue exigiendo CI en verde | SJOM no aceptó la invitación ni revisó entregables. Es una desviación de separación de funciones, declarada en `roles-y-raci.md`, apartado 6 |
+| 10 nov 2026 | El manual se emite como **v3.0**, no v2.1: incluye las correcciones #7 a #14 y el cambio de alcance (`manual-v3.0.md`) | La sección 1.3 del manual sube el número mayor cuando cambia el alcance, y la compactación lo cambió. Decisión de FJMP |
+| 10 nov 2026 | Los batches 9 a 14 se compactan en dos: 9, pagos simulados y trámites; 10, reportes y revisión final. Sin Mercado Pago real, piloto, monitoreo, pruebas de carga ni usabilidad con participantes | Es un proyecto escolar: basta con que el sistema funcione bien de punta a punta. Ver `plan-de-sistema.md`, apartado 6.1 |
+

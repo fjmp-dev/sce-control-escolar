@@ -32,6 +32,7 @@ cloud "Mercado Pago" as MP <<externo>>
 CLIENTE -down-> PROXY : HTTPS 443
 PROXY -down-> NEXT : HTTP 3000
 PROXY -down-> NEST : HTTP 3001
+NEXT -right-> NEST : HTTP 3001 (REST, servidor a servidor; CC-014)
 NEST -down-> PG : TCP 5432 (TLS)
 NEST -right-> MP : HTTPS (API y webhook)
 MP -left-> PROXY : HTTPS webhook

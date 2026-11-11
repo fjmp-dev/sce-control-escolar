@@ -9,7 +9,10 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --force",
-    "test": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --runInBand"
+    "test": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --runInBand",
+    "lint": "eslint src test --max-warnings 0",
+    "test:unitarias": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --selectProjects unitarias --coverage --coverageDirectory coverage/unitarias --coverageThreshold='{\"./src/**/dominio/**\":{\"lines\":80}}'",
+    "test:integracion": "node --env-file-if-exists=.env --experimental-vm-modules --no-warnings node_modules/.bin/jest --selectProjects integracion --runInBand --coverage --coverageDirectory coverage/integracion"
   },
   "license": "UNLICENSED",
   "type": "commonjs",
@@ -18,7 +21,9 @@
     "@nestjs/core": "^12.2.0",
     "@nestjs/jwt": "^12.0.3",
     "@nestjs/platform-express": "^12.2.0",
+    "@nestjs/swagger": "^12.1.1",
     "@prisma/client": "^6.19.3",
+    "prisma": "^6.19.3",
     "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
@@ -27,27 +32,54 @@
   },
   "devDependencies": {
     "@nestjs/testing": "^12.2.0",
+    "@testcontainers/postgresql": "^12.2.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.5",
     "@types/supertest": "^7.2.1",
+    "eslint": "^10.14.0",
     "jest": "^30.5.2",
-    "prisma": "^6.19.3",
     "supertest": "^7.3.1",
+    "testcontainers": "^12.2.1",
     "ts-jest": "^29.4.15",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1"
   },
   "private": true,
   "prisma": {
     "seed": "node prisma/seed.mts"
   },
   "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "rootDir": ".",
-    "testMatch": [
-      "<rootDir>/test/**/*.spec.ts"
+    "projects": [
+      {
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "displayName": "unitarias",
+        "testMatch": [
+          "<rootDir>/test/unitarias/**/*.spec.ts"
+        ]
+      },
+      {
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "displayName": "integracion",
+        "testMatch": [
+          "<rootDir>/test/integracion/**/*.spec.ts"
+        ],
+        "globalSetup": "<rootDir>/test/integracion/global-setup.ts",
+        "globalTeardown": "<rootDir>/test/integracion/global-teardown.ts"
+      }
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text-summary"
     ]
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
   }
 }

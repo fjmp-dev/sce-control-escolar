@@ -1,0 +1,11 @@
+# Falsos positivos de Gitleaks, por huella: commit, archivo, regla y linea. Una coincidencia nueva sigue fallando.
+#
+# 063778f tenia `curl -u admin:admin` en scripts/sonar-puerta.sh: es la credencial publica por omision de la imagen de
+# SonarQube, en un contenedor que solo escucha en 127.0.0.1 y muere con el script. No es un secreto del SCE.
+# El codigo actual ya no tiene ese patron; estas huellas solo cubren ese commit del historial.
+063778f7ddf898de77b5bbe0116ae4a19c16012f:scripts/sonar-puerta.sh:curl-auth-user:41
+063778f7ddf898de77b5bbe0116ae4a19c16012f:scripts/sonar-puerta.sh:curl-auth-user:48
+#
+# b6840e9 (Batch 5): en api/test/integracion/inscripcion.spec.ts, la regla generica toma la palabra "token" seguida
+# del folio inventado 'INS-2031A-NO-EXISTE', que la prueba de CS-SEG-03 usa como folio inexistente. No es un secreto.
+b6840e9ae1c3a0154bdadbfa29352fa86d73aaef:api/test/integracion/inscripcion.spec.ts:generic-api-key:379

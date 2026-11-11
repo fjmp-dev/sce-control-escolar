@@ -1,0 +1,76 @@
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { BitacoraService } from '../bitacora/bitacora.service';
+import { PrismaService } from '../persistencia/prisma.service';
+import { CatalogosRepository } from './catalogos.repository';
+import { Periodo } from './dominio/periodo';
+import { validarPrerequisito } from './dominio/prerequisito';
+
+/**
+ * Catálogos institucionales (RNF-FLE-001). Con CC-007, el administrador da de alta facultades y planes,
+ * y cada alta queda en bitácora (Parte B: acciones del administrador). Coordinación conserva materias y periodos;
+ * abrir un periodo también queda en bitácora (Batch 7).
+ */
+@Injectable()
+export class CatalogosService {
+  constructor(
+    private readonly catalogos: CatalogosRepository,
+    private readonly bitacora: BitacoraService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  facultades() {
+    return this.catalogos.facultades();
+  }
+
+  crearFacultad(autor: string, datos: Prisma.FacultadUncheckedCreateInput) {
+    return this.prisma.transaccion(async () => {
+      const creada = await this.catalogos.crearFacultad(datos);
+      await this.bitacora.registrar({ autor, accion: 'alta_facultad', entidad: `facultad:${creada.clave}` });
+      return creada;
+    });
+  }
+
+  planes() {
+    return this.catalogos.planes();
+  }
+
+  crearPlan(autor: string, datos: Prisma.PlanEstudiosUncheckedCreateInput) {
+    return this.prisma.transaccion(async () => {
+      const creado = await this.catalogos.crearPlan(datos);
+      await this.bitacora.registrar({ autor, accion: 'alta_plan', entidad: `plan_estudios:${creado.clave}` });
+      return creado;
+    });
+  }
+
+  materias() {
+    return this.catalogos.materias();
+  }
+
+  crearMateria(datos: Prisma.MateriaUncheckedCreateInput) {
+    return this.catalogos.crearMateria(datos);
+  }
+
+  async agregarPrerrequisito(materiaClave: string, requiereClave: string, obligatorio: boolean) {
+    validarPrerequisito(materiaClave, requiereClave, await this.catalogos.prerrequisitos());
+    return this.catalogos.crearPrerrequisito({ materiaClave, requiereClave, obligatorio });
+  }
+
+  quitarPrerrequisito(materiaClave: string, requiereClave: string) {
+    return this.catalogos.quitarPrerrequisito(materiaClave, requiereClave);
+  }
+
+  periodos() {
+    return this.catalogos.periodos();
+  }
+
+  /** Fig. 3, `Periodo.abrir()`; queda en bitácora quién lo abrió. */
+  abrirPeriodo(autor: string, clave: string, fechaInicio: Date, fechaFin: Date) {
+    const { estado } = Periodo.abrir(clave, fechaInicio, fechaFin);
+    return this.prisma.transaccion(async () => {
+      const creado = await this.catalogos.crearPeriodo({ clave, fechaInicio, fechaFin, estado });
+      await this.bitacora.registrar({ autor, accion: 'abrir_periodo', entidad: `periodo:${clave}` });
+      return creado;
+    });
+  }
+}

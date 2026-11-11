@@ -1,0 +1,20 @@
+# Prettier cubre codigo y configuracion; los documentos del sistema de calidad conservan su formato.
+docs/
+*.md
+package-lock.json
+node_modules/
+api/dist/
+api/coverage/
+api/prisma/migrations/
+.puerta/
+sonar-reporte/
+reportes/
+.staging/
+.next/
+web/coverage/
+web/lib/tipos-api.ts
+web/next-env.d.ts
+web/cypress/videos/
+web/cypress/screenshots/
+web/cypress/reportes/
+.staging/

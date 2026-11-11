@@ -22,23 +22,24 @@ datasource db {
 // ---------------------------------------------------------------------
 
 model Usuario {
-  id             String        @id @default(uuid()) @db.Uuid
-  correo         String        @unique
-  hashContrasena String        @map("hash_contrasena")
-  activo         Boolean       @default(true)
-  creadoEn       DateTime      @default(now()) @map("creado_en") @db.Timestamptz
-  roles          UsuarioRol[]
-  alumno         Alumno?
-  gruposImpartidos Grupo[]     @relation("ProfesorDeGrupo")
-  calificaciones Calificacion[]
-  bitacora       Bitacora[]
+  id               String         @id @default(uuid()) @db.Uuid
+  correo           String         @unique
+  hashContrasena   String         @map("hash_contrasena")
+  activo           Boolean        @default(true)
+  sesionVersion    Int            @default(0) @map("sesion_version")
+  creadoEn         DateTime       @default(now()) @map("creado_en") @db.Timestamptz
+  roles            UsuarioRol[]
+  alumno           Alumno?
+  gruposImpartidos Grupo[]        @relation("ProfesorDeGrupo")
+  calificaciones   Calificacion[]
+  bitacora         Bitacora[]
 
   @@map("usuario")
 }
 
 model Rol {
   id       Int          @id @db.SmallInt
-  clave    String       @unique // alumno, profesor, control_escolar, coordinacion, caja, direccion
+  clave    String       @unique // alumno, profesor, control_escolar, coordinacion, caja, direccion, administrador
   nombre   String
   usuarios UsuarioRol[]
 
@@ -62,7 +63,7 @@ model UsuarioRol {
 // ---------------------------------------------------------------------
 
 model Facultad {
-  clave   String        @id
+  clave   String         @id
   nombre  String
   alumnos Alumno[]
   planes  PlanEstudios[]
@@ -71,24 +72,24 @@ model Facultad {
 }
 
 model PlanEstudios {
-  clave           String   @id
-  facultadClave   String   @map("facultad_clave")
-  creditosTotales Int      @map("creditos_totales")
-  vigenteDesde    DateTime @map("vigente_desde") @db.Date
-  facultad        Facultad @relation(fields: [facultadClave], references: [clave])
+  clave           String    @id
+  facultadClave   String    @map("facultad_clave")
+  creditosTotales Int       @map("creditos_totales")
+  vigenteDesde    DateTime  @map("vigente_desde") @db.Date
+  facultad        Facultad  @relation(fields: [facultadClave], references: [clave])
   materias        Materia[]
 
   @@map("plan_estudios")
 }
 
 model Materia {
-  clave      String        @id
-  planClave  String        @map("plan_clave")
-  nombre     String
-  creditos   Int
-  plan       PlanEstudios  @relation(fields: [planClave], references: [clave])
-  grupos     Grupo[]
-  requiereDe Prerequisito[] @relation("MateriaDestino")
+  clave         String         @id
+  planClave     String         @map("plan_clave")
+  nombre        String
+  creditos      Int
+  plan          PlanEstudios   @relation(fields: [planClave], references: [clave])
+  grupos        Grupo[]
+  requiereDe    Prerequisito[] @relation("MateriaDestino")
   esRequisitoDe Prerequisito[] @relation("MateriaOrigen")
 
   @@map("materia")
@@ -107,13 +108,14 @@ model Prerequisito {
 }
 
 model Periodo {
-  clave          String         @id // ej. 2026B
-  fechaInicio    DateTime       @map("fecha_inicio") @db.Date
-  fechaFin       DateTime       @map("fecha_fin") @db.Date
-  estado         String // abierto, en_curso, cerrado
-  grupos         Grupo[]
-  inscripciones  Inscripcion[]
-  calificaciones Calificacion[]
+  clave             String         @id // ej. 2026B
+  fechaInicio       DateTime       @map("fecha_inicio") @db.Date
+  fechaFin          DateTime       @map("fecha_fin") @db.Date
+  estado            String // abierto, en_curso, cerrado
+  ofertaPublicadaEn DateTime?      @map("oferta_publicada_en") @db.Timestamptz // CC-012
+  grupos            Grupo[]
+  inscripciones     Inscripcion[]
+  calificaciones    Calificacion[]
 
   @@map("periodo")
 }
@@ -160,18 +162,18 @@ model Historial {
 // ---------------------------------------------------------------------
 
 model Grupo {
-  id            BigInt             @id @default(autoincrement())
-  clave         String
-  materiaClave  String             @map("materia_clave")
-  periodoClave  String             @map("periodo_clave")
-  profesorId    String             @map("profesor_id") @db.Uuid
-  cupo          Int
-  ocupacion     Int                @default(0)
-  materia       Materia            @relation(fields: [materiaClave], references: [clave])
-  periodo       Periodo            @relation(fields: [periodoClave], references: [clave])
-  profesor      Usuario            @relation("ProfesorDeGrupo", fields: [profesorId], references: [id])
-  horarios      Horario[]
-  inscritos     InscripcionGrupo[]
+  id             BigInt             @id @default(autoincrement())
+  clave          String
+  materiaClave   String             @map("materia_clave")
+  periodoClave   String             @map("periodo_clave")
+  profesorId     String             @map("profesor_id") @db.Uuid
+  cupo           Int
+  ocupacion      Int                @default(0)
+  materia        Materia            @relation(fields: [materiaClave], references: [clave])
+  periodo        Periodo            @relation(fields: [periodoClave], references: [clave])
+  profesor       Usuario            @relation("ProfesorDeGrupo", fields: [profesorId], references: [id])
+  horarios       Horario[]
+  inscritos      InscripcionGrupo[]
   calificaciones Calificacion[]
 
   @@unique([clave, periodoClave])
@@ -232,18 +234,18 @@ model InscripcionGrupo {
 
 /// Toda calificacion queda ligada a profesor, grupo y periodo (sec. 13.6).
 model Calificacion {
-  id            BigInt      @id @default(autoincrement())
-  folio         String
-  grupoId       BigInt      @map("grupo_id")
-  profesorId    String      @map("profesor_id") @db.Uuid
-  periodoClave  String      @map("periodo_clave")
-  parcial       Int         @db.SmallInt
-  valor         Decimal     @db.Decimal(4, 2)
-  fechaCaptura  DateTime    @default(now()) @map("fecha_captura") @db.Timestamptz
-  inscripcion   Inscripcion @relation(fields: [folio], references: [folio])
-  grupo         Grupo       @relation(fields: [grupoId], references: [id])
-  profesor      Usuario     @relation(fields: [profesorId], references: [id])
-  periodo       Periodo     @relation(fields: [periodoClave], references: [clave])
+  id           BigInt      @id @default(autoincrement())
+  folio        String
+  grupoId      BigInt      @map("grupo_id")
+  profesorId   String      @map("profesor_id") @db.Uuid
+  periodoClave String      @map("periodo_clave")
+  parcial      Int         @db.SmallInt
+  valor        Decimal     @db.Decimal(4, 2)
+  fechaCaptura DateTime    @default(now()) @map("fecha_captura") @db.Timestamptz
+  inscripcion  Inscripcion @relation(fields: [folio], references: [folio])
+  grupo        Grupo       @relation(fields: [grupoId], references: [id])
+  profesor     Usuario     @relation(fields: [profesorId], references: [id])
+  periodo      Periodo     @relation(fields: [periodoClave], references: [clave])
 
   @@unique([folio, grupoId, parcial])
   @@index([grupoId, periodoClave])
@@ -303,6 +305,7 @@ model Tramite {
   matricula          String
   tipo               String // constancia, no_adeudo, historial
   estado             String // recibida, en_proceso, lista, entregada, rechazada
+  motivoRechazo      String?    @map("motivo_rechazo")
   fechaSolicitud     DateTime   @default(now()) @map("fecha_solicitud") @db.Timestamptz
   fechaActualizacion DateTime   @updatedAt @map("fecha_actualizacion") @db.Timestamptz
   alumno             Alumno     @relation(fields: [matricula], references: [matricula])
@@ -317,6 +320,7 @@ model Documento {
   tramiteFolio String   @unique @map("tramite_folio")
   tipo         String
   hash         String // verificacion de autenticidad del documento emitido
+  contenido    String   @default("") // texto emitido; no cambia
   fechaEmision DateTime @default(now()) @map("fecha_emision") @db.Timestamptz
   tramite      Tramite  @relation(fields: [tramiteFolio], references: [folio])
 

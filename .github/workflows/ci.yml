@@ -1,34 +1,138 @@
-# Integracion continua (manual sec. 31.1, etapas 1 a 4; plan de trabajo #17).
-# Ningun pull request entra a main sin estos dos trabajos en verde.
+# Pipeline de integracion: etapas 1 a 7 de la Tabla 53 (sec. 31.1). Cada etapa es criterio de avance de la siguiente.
+# La etapa 6 publica solo al integrar; en un pull request, la 7 ensaya con imagenes construidas ahi mismo.
+# La 8, manual, esta en staging.yml. Dentro de que etapa corre cada herramienta que la Tabla 53 no nombra:
+# docs/calidad/plan-de-pruebas.md, seccion 4.1.
 name: CI
 
 on:
   pull_request:
   push:
-    branches: [main, Desarrollo]
+    branches: [main, develop, 'release/**'] # una etiqueta candidata en release tambien tiene imagenes firmadas
 
-# Minimo privilegio para el token del workflow; gitleaks-action lee los commits del pull request.
 permissions:
   contents: read
-  pull-requests: read
+
+env:
+  CYPRESS_INSTALL_BINARY: 0 # Cypress corre en su imagen (scripts/cypress.sh); de npm solo hacen falta los tipos
 
 jobs:
-  api:
-    name: API - build y pruebas
+  construccion:
+    name: 1 Construcción
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16 # version del manual, Tabla 7
-        env:
-          POSTGRES_USER: sce_app
-          POSTGRES_PASSWORD: sce_ci
-          POSTGRES_DB: sce
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd "pg_isready -U sce_app" --health-interval 5s --health-timeout 5s --health-retries 10
-    env:
-      DATABASE_URL: postgresql://sce_app:sce_ci@localhost:5432/sce?schema=public
-      JWT_SECRET: solo-para-ci-no-es-un-secreto
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            api/package-lock.json
+            web/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: TypeScript estricto en la API (Tabla 32)
+        run: npm run build
+      - run: npm ci
+        working-directory: web
+      - name: Contrato - los tipos del portal coinciden con el OpenAPI (Tabla 44)
+        working-directory: web
+        run: npm run tipos:api && git diff --exit-code lib/tipos-api.ts
+      - name: TypeScript estricto en el portal, con Next.js (Tablas 32 y 53)
+        working-directory: web
+        run: npm run build && npm run tipos
+
+  analisis:
+    name: 2 Análisis estático
+    needs: construccion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Commitlint y Gitleaks necesitan el historial
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api/package-lock.json
+            web/package-lock.json
+      - run: npm ci
+      - name: Prettier (Tabla 32)
+        run: npm run format:check
+      - name: Commitlint (Tablas 31 y 32)
+        run: >-
+          npx commitlint --verbose
+          --from ${{ github.event.pull_request.base.sha || github.event.before }}
+          --to ${{ github.event.pull_request.head.sha || github.sha }}
+      - run: npm ci
+        working-directory: api
+      - run: npx prisma generate
+        working-directory: api
+      - name: ESLint con el plugin de TypeScript, sin any (Tabla 32, AU-10)
+        run: npm run lint
+        working-directory: api
+      - run: npm ci
+        working-directory: web
+      - name: ESLint en el portal, con las reglas de accesibilidad de Next.js (Tabla 32)
+        working-directory: web
+        run: npm run lint && npx tsc -p cypress/tsconfig.json
+      - name: Gitleaks sobre el historial completo (CS-SEG-08, AU-13)
+        run: scripts/gitleaks-historial.sh gitleaks.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gitleaks
+          path: gitleaks.json
+          retention-days: 90
+
+  unitarias:
+    name: 3 Pruebas unitarias
+    needs: analisis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            api/package-lock.json
+            web/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Jest con cobertura, al menos 80 % en el dominio (Tablas 53 y 59)
+        run: npm run test:unitarias
+      - run: npm ci
+        working-directory: web
+      - name: Vitest y React Testing Library con cobertura (Tablas 42 y 53)
+        working-directory: web
+        run: npm run test:unitarias
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-unitarias
+          path: api/coverage/unitarias/
+          if-no-files-found: ignore
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-portal
+          path: web/coverage/
+          if-no-files-found: ignore
+          retention-days: 90
+
+  integracion:
+    name: 4 Pruebas de integración
+    needs: unitarias
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: api
@@ -41,20 +145,240 @@ jobs:
           cache-dependency-path: api/package-lock.json
       - run: npm ci
       - run: npx prisma generate
-      - name: Migraciones sobre base limpia (CI-MIG-01)
-        run: npx prisma migrate deploy
-      - run: npm run db:seed
-      - run: npm run build
-      - name: Pruebas (CS-SEG, CI-AUTH, CD-DAT)
-        run: npm test
+      - name: Supertest y Testcontainers sobre PostgreSQL 16 efimero (CI-MIG-01, CI-AUTH-01, CF-ROL-01, CS-SEG, CD-DAT)
+        run: npm run test:integracion
+      - name: Levantar PostgreSQL 16 y la API con datos sinteticos
+        working-directory: .
+        run: docker compose up -d --build --wait --wait-timeout 240 api
+      - name: Newman - contratos de API y CS-SEG-04 (Tablas 30, 42 y 49)
+        working-directory: .
+        run: scripts/newman.sh http://localhost:3001 reportes/newman
+      - name: Great Expectations - CD-DAT-01 y 04, expediente y CS-SEG-06 en plantel (Tablas 39 y 42; AU-22)
+        working-directory: .
+        run: scripts/calidad-datos.sh reportes/calidad-datos
+      - if: failure()
+        working-directory: .
+        run: docker compose logs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cobertura-integracion
+          path: api/coverage/integracion/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman
+          path: reportes/newman/
+          if-no-files-found: ignore
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calidad-datos
+          path: reportes/calidad-datos/
+          if-no-files-found: ignore
+          retention-days: 90
 
-  secretos:
-    name: Secretos - Gitleaks
+  calidad:
+    name: 5 Calidad - SonarQube y npm audit
+    needs: integracion
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0 # el commit base de la puerta de calidad
+      - uses: actions/download-artifact@v4
+        with:
+          name: cobertura-integracion
+          path: api/coverage/integracion
+      - uses: actions/download-artifact@v4
+        with:
+          name: cobertura-portal
+          path: web/coverage
+      - name: npm audit, cero altas o criticas (Tabla 32, AU-20)
+        run: |
+          mkdir -p reportes
+          npm audit --json > reportes/npm-audit-raiz.json || true
+          (cd api && npm audit --json > ../reportes/npm-audit-api.json || true)
+          (cd web && npm audit --json > ../reportes/npm-audit-portal.json || true)
+          npm audit --audit-level=high
+          (cd api && npm audit --audit-level=high)
+          (cd web && npm audit --audit-level=high)
+      - name: Puerta de calidad sobre codigo nuevo (Tabla 51)
+        run: scripts/sonar-puerta.sh "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD reportes/sonar
+      - name: Resumen de la puerta
+        if: always()
+        run: cat reportes/sonar/resumen.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calidad
+          path: reportes/
+          retention-days: 90
+
+  seguridad-imagen:
+    name: 5 Seguridad - Trivy y humo del ambiente
+    needs: integracion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Levantar PostgreSQL 16, la API y el portal con datos sinteticos
+        run: docker compose up -d --build --wait --wait-timeout 300
+      - name: Humo - salud e inicio de sesion con los seis roles y el administrador (F-01 #2)
+        run: scripts/humo.sh
+      - if: failure()
+        run: docker compose logs
+      - name: Trivy - imagen de la API (AU-20)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: sce-api:local
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          format: table
+          output: trivy-imagen.txt
+      - name: Trivy - imagen del portal (AU-20)
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: sce-portal:local
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          format: table
+          output: trivy-portal.txt
+      - name: Trivy - repositorio (dependencias, secretos y configuracion)
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: table
+          output: trivy-repositorio.txt
+      - name: OWASP ZAP - CS-SEG-05 y registros sin datos sensibles (Tablas 30, 42 y 49; AU-20)
+        if: always()
+        run: scripts/zap.sh reportes/zap
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy
+          path: trivy-*.txt
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap
+          path: reportes/zap/
+          if-no-files-found: ignore
+          retention-days: 90
+
+  empaquetado:
+    name: 6 Empaquetado
+    needs: [calidad, seguridad-imagen]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write # firma sin llaves
+    outputs:
+      imagen_api: ${{ steps.publicar.outputs.imagen_api }}
+      imagen_portal: ${{ steps.publicar.outputs.imagen_portal }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: sigstore/cosign-installer@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Construir, registrar y firmar sce-api y sce-portal (Tabla 53, AU-12)
+        id: publicar
+        run: scripts/publicar-imagenes.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: imagenes
+          path: reportes/imagenes.md
+          retention-days: 90
+
+  despliegue-pruebas:
+    name: 7 Despliegue a pruebas
+    needs: [calidad, seguridad-imagen, empaquetado]
+    # empaquetado se omite en un pull request; una omision por fallo de la etapa 5 la detienen las dos primeras condiciones.
+    if: ${{ !cancelled() && needs.calidad.result == 'success' && needs.seguridad-imagen.result == 'success' && (needs.empaquetado.result == 'success' || needs.empaquetado.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      IMAGEN_API: ${{ needs.empaquetado.outputs.imagen_api }}
+      IMAGEN_PORTAL: ${{ needs.empaquetado.outputs.imagen_portal }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - uses: sigstore/cosign-installer@v3
+        if: github.event_name == 'push'
+      - uses: docker/login-action@v3
+        if: github.event_name == 'push'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Desplegar las imagenes registradas, solo si la firma es de este pipeline (Tabla 30, AU-12)
+        if: github.event_name == 'push'
+        run: |
+          for imagen in "$IMAGEN_API" "$IMAGEN_PORTAL"; do
+            cosign verify "$imagen" --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              --certificate-identity-regexp "^https://github.com/${GITHUB_REPOSITORY}/.github/workflows/ci.yml@refs/.*$" >/dev/null
+          done
+          docker compose pull api web
+          docker compose up -d --no-build --wait --wait-timeout 300
+      - name: Ensayo en pull request, con imagenes construidas aqui
+        if: github.event_name == 'pull_request'
+        run: docker compose up -d --build --wait --wait-timeout 300
+      - name: Humo (Tabla 53, criterio de avance de la etapa)
+        run: scripts/humo.sh | tee reportes-humo.txt
+        shell: bash
+      - name: Cypress con video y capturas, y axe - demostracion por rol (Tablas 42 y 44; 28.2)
+        run: scripts/cypress.sh reportes/cypress
+      - name: Lighthouse (Tabla 42, 28.2)
+        if: always()
+        run: scripts/lighthouse.sh reportes/lighthouse
+      - name: Staging efimero con estas imagenes - TLS 1.2+, base solo por TLS y SCRAM, pgAudit y humo del Anexo D (CC-018)
+        run: scripts/staging.sh "${IMAGEN_API:-sce-api:local}" "${IMAGEN_PORTAL:-sce-portal:local}"
+      - name: Registro del despliegue (31.2)
+        if: always()
+        run: |
+          mkdir -p reportes
+          {
+            echo "### Despliegue a pruebas"
+            echo "- Ambiente: GitHub Actions, base efimera (Tabla 30)"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Evento: $GITHUB_EVENT_NAME en $GITHUB_REF_NAME"
+            echo "- API: ${IMAGEN_API:-construida en esta corrida}"
+            echo "- Portal: ${IMAGEN_PORTAL:-construido en esta corrida}"
+            echo "- Fecha: $(date -u +%FT%TZ)"
+            echo "- Resultado del job: ${{ job.status }}"
+            echo
+            cat reportes-humo.txt 2>/dev/null || true
+            echo
+            cat reportes/lighthouse/resumen.md 2>/dev/null || true
+          } | tee reportes/despliegue.md >> "$GITHUB_STEP_SUMMARY"
+      - if: failure()
+        run: docker compose logs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: despliegue-pruebas
+          path: reportes/
+          retention-days: 90

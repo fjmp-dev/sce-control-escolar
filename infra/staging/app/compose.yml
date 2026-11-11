@@ -1,0 +1,70 @@
+# Servidor de aplicacion de staging (Fig. 9, Tabla 30). nginx termina TLS 1.2+ y enruta al portal y a la API; ninguno
+# de los dos publica puerto. Solo corre imagenes registradas y firmadas, por digest (etapa 8, Tabla 53).
+# Variables en .env: lo escribe scripts/desplegar-staging.sh con los secretos del ambiente staging de GitHub (20.2).
+x-registro: &registro
+  logging:
+    options: { max-size: 50m, max-file: '10' }
+
+services:
+  api:
+    image: ${IMAGEN_API:?}
+    container_name: sce-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?} # sslmode=require y el certificado de la base como CA (Fig. 9: TCP 5432 con TLS)
+      JWT_SECRET: ${JWT_SECRET:?}
+    volumes: ['./db.crt:/certs/db.crt:ro']
+    <<: *registro
+    healthcheck: # Fig. 9 y Tabla 57
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3001/salud').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+        ]
+      interval: 3s
+      retries: 40
+  tareas: # en cada despliegue, antes de arrancar: migraciones con registro y datos sinteticos (RK-09)
+    image: ${IMAGEN_API:?}
+    profiles: [tareas]
+    command: ['sh', '-c', 'node_modules/.bin/prisma migrate deploy && node prisma/seed.mts']
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?}
+      CONTRASENA_SEMILLA: ${CONTRASENA_SEMILLA:?} # la de este ambiente, no la del README (20.2)
+    volumes: ['./db.crt:/certs/db.crt:ro']
+  web:
+    image: ${IMAGEN_PORTAL:?}
+    container_name: sce-portal
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_URL: http://api:3001 # del servidor de Next.js a la API (CC-014); la cookie es Secure por omision
+    <<: *registro
+    healthcheck: # Tabla 57
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/salud').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+        ]
+      interval: 3s
+      retries: 20
+  proxy:
+    image: nginx:1.28
+    container_name: sce-proxy
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      DOMINIO: ${DOMINIO:?}
+    ports: ['80:80', '443:443']
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./certificados:/etc/letsencrypt:ro
+      - ./acme:/var/www/acme:ro
+    <<: *registro

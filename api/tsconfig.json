@@ -8,8 +8,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strictPropertyInitialization": false
+    "skipLibCheck": true
   },
   "include": ["src"]
 }
