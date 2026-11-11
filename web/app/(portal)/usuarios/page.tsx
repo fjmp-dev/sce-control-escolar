@@ -1,4 +1,5 @@
 import { Campo, Casilla, Casillas, Formulario } from '@/componentes/formulario';
+import { Insignia, tonoDeEstado } from '@/componentes/insignia';
 import { Tabla } from '@/componentes/tabla';
 import { altaUsuario, cambiarUsuario } from '@/lib/acciones';
 import { consultar, sesionActual } from '@/lib/api';
@@ -14,7 +15,9 @@ const CORRECCION_CONFIRMACION = 'Escribe tu contraseña para confirmar.';
 function CambioDeAcceso({ usuario }: Readonly<{ usuario: Esquemas['UsuarioRespuesta'] }>) {
   return (
     <details>
-      <summary>Cambiar acceso de {usuario.correo}</summary>
+      <summary>
+        Cambiar acceso<span className="solo-lector"> de {usuario.correo}</span>
+      </summary>
       <Formulario accion={cambiarUsuario} envio={`Guardar cambios de ${usuario.correo}`}>
         <input type="hidden" name="id" value={usuario.id} />
         <Casilla nombre="activo" etiqueta="Cuenta activa" marcada={usuario.activo} />
@@ -79,7 +82,14 @@ export default async function PaginaUsuarios() {
         columnas={[
           { titulo: 'Correo', celda: (u) => u.correo },
           { titulo: 'Roles', celda: (u) => u.roles.map((rol) => ETIQUETA_ROL[rol]).join(', ') },
-          { titulo: 'Estado', celda: (u) => (u.activo ? 'Activo' : 'Inactivo') },
+          {
+            titulo: 'Estado',
+            celda: (u) => (
+              <Insignia tono={tonoDeEstado(u.activo ? 'activo' : 'inactivo')}>
+                {u.activo ? 'Activo' : 'Inactivo'}
+              </Insignia>
+            ),
+          },
           {
             titulo: 'Acceso',
             celda: (u) =>

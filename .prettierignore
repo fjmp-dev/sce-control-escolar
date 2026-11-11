@@ -8,7 +8,7 @@ api/coverage/
 api/prisma/migrations/
 .puerta/
 sonar-reporte/
-reportes/
+/reportes/
 .staging/
 .next/
 web/coverage/

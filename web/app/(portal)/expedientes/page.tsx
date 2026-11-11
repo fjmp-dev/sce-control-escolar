@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Campo, Formulario, Selector } from '@/componentes/formulario';
+import { Insignia, tonoDeEstado } from '@/componentes/insignia';
 import { Tabla } from '@/componentes/tabla';
 import { altaExpediente } from '@/lib/acciones';
 import { consultar } from '@/lib/api';
@@ -20,6 +21,7 @@ export default async function PaginaExpedientes({
   return (
     <>
       <h1>Expedientes</h1>
+      <p className="entrada">Busca un expediente para consultar su ficha, o da de alta uno nuevo.</p>
       <form method="get" className="busqueda" role="search">
         <label htmlFor="buscar">Buscar por matrícula o nombre</label>
         <input id="buscar" name="buscar" type="search" defaultValue={buscar} maxLength={100} />
@@ -44,7 +46,12 @@ export default async function PaginaExpedientes({
           },
           { titulo: 'Nombre', celda: (a) => a.nombre },
           { titulo: 'Facultad', celda: (a) => a.facultadClave },
-          { titulo: 'Estatus', celda: (a) => ETIQUETA_ESTATUS[a.estatus] ?? a.estatus },
+          {
+            titulo: 'Estatus',
+            celda: (a) => (
+              <Insignia tono={tonoDeEstado(a.estatus)}>{ETIQUETA_ESTATUS[a.estatus] ?? a.estatus}</Insignia>
+            ),
+          },
         ]}
       />
       <h2>Dar de alta un expediente</h2>

@@ -37,6 +37,10 @@ export default async function PaginaCaja({
   return (
     <>
       <h1>Caja</h1>
+      <p className="entrada">
+        Consulta el estado de cuenta de un alumno, registra becas, genera los cargos del periodo y revisa el corte del
+        día.
+      </p>
       <h2>Estado de cuenta</h2>
       <form method="get" className="busqueda" role="search">
         <label htmlFor="matricula">Matrícula del alumno</label>
@@ -55,8 +59,7 @@ export default async function PaginaCaja({
       </form>
       {typeof cuenta === 'string' && <Aviso tipo="error">{cuenta}</Aviso>}
       {typeof cuenta === 'object' && (
-        <>
-          <EstadoDeCuenta cuenta={cuenta} />
+        <EstadoDeCuenta cuenta={cuenta}>
           {cuenta.saldo > 0 && (
             <>
               <h2>Registrar una beca</h2>
@@ -73,7 +76,7 @@ export default async function PaginaCaja({
               </Formulario>
             </>
           )}
-        </>
+        </EstadoDeCuenta>
       )}
 
       <h2>Cargos del periodo</h2>
@@ -111,6 +114,16 @@ export default async function PaginaCaja({
           Consultar
         </button>
       </form>
+      <dl className="cifras caja-corte">
+        <div className="cifra saldo">
+          <dt className="cifra-etiqueta">Total del día</dt>
+          <dd className="cifra-valor">{pesos(corte.total)}</dd>
+        </div>
+        <div className="cifra">
+          <dt className="cifra-etiqueta">Pagos aplicados</dt>
+          <dd className="cifra-valor">{corte.pagos.length}</dd>
+        </div>
+      </dl>
       <Tabla
         titulo={`Pagos aplicados el ${fecha}`}
         filas={corte.pagos}
@@ -119,10 +132,9 @@ export default async function PaginaCaja({
           { titulo: 'Referencia', celda: (p) => p.referencia },
           { titulo: 'Matrícula', celda: (p) => p.matricula },
           { titulo: 'Hora', celda: (p) => momentoLegible(p.aplicadoEn ?? p.fecha) },
-          { titulo: 'Importe', celda: (p) => pesos(p.importe) },
+          { titulo: 'Importe', celda: (p) => pesos(p.importe), numerica: true },
         ]}
       />
-      <p className="saldo">Total del día: {pesos(corte.total)}</p>
     </>
   );
 }

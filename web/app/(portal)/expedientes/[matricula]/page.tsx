@@ -34,7 +34,7 @@ export default async function PaginaExpediente({ params }: Readonly<{ params: Pr
   return (
     <>
       <p>
-        <Link href="/expedientes" prefetch={false}>
+        <Link href="/expedientes" prefetch={false} className="boton boton-secundario">
           Volver a expedientes
         </Link>
       </p>
@@ -50,7 +50,11 @@ export default async function PaginaExpediente({ params }: Readonly<{ params: Pr
       <h3>Kárdex</h3>
       <Kardex materias={calificaciones.materias} />
       <p>
-        <a href={`/expedientes/${encodeURIComponent(expediente.matricula)}/historial.csv`} download>
+        <a
+          href={`/expedientes/${encodeURIComponent(expediente.matricula)}/historial.csv`}
+          download
+          className="boton boton-secundario"
+        >
           Exportar el historial (CSV)
         </a>
       </p>

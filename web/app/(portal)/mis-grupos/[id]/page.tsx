@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Aviso } from '@/componentes/aviso';
 import { Formulario } from '@/componentes/formulario';
+import { Insignia, tonoDeEstado } from '@/componentes/insignia';
 import { Tabla } from '@/componentes/tabla';
 import { capturarParcial } from '@/lib/acciones';
 import { consultar, ErrorApi } from '@/lib/api';
@@ -40,16 +41,18 @@ export default async function PaginaCalificacionesDelGrupo({
   return (
     <>
       <p>
-        <Link href="/mis-grupos" prefetch={false}>
+        <Link href="/mis-grupos" prefetch={false} className="boton boton-secundario">
           Volver a mis grupos
         </Link>
       </p>
       <h1>
         {grupo.materiaClave} {grupo.materiaNombre}, grupo {grupo.clave}
       </h1>
-      <p>
-        Periodo {grupo.periodoClave},{' '}
-        {(ETIQUETA_ESTADO_PERIODO[grupo.estadoPeriodo] ?? grupo.estadoPeriodo).toLowerCase()}.
+      <p className="entrada">
+        Periodo {grupo.periodoClave}{' '}
+        <Insignia tono={tonoDeEstado(grupo.estadoPeriodo)}>
+          {ETIQUETA_ESTADO_PERIODO[grupo.estadoPeriodo] ?? grupo.estadoPeriodo}
+        </Insignia>
       </p>
       {!enCurso && (
         <Aviso tipo="informacion">
@@ -70,6 +73,7 @@ export default async function PaginaCalificacionesDelGrupo({
           ...PARCIALES.map((p) => ({
             titulo: `Parcial ${p}`,
             celda: (a: Grupo['alumnos'][number]) => valorDe(a, p)?.toFixed(2) ?? '—',
+            numerica: true,
           })),
         ]}
       />

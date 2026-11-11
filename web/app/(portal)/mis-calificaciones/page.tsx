@@ -30,7 +30,7 @@ export default async function PaginaMisCalificaciones() {
       <h2>Kárdex</h2>
       <Kardex materias={datos.materias} />
       <p>
-        <a href="/mis-calificaciones/historial.csv" download>
+        <a href="/mis-calificaciones/historial.csv" download className="boton boton-secundario">
           Descargar mi historial (CSV)
         </a>
       </p>

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Hoja } from '@/app/(portal)/tramites/piezas';
 import { BotonImprimir } from '@/componentes/imprimir';
 import { consultar, ErrorApi } from '@/lib/api';
 import type { Esquemas } from '@/lib/contrato';
-import { momentoLegible } from '@/lib/formato';
 
 export const metadata = { title: 'Documento' };
 
@@ -20,13 +20,16 @@ export default async function PaginaDocumento({ params }: Readonly<{ params: Pro
   return (
     <>
       <h1 className="no-imprimir">Documento {documento.folio}</h1>
-      <pre className="documento">{documento.contenido}</pre>
-      <p>
-        Emitido el {momentoLegible(documento.fechaEmision)}. Huella SHA-256: <code>{documento.hash}</code>
+      <p className="entrada no-imprimir">
+        Para guardarlo, imprímelo o elige Guardar como PDF. Con su folio y su huella, control escolar comprueba que no
+        ha cambiado.
       </p>
+      <Hoja documento={documento} />
       <BotonImprimir etiqueta="Imprimir documento" />
       <p className="no-imprimir">
-        <Link href="/mis-tramites">Volver a mis trámites</Link>
+        <Link href="/mis-tramites" className="boton boton-secundario">
+          Volver a mis trámites
+        </Link>
       </p>
     </>
   );

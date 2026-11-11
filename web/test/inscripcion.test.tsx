@@ -3,7 +3,9 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import PaginaExpediente from '@/app/(portal)/expedientes/[matricula]/page';
+import { OfertaDeGrupos } from '@/app/(portal)/inscripcion/oferta';
 import PaginaInscripcion from '@/app/(portal)/inscripcion/page';
+import { Formulario } from '@/componentes/formulario';
 import { BotonImprimir } from '@/componentes/imprimir';
 import { estadoDeInscripcion, momentoLegible } from '@/lib/formato';
 
@@ -110,7 +112,7 @@ describe('Inscripcion del alumno', () => {
     expect(screen.getByRole('heading', { name: 'Arma tu carga' })).toBeTruthy();
     const oferta = screen.getByRole('group', { name: 'Oferta de 2027A' });
     within(oferta).getByLabelText(
-      /ISW-201 Programación II, grupo ISW-201-A: Lunes de 07:00 a 09:00, aula A1; Miércoles.*27 lugares/,
+      /ISW-201 Programación II, grupo ISW-201-A: Lunes de 07:00 a 09:00, aula\sA1; Miércoles.*27 lugares/,
     );
     within(oferta).getByLabelText(/ISW-702 Ética profesional.*Sin lugares/);
     expect(screen.getByRole('button', { name: 'Revisar choques' }).getAttribute('name')).toBe('intencion');
@@ -179,6 +181,23 @@ describe('Inscripcion del alumno', () => {
   it('otros errores llegan a la pagina de error', async () => {
     api({});
     await expect(PaginaInscripcion()).rejects.toThrow();
+  });
+});
+
+describe('Oferta en tarjetas', () => {
+  it('tras un rechazo de validacion conserva lo elegido, marca el campo y dice el lugar en singular', async () => {
+    const accion = async () => ({ error: 'Revisa la carga.', campos: ['grupos'], valores: { grupos: ['6'] } });
+    render(
+      <Formulario accion={accion} envio="Enviar carga">
+        <OfertaDeGrupos periodo="2027A" oferta={[GRUPO_201, { ...GRUPO_LLENO, cupo: 2 }]} marcadas={[]} />
+      </Formulario>,
+    );
+    screen.getByLabelText(/ISW-702 Ética profesional.*1 lugar$/);
+    fireEvent.click(screen.getByRole('button', { name: 'Enviar carga' }));
+    const error = await screen.findByText(/Elige al menos un grupo/);
+    expect(screen.getByRole('group', { name: 'Oferta de 2027A' }).getAttribute('aria-describedby')).toBe(error.id);
+    expect(screen.getByLabelText<HTMLInputElement>(/ISW-702/).checked).toBe(true);
+    expect(screen.getByLabelText<HTMLInputElement>(/ISW-201/).checked).toBe(false);
   });
 });
 
