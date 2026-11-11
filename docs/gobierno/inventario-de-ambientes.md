@@ -44,6 +44,8 @@ Cada ambiente tiene los suyos y no se reutilizan entre ambientes (20.2). Ninguno
 
 Quien lanza el despliegue no puede aprobarlo (31.2). El ambiente no necesita variables ni secretos.
 
+> **Nota del 10 de noviembre de 2026:** esta regla no está configurada. El repositorio no tiene ningún environment (`gh api repos/fjmp-dev/sce-control-escolar/environments`: 0), y SJOM no revisa ni aprueba. El environment `staging` se crea en el sub-batch 11.4 con FJMP como revisor y con la autoaprobación permitida (NC-012). Este apartado se reescribe ahí.
+
 ## 4. Alta
 
 No hay servidores que dar de alta. Lo único que se configura, una vez, es la regla de protección de la sección 3. El piloto sí tendrá servidores (Batches 13 y 14). Ahí `scripts/desplegar-staging.sh` se usa con `EN_APP` y `EN_DB` por SSH, y se documentan su alta y su certificado.
