@@ -103,7 +103,7 @@ jobs:
             echo "- CA: $(openssl x509 -noout -fingerprint -sha256 <<< "$CA_CRT" | cut -d= -f2)"
           } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: sigstore/cosign-installer@v3
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

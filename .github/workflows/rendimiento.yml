@@ -71,7 +71,7 @@ jobs:
           [ "$(nproc)" -ge 4 ] || { echo "::error::el runner tiene $(nproc) nucleos; el dimensionamiento de referencia pide 4"; exit 1; }
           echo "DIMENSIONAMIENTO=runner ubuntu-latest de $(nproc) vCPU y $(free -g | awk '/^Mem/ {print $2}') GB; aplicacion (API, portal y proxy) en los nucleos ${CPUS_APP//|/ y }, base en el $CPUS_DB, generador y monitoreo en el $CPUS_GENERADOR (cpuset)" >> "$GITHUB_ENV"
       - uses: sigstore/cosign-installer@v3
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

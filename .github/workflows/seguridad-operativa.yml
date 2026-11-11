@@ -45,7 +45,7 @@ jobs:
               consulta "$api/branches/$rama/protection" "\"- $rama: checks \(.required_status_checks.contexts | length), admins incluidos \(.enforce_admins.enabled)\""
             done
           } | tee "$SALIDA/github.md"
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
