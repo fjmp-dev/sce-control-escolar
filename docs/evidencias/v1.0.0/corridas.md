@@ -8,7 +8,7 @@ Copiadas el 11 de noviembre de 2026 (Tabla 62: los artefactos de Actions caducan
 |---|---|---|---|
 | `5385940` | Corte de `release/1.0.0` (fusión del PR #102) | [43009794851](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43009794851) | Etapas 1 a 6 en verde. La etapa 5 de seguridad falló una vez por un `502` de Docker Hub. La 7 falló dos veces en Lighthouse con `NO_NAVSTART`. **No se etiquetó** |
 | `8e26059` | Fusión del PR #105: actas, reintento de Lighthouse y registro de flujos | [43022020442](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43022020442) | Etapas 1 a 7 en verde, al primer intento. **Es `v1.0.0-rc.1` y `v1.0.0`** |
-| `5a304fb` | Fusión del PR #106: resumen de rendimiento por digest y arreglos del CI | [43069907898](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43069907898) | {{CI_5A304FB}}. No se etiquetó |
+| `5a304fb` | Fusión del PR #106: resumen de rendimiento por digest y arreglos del CI | [43069907898](https://github.com/fjmp-dev/sce-control-escolar/actions/runs/43069907898) | Verde al primer intento en las etapas 1 a 7. No se etiquetó |
 
 **PR #106 y el DNS de los runners.** El 11 de noviembre, de 13:30 a 17:30 UTC, la etapa 7 del PR #106 falló cinco veces. Los runners no resolvían a ratos `azure.archive.ubuntu.com` ni `archive.ubuntu.com`, y la instalación de los navegadores de Playwright se colgaba o pedía paquetes que ya no existían (404). GitHub no reportaba incidente. Se corrigió con `scripts/navegadores.sh`: resolvedores públicos, el archivo de Ubuntu en lugar del espejo de Azure, tiempos de espera y un segundo intento. `rendimiento.yml` dejó de instalar `xmllint` y valida `sce.jmx` con Python. Por esa demora no se etiquetó `rc.2` (NC-022).
 

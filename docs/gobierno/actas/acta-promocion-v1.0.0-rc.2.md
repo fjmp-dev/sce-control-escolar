@@ -17,9 +17,9 @@
 
 | Condición | Resultado | Evidencia |
 |---|---|---|
-| CI en verde sobre el commit etiquetado, etapas 1 a 7 | Pendiente | Corrida de `release/1.0.0` |
-| Imágenes `sce-api` y `sce-portal` firmadas por la etapa 6 para el commit | Pendiente | `cosign verify` en la etapa 8 |
-| Cero defectos críticos abiertos (Tabla 40) | Pendiente | Issues con etiqueta de severidad crítica |
+| CI en verde sobre el commit etiquetado, etapas 1 a 7 | No se ejecutó | Corrida de `release/1.0.0` |
+| Imágenes `sce-api` y `sce-portal` firmadas por la etapa 6 para el commit | No se ejecutó | `cosign verify` en la etapa 8 |
+| Cero defectos críticos abiertos (Tabla 40) | No se ejecutó | Issues con etiqueta de severidad crítica |
 | Revisor del ambiente `staging` | FJMP, con autoaprobación (NC-012) | `inventario-de-ambientes.md` §3 |
 
 ## 2. Humo en staging
@@ -28,18 +28,18 @@ La tabla del Anexo D la escribe `scripts/verificar-staging.sh` en el resumen de 
 
 | Verificación | Resultado | Evidencia |
 |---|---|---|
-| Inicio de sesión de cada rol: alumno, profesor, control escolar, coordinación, caja, dirección y administrador | Pendiente | `scripts/humo.sh` |
-| Inscripción: una confirmada y un rechazo por cada motivo | Pendiente | Newman, carpeta Contratos |
-| Consulta de horario y de calificaciones | Pendiente | Newman |
-| Pago con doble notificación que no duplica | Pendiente. **Pasarela simulada, no sandbox** (CC-020) | Newman, carpeta "Pagos, trámites y reportes" (CI-PAG-01) |
-| Segunda facultad sin migración estructural (CO-FLE-01) | Pendiente | `co-fle-01.sql` y Newman, carpeta CO-FLE-01 |
-| `/salud` de la API y de la web | Pendiente | `scripts/humo.sh` |
-| HTTPS con TLS 1.2 o superior | Pendiente | testssl.sh y ZAP pasivo |
-| Sin matrículas reales del piloto (18.2, RK-09) | Pendiente | `sin-datos-reales.sql` |
-| Accesos revisados y sin cuentas obsoletas | Pendiente | `accesos.sql`, revisado por FJMP en el papel de Seguridad |
-| Calidad de datos después del despliegue | Pendiente | Great Expectations (CD-DAT-01 a 06) |
-| Matriz de compatibilidad, proyectos Must (CO-COM-01) | Pendiente | Playwright, `matriz-compatibilidad.md` del artefacto |
-| Humo de rendimiento con los umbrales de la Tabla 46 | Pendiente | k6, `reportes/staging/k6/humo.json` |
+| Inicio de sesión de cada rol: alumno, profesor, control escolar, coordinación, caja, dirección y administrador | No se ejecutó | `scripts/humo.sh` |
+| Inscripción: una confirmada y un rechazo por cada motivo | No se ejecutó | Newman, carpeta Contratos |
+| Consulta de horario y de calificaciones | No se ejecutó | Newman |
+| Pago con doble notificación que no duplica | No se ejecutó | Newman, carpeta "Pagos, trámites y reportes" (CI-PAG-01) |
+| Segunda facultad sin migración estructural (CO-FLE-01) | No se ejecutó | `co-fle-01.sql` y Newman, carpeta CO-FLE-01 |
+| `/salud` de la API y de la web | No se ejecutó | `scripts/humo.sh` |
+| HTTPS con TLS 1.2 o superior | No se ejecutó | testssl.sh y ZAP pasivo |
+| Sin matrículas reales del piloto (18.2, RK-09) | No se ejecutó | `sin-datos-reales.sql` |
+| Accesos revisados y sin cuentas obsoletas | No se ejecutó | `accesos.sql`, revisado por FJMP en el papel de Seguridad |
+| Calidad de datos después del despliegue | No se ejecutó | Great Expectations (CD-DAT-01 a 06) |
+| Matriz de compatibilidad, proyectos Must (CO-COM-01) | No se ejecutó | Playwright, `matriz-compatibilidad.md` del artefacto |
+| Humo de rendimiento con los umbrales de la Tabla 46 | No se ejecutó | k6, `reportes/staging/k6/humo.json` |
 
 ## 3. Rollback ensayado (sec. 20.2; puerta 6 de 20.1)
 
@@ -47,10 +47,10 @@ La etapa 8 despliega `v1.0.0-rc.1`, luego esta candidata, vuelve a `v1.0.0-rc.1`
 
 | Paso | Resultado | Evidencia |
 |---|---|---|
-| Respaldo antes de desplegar la nueva candidata | Pendiente | `rollback.md` |
-| Vuelta a `v1.0.0-rc.1` con su humo en verde | Pendiente | `rollback.md` |
-| Tiempo de rollback contra RTO < 4 h (RNF-FIA-002) | Pendiente | `rollback.md` |
-| Esta candidata otra vez, con humo en verde | Pendiente | `anexo-d.md` |
+| Respaldo antes de desplegar la nueva candidata | No se ejecutó | `rollback.md` |
+| Vuelta a `v1.0.0-rc.1` con su humo en verde | No se ejecutó | `rollback.md` |
+| Tiempo de rollback contra RTO < 4 h (RNF-FIA-002) | No se ejecutó | `rollback.md` |
+| Esta candidata otra vez, con humo en verde | No se ejecutó | `anexo-d.md` |
 
 ## 4. Rendimiento sobre esta candidata (sec. 24, 13.6)
 
@@ -58,11 +58,11 @@ CR-REN-01 a 05 corren después de la promoción con `rendimiento.yml`, sobre las
 
 | Caso | Resultado | Corrida |
 |---|---|---|
-| CR-REN-01, mediana de tres | Pendiente | |
-| CR-REN-02, mediana de tres | Pendiente | |
-| CR-REN-03 | Pendiente (informativo) | |
-| CR-REN-04 | Pendiente (informativo) | |
-| CR-REN-05 | Pendiente | |
+| CR-REN-01, mediana de tres | No aplica: CR-REN se midió sobre rc.1 | |
+| CR-REN-02, mediana de tres | No aplica: CR-REN se midió sobre rc.1 | |
+| CR-REN-03 | No aplica: CR-REN se midió sobre rc.1 | |
+| CR-REN-04 | No aplica: CR-REN se midió sobre rc.1 | |
+| CR-REN-05 | No aplica: CR-REN se midió sobre rc.1 | |
 
 ## 5. Desviaciones declaradas
 
@@ -73,7 +73,7 @@ CR-REN-01 a 05 corren después de la promoción con `rendimiento.yml`, sobre las
 
 ## 6. Resultado
 
-Corrida de la etapa 8: pendiente · Artefacto `despliegue-staging-v1.0.0-rc.2`: pendiente
+Corrida de la etapa 8: no hubo · Artefacto `despliegue-staging-v1.0.0-rc.2`: no existe
 
 ## 7. Decisión
 
