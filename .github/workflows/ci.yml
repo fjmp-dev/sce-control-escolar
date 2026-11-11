@@ -23,7 +23,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -49,7 +49,7 @@ jobs:
     needs: construccion
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Commitlint y Gitleaks necesitan el historial
       - uses: actions/setup-node@v4
@@ -111,7 +111,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -154,7 +154,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -211,7 +211,7 @@ jobs:
     needs: integracion
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # el commit base de la puerta de calidad
       - uses: actions/download-artifact@v4
@@ -252,7 +252,7 @@ jobs:
     needs: integracion
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Levantar PostgreSQL 16, la API y el portal con datos sinteticos
         run: docker compose up -d --build --wait --wait-timeout 300
       - name: Humo - salud e inicio de sesion con los seis roles y el administrador (F-01 #2)
@@ -325,7 +325,7 @@ jobs:
       imagen_api: ${{ steps.publicar.outputs.imagen_api }}
       imagen_portal: ${{ steps.publicar.outputs.imagen_portal }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: sigstore/cosign-installer@v3
       - uses: docker/login-action@v3
         with:
@@ -354,7 +354,7 @@ jobs:
       IMAGEN_API: ${{ needs.empaquetado.outputs.imagen_api }}
       IMAGEN_PORTAL: ${{ needs.empaquetado.outputs.imagen_portal }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24

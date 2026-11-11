@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Levantar PostgreSQL 16, la API y el portal con datos sinteticos
         run: docker compose up -d --build --wait --wait-timeout 300
       - name: Humo - salud e inicio de sesion con los siete roles (Anexo D)

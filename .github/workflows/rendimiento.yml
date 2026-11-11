@@ -33,7 +33,7 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: sce.jmx, guiones de k6 y de metas
         run: |
           sudo apt-get install -qq -y libxml2-utils >/dev/null
@@ -62,7 +62,7 @@ jobs:
       CPUS_DB: '2'
       CPUS_GENERADOR: '3'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.etiqueta }}
       - name: Etiqueta candidata y dimensionamiento de referencia

@@ -48,7 +48,7 @@ jobs:
         ${{ inputs.acta || format('docs/gobierno/actas/acta-{0}-{1}.md',
         contains(github.ref_name, '-rc.') && 'promocion' || 'liberacion', github.ref_name) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Etiqueta SemVer integrada en develop, main o release, y acta que la nombra (sec. 31.2)
