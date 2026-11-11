@@ -86,7 +86,7 @@ E. Evidencia de pruebas
    - La corrida de CI en verde de cada pull request, en la pestaña Actions de GitHub.
    - Sus reportes: cobertura, Newman, Cypress con video y axe, ZAP, Trivy, Gitleaks y SonarQube.
    - Copia de esos reportes, con SHA-256: docs/evidencias/fase-4/corridas.md y reportes/. Los artefactos
-     de GitHub caducan a los 90 días. El video de Cypress va adjunto a la release v1.0.0.
+     de GitHub caducan a los 90 días. El video de Cypress va adjunto a la release v0.4.0.
 
 F. Gobierno y control
    docs/gobierno/  registro-de-cambios.md (CC-001 a CC-019, con aprobaciones), actas/ (fases 0 a 3 y sprints),
@@ -95,15 +95,15 @@ F. Gobierno y control
                    informe-fase-1.md a informe-fase-3.md
    docs/auditoria/ respuesta-F-01-SCE-002.md
 
-G. Los pull requests #30 y #55 a #66, con su CI en verde.
+G. Los pull requests #30, #55 a #66 y #70 en adelante, con su CI en verde.
    AVISO: desde el 10 de noviembre de 2026 el proyecto sigue sin Samuel (SJOM). FJMP fusiona y firma
    solo, así que no hay revisión independiente. Se declara en docs/gobierno/roles-y-raci.md, apartado 6.
 
 
 6. PENDIENTE ANTES DE ENTREGAR
 ------------------------------
-- Fusionar en orden a develop: #30, luego #55, #56 y así hasta #66. Después, develop en main.
+- Hecho: #30 y #55 a #66 están en develop. La fase 4 llega a main con release/0.4.0 (sub-batch 11.4).
 - FJMP firma: manual v3.0 (apartado 9), registro de aprobación de la v2.0, actas de fase y aprobaciones de CC.
 - Confirmar en la Gaceta del Gobierno el nombre y la fecha de la ley estatal de datos personales
   (manual v3.0, apartado 7).
-- Etiquetar v1.0.0 (notas: docs/gobierno/notas-version/v1.0.0.md).
+- Release v0.4.0 (notas: docs/gobierno/notas-version/v0.4.0.md); v1.0.0 al final, tras v1.0.0-rc.N (plan, 6.2).
